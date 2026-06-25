@@ -15,6 +15,14 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  // Endpoint de récupération de tous les utilisateurs Protégé par JWT GET /users
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPER_ADMIN', 'ADMIN')
+  @Get()
+  async findAll() {
+    return this.usersService.findAll();
+  }
+
   // Endpoint de récupération d'un utilisateur par ID Protégé par JWT GET /users/:id
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('SUPER_ADMIN')
