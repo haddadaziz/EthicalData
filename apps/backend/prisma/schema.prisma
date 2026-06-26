@@ -41,7 +41,7 @@ model Fournisseur {
   id             BigInt          @id @default(autoincrement())
   nom            String          @unique
   slug           String          @unique
-  logo           String?
+  image          String?
   certifications Certification[]
 
   @@map("fournisseurs")

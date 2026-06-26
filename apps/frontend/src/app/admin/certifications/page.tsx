@@ -9,7 +9,8 @@ interface Fournisseur {
   id: string;
   nom: string;
   slug: string;
-  logo?: string | null;
+  image?: string | null;
+  certificationCount?: number;
 }
 
 interface Module {
@@ -67,6 +68,12 @@ export default function CertificationsAdmin() {
   
   const [imageError, setImageError] = useState(false);
   const [editImageError, setEditImageError] = useState(false);
+
+  // États pour la gestion simplifiée des fournisseurs en ligne
+  const [isFournModalOpen, setIsFournModalOpen] = useState(false);
+  const [fournNom, setFournNom] = useState('');
+  const [fournLoading, setFournLoading] = useState(false);
+  const [fournError, setFournError] = useState<string | null>(null);
 
   useEffect(() => {
     setImageError(false);
@@ -140,6 +147,63 @@ export default function CertificationsAdmin() {
       }
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleCreateFournisseur = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!fournNom.trim()) return;
+    setFournLoading(true);
+    setFournError(null);
+    try {
+      const newFourn = await apiFetch('/certifications/fournisseurs', {
+        method: 'POST',
+        body: { nom: fournNom.trim() }
+      });
+      const fournisseursData = await apiFetch('/certifications/fournisseurs');
+      setFournisseurs(fournisseursData);
+      
+      if (newFourn && newFourn.id) {
+        const strId = newFourn.id.toString();
+        if (isEditModalOpen) {
+          setEditFournisseurId(strId);
+        } else {
+          setFournisseurId(strId);
+        }
+      }
+      setFournNom('');
+    } catch (err: any) {
+      console.error(err);
+      setFournError(err.message || 'Une erreur est survenue lors de la création du fournisseur.');
+    } finally {
+      setFournLoading(false);
+    }
+  };
+
+  const handleDeleteFournisseur = async (id: string, name: string) => {
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer le fournisseur "${name}" ?`)) {
+      return;
+    }
+    setFournLoading(true);
+    setFournError(null);
+    try {
+      await apiFetch(`/certifications/fournisseurs/${id}`, {
+        method: 'DELETE'
+      });
+      const fournisseursData = await apiFetch('/certifications/fournisseurs');
+      setFournisseurs(fournisseursData);
+      
+      if (fournisseurId === id) {
+        setFournisseurId(fournisseursData[0]?.id || '');
+      }
+      if (editFournisseurId === id) {
+        setEditFournisseurId(fournisseursData[0]?.id || '');
+      }
+    } catch (err: any) {
+      console.error(err);
+      setFournError(err.message || 'Une erreur est survenue lors de la suppression du fournisseur.');
+    } finally {
+      setFournLoading(false);
+    }
   };
 
   const handleCreateCert = async (e: React.FormEvent) => {
@@ -572,17 +636,30 @@ export default function CertificationsAdmin() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-555 dark:text-slate-400 uppercase tracking-wider pl-1">Fournisseur</label>
+                      <div className="flex justify-between items-center pl-1">
+                        <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Fournisseur</label>
+                        <button
+                          type="button"
+                          onClick={() => setIsFournModalOpen(true)}
+                          className="text-xs text-indigo-500 hover:text-indigo-600 dark:text-indigo-400 dark:hover:text-indigo-300 font-semibold hover:underline"
+                        >
+                          + Gérer
+                        </button>
+                      </div>
                       <select
                         value={fournisseurId}
                         onChange={(e) => setFournisseurId(e.target.value)}
                         className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-955/40 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all duration-200 font-semibold"
                       >
-                        {fournisseurs.map((f) => (
-                          <option key={f.id} value={f.id}>
-                            {f.nom}
-                          </option>
-                        ))}
+                        {fournisseurs.length === 0 ? (
+                          <option value="" disabled>Aucun fournisseur - Cliquez sur "+ Gérer"</option>
+                        ) : (
+                          fournisseurs.map((f) => (
+                            <option key={f.id} value={f.id}>
+                              {f.nom}
+                            </option>
+                          ))
+                        )}
                       </select>
                     </div>
                   </div>
@@ -851,17 +928,30 @@ export default function CertificationsAdmin() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-555 dark:text-slate-400 uppercase tracking-wider pl-1">Fournisseur</label>
+                      <div className="flex justify-between items-center pl-1">
+                        <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Fournisseur</label>
+                        <button
+                          type="button"
+                          onClick={() => setIsFournModalOpen(true)}
+                          className="text-xs text-indigo-500 hover:text-indigo-600 dark:text-indigo-400 dark:hover:text-indigo-300 font-semibold hover:underline"
+                        >
+                          + Gérer
+                        </button>
+                      </div>
                       <select
                         value={editFournisseurId}
                         onChange={(e) => setEditFournisseurId(e.target.value)}
                         className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-955/40 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all duration-200 font-semibold"
                       >
-                        {fournisseurs.map((f) => (
-                          <option key={f.id} value={f.id}>
-                            {f.nom}
-                          </option>
-                        ))}
+                        {fournisseurs.length === 0 ? (
+                          <option value="" disabled>Aucun fournisseur - Cliquez sur "+ Gérer"</option>
+                        ) : (
+                          fournisseurs.map((f) => (
+                            <option key={f.id} value={f.id}>
+                              {f.nom}
+                            </option>
+                          ))
+                        )}
                       </select>
                     </div>
                   </div>
@@ -1049,6 +1139,116 @@ export default function CertificationsAdmin() {
                   </div>
                 </div>
 
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal de gestion des fournisseurs */}
+      <AnimatePresence>
+        {isFournModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl relative z-10 flex flex-col max-h-[80vh]"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800">
+                <div className="flex items-center gap-2">
+                  <Briefcase className="w-5 h-5 text-indigo-500" />
+                  <h3 className="font-extrabold text-base text-slate-800 dark:text-white uppercase tracking-wider">Gérer les Fournisseurs</h3>
+                </div>
+                <button
+                  onClick={() => {
+                    setIsFournModalOpen(false);
+                    setFournError(null);
+                    setFournNom('');
+                  }}
+                  className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Contenu */}
+              <div className="p-6 overflow-y-auto space-y-4 flex-1">
+                {fournError && (
+                  <div className="p-3.5 bg-rose-500/10 border border-rose-500/20 text-rose-500 text-xs font-semibold rounded-xl flex items-start gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0" />
+                    <span>{fournError}</span>
+                  </div>
+                )}
+
+                {/* Formulaire d'ajout */}
+                <form onSubmit={handleCreateFournisseur} className="flex gap-2">
+                  <input
+                    type="text"
+                    value={fournNom}
+                    onChange={(e) => setFournNom(e.target.value)}
+                    placeholder="Nom du fournisseur (ex: Microsoft)"
+                    className="flex-1 px-4 py-2.5 bg-slate-50 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all duration-200"
+                    disabled={fournLoading}
+                  />
+                  <button
+                    type="submit"
+                    disabled={fournLoading || !fournNom.trim()}
+                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:hover:bg-indigo-600 text-white text-sm font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-1 shrink-0"
+                  >
+                    {fournLoading ? (
+                      <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <Plus className="w-4 h-4" />
+                    )}
+                    <span>Ajouter</span>
+                  </button>
+                </form>
+
+                {/* Liste des fournisseurs */}
+                <div className="space-y-2">
+                  <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">Fournisseurs actuels</p>
+                  
+                  <div className="space-y-2 max-h-[250px] overflow-y-auto pr-1">
+                    {fournisseurs.length === 0 ? (
+                      <div className="text-center py-6 text-sm text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-950/20 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
+                        Aucun fournisseur enregistré.
+                      </div>
+                    ) : (
+                      fournisseurs.map((f: any) => {
+                        const count = f.certificationCount || 0;
+                        const hasCerts = count > 0;
+                        return (
+                          <div
+                            key={f.id}
+                            className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-950/20 border border-slate-200/60 dark:border-slate-800/60 rounded-xl transition-colors hover:bg-slate-100 dark:hover:bg-slate-800/40"
+                          >
+                            <div className="min-w-0">
+                              <p className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate">{f.nom}</p>
+                              <p className="text-xs text-slate-500 dark:text-slate-400">
+                                {count} certification{count > 1 ? 's' : ''}
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteFournisseur(f.id, f.nom)}
+                              disabled={fournLoading || hasCerts}
+                              title={hasCerts ? "Ce fournisseur est lié à des certifications et ne peut pas être supprimé." : "Supprimer le fournisseur"}
+                              className={`p-2 rounded-lg transition-all duration-200 ${
+                                hasCerts
+                                  ? 'text-slate-300 dark:text-slate-700 cursor-not-allowed opacity-50'
+                                  : 'text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 dark:hover:bg-rose-500/20'
+                              }`}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
               </div>
             </motion.div>
           </div>

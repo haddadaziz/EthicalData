@@ -2,6 +2,8 @@ import { Injectable, NotFoundException, ConflictException } from '@nestjs/common
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateCertificationDto } from './dto/create-certification.dto';
 import { UpdateCertificationDto } from './dto/update-certification.dto';
+import { CreateFournisseurDto } from './dto/create-fournisseur.dto';
+import { UpdateFournisseurDto } from './dto/update-fournisseur.dto';
 
 @Injectable()
 export class CertificationsService {
@@ -23,12 +25,115 @@ export class CertificationsService {
   // Récupérer tous les fournisseurs
   async findAllFournisseurs() {
     const fournisseurs = await this.prisma.fournisseur.findMany({
+      include: {
+        _count: {
+          select: { certifications: { where: { deletedAt: null } } }
+        }
+      },
       orderBy: { nom: 'asc' }
     });
     return fournisseurs.map(f => ({
       ...f,
-      id: f.id.toString()
+      id: f.id.toString(),
+      certificationCount: f._count.certifications
     }));
+  }
+
+  // Récupérer un fournisseur par ID
+  async findOneFournisseur(id: number) {
+    const fournisseur = await this.prisma.fournisseur.findFirst({
+      where: { id: BigInt(id) },
+      include: {
+        _count: {
+          select: { certifications: { where: { deletedAt: null } } }
+        }
+      }
+    });
+    if (!fournisseur) {
+      throw new NotFoundException("Le fournisseur demandé n'existe pas.");
+    }
+    return {
+      ...fournisseur,
+      id: fournisseur.id.toString(),
+      certificationCount: fournisseur._count.certifications
+    };
+  }
+
+  // Créer un fournisseur
+  async createFournisseur(dto: CreateFournisseurDto) {
+    const slug = this.slugify(dto.nom);
+    const existing = await this.prisma.fournisseur.findFirst({
+      where: { OR: [{ nom: dto.nom }, { slug }] }
+    });
+    if (existing) {
+      throw new ConflictException("Un fournisseur avec ce nom existe déjà.");
+    }
+    const f = await this.prisma.fournisseur.create({
+      data: {
+        nom: dto.nom,
+        slug,
+        image: dto.image || null
+      }
+    });
+    return {
+      ...f,
+      id: f.id.toString()
+    };
+  }
+
+  // Modifier un fournisseur
+  async updateFournisseur(id: number, dto: UpdateFournisseurDto) {
+    const f = await this.prisma.fournisseur.findFirst({
+      where: { id: BigInt(id) }
+    });
+    if (!f) {
+      throw new NotFoundException("Le fournisseur demandé n'existe pas.");
+    }
+    const data: any = {
+      nom: dto.nom,
+      image: dto.image
+    };
+    if (dto.nom) {
+      data.slug = this.slugify(dto.nom);
+      const existing = await this.prisma.fournisseur.findFirst({
+        where: {
+          nom: dto.nom,
+          NOT: { id: BigInt(id) }
+        }
+      });
+      if (existing) {
+        throw new ConflictException("Un fournisseur avec ce nom existe déjà.");
+      }
+    }
+    Object.keys(data).forEach(key => data[key] === undefined && delete data[key]);
+    const updated = await this.prisma.fournisseur.update({
+      where: { id: BigInt(id) },
+      data
+    });
+    return {
+      ...updated,
+      id: updated.id.toString()
+    };
+  }
+
+  // Supprimer un fournisseur
+  async removeFournisseur(id: number) {
+    const f = await this.prisma.fournisseur.findFirst({
+      where: { id: BigInt(id) },
+      include: {
+        certifications: { where: { deletedAt: null } }
+      }
+    });
+    if (!f) {
+      throw new NotFoundException("Le fournisseur demandé n'existe pas.");
+    }
+    if (f.certifications.length > 0) {
+      throw new ConflictException("Impossible de supprimer ce fournisseur car il possède des certifications actives rattachées.");
+    }
+    await this.prisma.fournisseur.delete({
+      where: { id: BigInt(id) }
+    });
+    return { message: 'Fournisseur supprimé avec succès.' };
   }
 
   // Récupérer toutes les certifications non supprimées

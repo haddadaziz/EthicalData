@@ -2,6 +2,8 @@ import { Controller, Get, Post, Patch, Delete, Body, Param, ParseIntPipe, UseGua
 import { CertificationsService } from './certifications.service';
 import { CreateCertificationDto } from './dto/create-certification.dto';
 import { UpdateCertificationDto } from './dto/update-certification.dto';
+import { CreateFournisseurDto } from './dto/create-fournisseur.dto';
+import { UpdateFournisseurDto } from './dto/update-fournisseur.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -14,6 +16,36 @@ export class CertificationsController {
   @Get('fournisseurs')
   async findAllFournisseurs() {
     return this.certificationsService.findAllFournisseurs();
+  }
+
+  // Récupérer un fournisseur par ID
+  @Get('fournisseurs/:id')
+  async findOneFournisseur(@Param('id', ParseIntPipe) id: number) {
+    return this.certificationsService.findOneFournisseur(id);
+  }
+
+  // Créer un fournisseur
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPER_ADMIN')
+  @Post('fournisseurs')
+  async createFournisseur(@Body() dto: CreateFournisseurDto) {
+    return this.certificationsService.createFournisseur(dto);
+  }
+
+  // Modifier un fournisseur
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPER_ADMIN')
+  @Patch('fournisseurs/:id')
+  async updateFournisseur(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateFournisseurDto) {
+    return this.certificationsService.updateFournisseur(id, dto);
+  }
+
+  // Supprimer un fournisseur
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPER_ADMIN', 'ADMIN')
+  @Delete('fournisseurs/:id')
+  async removeFournisseur(@Param('id', ParseIntPipe) id: number) {
+    return this.certificationsService.removeFournisseur(id);
   }
 
   // Récupérer toutes les certifications

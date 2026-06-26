@@ -55,17 +55,17 @@ async function main() {
     }
 
     const fournisseursData = [
-        { nom: 'Microsoft', slug: 'microsoft', logo: '/logos/microsoft.svg' },
-        { nom: 'AWS', slug: 'aws', logo: '/logos/aws.svg' },
-        { nom: 'Google Cloud', slug: 'google-cloud', logo: '/logos/gcp.svg' },
-        { nom: 'Cisco', slug: 'cisco', logo: '/logos/cisco.svg' },
+        { nom: 'Microsoft', slug: 'microsoft', image: '/logos/microsoft.svg' },
+        { nom: 'AWS', slug: 'aws', image: '/logos/aws.svg' },
+        { nom: 'Google Cloud', slug: 'google-cloud', image: '/logos/gcp.svg' },
+        { nom: 'Cisco', slug: 'cisco', image: '/logos/cisco.svg' },
     ];
 
     const createdFournisseurs = [];
     for (const f of fournisseursData) {
         const fournisseur = await prisma.fournisseur.upsert({
             where: { nom: f.nom },
-            update: { logo: f.logo },
+            update: { image: f.image },
             create: f,
         });
         createdFournisseurs.push(fournisseur);
