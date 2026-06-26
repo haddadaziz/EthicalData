@@ -41,3 +41,10 @@ tsconfig.build.tsbuildinfo
 # Système
 .DS_Store
 Thumbs.db
+
+# Outils
+.antigravity/
+
+#Diagrammes
+*.vsdx
+vsdx_extracted/
