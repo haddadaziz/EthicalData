@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
-import { Award, Plus, RefreshCw, X, Edit, Trash2, Search, Layers, Briefcase, BookmarkCheck } from 'lucide-react';
+import { Award, Plus, RefreshCw, X, Edit, Trash2, Search, Layers, Briefcase, BookmarkCheck, Upload, Clock, Image as ImageIcon, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Fournisseur {
@@ -64,6 +64,17 @@ export default function CertificationsAdmin() {
   const [editDureeIndicative, setEditDureeIndicative] = useState('');
   const [editFournisseurId, setEditFournisseurId] = useState('');
   const [editImage, setEditImage] = useState('');
+  
+  const [imageError, setImageError] = useState(false);
+  const [editImageError, setEditImageError] = useState(false);
+
+  useEffect(() => {
+    setImageError(false);
+  }, [image]);
+
+  useEffect(() => {
+    setEditImageError(false);
+  }, [editImage]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -108,6 +119,28 @@ export default function CertificationsAdmin() {
   const microsoftCount = certs.filter(c => c.fournisseur.nom === 'Microsoft').length;
   const awsCount = certs.filter(c => c.fournisseur.nom === 'AWS').length;
   const otherCount = totalCerts - (microsoftCount + awsCount);
+
+  // Gestion de la sélection locale de fichiers (conversion en Base64 pour prévisualisation immédiate et stockage)
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, isEdit: boolean) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert("L'image est trop grande. La taille maximale est de 2 Mo.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result as string;
+      if (isEdit) {
+        setEditImage(base64String);
+      } else {
+        setImage(base64String);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleCreateCert = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -215,12 +248,28 @@ export default function CertificationsAdmin() {
   const getNiveauBadgeStyle = (niv: string) => {
     switch (niv) {
       case 'AVANCE':
-        return 'bg-rose-500/10 text-rose-600 dark:text-rose-450 border border-rose-500/20';
+        return 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20';
       case 'INTERMEDIAIRE':
-        return 'bg-amber-500/10 text-amber-600 dark:text-amber-450 border border-amber-500/20';
+        return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20';
       case 'DEBUTANT':
       default:
-        return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-450 border border-emerald-500/20';
+        return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20';
+    }
+  };
+
+  const getSupplierBadgeStyle = (name: string) => {
+    switch (name?.toLowerCase()) {
+      case 'microsoft':
+        return 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20';
+      case 'aws':
+        return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20';
+      case 'google cloud':
+      case 'google':
+        return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20';
+      case 'cisco':
+        return 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20';
+      default:
+        return 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20';
     }
   };
 
@@ -316,7 +365,7 @@ export default function CertificationsAdmin() {
                 <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Autres fournisseurs</p>
                 <p className="text-3xl font-extrabold text-slate-900 dark:text-white mt-2">{otherCount}</p>
               </div>
-              <div className="w-12 h-12 bg-purple-500/10 border border-purple-500/20 rounded-xl flex items-center justify-center text-purple-650 dark:text-purple-400">
+              <div className="w-12 h-12 bg-purple-500/10 border border-purple-500/20 rounded-xl flex items-center justify-center text-purple-655 dark:text-purple-400">
                 <BookmarkCheck className="w-6 h-6" />
               </div>
             </motion.div>
@@ -338,7 +387,7 @@ export default function CertificationsAdmin() {
               placeholder="Rechercher une certification..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 transition-all text-sm outline-none"
+              className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-955/60 border border-slate-200 dark:border-slate-850 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 transition-all text-sm outline-none"
             />
           </div>
           
@@ -394,35 +443,13 @@ export default function CertificationsAdmin() {
                     </td>
 
                     <td className="py-4 px-6">
-                      <div className="flex items-center gap-3">
-                        {/* Conteneur de l'image de la certification (avec repli sur le logo du fournisseur) */}
-                        <div className="w-10 h-10 bg-slate-50 dark:bg-slate-900/60 rounded-xl flex items-center justify-center shrink-0 border border-slate-200 dark:border-slate-800 overflow-hidden">
-                          {cert.image ? (
-                            <img 
-                              src={cert.image} 
-                              alt={cert.nom} 
-                              className="w-full h-full object-cover"
-                            />
-                          ) : cert.fournisseur.logo ? (
-                            <img 
-                              src={cert.fournisseur.logo} 
-                              alt={cert.fournisseur.nom} 
-                              className="w-6 h-6 object-contain"
-                            />
-                          ) : (
-                            <span className="font-bold text-slate-500 dark:text-slate-400 text-sm">
-                              {cert.fournisseur.nom.charAt(0).toUpperCase()}
-                            </span>
-                          )}
-                        </div>
-                        <div>
-                          <span className="font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors block font-sans">
-                            {cert.nom}
-                          </span>
-                          <span className="text-xs text-slate-400 dark:text-slate-500 line-clamp-1 max-w-md mt-0.5">
-                            {cert.description}
-                          </span>
-                        </div>
+                      <div>
+                        <span className="font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors block">
+                          {cert.nom}
+                        </span>
+                        <span className="text-xs text-slate-400 dark:text-slate-500 line-clamp-1 max-w-md mt-0.5">
+                          {cert.description}
+                        </span>
                       </div>
                     </td>
 
@@ -436,7 +463,7 @@ export default function CertificationsAdmin() {
                       </span>
                     </td>
 
-                    <td className="py-4 px-6 text-slate-550 dark:text-slate-450 font-medium">
+                    <td className="py-4 px-6 text-slate-555 dark:text-slate-450 font-medium">
                       {cert.dureeIndicative || 'Non spécifiée'}
                     </td>
 
@@ -470,7 +497,7 @@ export default function CertificationsAdmin() {
         </div>
       </div>
 
-      {/* MODAL DE CRÉATION */}
+      {/* MODAL DE CRÉATION (Avec Aperçu en direct Côte à Côte) */}
       <AnimatePresence>
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -486,142 +513,270 @@ export default function CertificationsAdmin() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-xl rounded-[28px] shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh] transition-colors duration-300"
+              className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 w-full max-w-5xl rounded-[32px] shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh] transition-colors duration-300"
             >
-              <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/20">
-                <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">Créer une certification</h2>
+              {/* Header */}
+              <div className="p-6 border-b border-slate-200/80 dark:border-slate-850 flex items-center justify-between bg-slate-50/50 dark:bg-slate-955/20">
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-650 dark:text-indigo-400">
+                    <Sparkles className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black text-slate-900 dark:text-white leading-tight">Nouvelle certification</h2>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Configurez une nouvelle certification et visualisez-la en direct.</p>
+                  </div>
+                </div>
                 <button
                   onClick={() => { setIsModalOpen(false); resetForm(); }}
                   disabled={modalLoading}
-                  className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-xl transition-colors cursor-pointer disabled:opacity-50"
+                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-xl transition-all cursor-pointer disabled:opacity-50"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <form onSubmit={handleCreateCert} className="p-6 overflow-y-auto space-y-5 flex-1 font-sans">
-                {modalError && (
-                  <div className="p-4 bg-rose-500/10 border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 rounded-2xl text-sm font-semibold">
-                    {modalError}
-                  </div>
-                )}
+              {/* Side-by-side content */}
+              <div className="flex-1 overflow-y-auto flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-slate-200/80 dark:divide-slate-850">
+                
+                {/* Formulaire (Gauche) */}
+                <form onSubmit={handleCreateCert} className="p-8 space-y-5 md:w-1/2 overflow-y-auto">
+                  {modalError && (
+                    <div className="p-4 bg-rose-500/10 border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-450 rounded-2xl text-sm font-semibold">
+                      {modalError}
+                    </div>
+                  )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">Nom commercial</label>
+                  {/* Nom commercial */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-555 dark:text-slate-400 uppercase tracking-wider pl-1">Nom commercial</label>
                     <input
                       type="text"
                       required
                       value={nom}
                       onChange={(e) => setNom(e.target.value)}
                       placeholder="Azure Fundamentals"
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500/15"
+                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all duration-200"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">Code examen <span className="text-[10px] text-slate-400/80 lowercase">(optionnel)</span></label>
-                    <input
-                      type="text"
-                      value={codeExamen}
-                      onChange={(e) => setCodeExamen(e.target.value)}
-                      placeholder="AZ-900"
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500/15"
-                    />
+
+                  {/* Code et Fournisseur */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-555 dark:text-slate-400 uppercase tracking-wider pl-1">Code examen</label>
+                      <input
+                        type="text"
+                        value={codeExamen}
+                        onChange={(e) => setCodeExamen(e.target.value)}
+                        placeholder="AZ-900"
+                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-955/40 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all duration-200"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-555 dark:text-slate-400 uppercase tracking-wider pl-1">Fournisseur</label>
+                      <select
+                        value={fournisseurId}
+                        onChange={(e) => setFournisseurId(e.target.value)}
+                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-955/40 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all duration-200 font-semibold"
+                      >
+                        {fournisseurs.map((f) => (
+                          <option key={f.id} value={f.id}>
+                            {f.nom}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
-                </div>
 
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">Fournisseur</label>
-                  <select
-                    value={fournisseurId}
-                    onChange={(e) => setFournisseurId(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500/15 font-semibold"
-                  >
-                    {fournisseurs.map((f) => (
-                      <option key={f.id} value={f.id}>
-                        {f.nom}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">Niveau</label>
-                    <select
-                      value={niveau}
-                      onChange={(e) => setNiveau(e.target.value as any)}
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500/15 font-semibold"
-                    >
-                      <option value="DEBUTANT">Débutant</option>
-                      <option value="INTERMEDIAIRE">Intermédiaire</option>
-                      <option value="AVANCE">Avancé</option>
-                    </select>
+                  {/* Niveau et Durée */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-555 dark:text-slate-400 uppercase tracking-wider pl-1">Niveau</label>
+                      <select
+                        value={niveau}
+                        onChange={(e) => setNiveau(e.target.value as any)}
+                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-955/40 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all duration-200 font-semibold"
+                      >
+                        <option value="DEBUTANT">Débutant</option>
+                        <option value="INTERMEDIAIRE">Intermédiaire</option>
+                        <option value="AVANCE">Avancé</option>
+                      </select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-555 dark:text-slate-400 uppercase tracking-wider pl-1">Durée indicative</label>
+                      <input
+                        type="text"
+                        value={dureeIndicative}
+                        onChange={(e) => setDureeIndicative(e.target.value)}
+                        placeholder="15 heures"
+                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-955/40 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all duration-200"
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">Durée indicative</label>
-                    <input
-                      type="text"
-                      value={dureeIndicative}
-                      onChange={(e) => setDureeIndicative(e.target.value)}
-                      placeholder="15 heures"
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500/15"
-                    />
-                  </div>
-                </div>
 
-                {/* Champ d'image de la certification */}
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">URL de l'image de certification</label>
-                  <input
-                    type="text"
-                    value={image}
-                    onChange={(e) => setImage(e.target.value)}
-                    placeholder="Ex: /certifications/az900.svg"
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500/15"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">Description</label>
-                  <textarea
-                    required
-                    rows={4}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Saisissez les objectifs et l'audience cible de cette certification..."
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500/15 resize-none"
-                  />
-                </div>
-
-                <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3 bg-slate-50/10 dark:bg-slate-950/10 mt-6">
-                  <button
-                    type="button"
-                    onClick={() => { setIsModalOpen(false); resetForm(); }}
-                    disabled={modalLoading}
-                    className="px-5 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl cursor-pointer transition-colors disabled:opacity-50"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={modalLoading}
-                    className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl cursor-pointer shadow-lg shadow-indigo-600/15 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                  >
-                    {modalLoading ? (
-                      <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  {/* Image picker */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-555 dark:text-slate-400 uppercase tracking-wider pl-1">Image / Badge de Certification</label>
+                    
+                    {image ? (
+                      <div className="flex items-center gap-3 p-3 bg-indigo-50/30 dark:bg-indigo-950/10 border border-indigo-100 dark:border-indigo-900/30 rounded-xl">
+                        <div className="w-12 h-12 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-855 rounded-lg overflow-hidden shrink-0 flex items-center justify-center p-1">
+                          <img src={image} alt="Thumbnail" className="w-full h-full object-contain" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate">Image sélectionnée</p>
+                          <p className="text-[10px] text-slate-450 dark:text-slate-500 truncate">
+                            {image.startsWith('data:') ? 'Fichier importé (Base64)' : image}
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setImage('')}
+                          className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 text-rose-500 rounded-lg transition-colors cursor-pointer"
+                          title="Supprimer l'image"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
                     ) : (
-                      'Créer la certification'
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 border border-dashed border-slate-200 dark:border-slate-800 p-3 rounded-xl bg-slate-50/50 dark:bg-slate-955/20 hover:bg-indigo-50/10 dark:hover:bg-indigo-955/5 hover:border-indigo-500/30 dark:hover:border-indigo-500/20 transition-all duration-200 relative">
+                          <Upload className="w-4 h-4 text-slate-450 dark:text-slate-500 pl-1" />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleFileChange(e, false)}
+                            className="w-full text-xs text-slate-500 dark:text-slate-400 file:mr-4 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-indigo-50 file:text-indigo-650 hover:file:bg-indigo-100 file:cursor-pointer cursor-pointer"
+                          />
+                        </div>
+                        <input
+                          type="text"
+                          value={image}
+                          onChange={(e) => setImage(e.target.value)}
+                          placeholder="Ou saisissez un chemin d'accès (ex: /certifications/az900.svg)"
+                          className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-955/40 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all duration-200"
+                        />
+                      </div>
                     )}
-                  </button>
+                  </div>
+
+                  {/* Description */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-555 dark:text-slate-400 uppercase tracking-wider pl-1">Description</label>
+                    <textarea
+                      required
+                      rows={3}
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Objectifs de la certification..."
+                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-955/40 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all duration-200 resize-none"
+                    />
+                  </div>
+
+                  {/* Actions */}
+                  <div className="pt-4 border-t border-slate-200/80 dark:border-slate-850 flex justify-end gap-3">
+                    <button
+                      type="button"
+                      onClick={() => { setIsModalOpen(false); resetForm(); }}
+                      disabled={modalLoading}
+                      className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200/60 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 font-bold rounded-xl cursor-pointer transition-colors disabled:opacity-50 text-xs"
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={modalLoading}
+                      className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-550 text-white font-bold rounded-xl cursor-pointer shadow-lg shadow-indigo-600/15 transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-xs"
+                    >
+                      {modalLoading ? (
+                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      ) : (
+                        'Créer la certification'
+                      )}
+                    </button>
+                  </div>
+                </form>
+
+                {/* Prévisualisation (Droite) */}
+                <div className="p-8 md:w-1/2 bg-gradient-to-tr from-slate-50 to-indigo-50/20 dark:from-slate-950 dark:to-indigo-950/10 flex flex-col items-center justify-center border-l border-slate-200/60 dark:border-slate-850 relative min-h-[450px]">
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-indigo-500/10 dark:bg-indigo-500/15 blur-3xl pointer-events-none" />
+
+                  <div className="w-full max-w-xs space-y-5 relative z-10">
+                    <span className="text-[10px] font-black text-slate-450 dark:text-slate-500 uppercase tracking-widest block text-center">Aperçu en direct (Vue utilisateur)</span>
+                    
+                    <div className="w-full max-w-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-[28px] overflow-hidden shadow-xl hover:shadow-2xl dark:shadow-black/30 hover:border-indigo-500/30 dark:hover:border-indigo-500/20 transition-all duration-300 group flex flex-col relative">
+                      
+                      <div className="h-40 w-full bg-white dark:bg-slate-950 border-b border-slate-150 dark:border-slate-850 relative flex items-center justify-center overflow-hidden p-3">
+                        <div className="absolute w-32 h-32 rounded-full bg-indigo-500/5 dark:bg-indigo-500/10 blur-xl group-hover:bg-indigo-500/15 transition-all duration-500" />
+                        
+                        {image && !imageError ? (
+                          <img 
+                            src={image} 
+                            alt={nom || "Certification"} 
+                            className="max-w-full max-h-full object-contain relative z-10 filter drop-shadow-sm group-hover:scale-103 transition-all duration-500"
+                            onError={() => setImageError(true)}
+                          />
+                        ) : (
+                          <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center z-10">
+                            <div className="w-12 h-12 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700/80 bg-slate-105/50 dark:bg-slate-900/40 flex items-center justify-center mb-2">
+                              <Award className="w-6 h-6 text-slate-400 dark:text-slate-500" />
+                            </div>
+                            <span className="text-[10px] font-bold text-slate-450 dark:text-slate-500 uppercase tracking-widest">
+                              Aucune image insérée
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className={`text-[9px] px-2.5 py-0.5 rounded-full font-extrabold uppercase tracking-wider ${getSupplierBadgeStyle(fournisseurs.find(f => f.id === fournisseurId)?.nom || '')}`}>
+                              {fournisseurs.find(f => f.id === fournisseurId)?.nom || 'Fournisseur'}
+                            </span>
+                            <span className={`text-[9px] px-2.5 py-0.5 rounded-full font-extrabold uppercase tracking-wider ${getNiveauBadgeStyle(niveau)}`}>
+                              {niveau}
+                            </span>
+                          </div>
+
+                          <div className="space-y-0.5">
+                            {codeExamen && (
+                              <span className="text-[10px] font-bold text-indigo-550 dark:text-indigo-405 block uppercase tracking-wider">
+                                {codeExamen}
+                              </span>
+                            )}
+                            <h3 className="font-extrabold text-base text-slate-900 dark:text-white line-clamp-1 group-hover:text-indigo-650 dark:group-hover:text-indigo-400 transition-colors">
+                              {nom || 'Titre de la Certification'}
+                            </h3>
+                          </div>
+
+                          <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                            {description || 'Aucune description rédigée pour le moment.'}
+                          </p>
+                        </div>
+
+                        <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500 font-extrabold uppercase tracking-wider">
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5" />
+                            <span>{dureeIndicative || 'Non spécifiée'}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Layers className="w-3.5 h-3.5" />
+                            <span>0 module</span>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
                 </div>
-              </form>
+
+              </div>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
 
-      {/* MODAL DE MODIFICATION */}
+      {/* MODAL DE MODIFICATION (Avec Aperçu en direct Côte à Côte) */}
       <AnimatePresence>
         {isEditModalOpen && editingCert && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -637,136 +792,264 @@ export default function CertificationsAdmin() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-xl rounded-[28px] shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh] transition-colors duration-300"
+              className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 w-full max-w-5xl rounded-[32px] shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh] transition-colors duration-300"
             >
-              <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/20">
-                <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">Modifier la certification</h2>
+              {/* Header */}
+              <div className="p-6 border-b border-slate-200/80 dark:border-slate-850 flex items-center justify-between bg-slate-50/50 dark:bg-slate-955/20">
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-650 dark:text-indigo-400">
+                    <Edit className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black text-slate-900 dark:text-white leading-tight">Modifier la certification</h2>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Modifiez les caractéristiques et suivez l'impact visuel en direct.</p>
+                  </div>
+                </div>
                 <button
                   onClick={() => { setIsEditModalOpen(false); setEditingCert(null); }}
                   disabled={modalLoading}
-                  className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-xl transition-colors cursor-pointer disabled:opacity-50"
+                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-xl transition-all cursor-pointer disabled:opacity-50"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <form onSubmit={handleUpdateCert} className="p-6 overflow-y-auto space-y-5 flex-1">
-                {modalError && (
-                  <div className="p-4 bg-rose-500/10 border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 rounded-2xl text-sm font-semibold">
-                    {modalError}
-                  </div>
-                )}
+              {/* Side-by-side content */}
+              <div className="flex-1 overflow-y-auto flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-slate-200/80 dark:divide-slate-850">
+                
+                {/* Formulaire (Gauche) */}
+                <form onSubmit={handleUpdateCert} className="p-8 space-y-5 md:w-1/2 overflow-y-auto">
+                  {modalError && (
+                    <div className="p-4 bg-rose-500/10 border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-455 rounded-2xl text-sm font-semibold">
+                      {modalError}
+                    </div>
+                  )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">Nom commercial</label>
+                  {/* Nom commercial */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-555 dark:text-slate-400 uppercase tracking-wider pl-1">Nom commercial</label>
                     <input
                       type="text"
                       required
                       value={editNom}
                       onChange={(e) => setEditNom(e.target.value)}
                       placeholder="Azure Fundamentals"
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500/15"
+                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-955/40 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all duration-200"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">Code examen <span className="text-[10px] text-slate-400/80 lowercase">(optionnel)</span></label>
-                    <input
-                      type="text"
-                      value={editCodeExamen}
-                      onChange={(e) => setEditCodeExamen(e.target.value)}
-                      placeholder="AZ-900"
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500/15"
-                    />
+
+                  {/* Code et Fournisseur */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-555 dark:text-slate-400 uppercase tracking-wider pl-1">Code examen</label>
+                      <input
+                        type="text"
+                        value={editCodeExamen}
+                        onChange={(e) => setEditCodeExamen(e.target.value)}
+                        placeholder="AZ-900"
+                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-955/40 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all duration-200"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-555 dark:text-slate-400 uppercase tracking-wider pl-1">Fournisseur</label>
+                      <select
+                        value={editFournisseurId}
+                        onChange={(e) => setEditFournisseurId(e.target.value)}
+                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-955/40 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all duration-200 font-semibold"
+                      >
+                        {fournisseurs.map((f) => (
+                          <option key={f.id} value={f.id}>
+                            {f.nom}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
-                </div>
 
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">Fournisseur</label>
-                  <select
-                    value={editFournisseurId}
-                    onChange={(e) => setEditFournisseurId(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500/15 font-semibold"
-                  >
-                    {fournisseurs.map((f) => (
-                      <option key={f.id} value={f.id}>
-                        {f.nom}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">Niveau</label>
-                    <select
-                      value={editNiveau}
-                      onChange={(e) => setEditNiveau(e.target.value as any)}
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500/15 font-semibold"
-                    >
-                      <option value="DEBUTANT">Débutant</option>
-                      <option value="INTERMEDIAIRE">Intermédiaire</option>
-                      <option value="AVANCE">Avancé</option>
-                    </select>
+                  {/* Niveau et Durée */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-555 dark:text-slate-400 uppercase tracking-wider pl-1">Niveau</label>
+                      <select
+                        value={editNiveau}
+                        onChange={(e) => setEditNiveau(e.target.value as any)}
+                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-955/40 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all duration-200 font-semibold"
+                      >
+                        <option value="DEBUTANT">Débutant</option>
+                        <option value="INTERMEDIAIRE">Intermédiaire</option>
+                        <option value="AVANCE">Avancé</option>
+                      </select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-555 dark:text-slate-400 uppercase tracking-wider pl-1">Durée indicative</label>
+                      <input
+                        type="text"
+                        value={editDureeIndicative}
+                        onChange={(e) => setEditDureeIndicative(e.target.value)}
+                        placeholder="15 heures"
+                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-955/40 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all duration-200"
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">Durée indicative</label>
-                    <input
-                      type="text"
-                      value={editDureeIndicative}
-                      onChange={(e) => setEditDureeIndicative(e.target.value)}
-                      placeholder="15 heures"
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500/15"
-                    />
-                  </div>
-                </div>
 
-                {/* Modification du champ d'image de la certification */}
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">URL de l'image de certification</label>
-                  <input
-                    type="text"
-                    value={editImage}
-                    onChange={(e) => setEditImage(e.target.value)}
-                    placeholder="Ex: /certifications/az900.svg"
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500/15"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">Description</label>
-                  <textarea
-                    required
-                    rows={4}
-                    value={editDescription}
-                    onChange={(e) => setEditDescription(e.target.value)}
-                    placeholder="Saisissez les objectifs et l'audience cible de cette certification..."
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500/15 resize-none"
-                  />
-                </div>
-
-                <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3 bg-slate-50/10 dark:bg-slate-950/10 mt-6">
-                  <button
-                    type="button"
-                    onClick={() => { setIsEditModalOpen(false); setEditingCert(null); }}
-                    disabled={modalLoading}
-                    className="px-5 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl cursor-pointer transition-colors disabled:opacity-50"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={modalLoading}
-                    className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl cursor-pointer shadow-lg shadow-indigo-600/15 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                  >
-                    {modalLoading ? (
-                      <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  {/* Image picker */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-555 dark:text-slate-400 uppercase tracking-wider pl-1">Image / Badge de Certification</label>
+                    
+                    {editImage ? (
+                      <div className="flex items-center gap-3 p-3 bg-indigo-50/30 dark:bg-indigo-950/10 border border-indigo-100 dark:border-indigo-900/30 rounded-xl">
+                        <div className="w-12 h-12 bg-white dark:bg-slate-955 border border-slate-200 dark:border-slate-855 rounded-lg overflow-hidden shrink-0 flex items-center justify-center p-1">
+                          <img src={editImage} alt="Thumbnail" className="w-full h-full object-contain" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate">Image de la certif actuelle / sélectionnée</p>
+                          <p className="text-[10px] text-slate-450 dark:text-slate-500 truncate">
+                            {editImage.startsWith('data:') ? 'Fichier importé (Base64)' : editImage}
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setEditImage('')}
+                          className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 text-rose-500 rounded-lg transition-colors cursor-pointer"
+                          title="Supprimer l'image"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
                     ) : (
-                      'Sauvegarder les modifications'
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 border border-dashed border-slate-200 dark:border-slate-800 p-3 rounded-xl bg-slate-50/50 dark:bg-slate-955/20 hover:bg-indigo-50/10 dark:hover:bg-indigo-955/5 hover:border-indigo-500/30 dark:hover:border-indigo-500/20 transition-all duration-200 relative">
+                          <Upload className="w-4 h-4 text-slate-450 dark:text-slate-550 pl-1" />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleFileChange(e, true)}
+                            className="w-full text-xs text-slate-500 dark:text-slate-400 file:mr-4 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-indigo-50 file:text-indigo-650 hover:file:bg-indigo-100 file:cursor-pointer cursor-pointer"
+                          />
+                        </div>
+                        <input
+                          type="text"
+                          value={editImage}
+                          onChange={(e) => setEditImage(e.target.value)}
+                          placeholder="Ou saisissez un chemin d'accès (ex: /certifications/az900.svg)"
+                          className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-955/40 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all duration-200"
+                        />
+                      </div>
                     )}
-                  </button>
+                  </div>
+
+                  {/* Description */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-555 dark:text-slate-400 uppercase tracking-wider pl-1">Description</label>
+                    <textarea
+                      required
+                      rows={3}
+                      value={editDescription}
+                      onChange={(e) => setEditDescription(e.target.value)}
+                      placeholder="Objectifs de la certification..."
+                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-955/40 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all duration-200 resize-none"
+                    />
+                  </div>
+
+                  {/* Actions */}
+                  <div className="pt-4 border-t border-slate-200/80 dark:border-slate-850 flex justify-end gap-3">
+                    <button
+                      type="button"
+                      onClick={() => { setIsEditModalOpen(false); setEditingCert(null); }}
+                      disabled={modalLoading}
+                      className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200/60 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 font-bold rounded-xl cursor-pointer transition-colors disabled:opacity-50 text-xs"
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={modalLoading}
+                      className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-550 text-white font-bold rounded-xl cursor-pointer shadow-lg shadow-indigo-600/15 transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-xs"
+                    >
+                      {modalLoading ? (
+                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      ) : (
+                        'Sauvegarder les modifications'
+                      )}
+                    </button>
+                  </div>
+                </form>
+
+                {/* Prévisualisation (Droite) */}
+                <div className="p-8 md:w-1/2 bg-gradient-to-tr from-slate-50 to-indigo-50/20 dark:from-slate-955 dark:to-indigo-955/10 flex flex-col items-center justify-center border-l border-slate-200/60 dark:border-slate-850 relative min-h-[450px]">
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-indigo-500/10 dark:bg-indigo-500/15 blur-3xl pointer-events-none" />
+
+                  <div className="w-full max-w-xs space-y-5 relative z-10">
+                    <span className="text-[10px] font-black text-slate-450 dark:text-slate-550 uppercase tracking-widest block text-center">Aperçu en direct (Vue utilisateur)</span>
+                    
+                    <div className="w-full max-w-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-[28px] overflow-hidden shadow-xl hover:shadow-2xl dark:shadow-black/30 hover:border-indigo-500/30 dark:hover:border-indigo-500/20 transition-all duration-300 group flex flex-col relative">
+                      
+                      <div className="h-40 w-full bg-white dark:bg-slate-955 border-b border-slate-150 dark:border-slate-850 relative flex items-center justify-center overflow-hidden p-3">
+                        <div className="absolute w-32 h-32 rounded-full bg-indigo-500/5 dark:bg-indigo-500/10 blur-xl group-hover:bg-indigo-500/15 transition-all duration-500" />
+                        
+                        {editImage && !editImageError ? (
+                          <img 
+                            src={editImage} 
+                            alt={editNom || "Certification"} 
+                            className="max-w-full max-h-full object-contain relative z-10 filter drop-shadow-sm group-hover:scale-103 transition-all duration-500"
+                            onError={() => setEditImageError(true)}
+                          />
+                        ) : (
+                          <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center z-10">
+                            <div className="w-12 h-12 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700/80 bg-slate-105/50 dark:bg-slate-900/40 flex items-center justify-center mb-2">
+                              <Award className="w-6 h-6 text-slate-400 dark:text-slate-500" />
+                            </div>
+                            <span className="text-[10px] font-bold text-slate-450 dark:text-slate-550 uppercase tracking-widest">
+                              Aucune image insérée
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className={`text-[9px] px-2.5 py-0.5 rounded-full font-extrabold uppercase tracking-wider ${getSupplierBadgeStyle(fournisseurs.find(f => f.id === editFournisseurId)?.nom || '')}`}>
+                              {fournisseurs.find(f => f.id === editFournisseurId)?.nom || 'Fournisseur'}
+                            </span>
+                            <span className={`text-[9px] px-2.5 py-0.5 rounded-full font-extrabold uppercase tracking-wider ${getNiveauBadgeStyle(editNiveau)}`}>
+                              {editNiveau}
+                            </span>
+                          </div>
+
+                          <div className="space-y-0.5">
+                            {editCodeExamen && (
+                              <span className="text-[10px] font-bold text-indigo-555 dark:text-indigo-405 block uppercase tracking-wider">
+                                {editCodeExamen}
+                              </span>
+                            )}
+                            <h3 className="font-extrabold text-base text-slate-900 dark:text-white line-clamp-1 group-hover:text-indigo-650 dark:group-hover:text-indigo-400 transition-colors">
+                              {editNom || 'Titre de la Certification'}
+                            </h3>
+                          </div>
+
+                          <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                            {editDescription || 'Aucune description rédigée pour le moment.'}
+                          </p>
+                        </div>
+
+                        <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500 font-extrabold uppercase tracking-wider">
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5" />
+                            <span>{editDureeIndicative || 'Non spécifiée'}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Layers className="w-3.5 h-3.5" />
+                            <span>{editingCert?.modules?.length || 0} module{editingCert?.modules?.length > 1 ? 's' : ''}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
                 </div>
-              </form>
+
+              </div>
             </motion.div>
           </div>
         )}

@@ -5,9 +5,8 @@ import { UpdateCertificationDto } from './dto/update-certification.dto';
 
 @Injectable()
 export class CertificationsService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
-  // Helper pour générer un slug URL-friendly
   private slugify(text: string): string {
     return text
       .toString()
@@ -52,15 +51,15 @@ export class CertificationsService {
         ...c.fournisseur,
         id: c.fournisseur.id.toString()
       },
-      modules: c.modules.map(m => ({
-        ...m,
-        id: m.id.toString(),
-        certificationId: m.certificationId.toString()
+      modules: c.modules.map(m => ({ 
+        ...m, 
+        id: m.id.toString(), 
+        certificationId: m.certificationId.toString() 
       })),
-      ressources: c.ressources.map(r => ({
-        ...r,
-        id: r.id.toString(),
-        certificationId: r.certificationId?.toString()
+      ressources: c.ressources.map(r => ({ 
+        ...r, 
+        id: r.id.toString(), 
+        certificationId: r.certificationId?.toString() 
       }))
     }));
   }
@@ -88,15 +87,15 @@ export class CertificationsService {
         ...cert.fournisseur,
         id: cert.fournisseur.id.toString()
       },
-      modules: cert.modules.map(m => ({
-        ...m,
-        id: m.id.toString(),
-        certificationId: m.certificationId.toString()
+      modules: cert.modules.map(m => ({ 
+        ...m, 
+        id: m.id.toString(), 
+        certificationId: m.certificationId.toString() 
       })),
-      ressources: cert.ressources.map(r => ({
-        ...r,
-        id: r.id.toString(),
-        certificationId: r.certificationId?.toString()
+      ressources: cert.ressources.map(r => ({ 
+        ...r, 
+        id: r.id.toString(), 
+        certificationId: r.certificationId?.toString() 
       }))
     };
   }
@@ -129,79 +128,83 @@ export class CertificationsService {
         image: dto.image || null,
         fournisseurId: BigInt(dto.fournisseurId)
       },
+      include: {
+        fournisseur: true
+      }
+    });
 
-      return {
-        ...cert,
-        id: cert.id.toString(),
-        fournisseurId: cert.fournisseurId.toString(),
-        fournisseur: {
-          ...cert.fournisseur,
-          id: cert.fournisseur.id.toString()
-        }
-      };
-    }
+    return {
+      ...cert,
+      id: cert.id.toString(),
+      fournisseurId: cert.fournisseurId.toString(),
+      fournisseur: {
+        ...cert.fournisseur,
+        id: cert.fournisseur.id.toString()
+      }
+    };
+  }
 
   // Modifier une certification
   async update(id: number, dto: UpdateCertificationDto) {
-      const cert = await this.prisma.certification.findFirst({
-        where: { id: BigInt(id), deletedAt: null }
-      });
+    const cert = await this.prisma.certification.findFirst({
+      where: { id: BigInt(id), deletedAt: null }
+    });
 
-      if(!cert) {
-        throw new NotFoundException("La certification demandée n'existe pas.");
-      }
+    if (!cert) {
+      throw new NotFoundException("La certification demandée n'existe pas.");
+    }
 
-       const data: any = {
-        nom: dto.nom,
-        codeExamen: dto.codeExamen,
-        description: dto.description,
-        niveau: dto.niveau,
-        dureeIndicative: dto.dureeIndicative,
-        image: dto.image,
-        fournisseurId: dto.fournisseurId ? BigInt(dto.fournisseurId) : undefined
-      };
+    const data: any = {
+      nom: dto.nom,
+      codeExamen: dto.codeExamen,
+      description: dto.description,
+      niveau: dto.niveau,
+      dureeIndicative: dto.dureeIndicative,
+      image: dto.image,
+      fournisseurId: dto.fournisseurId ? BigInt(dto.fournisseurId) : undefined
+    };
 
-      if(dto.nom) {
-        data.slug = `${this.slugify(dto.nom)}-${this.slugify(dto.codeExamen || cert.codeExamen || '')}`;
-  }
+    if (dto.nom) {
+      data.slug = `${this.slugify(dto.nom)}-${this.slugify(dto.codeExamen || cert.codeExamen || '')}`;
+    }
 
     // Nettoyer les propriétés undefined
     Object.keys(data).forEach(key => data[key] === undefined && delete data[key]);
 
-const updated = await this.prisma.certification.update({
-  where: { id: BigInt(id) },
-  data,
-  include: {
-    fournisseur: true
-  }
-});
+    const updated = await this.prisma.certification.update({
+      where: { id: BigInt(id) },
+      data,
+      include: {
+        fournisseur: true
+      }
+    });
 
-return {
-  ...updated,
-  id: updated.id.toString(),
-  fournisseurId: updated.fournisseurId.toString(),
-  fournisseur: {
-    ...updated.fournisseur,
-    id: updated.fournisseur.id.toString()
-  }
-};
+    return {
+      ...updated,
+      id: updated.id.toString(),
+      fournisseurId: updated.fournisseurId.toString(),
+      fournisseur: {
+        ...updated.fournisseur,
+        id: updated.fournisseur.id.toString()
+      }
+    };
   }
 
   // Soft delete
   async remove(id: number) {
-  const cert = await this.prisma.certification.findFirst({
-    where: { id: BigInt(id), deletedAt: null }
-  });
+    const cert = await this.prisma.certification.findFirst({
+      where: { id: BigInt(id), deletedAt: null }
+    });
 
-  if (!cert) {
-    throw new NotFoundException("La certification demandée n'existe pas.");
+    if (!cert) {
+      throw new NotFoundException("La certification demandée n'existe pas.");
+    }
+
+    await this.prisma.certification.update({
+      where: { id: BigInt(id) },
+      data: { deletedAt: new Date() }
+    });
+
+    return { message: 'Certification supprimée avec succès.' };
   }
-
-  await this.prisma.certification.update({
-    where: { id: BigInt(id) },
-    data: { deletedAt: new Date() }
-  });
-
-  return { message: 'Certification supprimée avec succès.' };
-}
 }
