@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Utilisateur {
+  id              BigInt    @id @default(autoincrement())
+  prenom          String
+  nom             String    
+  email           String    @unique
+  telephone       String?
+  motDePasse      String    
+  statut          Statut    @default(ACTIF)
+  preferences     Json      @default("{}")
+  avatar          String?   
+  dateInscription DateTime  @default(now())
+  deletedAt       DateTime? @map("deleted_at")
+  
+  // Relation Many-to-Many implicite avec les Rôles
+  roles           Role[]    @relation("UtilisateurRoles")
+
+  @@map("utilisateurs")
+}
+
+model Role {
+  id              BigInt        @id @default(autoincrement())
+  nom             String        @unique // ex: "SUPER_ADMIN", "ADMIN", "FORMATEUR", "APPRENANT"
+  
+  // Relation inverse
+  utilisateurs    Utilisateur[] @relation("UtilisateurRoles")
+
+  @@map("roles")
+}
+
+enum Statut {
+  ACTIF
+  INACTIF
+  BANNI
+}
