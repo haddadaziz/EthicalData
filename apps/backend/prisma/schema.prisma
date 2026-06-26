@@ -8,27 +8,28 @@ datasource db {
 }
 
 model Utilisateur {
-  id              BigInt    @id @default(autoincrement())
+  id              BigInt          @id @default(autoincrement())
   prenom          String
   nom             String    
-  email           String    @unique
+  email           String          @unique
   telephone       String?
   motDePasse      String    
-  statut          Statut    @default(ACTIF)
-  preferences     Json      @default("{}")
+  statut          Statut          @default(ACTIF)
+  preferences     Json            @default("{}")
   avatar          String?   
-  dateInscription DateTime  @default(now())
-  deletedAt       DateTime? @map("deleted_at")
+  dateInscription DateTime        @default(now())
+  deletedAt       DateTime?       @map("deleted_at")
   
-  // Relation Many-to-Many implicite avec les Rôles
-  roles           Role[]    @relation("UtilisateurRoles")
+  // Relations
+  roles           Role[]          @relation("UtilisateurRoles")
+  telechargements Telechargement[]
 
   @@map("utilisateurs")
 }
 
 model Role {
   id              BigInt        @id @default(autoincrement())
-  nom             String        @unique // ex: "SUPER_ADMIN", "ADMIN", "FORMATEUR", "APPRENANT"
+  nom             String        @unique
   
   // Relation inverse
   utilisateurs    Utilisateur[] @relation("UtilisateurRoles")
@@ -36,8 +37,92 @@ model Role {
   @@map("roles")
 }
 
+model Fournisseur {
+  id             BigInt          @id @default(autoincrement())
+  nom            String          @unique
+  slug           String          @unique
+  logo           String?
+  certifications Certification[]
+
+  @@map("fournisseurs")
+}
+
+model Certification {
+  id              BigInt      @id @default(autoincrement())
+  nom             String
+  slug            String      @unique
+  codeExamen      String?     @unique
+  description     String      @db.Text
+  niveau          Niveau
+  dureeIndicative String?
+  image           String?
+  dateCreation    DateTime    @default(now())
+  deletedAt       DateTime?   @map("deleted_at")
+  // Relations
+  fournisseurId   BigInt
+  fournisseur     Fournisseur @relation(fields: [fournisseurId], references: [id], onDelete: Cascade)
+  modules         Module[]
+  ressources      Ressource[]
+  @@map("certifications")
+}
+
+model Module {
+  id              BigInt        @id @default(autoincrement())
+  titre           String
+  description     String?       @db.Text
+  ordre           Int           @default(0)
+  dateCreation    DateTime      @default(now())
+
+  // Relations
+  certificationId BigInt
+  certification   Certification @relation(fields: [certificationId], references: [id], onDelete: Cascade)
+
+  @@map("modules")
+}
+
+model Ressource {
+  id                 BigInt          @id @default(autoincrement())
+  titre              String
+  description        String?         @db.Text
+  type               String
+  url                String
+  taille             Int?
+  version            String          @default("1.0.0")
+  quotaTelechargement Int?           @default(10)
+  public             Boolean         @default(false)
+  dateCreation       DateTime        @default(now())
+  deletedAt          DateTime?       @map("deleted_at")
+
+  // Relations
+  certificationId    BigInt?
+  certification      Certification?  @relation(fields: [certificationId], references: [id], onDelete: SetNull)
+  telechargements    Telechargement[]
+
+  @@map("ressources")
+}
+
+model Telechargement {
+  id           BigInt      @id @default(autoincrement())
+  date         DateTime    @default(now())
+  ip           String?
+
+  // Relations
+  ressourceId  BigInt
+  ressource    Ressource   @relation(fields: [ressourceId], references: [id], onDelete: Cascade)
+  utilisateurId BigInt
+  utilisateur  Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+
+  @@map("telechargements")
+}
+
 enum Statut {
   ACTIF
   INACTIF
   BANNI
+}
+
+enum Niveau {
+  DEBUTANT
+  INTERMEDIAIRE
+  AVANCE
 }

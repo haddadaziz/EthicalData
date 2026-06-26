@@ -72,10 +72,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     router.push('/login');
   };
 
-  const navItems = [
-    { name: 'Tableau de bord', href: '/admin', icon: LayoutDashboard },
-    { name: 'Utilisateurs', href: '#', icon: Users, badge: 'NestJS api' },
-    { name: 'Certifications', href: '#', icon: Award, disabled: true },
+  interface NavItem {
+    name: string;
+    href: string;
+    icon: React.ComponentType<any>;
+    disabled?: boolean;
+    badge?: string;
+  }
+  const navItems: NavItem[] = [
+    { name: 'Utilisateurs', href: '/admin', icon: Users },
+    { name: 'Certifications', href: '/admin/certifications', icon: Award },
     { name: 'Paramètres', href: '#', icon: Settings, disabled: true },
   ];
 
@@ -90,13 +96,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex relative overflow-hidden font-sans transition-colors duration-300">
-      
+
       {/* Halos lumineux d'ambiance d'arrière-plan */}
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/5 dark:bg-indigo-950/15 rounded-full blur-[140px] pointer-events-none z-0" />
       <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-purple-500/5 dark:bg-purple-950/15 rounded-full blur-[140px] pointer-events-none z-0" />
 
       {/* Sidebar - Menu de navigation à gauche */}
-      <motion.aside 
+      <motion.aside
         animate={{ width: sidebarOpen ? 260 : 80 }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className="hidden md:flex flex-col bg-slate-50/90 dark:bg-slate-900/80 backdrop-blur-md border-r border-slate-200 dark:border-slate-800/80 relative z-10 shrink-0 h-screen transition-colors duration-300"
@@ -107,7 +113,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <ShieldCheck className="w-6 h-6" />
             </div>
             {sidebarOpen && (
-              <motion.span 
+              <motion.span
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="font-extrabold text-lg text-slate-800 dark:text-white tracking-tight shrink-0"
@@ -127,17 +133,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <a
                 key={index}
                 href={item.href}
-                className={`flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-semibold transition-all duration-200 group relative ${
-                  isActive 
-                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/15' 
-                    : item.disabled
-                      ? 'text-slate-400 dark:text-slate-600 cursor-not-allowed opacity-60'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50 cursor-pointer'
-                }`}
+                className={`flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-semibold transition-all duration-200 group relative ${isActive
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/15'
+                  : item.disabled
+                    ? 'text-slate-400 dark:text-slate-600 cursor-not-allowed opacity-60'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50 cursor-pointer'
+                  }`}
               >
                 <Icon className={`w-5.5 h-5.5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400 dark:text-slate-400 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors'}`} />
                 {sidebarOpen && (
-                  <motion.span 
+                  <motion.span
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className="truncate flex-1"
@@ -161,7 +166,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <User className="w-5.5 h-5.5" />
             </div>
             {sidebarOpen && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="truncate flex-1 min-w-0"
@@ -171,7 +176,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </motion.div>
             )}
           </div>
-          
+
           <button
             onClick={handleLogout}
             className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-semibold text-rose-500 dark:text-rose-400 hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-300 transition-all cursor-pointer group`}
@@ -184,7 +189,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Contenu de droite */}
       <div className="flex-1 flex flex-col min-h-screen overflow-y-auto relative z-10">
-        
+
         {/* Header avec switch de Thème */}
         <header className="h-20 border-b border-slate-200 dark:border-slate-800/80 bg-slate-50/40 dark:bg-slate-900/40 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-20 transition-colors duration-300">
           <button
@@ -193,7 +198,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           >
             {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
-          
+
           <div className="flex items-center gap-4">
             {/* Bouton de bascule Mode Sombre / Mode Clair */}
             <button
