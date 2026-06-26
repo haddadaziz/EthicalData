@@ -237,7 +237,7 @@ export default function LoginPage() {
                 initial={{ opacity: 0, y: 25 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: 'easeOut' }}
-                className="w-full max-w-[620px] bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200 dark:border-slate-800/80 rounded-[36px] shadow-2xl p-16 relative z-10 hover:border-indigo-500/20 dark:hover:border-indigo-500/30 hover:shadow-[0_0_50px_rgba(99,102,241,0.06)] dark:hover:shadow-[0_0_50px_rgba(99,102,241,0.1)] transition-all duration-500 group/card"
+                className="w-full max-w-[620px] bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200 dark:border-slate-800/80 rounded-[28px] sm:rounded-[36px] shadow-2xl p-8 sm:p-12 md:p-16 relative z-10 hover:border-indigo-500/20 dark:hover:border-indigo-500/30 hover:shadow-[0_0_50px_rgba(99,102,241,0.06)] dark:hover:shadow-[0_0_50px_rgba(99,102,241,0.1)] transition-all duration-500 group/card"
             >
 
                 {/* Logo & Titre */}

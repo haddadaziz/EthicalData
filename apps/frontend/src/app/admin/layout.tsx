@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { LayoutDashboard, Users, Award, Settings, LogOut, ShieldCheck, Menu, X, User, Sun, Moon } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -13,6 +13,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [userEmail, setUserEmail] = useState<string>('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Détection de la taille d'écran et écoute des changements
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (mobile) {
+        setSidebarOpen(false);
+      } else {
+        setSidebarOpen(true);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Initialisation du thème et authentification
   useEffect(() => {
@@ -101,91 +118,181 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/5 dark:bg-indigo-950/15 rounded-full blur-[140px] pointer-events-none z-0" />
       <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-purple-500/5 dark:bg-purple-950/15 rounded-full blur-[140px] pointer-events-none z-0" />
 
-      {/* Sidebar - Menu de navigation à gauche */}
-      <motion.aside
-        animate={{ width: sidebarOpen ? 260 : 80 }}
-        transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className="hidden md:flex flex-col bg-slate-50/90 dark:bg-slate-900/80 backdrop-blur-md border-r border-slate-200 dark:border-slate-800/80 relative z-10 shrink-0 h-screen transition-colors duration-300"
-      >
-        <div className="h-20 flex items-center justify-between px-6 border-b border-slate-200 dark:border-slate-800/80">
-          <div className="flex items-center gap-3 overflow-hidden">
-            <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-500 dark:text-indigo-400 shrink-0">
-              <ShieldCheck className="w-6 h-6" />
-            </div>
-            {sidebarOpen && (
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="font-extrabold text-lg text-slate-800 dark:text-white tracking-tight shrink-0"
-              >
-                EthicalData
-              </motion.span>
-            )}
-          </div>
-        </div>
-
-        <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
-          {navItems.map((item, index) => {
-            const isActive = pathname === item.href;
-            const Icon = item.icon;
-
-            return (
-              <a
-                key={index}
-                href={item.href}
-                className={`flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-semibold transition-all duration-200 group relative ${isActive
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/15'
-                  : item.disabled
-                    ? 'text-slate-400 dark:text-slate-600 cursor-not-allowed opacity-60'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50 cursor-pointer'
-                  }`}
-              >
-                <Icon className={`w-5.5 h-5.5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400 dark:text-slate-400 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors'}`} />
-                {sidebarOpen && (
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="truncate flex-1"
-                  >
-                    {item.name}
-                  </motion.span>
-                )}
-                {sidebarOpen && item.badge && (
-                  <span className="text-[10px] bg-slate-200 dark:bg-slate-800 text-indigo-600 dark:text-indigo-300 border border-indigo-500/20 px-2 py-0.5 rounded-full shrink-0 font-bold uppercase tracking-wider">
-                    {item.badge}
+      {/* Sidebar mobile avec overlay de fond */}
+      <AnimatePresence>
+        {isMobile && sidebarOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSidebarOpen(false)}
+              className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm"
+            />
+            <motion.aside
+              initial={{ x: -280 }}
+              animate={{ x: 0 }}
+              exit={{ x: -280 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed top-0 bottom-0 left-0 z-50 w-[260px] flex flex-col bg-slate-50/95 dark:bg-slate-900/95 backdrop-blur-md border-r border-slate-200 dark:border-slate-800/80 h-screen"
+            >
+              <div className="h-20 flex items-center justify-between px-6 border-b border-slate-200 dark:border-slate-800/80">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-500 dark:text-indigo-400">
+                    <ShieldCheck className="w-6 h-6" />
+                  </div>
+                  <span className="font-extrabold text-lg text-slate-800 dark:text-white tracking-tight">
+                    EthicalData
                   </span>
-                )}
-              </a>
-            );
-          })}
-        </nav>
+                </div>
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-slate-500 dark:text-slate-400"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
 
-        <div className="p-4 border-t border-slate-200 dark:border-slate-800/80 bg-slate-950/5 dark:bg-slate-950/20">
-          <div className="flex items-center gap-3 p-2 rounded-xl mb-2 overflow-hidden">
-            <div className="w-10 h-10 bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700/80 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-300 shrink-0">
-              <User className="w-5.5 h-5.5" />
+              <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
+                {navItems.map((item, index) => {
+                  const isActive = pathname === item.href;
+                  const Icon = item.icon;
+
+                  return (
+                    <a
+                      key={index}
+                      href={item.href}
+                      onClick={() => setSidebarOpen(false)}
+                      className={`flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-semibold transition-all duration-200 group relative ${isActive
+                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/15'
+                        : item.disabled
+                          ? 'text-slate-400 dark:text-slate-600 cursor-not-allowed opacity-60'
+                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50 cursor-pointer'
+                        }`}
+                    >
+                      <Icon className={`w-5.5 h-5.5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400 dark:text-slate-400 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors'}`} />
+                      <span className="truncate flex-1">{item.name}</span>
+                      {item.badge && (
+                        <span className="text-[10px] bg-slate-200 dark:bg-slate-800 text-indigo-600 dark:text-indigo-300 border border-indigo-500/20 px-2 py-0.5 rounded-full shrink-0 font-bold uppercase tracking-wider">
+                          {item.badge}
+                        </span>
+                      )}
+                    </a>
+                  );
+                })}
+              </nav>
+
+              <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-950/5 dark:bg-slate-950/20">
+                <div className="flex items-center gap-3 p-2 rounded-xl mb-2 overflow-hidden">
+                  <div className="w-10 h-10 bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700/80 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-300 shrink-0">
+                    <User className="w-5.5 h-5.5" />
+                  </div>
+                  <div className="truncate flex-1 min-w-0">
+                    <p className="text-sm font-bold text-slate-800 dark:text-white truncate leading-none mb-1">{userEmail}</p>
+                    <p className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold uppercase tracking-wider leading-none">{userRole}</p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-semibold text-rose-500 dark:text-rose-400 hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-300 transition-all cursor-pointer group"
+                >
+                  <LogOut className="w-5.5 h-5.5 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                  <span>Déconnexion</span>
+                </button>
+              </div>
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Sidebar Desktop */}
+      {!isMobile && (
+        <motion.aside
+          animate={{ width: sidebarOpen ? 260 : 80 }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          className="hidden md:flex flex-col bg-slate-50/90 dark:bg-slate-900/80 backdrop-blur-md border-r border-slate-200 dark:border-slate-800/80 relative z-10 shrink-0 h-screen transition-colors duration-300"
+        >
+          <div className="h-20 flex items-center justify-between px-6 border-b border-slate-200 dark:border-slate-800/80">
+            <div className="flex items-center gap-3 overflow-hidden">
+              <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-500 dark:text-indigo-400 shrink-0">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              {sidebarOpen && (
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="font-extrabold text-lg text-slate-800 dark:text-white tracking-tight shrink-0"
+                >
+                  EthicalData
+                </motion.span>
+              )}
             </div>
-            {sidebarOpen && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="truncate flex-1 min-w-0"
-              >
-                <p className="text-sm font-bold text-slate-800 dark:text-white truncate leading-none mb-1">{userEmail}</p>
-                <p className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold uppercase tracking-wider leading-none">{userRole}</p>
-              </motion.div>
-            )}
           </div>
 
-          <button
-            onClick={handleLogout}
-            className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-semibold text-rose-500 dark:text-rose-400 hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-300 transition-all cursor-pointer group`}
-          >
-            <LogOut className="w-5.5 h-5.5 shrink-0 group-hover:translate-x-0.5 transition-transform" />
-            {sidebarOpen && <span>Déconnexion</span>}
-          </button>
-        </div>
-      </motion.aside>
+          <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
+            {navItems.map((item, index) => {
+              const isActive = pathname === item.href;
+              const Icon = item.icon;
+
+              return (
+                <a
+                  key={index}
+                  href={item.href}
+                  className={`flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-semibold transition-all duration-200 group relative ${isActive
+                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/15'
+                    : item.disabled
+                      ? 'text-slate-400 dark:text-slate-600 cursor-not-allowed opacity-60'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50 cursor-pointer'
+                    }`}
+                >
+                  <Icon className={`w-5.5 h-5.5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400 dark:text-slate-400 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors'}`} />
+                  {sidebarOpen && (
+                    <motion.span
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="truncate flex-1"
+                    >
+                      {item.name}
+                    </motion.span>
+                  )}
+                  {sidebarOpen && item.badge && (
+                    <span className="text-[10px] bg-slate-200 dark:bg-slate-800 text-indigo-600 dark:text-indigo-300 border border-indigo-500/20 px-2 py-0.5 rounded-full shrink-0 font-bold uppercase tracking-wider">
+                      {item.badge}
+                    </span>
+                  )}
+                </a>
+              );
+            })}
+          </nav>
+
+          <div className="p-4 border-t border-slate-200 dark:border-slate-800/80 bg-slate-950/5 dark:bg-slate-950/20">
+            <div className="flex items-center gap-3 p-2 rounded-xl mb-2 overflow-hidden">
+              <div className="w-10 h-10 bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700/80 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-300 shrink-0">
+                <User className="w-5.5 h-5.5" />
+              </div>
+              {sidebarOpen && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="truncate flex-1 min-w-0"
+                >
+                  <p className="text-sm font-bold text-slate-800 dark:text-white truncate leading-none mb-1">{userEmail}</p>
+                  <p className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold uppercase tracking-wider leading-none">{userRole}</p>
+                </motion.div>
+              )}
+            </div>
+
+            <button
+              onClick={handleLogout}
+              className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-semibold text-rose-500 dark:text-rose-400 hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-300 transition-all cursor-pointer group`}
+            >
+              <LogOut className="w-5.5 h-5.5 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+              {sidebarOpen && <span>Déconnexion</span>}
+            </button>
+          </div>
+        </motion.aside>
+      )}
 
       {/* Contenu de droite */}
       <div className="flex-1 flex flex-col min-h-screen overflow-y-auto relative z-10">
@@ -219,7 +326,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
         </header>
 
-        <main className="flex-1 p-8 md:p-10">
+        <main className="flex-1 p-4 md:p-10">
           {children}
         </main>
       </div>

@@ -484,8 +484,8 @@ export default function AdminDashboard() {
           )}
         </AnimatePresence>
 
-        {/* Tableau */}
-        <div className="overflow-x-auto">
+               {/* Tableau / Cartes */}
+        <div>
           {loading ? (
             <div className="p-8 space-y-4">
               {Array.from({ length: 3 }).map((_, i) => (
@@ -508,96 +508,182 @@ export default function AdminDashboard() {
               Aucun utilisateur ne correspond aux critères sélectionnés.
             </div>
           ) : (
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">
-                  <th className="py-5 px-6">Nom</th>
-                  <th className="py-5 px-6">Adresse e-mail</th>
-                  <th className="py-5 px-6">Rôles</th>
-                  <th className="py-5 px-6">Statut</th>
-                  <th className="py-5 px-6">Date d'inscription</th>
-                  <th className="py-5 px-6 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300 text-sm">
+            <>
+              {/* Version Mobile : Liste de cartes */}
+              <div className="block lg:hidden space-y-4 p-4">
                 {filteredUsers.map((user) => (
-                  <tr
+                  <div
                     key={user.id}
-                    className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors group"
+                    className="bg-slate-50/50 dark:bg-slate-900/20 border border-slate-200/60 dark:border-slate-800/80 rounded-2xl p-5 space-y-4 transition-all duration-300"
                   >
-                    <td className="py-4 px-6 flex items-center gap-3">
-                      <div className="w-9 h-9 bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center font-bold animate-fade-in">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 text-indigo-655 dark:text-indigo-400 rounded-xl flex items-center justify-center font-bold shrink-0">
                         {user.prenom.charAt(0).toUpperCase()}{user.nom.charAt(0).toUpperCase()}
                       </div>
-                      <div>
-                        <span className="font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                      <div className="min-w-0 flex-1">
+                        <span className="font-extrabold text-slate-900 dark:text-white text-base block truncate">
                           {user.prenom} {user.nom}
                         </span>
                         {user.telephone && (
-                          <span className="block text-xs text-slate-400 dark:text-slate-500 font-medium mt-0.5">{user.telephone}</span>
+                          <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">{user.telephone}</span>
                         )}
                       </div>
-                    </td>
+                    </div>
 
-                    <td className="py-4 px-6 font-medium text-slate-500 dark:text-slate-400">
-                      {user.email}
-                    </td>
-
-                    <td className="py-4 px-6">
-                      <div className="flex flex-wrap gap-1.5">
-                        {user.roles.length === 0 ? (
-                          <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 px-2 py-0.5 rounded-md font-semibold">Aucun</span>
-                        ) : (
-                          user.roles.map((role) => (
-                            <span
-                              key={role.id}
-                              className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${getRoleBadgeStyle(role.nom)}`}
-                            >
-                              {role.nom}
-                            </span>
-                          ))
-                        )}
+                    <div className="space-y-2 text-xs">
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-400 dark:text-slate-500">E-mail</span>
+                        <span className="font-semibold text-slate-750 dark:text-slate-350">{user.email}</span>
                       </div>
-                    </td>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-400 dark:text-slate-500">Statut</span>
+                        <span className={`inline-flex items-center gap-1.5 text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${getStatutBadgeStyle(user.statut)}`}>
+                          <span className={`w-1 h-1 rounded-full ${user.statut === 'ACTIF' ? 'bg-emerald-500' : user.statut === 'INACTIF' ? 'bg-amber-500' : 'bg-rose-500'}`} />
+                          {user.statut}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-start">
+                        <span className="text-slate-400 dark:text-slate-500 mt-0.5">Rôles</span>
+                        <div className="flex flex-wrap gap-1 justify-end max-w-[200px]">
+                          {user.roles.length === 0 ? (
+                            <span className="text-[9px] bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 px-2 py-0.5 rounded-md font-semibold">Aucun</span>
+                          ) : (
+                            user.roles.map((role) => (
+                              <span
+                                key={role.id}
+                                className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${getRoleBadgeStyle(role.nom)}`}
+                              >
+                                {role.nom}
+                              </span>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    </div>
 
-                    <td className="py-4 px-6">
-                      <span className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wider ${getStatutBadgeStyle(user.statut)}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${user.statut === 'ACTIF' ? 'bg-emerald-500' : user.statut === 'INACTIF' ? 'bg-amber-500' : 'bg-rose-500'
-                          }`} />
-                        {user.statut}
+                    <div className="flex items-center justify-between pt-4 border-t border-slate-200/60 dark:border-slate-800/60">
+                      <span className="text-xs text-slate-400 dark:text-slate-500 font-semibold">
+                        Inscrit le {new Date(user.dateInscription).toLocaleDateString('fr-FR', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        })}
                       </span>
-                    </td>
 
-                    <td className="py-4 px-6 text-slate-400 dark:text-slate-500 font-medium">
-                      {new Date(user.dateInscription).toLocaleDateString('fr-FR', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </td>
-
-                    <td className="py-4 px-6 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center gap-1.5">
                         <button
                           onClick={() => handleOpenEditModal(user)}
-                          className="p-2 hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl transition-colors cursor-pointer"
+                          className="p-2.5 bg-slate-100 hover:bg-slate-250 dark:bg-slate-800 hover:text-indigo-650 dark:hover:text-indigo-400 text-slate-500 dark:text-slate-300 rounded-xl transition-colors cursor-pointer"
                           title="Modifier"
                         >
                           <Edit className="w-4.5 h-4.5" />
                         </button>
                         <button
                           onClick={() => handleDeleteUser(user.id, `${user.prenom} ${user.nom}`)}
-                          className="p-2 hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-xl transition-colors cursor-pointer"
+                          className="p-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-650 dark:text-rose-450 rounded-xl transition-colors cursor-pointer"
                           title="Supprimer"
                         >
                           <Trash2 className="w-4.5 h-4.5" />
                         </button>
                       </div>
-                    </td>
-                  </tr>
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
+              </div>
+
+              {/* Version Desktop : Tableau classique */}
+              <div className="hidden lg:block overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">
+                      <th className="py-5 px-6">Nom</th>
+                      <th className="py-5 px-6">Adresse e-mail</th>
+                      <th className="py-5 px-6">Rôles</th>
+                      <th className="py-5 px-6">Statut</th>
+                      <th className="py-5 px-6">Date d'inscription</th>
+                      <th className="py-5 px-6 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300 text-sm">
+                    {filteredUsers.map((user) => (
+                      <tr
+                        key={user.id}
+                        className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors group"
+                      >
+                        <td className="py-4 px-6 flex items-center gap-3">
+                          <div className="w-9 h-9 bg-indigo-500/10 border border-indigo-500/20 text-indigo-650 dark:text-indigo-400 rounded-xl flex items-center justify-center font-bold">
+                            {user.prenom.charAt(0).toUpperCase()}{user.nom.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <span className="font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                              {user.prenom} {user.nom}
+                            </span>
+                            {user.telephone && (
+                              <span className="block text-xs text-slate-400 dark:text-slate-500 font-medium mt-0.5">{user.telephone}</span>
+                            )}
+                          </div>
+                        </td>
+
+                        <td className="py-4 px-6 font-medium text-slate-500 dark:text-slate-400">
+                          {user.email}
+                        </td>
+
+                        <td className="py-4 px-6">
+                          <div className="flex flex-wrap gap-1.5">
+                            {user.roles.length === 0 ? (
+                              <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 px-2 py-0.5 rounded-md font-semibold">Aucun</span>
+                            ) : (
+                              user.roles.map((role) => (
+                                <span
+                                  key={role.id}
+                                  className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${getRoleBadgeStyle(role.nom)}`}
+                                >
+                                  {role.nom}
+                                </span>
+                              ))
+                            )}
+                          </div>
+                        </td>
+
+                        <td className="py-4 px-6">
+                          <span className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wider ${getStatutBadgeStyle(user.statut)}`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${user.statut === 'ACTIF' ? 'bg-emerald-500' : user.statut === 'INACTIF' ? 'bg-amber-500' : 'bg-rose-500'}`} />
+                            {user.statut}
+                          </span>
+                        </td>
+
+                        <td className="py-4 px-6 text-slate-400 dark:text-slate-500 font-medium">
+                          {new Date(user.dateInscription).toLocaleDateString('fr-FR', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </td>
+
+                        <td className="py-4 px-6 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => handleOpenEditModal(user)}
+                              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-400 hover:text-indigo-650 dark:hover:text-indigo-400 rounded-xl transition-colors cursor-pointer"
+                              title="Modifier"
+                            >
+                              <Edit className="w-4.5 h-4.5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteUser(user.id, `${user.prenom} ${user.nom}`)}
+                              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-xl transition-colors cursor-pointer"
+                              title="Supprimer"
+                            >
+                              <Trash2 className="w-4.5 h-4.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
       </div>

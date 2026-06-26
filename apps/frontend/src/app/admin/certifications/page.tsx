@@ -460,8 +460,8 @@ export default function CertificationsAdmin() {
           </div>
         </div>
 
-        {/* Tableau */}
-        <div className="overflow-x-auto">
+        {/* Tableau / Cartes */}
+        <div>
           {loading ? (
             <div className="p-8 space-y-4">
               {Array.from({ length: 3 }).map((_, i) => (
@@ -484,79 +484,135 @@ export default function CertificationsAdmin() {
               Aucune certification disponible dans le catalogue.
             </div>
           ) : (
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">
-                  <th className="py-5 px-6">Code / Examen</th>
-                  <th className="py-5 px-6">Nom</th>
-                  <th className="py-5 px-6">Fournisseur</th>
-                  <th className="py-5 px-6">Niveau</th>
-                  <th className="py-5 px-6">Durée indicative</th>
-                  <th className="py-5 px-6">Modules</th>
-                  <th className="py-5 px-6 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300 text-sm">
+            <>
+              {/* Version Mobile : Liste de cartes */}
+              <div className="block lg:hidden space-y-4 p-4">
                 {filteredCerts.map((cert) => (
-                  <tr 
+                  <div 
                     key={cert.id} 
-                    className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors group"
+                    className="bg-slate-50/50 dark:bg-slate-900/20 border border-slate-200/60 dark:border-slate-800/80 rounded-2xl p-5 space-y-4 transition-all duration-300"
                   >
-                    <td className="py-4 px-6 font-bold text-indigo-650 dark:text-indigo-400">
-                      {cert.codeExamen || 'N/A'}
-                    </td>
-
-                    <td className="py-4 px-6">
-                      <div>
-                        <span className="font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors block">
-                          {cert.nom}
-                        </span>
-                        <span className="text-xs text-slate-400 dark:text-slate-500 line-clamp-1 max-w-md mt-0.5">
-                          {cert.description}
-                        </span>
-                      </div>
-                    </td>
-
-                    <td className="py-4 px-6 font-semibold text-slate-650 dark:text-slate-400">
-                      {cert.fournisseur.nom}
-                    </td>
-
-                    <td className="py-4 px-6">
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${getNiveauBadgeStyle(cert.niveau)}`}>
+                    <div className="flex justify-between items-start">
+                      <span className="font-bold text-indigo-650 dark:text-indigo-400 text-xs px-2.5 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-lg">
+                        {cert.codeExamen || 'Examen'}
+                      </span>
+                      <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${getNiveauBadgeStyle(cert.niveau)}`}>
                         {cert.niveau}
                       </span>
-                    </td>
+                    </div>
 
-                    <td className="py-4 px-6 text-slate-555 dark:text-slate-450 font-medium">
-                      {cert.dureeIndicative || 'Non spécifiée'}
-                    </td>
+                    <div>
+                      <h4 className="font-extrabold text-slate-900 dark:text-white text-base leading-snug">{cert.nom}</h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Fournisseur : <span className="font-bold">{cert.fournisseur.nom}</span></p>
+                    </div>
 
-                    <td className="py-4 px-6 text-slate-400 dark:text-slate-500 font-bold">
-                      {cert.modules?.length || 0} module{cert.modules?.length > 1 ? 's' : ''}
-                    </td>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">{cert.description}</p>
 
-                    <td className="py-4 px-6 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center justify-between pt-4 border-t border-slate-200/60 dark:border-slate-800/60">
+                      <div className="text-xs text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1">
+                        <span>{cert.dureeIndicative || 'Durée N/A'}</span>
+                        <span>•</span>
+                        <span>{cert.modules?.length || 0} module{cert.modules?.length > 1 ? 's' : ''}</span>
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
                         <button
                           onClick={() => handleOpenEditModal(cert)}
-                          className="p-2 hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl transition-colors cursor-pointer"
+                          className="p-2.5 bg-slate-100 hover:bg-slate-250 dark:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 text-slate-500 dark:text-slate-300 rounded-xl transition-colors cursor-pointer"
                           title="Modifier"
                         >
                           <Edit className="w-4.5 h-4.5" />
                         </button>
                         <button
                           onClick={() => handleDeleteCert(cert.id, cert.nom)}
-                          className="p-2 hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-xl transition-colors cursor-pointer"
+                          className="p-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-650 dark:text-rose-400 rounded-xl transition-colors cursor-pointer"
                           title="Supprimer"
                         >
                           <Trash2 className="w-4.5 h-4.5" />
                         </button>
                       </div>
-                    </td>
-                  </tr>
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
+              </div>
+
+              {/* Version Desktop : Tableau classique */}
+              <div className="hidden lg:block overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">
+                      <th className="py-5 px-6">Code / Examen</th>
+                      <th className="py-5 px-6">Nom</th>
+                      <th className="py-5 px-6">Fournisseur</th>
+                      <th className="py-5 px-6">Niveau</th>
+                      <th className="py-5 px-6">Durée indicative</th>
+                      <th className="py-5 px-6">Modules</th>
+                      <th className="py-5 px-6 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300 text-sm">
+                    {filteredCerts.map((cert) => (
+                      <tr 
+                        key={cert.id} 
+                        className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors group"
+                      >
+                        <td className="py-4 px-6 font-bold text-indigo-650 dark:text-indigo-400">
+                          {cert.codeExamen || 'N/A'}
+                        </td>
+
+                        <td className="py-4 px-6">
+                          <div>
+                            <span className="font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors block">
+                              {cert.nom}
+                            </span>
+                            <span className="text-xs text-slate-400 dark:text-slate-500 line-clamp-1 max-w-md mt-0.5">
+                              {cert.description}
+                            </span>
+                          </div>
+                        </td>
+
+                        <td className="py-4 px-6 font-semibold text-slate-650 dark:text-slate-400">
+                          {cert.fournisseur.nom}
+                        </td>
+
+                        <td className="py-4 px-6">
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${getNiveauBadgeStyle(cert.niveau)}`}>
+                            {cert.niveau}
+                          </span>
+                        </td>
+
+                        <td className="py-4 px-6 text-slate-555 dark:text-slate-450 font-medium">
+                          {cert.dureeIndicative || 'Non spécifiée'}
+                        </td>
+
+                        <td className="py-4 px-6 text-slate-400 dark:text-slate-500 font-bold">
+                          {cert.modules?.length || 0} module{cert.modules?.length > 1 ? 's' : ''}
+                        </td>
+
+                        <td className="py-4 px-6 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => handleOpenEditModal(cert)}
+                              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-400 hover:text-indigo-650 dark:hover:text-indigo-400 rounded-xl transition-colors cursor-pointer"
+                              title="Modifier"
+                            >
+                              <Edit className="w-4.5 h-4.5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteCert(cert.id, cert.nom)}
+                              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-xl transition-colors cursor-pointer"
+                              title="Supprimer"
+                            >
+                              <Trash2 className="w-4.5 h-4.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -624,7 +680,7 @@ export default function CertificationsAdmin() {
                   </div>
 
                   {/* Code et Fournisseur */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-555 dark:text-slate-400 uppercase tracking-wider pl-1">Code examen</label>
                       <input
@@ -665,7 +721,7 @@ export default function CertificationsAdmin() {
                   </div>
 
                   {/* Niveau et Durée */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-555 dark:text-slate-400 uppercase tracking-wider pl-1">Niveau</label>
                       <select
@@ -916,7 +972,7 @@ export default function CertificationsAdmin() {
                   </div>
 
                   {/* Code et Fournisseur */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-555 dark:text-slate-400 uppercase tracking-wider pl-1">Code examen</label>
                       <input
@@ -957,7 +1013,7 @@ export default function CertificationsAdmin() {
                   </div>
 
                   {/* Niveau et Durée */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-555 dark:text-slate-400 uppercase tracking-wider pl-1">Niveau</label>
                       <select
