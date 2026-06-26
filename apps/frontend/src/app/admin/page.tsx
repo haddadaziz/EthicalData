@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../lib/api';
-import { Users, UserCheck, ShieldAlert, Award, Search, Plus, RefreshCw, X, Eye, EyeOff } from 'lucide-react';
+import { Users, UserCheck, ShieldAlert, Award, Search, Plus, RefreshCw, X, Eye, EyeOff, Edit, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Role {
@@ -39,7 +39,18 @@ export default function AdminDashboard() {
   const [email, setEmail] = useState('');
   const [telephone, setTelephone] = useState('');
   const [password, setPassword] = useState('');
-  const [selectedRoles, setSelectedRoles] = useState<string[]>(['APPRENANT']); // Tableau pour sélection multiple
+  const [selectedRoles, setSelectedRoles] = useState<string[]>(['APPRENANT']);
+
+  // États pour le modal de modification d'utilisateur
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<Utilisateur | null>(null);
+  const [editPrenom, setEditPrenom] = useState('');
+  const [editNom, setEditNom] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [editTelephone, setEditTelephone] = useState('');
+  const [editPassword, setEditPassword] = useState('');
+  const [editSelectedRoles, setEditSelectedRoles] = useState<string[]>([]);
+  const [editStatut, setEditStatut] = useState<'ACTIF' | 'INACTIF' | 'BANNI'>('ACTIF');
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -92,12 +103,21 @@ export default function AdminDashboard() {
 
   const toggleRoleSelection = (roleNom: string) => {
     if (selectedRoles.includes(roleNom)) {
-      // Empêche de désélectionner s'il ne reste qu'un seul rôle
       if (selectedRoles.length > 1) {
         setSelectedRoles(selectedRoles.filter(r => r !== roleNom));
       }
     } else {
       setSelectedRoles([...selectedRoles, roleNom]);
+    }
+  };
+
+  const toggleEditRoleSelection = (roleNom: string) => {
+    if (editSelectedRoles.includes(roleNom)) {
+      if (editSelectedRoles.length > 1) {
+        setEditSelectedRoles(editSelectedRoles.filter(r => r !== roleNom));
+      }
+    } else {
+      setEditSelectedRoles([...editSelectedRoles, roleNom]);
     }
   };
 
@@ -119,7 +139,6 @@ export default function AdminDashboard() {
         }
       });
 
-      // Fermeture du modal et réinitialisation du formulaire
       setIsModalOpen(false);
       resetForm();
       fetchUsers();
@@ -128,6 +147,71 @@ export default function AdminDashboard() {
       setModalError(err.message || 'Une erreur est survenue lors de la création.');
     } finally {
       setModalLoading(false);
+    }
+  };
+
+  const handleOpenEditModal = (user: Utilisateur) => {
+    setEditingUser(user);
+    setEditPrenom(user.prenom);
+    setEditNom(user.nom);
+    setEditEmail(user.email);
+    setEditTelephone(user.telephone || '');
+    setEditPassword('');
+    setEditSelectedRoles(user.roles.map(r => r.nom));
+    setEditStatut(user.statut);
+    setModalError(null);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingUser) return;
+    setModalLoading(true);
+    setModalError(null);
+
+    try {
+      const body: any = {
+        prenom: editPrenom,
+        nom: editNom,
+        email: editEmail,
+        telephone: editTelephone || null,
+        roles: editSelectedRoles,
+        statut: editStatut
+      };
+
+      if (editPassword) {
+        body.motDePasse = editPassword;
+      }
+
+      await apiFetch(`/users/${editingUser.id}`, {
+        method: 'PATCH',
+        body
+      });
+
+      setIsEditModalOpen(false);
+      setEditingUser(null);
+      fetchUsers();
+    } catch (err: any) {
+      console.error(err);
+      setModalError(err.message || 'Une erreur est survenue lors de la modification.');
+    } finally {
+      setModalLoading(false);
+    }
+  };
+
+  const handleDeleteUser = async (id: string, name: string) => {
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer l'utilisateur "${name}" ?`)) {
+      return;
+    }
+
+    try {
+      await apiFetch(`/users/${id}`, {
+        method: 'DELETE'
+      });
+      fetchUsers();
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || "Une erreur est survenue lors de la suppression.");
     }
   };
 
@@ -319,6 +403,7 @@ export default function AdminDashboard() {
                   <th className="py-5 px-6">Rôles</th>
                   <th className="py-5 px-6">Statut</th>
                   <th className="py-5 px-6">Date d'inscription</th>
+                  <th className="py-5 px-6 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300 text-sm">
@@ -378,6 +463,25 @@ export default function AdminDashboard() {
                         day: 'numeric'
                       })}
                     </td>
+
+                    <td className="py-4 px-6 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => handleOpenEditModal(user)}
+                          className="p-2 hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl transition-colors cursor-pointer"
+                          title="Modifier"
+                        >
+                          <Edit className="w-4.5 h-4.5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteUser(user.id, `${user.prenom} ${user.nom}`)}
+                          className="p-2 hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-xl transition-colors cursor-pointer"
+                          title="Supprimer"
+                        >
+                          <Trash2 className="w-4.5 h-4.5" />
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -386,6 +490,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
+      {/* MODAL DE CRÉATION */}
       <AnimatePresence>
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -490,7 +595,6 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                {/* Attribution des Rôles (Multi-sélection) */}
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">Attribuer des Rôles (Sélection multiple)</label>
                   <div className="grid grid-cols-2 gap-3">
@@ -537,6 +641,192 @@ export default function AdminDashboard() {
                       <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
                       'Créer le compte'
+                    )}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* MODAL DE MODIFICATION */}
+      <AnimatePresence>
+        {isEditModalOpen && editingUser && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => { if (!modalLoading) { setIsEditModalOpen(false); setEditingUser(null); } }}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-xl rounded-[28px] shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh] transition-colors duration-300"
+            >
+              <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/20">
+                <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">Modifier l'utilisateur</h2>
+                <button
+                  onClick={() => { setIsEditModalOpen(false); setEditingUser(null); }}
+                  disabled={modalLoading}
+                  className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-xl transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleUpdateUser} className="p-6 overflow-y-auto space-y-5 flex-1">
+                {modalError && (
+                  <div className="p-4 bg-rose-500/10 border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 rounded-2xl text-sm font-semibold">
+                    {modalError}
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">Prénom</label>
+                    <input
+                      type="text"
+                      required
+                      value={editPrenom}
+                      onChange={(e) => setEditPrenom(e.target.value)}
+                      placeholder="Jean"
+                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500/15"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">Nom</label>
+                    <input
+                      type="text"
+                      required
+                      value={editNom}
+                      onChange={(e) => setEditNom(e.target.value)}
+                      placeholder="Dupont"
+                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500/15"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">Adresse e-mail</label>
+                  <input
+                    type="email"
+                    required
+                    value={editEmail}
+                    onChange={(e) => setEditEmail(e.target.value)}
+                    placeholder="jean.dupont@ethicaldata.local"
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500/15"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">Téléphone <span className="text-[10px] text-slate-400/80 dark:text-slate-500 lowercase">(optionnel)</span></label>
+                  <input
+                    type="text"
+                    value={editTelephone}
+                    onChange={(e) => setEditTelephone(e.target.value)}
+                    placeholder="+33 6 12 34 56 78"
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500/15"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">Statut du compte</label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { val: 'ACTIF', label: 'Actif', style: 'border-emerald-500 bg-emerald-500/5 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shadow-sm' },
+                      { val: 'INACTIF', label: 'Inactif', style: 'border-amber-500 bg-amber-500/5 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 shadow-sm' },
+                      { val: 'BANNI', label: 'Banni', style: 'border-rose-500 bg-rose-500/5 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 shadow-sm' }
+                    ].map((statusObj) => {
+                      const isSelected = editStatut === statusObj.val;
+                      return (
+                        <button
+                          key={statusObj.val}
+                          type="button"
+                          onClick={() => setEditStatut(statusObj.val as any)}
+                          className={`p-3 border rounded-2xl text-center font-bold text-xs uppercase transition-all cursor-pointer ${
+                            isSelected
+                              ? statusObj.style
+                              : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-transparent text-slate-800 dark:text-slate-200'
+                          }`}
+                        >
+                          {statusObj.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">Mot de passe <span className="text-[10px] text-slate-400/80 dark:text-slate-500 lowercase">(laisser vide pour ne pas changer)</span></label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={editPassword}
+                      onChange={(e) => setEditPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full pl-4 pr-12 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 text-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500/15"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer"
+                    >
+                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pl-1">Rôles attribués (Sélection multiple)</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { nom: 'APPRENANT', label: 'Apprenant' },
+                      { nom: 'FORMATEUR', label: 'Formateur' },
+                      { nom: 'ADMIN', label: 'Admin' },
+                      { nom: 'SUPER_ADMIN', label: 'Super Admin' }
+                    ].map((role) => {
+                      const isSelected = editSelectedRoles.includes(role.nom);
+                      return (
+                        <button
+                          key={role.nom}
+                          type="button"
+                          onClick={() => toggleEditRoleSelection(role.nom)}
+                          className={`p-4 border rounded-2xl text-center font-bold transition-all cursor-pointer ${
+                            isSelected
+                              ? 'border-indigo-500 bg-indigo-500/5 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shadow-sm'
+                              : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-transparent text-slate-800 dark:text-slate-200'
+                          }`}
+                        >
+                          {role.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3 bg-slate-50/10 dark:bg-slate-950/10 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => { setIsEditModalOpen(false); setEditingUser(null); }}
+                    disabled={modalLoading}
+                    className="px-5 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl cursor-pointer transition-colors disabled:opacity-50"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={modalLoading}
+                    className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl cursor-pointer shadow-lg shadow-indigo-600/15 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {modalLoading ? (
+                      <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      'Sauvegarder'
                     )}
                   </button>
                 </div>
