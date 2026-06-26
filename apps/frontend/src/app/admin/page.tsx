@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../lib/api';
-import { Users, UserCheck, ShieldAlert, Award, Search, Plus, RefreshCw, X, Eye, EyeOff, Edit, Trash2 } from 'lucide-react';
+import { Users, UserCheck, ShieldAlert, Award, Search, Plus, RefreshCw, X, Eye, EyeOff, Edit, Trash2, SlidersHorizontal } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Role {
@@ -26,6 +26,11 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+
+  // États pour les Filtres
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedRoleFilter, setSelectedRoleFilter] = useState<'TOUS' | 'APPRENANT' | 'FORMATEUR' | 'ADMIN' | 'SUPER_ADMIN'>('TOUS');
+  const [selectedStatusFilter, setSelectedStatusFilter] = useState<'TOUS' | 'ACTIF' | 'INACTIF' | 'BANNI'>('TOUS');
 
   // États pour le modal de création d'utilisateur
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,34 +75,41 @@ export default function AdminDashboard() {
     fetchUsers();
   }, []);
 
-  // Filtrage des utilisateurs
+  // Filtrage combiné des utilisateurs (Texte + Rôle + Statut)
   const filteredUsers = users.filter(user => {
+    // 1. Filtre textuel (Recherche)
     const search = searchTerm.toLowerCase().trim();
-    if (!search) return true;
+    const matchesSearch = !search || (() => {
+      const prenomVal = (user.prenom || '').toLowerCase();
+      const nomVal = (user.nom || '').toLowerCase();
+      const emailVal = (user.email || '').toLowerCase();
+      const telephoneVal = (user.telephone || '').toLowerCase();
+      const fullName1 = `${prenomVal} ${nomVal}`;
+      const fullName2 = `${nomVal} ${prenomVal}`;
+      return (
+        fullName1.includes(search) ||
+        fullName2.includes(search) ||
+        emailVal.includes(search) ||
+        telephoneVal.includes(search)
+      );
+    })();
 
-    const prenomVal = (user.prenom || '').toLowerCase();
-    const nomVal = (user.nom || '').toLowerCase();
-    const emailVal = (user.email || '').toLowerCase();
-    const telephoneVal = (user.telephone || '').toLowerCase();
-    
-    const fullName1 = `${prenomVal} ${nomVal}`;
-    const fullName2 = `${nomVal} ${prenomVal}`;
+    // 2. Filtre par rôle
+    const matchesRole = selectedRoleFilter === 'TOUS' || user.roles.some(r => r.nom === selectedRoleFilter);
 
-    return (
-      fullName1.includes(search) || 
-      fullName2.includes(search) || 
-      emailVal.includes(search) ||
-      telephoneVal.includes(search)
-    );
+    // 3. Filtre par statut
+    const matchesStatus = selectedStatusFilter === 'TOUS' || user.statut === selectedStatusFilter;
+
+    return matchesSearch && matchesRole && matchesStatus;
   });
 
   // Calcul des statistiques
   const totalUsers = users.length;
   const activeUsers = users.filter(u => u.statut === 'ACTIF').length;
-  const adminUsers = users.filter(u => 
+  const adminUsers = users.filter(u =>
     u.roles.some(r => r.nom === 'SUPER_ADMIN' || r.nom === 'ADMIN')
   ).length;
-  const trainerUsers = users.filter(u => 
+  const trainerUsers = users.filter(u =>
     u.roles.some(r => r.nom === 'FORMATEUR')
   ).length;
 
@@ -253,25 +265,32 @@ export default function AdminDashboard() {
     }
   };
 
+  const hasActiveFilters = selectedRoleFilter !== 'TOUS' || selectedStatusFilter !== 'TOUS';
+
+  const resetFilters = () => {
+    setSelectedRoleFilter('TOUS');
+    setSelectedStatusFilter('TOUS');
+  };
+
   return (
     <div className="space-y-10">
-      
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Tableau de bord</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">Gérez les comptes et suivez l'activité de la plateforme.</p>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">Gerez les comptes et suivez l'activite de la plateforme.</p>
         </div>
-        
+
         <div className="flex items-center gap-3">
           <button
             onClick={fetchUsers}
             disabled={loading}
             className="p-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-2xl cursor-pointer disabled:opacity-50 transition-colors"
-            title="Rafraîchir"
+            title="Rafraichir"
           >
             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
           </button>
-          
+
           <button
             onClick={() => setIsModalOpen(true)}
             className="flex items-center gap-2 px-5 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl cursor-pointer shadow-lg shadow-indigo-600/15 transition-all"
@@ -282,6 +301,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
+      {/* Cartes Statistiques */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {loading ? (
           Array.from({ length: 4 }).map((_, i) => (
@@ -289,7 +309,7 @@ export default function AdminDashboard() {
           ))
         ) : (
           <>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               className="bg-white dark:bg-slate-900/40 backdrop-blur-md border border-slate-200 dark:border-slate-800/80 rounded-2xl p-6 flex items-center justify-between transition-colors duration-300"
@@ -303,7 +323,7 @@ export default function AdminDashboard() {
               </div>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
@@ -318,7 +338,7 @@ export default function AdminDashboard() {
               </div>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
@@ -333,7 +353,7 @@ export default function AdminDashboard() {
               </div>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
@@ -351,27 +371,120 @@ export default function AdminDashboard() {
         )}
       </div>
 
+      {/* Conteneur principal de la table */}
       <div className="bg-white dark:bg-slate-900/40 backdrop-blur-md border border-slate-200 dark:border-slate-800/80 rounded-[24px] overflow-hidden transition-colors duration-300">
-        
+
+        {/* Entête avec Recherche & Filtres */}
         <div className="p-6 border-b border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="relative max-w-md w-full">
-            <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 dark:text-slate-500">
-              <Search className="w-5 h-5" />
-            </span>
-            <input 
-              type="text"
-              placeholder="Rechercher par nom ou adresse e-mail..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 transition-all text-sm outline-none"
-            />
+          <div className="flex flex-1 items-center gap-3 w-full max-w-xl">
+            <div className="relative flex-1">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 dark:text-slate-500">
+                <Search className="w-5 h-5" />
+              </span>
+              <input
+                type="text"
+                placeholder="Rechercher par nom ou adresse e-mail..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 transition-all text-sm outline-none"
+              />
+            </div>
+
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`flex items-center gap-2 px-4 py-3 border rounded-xl font-bold text-sm transition-all cursor-pointer ${showFilters || hasActiveFilters
+                  ? 'border-indigo-500 bg-indigo-500/5 text-indigo-650 dark:text-indigo-400'
+                  : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-650 dark:text-slate-400 bg-white dark:bg-slate-900/20'
+                }`}
+            >
+              <SlidersHorizontal className="w-4.5 h-4.5" />
+              <span>Filtres</span>
+              {hasActiveFilters && (
+                <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+              )}
+            </button>
           </div>
-          
-          <div className="text-sm text-slate-500 dark:text-slate-400 font-semibold">
-            {filteredUsers.length} utilisateur{filteredUsers.length > 1 ? 's' : ''} trouvé{filteredUsers.length > 1 ? 's' : ''}
+
+          <div className="text-sm text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-3">
+            {hasActiveFilters && (
+              <button
+                onClick={resetFilters}
+                className="text-xs text-rose-500 hover:text-rose-600 hover:underline cursor-pointer font-bold"
+              >
+                Réinitialiser
+              </button>
+            )}
+            <span>
+              {filteredUsers.length} utilisateur{filteredUsers.length > 1 ? 's' : ''} trouvé{filteredUsers.length > 1 ? 's' : ''}
+            </span>
           </div>
         </div>
 
+        {/* Section extensible des Filtres */}
+        <AnimatePresence>
+          {showFilters && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+              className="overflow-hidden border-b border-slate-200 dark:border-slate-800/80 bg-slate-50/30 dark:bg-slate-950/10"
+            >
+              <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Rôle */}
+                <div className="space-y-2.5">
+                  <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider pl-1">Filtrer par Rôle</span>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { val: 'TOUS', label: 'Tous' },
+                      { val: 'APPRENANT', label: 'Apprenant' },
+                      { val: 'FORMATEUR', label: 'Formateur' },
+                      { val: 'ADMIN', label: 'Admin' },
+                      { val: 'SUPER_ADMIN', label: 'Super Admin' }
+                    ].map((role) => (
+                      <button
+                        key={role.val}
+                        onClick={() => setSelectedRoleFilter(role.val as any)}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${selectedRoleFilter === role.val
+                            ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-md shadow-indigo-600/15'
+                            : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 text-slate-650 dark:text-slate-400'
+                          }`}
+                      >
+                        {role.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Statut */}
+                <div className="space-y-2.5">
+                  <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider pl-1">Filtrer par Statut</span>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { val: 'TOUS', label: 'Tous' },
+                      { val: 'ACTIF', label: 'Actif' },
+                      { val: 'INACTIF', label: 'Inactif' },
+                      { val: 'BANNI', label: 'Banni' }
+                    ].map((status) => (
+                      <button
+                        key={status.val}
+                        onClick={() => setSelectedStatusFilter(status.val as any)}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${selectedStatusFilter === status.val
+                            ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-md shadow-indigo-600/15'
+                            : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 text-slate-650 dark:text-slate-400'
+                          }`}
+                      >
+                        {status.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Tableau */}
         <div className="overflow-x-auto">
           {loading ? (
             <div className="p-8 space-y-4">
@@ -383,7 +496,7 @@ export default function AdminDashboard() {
             <div className="p-12 text-center">
               <p className="text-rose-500 dark:text-rose-400 font-semibold mb-2">Une erreur est survenue</p>
               <p className="text-sm text-slate-400 dark:text-slate-500 mb-6">{error}</p>
-              <button 
+              <button
                 onClick={fetchUsers}
                 className="px-5 py-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white font-bold rounded-xl cursor-pointer transition-colors"
               >
@@ -391,8 +504,8 @@ export default function AdminDashboard() {
               </button>
             </div>
           ) : filteredUsers.length === 0 ? (
-            <div className="p-12 text-center text-slate-500">
-              Aucun utilisateur ne correspond à votre recherche.
+            <div className="p-12 text-center text-slate-500 dark:text-slate-400 font-medium">
+              Aucun utilisateur ne correspond aux critères sélectionnés.
             </div>
           ) : (
             <table className="w-full text-left border-collapse">
@@ -408,12 +521,12 @@ export default function AdminDashboard() {
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300 text-sm">
                 {filteredUsers.map((user) => (
-                  <tr 
-                    key={user.id} 
+                  <tr
+                    key={user.id}
                     className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors group"
                   >
                     <td className="py-4 px-6 flex items-center gap-3">
-                      <div className="w-9 h-9 bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center font-bold">
+                      <div className="w-9 h-9 bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center font-bold animate-fade-in">
                         {user.prenom.charAt(0).toUpperCase()}{user.nom.charAt(0).toUpperCase()}
                       </div>
                       <div>
@@ -436,7 +549,7 @@ export default function AdminDashboard() {
                           <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 px-2 py-0.5 rounded-md font-semibold">Aucun</span>
                         ) : (
                           user.roles.map((role) => (
-                            <span 
+                            <span
                               key={role.id}
                               className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${getRoleBadgeStyle(role.nom)}`}
                             >
@@ -449,9 +562,8 @@ export default function AdminDashboard() {
 
                     <td className="py-4 px-6">
                       <span className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wider ${getStatutBadgeStyle(user.statut)}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${
-                          user.statut === 'ACTIF' ? 'bg-emerald-500' : user.statut === 'INACTIF' ? 'bg-amber-500' : 'bg-rose-500'
-                        }`} />
+                        <span className={`w-1.5 h-1.5 rounded-full ${user.statut === 'ACTIF' ? 'bg-emerald-500' : user.statut === 'INACTIF' ? 'bg-amber-500' : 'bg-rose-500'
+                          }`} />
                         {user.statut}
                       </span>
                     </td>
@@ -610,11 +722,10 @@ export default function AdminDashboard() {
                           key={role.nom}
                           type="button"
                           onClick={() => toggleRoleSelection(role.nom)}
-                          className={`p-4 border rounded-2xl text-center font-bold transition-all cursor-pointer ${
-                            isSelected
+                          className={`p-4 border rounded-2xl text-center font-bold transition-all cursor-pointer ${isSelected
                               ? 'border-indigo-500 bg-indigo-500/5 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shadow-sm'
                               : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-transparent text-slate-800 dark:text-slate-200'
-                          }`}
+                            }`}
                         >
                           {role.label}
                         </button>
@@ -748,11 +859,10 @@ export default function AdminDashboard() {
                           key={statusObj.val}
                           type="button"
                           onClick={() => setEditStatut(statusObj.val as any)}
-                          className={`p-3 border rounded-2xl text-center font-bold text-xs uppercase transition-all cursor-pointer ${
-                            isSelected
+                          className={`p-3 border rounded-2xl text-center font-bold text-xs uppercase transition-all cursor-pointer ${isSelected
                               ? statusObj.style
                               : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-transparent text-slate-800 dark:text-slate-200'
-                          }`}
+                            }`}
                         >
                           {statusObj.label}
                         </button>
@@ -796,11 +906,10 @@ export default function AdminDashboard() {
                           key={role.nom}
                           type="button"
                           onClick={() => toggleEditRoleSelection(role.nom)}
-                          className={`p-4 border rounded-2xl text-center font-bold transition-all cursor-pointer ${
-                            isSelected
+                          className={`p-4 border rounded-2xl text-center font-bold transition-all cursor-pointer ${isSelected
                               ? 'border-indigo-500 bg-indigo-500/5 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shadow-sm'
                               : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-transparent text-slate-800 dark:text-slate-200'
-                          }`}
+                            }`}
                         >
                           {role.label}
                         </button>
