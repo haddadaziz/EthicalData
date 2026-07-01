@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
-import { Award, Plus, RefreshCw, X, Edit, Trash2, Search, Layers, Briefcase, BookmarkCheck, Upload, Clock, Sparkles, HelpCircle } from 'lucide-react'; import { motion, AnimatePresence } from 'framer-motion';
+import { Award, Plus, RefreshCw, X, Edit, Trash2, Search, Layers, Briefcase, BookmarkCheck, Upload, Clock, Sparkles, HelpCircle, ArrowLeft, ArrowRight } from 'lucide-react'; import { motion, AnimatePresence } from 'framer-motion';
 
 interface Fournisseur {
     id: string;
@@ -39,6 +39,14 @@ export default function CertificationsAdmin() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedLevel, setSelectedLevel] = useState<string>('TOUS');
+    const [selectedProvider, setSelectedProvider] = useState<string>('TOUS');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 6;
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, selectedLevel, selectedProvider]);
 
     // États pour le modal de création
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -279,14 +287,17 @@ export default function CertificationsAdmin() {
     // Filtrage des certifications
     const filteredCerts = certs.filter(c => {
         const search = searchTerm.toLowerCase().trim();
-        if (!search) return true;
+        const matchesSearch = !search || (
+            (c.nom || '').toLowerCase().includes(search) ||
+            (c.codeExamen || '').toLowerCase().includes(search) ||
+            (c.description || '').toLowerCase().includes(search) ||
+            (c.fournisseur?.nom || '').toLowerCase().includes(search)
+        );
 
-        const nomVal = (c.nom || '').toLowerCase();
-        const codeVal = (c.codeExamen || '').toLowerCase();
-        const descVal = (c.description || '').toLowerCase();
-        const fournVal = (c.fournisseur.nom || '').toLowerCase();
+        const matchesLevel = selectedLevel === 'TOUS' || c.niveau === selectedLevel;
+        const matchesProvider = selectedProvider === 'TOUS' || c.fournisseur?.slug === selectedProvider;
 
-        return nomVal.includes(search) || codeVal.includes(search) || descVal.includes(search) || fournVal.includes(search);
+        return matchesSearch && matchesLevel && matchesProvider;
     });
 
     // Calcul des statistiques
@@ -294,6 +305,12 @@ export default function CertificationsAdmin() {
     const microsoftCount = certs.filter(c => c.fournisseur.nom === 'Microsoft').length;
     const awsCount = certs.filter(c => c.fournisseur.nom === 'AWS').length;
     const otherCount = totalCerts - (microsoftCount + awsCount);
+
+    // Pagination
+    const totalPages = Math.ceil(filteredCerts.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentCerts = filteredCerts.slice(indexOfFirstItem, indexOfLastItem);
 
     // Gestion de la sélection locale de fichiers (conversion en Base64)
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, isEdit: boolean) => {
@@ -605,187 +622,166 @@ export default function CertificationsAdmin() {
                 )}
             </div>
 
-            {/* Conteneur de la table */}
+            {/* Conteneur des Certifications */}
             <div className="bg-white backdrop-blur-xl border border-slate-200/80 rounded-3xl overflow-hidden">
 
-                {/* Entête avec Recherche */}
-                <div className="p-6 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="relative max-w-md w-full">
-                        <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-500">
-                            <Search className="w-5 h-5" />
-                        </span>
-                        <input
-                            type="text"
-                            placeholder="Rechercher une certification..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-11 pr-4 py-3 bg-slate-50/40 border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-200 placeholder-slate-400 transition-all text-sm outline-none"
-                        />
-                    </div>
+                {/* Entête avec Recherche & Filtres */}
+                <div className="p-6 border-b border-slate-200/80 space-y-4">
+                    <div className="flex flex-col md:flex-row md:items-center gap-3">
+                        {/* Barre de recherche */}
+                        <div className="relative flex-1 max-w-sm">
+                            <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
+                                <Search className="w-4 h-4" />
+                            </span>
+                            <input
+                                type="text"
+                                placeholder="Rechercher..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 placeholder-slate-400 transition-all text-sm outline-none font-semibold"
+                            />
+                        </div>
 
-                    <div className="text-xs text-slate-500 font-bold">
-                        {filteredCerts.length} certification{filteredCerts.length > 1 ? 's' : ''} trouvée{filteredCerts.length > 1 ? 's' : ''}
+                        {/* Filtre Niveau */}
+                        <select
+                            value={selectedLevel}
+                            onChange={(e) => setSelectedLevel(e.target.value)}
+                            className="px-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-xs font-bold outline-none transition-all cursor-pointer"
+                        >
+                            <option value="TOUS">Tous les niveaux</option>
+                            <option value="DEBUTANT">Débutant</option>
+                            <option value="INTERMEDIAIRE">Intermédiaire</option>
+                            <option value="AVANCE">Avancé</option>
+                        </select>
+
+                        {/* Filtre Fournisseur */}
+                        <select
+                            value={selectedProvider}
+                            onChange={(e) => setSelectedProvider(e.target.value)}
+                            className="px-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-xs font-bold outline-none transition-all cursor-pointer"
+                        >
+                            <option value="TOUS">Tous les constructeurs</option>
+                            {fournisseurs.map(f => (
+                                <option key={f.id} value={f.slug}>{f.nom}</option>
+                            ))}
+                        </select>
+
+                        <div className="text-xs text-slate-500 font-bold ml-auto shrink-0">
+                            {filteredCerts.length} certification{filteredCerts.length > 1 ? 's' : ''} trouvée{filteredCerts.length > 1 ? 's' : ''}
+                        </div>
                     </div>
                 </div>
 
-                {/* Tableau / Cartes */}
+                {/* Grille de Cartes Premium */}
                 <div>
                     {loading ? (
-                        <div className="p-8 space-y-4">
-                            {Array.from({ length: 3 }).map((_, i) => (
-                                <div key={i} className="h-12 bg-white rounded-xl animate-pulse" />
+                        <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {Array.from({ length: 6 }).map((_, i) => (
+                                <div key={i} className="h-72 bg-slate-50 rounded-2xl animate-pulse border border-slate-100" />
                             ))}
                         </div>
                     ) : error ? (
                         <div className="p-12 text-center">
                             <p className="text-rose-500 font-bold mb-2">Une erreur est survenue</p>
                             <p className="text-xs text-slate-500 mb-6">{error}</p>
-                            <button
-                                onClick={fetchData}
-                                className="px-5 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-950 font-bold rounded-xl cursor-pointer transition-colors"
-                            >
-                                Réessayer
-                            </button>
+                            <button onClick={fetchData} className="px-5 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-950 font-bold rounded-xl cursor-pointer transition-colors">Réessayer</button>
                         </div>
                     ) : filteredCerts.length === 0 ? (
                         <div className="p-12 text-center text-slate-500 font-medium">
-                            Aucune certification disponible dans le catalogue.
+                            Aucune certification ne correspond à vos critères.
                         </div>
                     ) : (
                         <>
-                            {/* Version Mobile : Liste de cartes */}
-                            <div className="block lg:hidden space-y-4 p-4">
-                                {filteredCerts.map((cert) => (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 p-6">
+                                {currentCerts.map((cert) => (
                                     <div
                                         key={cert.id}
-                                        className="bg-white border border-slate-200/80 rounded-2xl p-5 space-y-4 transition-all duration-300 hover:border-slate-200"
+                                        className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden transition-all duration-300 hover:border-slate-300 hover:shadow-lg flex flex-col group"
                                     >
-                                        <div className="flex justify-between items-start">
-                                            <span className="font-bold text-red-600 text-xs px-2.5 py-1 bg-red-50 border border-red-100 rounded-lg">
-                                                {cert.codeExamen || 'Examen'}
-                                            </span>
-                                            <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${getNiveauBadgeStyle(cert.niveau)}`}>
-                                                {cert.niveau}
-                                            </span>
+                                        {/* Image */}
+                                        <div className="w-full h-36 bg-slate-50 border-b border-slate-100 flex items-center justify-center p-6 relative overflow-hidden shrink-0">
+                                            {cert.image ? (
+                                                <img src={cert.image} alt={cert.nom} className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105" />
+                                            ) : (
+                                                <Award className="w-12 h-12 text-slate-300" />
+                                            )}
+                                            <div className="absolute top-3 left-3">
+                                                <span className="font-bold text-red-600 text-[9px] px-2 py-0.5 bg-red-50 border border-red-100 rounded-lg">{cert.codeExamen || 'Examen'}</span>
+                                            </div>
+                                            <div className="absolute top-3 right-3">
+                                                <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${getNiveauBadgeStyle(cert.niveau)}`}>{cert.niveau}</span>
+                                            </div>
                                         </div>
 
-                                        <div className="text-left">
-                                            <h4 className="font-extrabold text-slate-950 text-base leading-snug">{cert.nom}</h4>
-                                            <p className="text-xs text-slate-600 mt-1 font-semibold">Fournisseur : <span className="text-slate-700">{cert.fournisseur.nom}</span></p>
-                                        </div>
-
-                                        <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed text-left">{cert.description}</p>
-
-                                        <div className="flex items-center justify-between pt-4 border-t border-slate-200/80">
-                                            <div className="text-xs text-slate-500 font-semibold flex items-center gap-1">
-                                                <span>{cert.dureeIndicative || 'Durée N/A'}</span>
-                                                <span>•</span>
-                                                <span>{cert.modules?.length || 0} module{cert.modules?.length > 1 ? 's' : ''}</span>
+                                        {/* Corps */}
+                                        <div className="p-5 flex-1 flex flex-col text-left space-y-3">
+                                            <div className="space-y-1.5">
+                                                <span className={`text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-wider inline-block ${getSupplierBadgeStyle(cert.fournisseur.nom)}`}>{cert.fournisseur.nom}</span>
+                                                <h4 className="font-extrabold text-slate-950 text-base leading-snug group-hover:text-red-600 transition-colors line-clamp-1">{cert.nom}</h4>
+                                                <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed font-semibold">{cert.description}</p>
                                             </div>
 
-                                            <div className="flex items-center gap-1.5">
-                                                <button
-                                                    onClick={() => handleOpenQuestionsModal(cert)}
-                                                    className="flex items-center gap-1 px-3 py-2 bg-red-50 hover:bg-red-100 border border-red-100 text-red-600 hover:text-indigo-300 rounded-xl transition-all cursor-pointer text-[10px] font-extrabold uppercase tracking-wider"
-                                                    title="Questions"
-                                                >
-                                                    <HelpCircle className="w-3.5 h-3.5" />
-                                                    <span>Questions</span>
-                                                </button>
-                                                <button
-                                                    onClick={() => handleOpenEditModal(cert)}
-                                                    className="p-2.5 bg-slate-50 border border-slate-200/80 hover:border-slate-200 text-slate-600 hover:text-slate-950 rounded-xl transition-colors cursor-pointer"
-                                                    title="Modifier"
-                                                >
-                                                    <Edit className="w-4 h-4" />
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDeleteCert(cert.id, cert.nom)}
-                                                    className="p-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-xl transition-colors cursor-pointer"
-                                                    title="Supprimer"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
+                                            <div className="pt-3 border-t border-slate-100 mt-auto space-y-3">
+                                                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center justify-between">
+                                                    <span>{cert.dureeIndicative || 'Durée N/A'}</span>
+                                                    <span>{cert.modules?.length || 0} module{cert.modules?.length > 1 ? 's' : ''}</span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5">
+                                                    <button onClick={() => handleOpenQuestionsModal(cert)} className="flex-1 flex items-center justify-center gap-1 px-3 py-2.5 bg-red-50 hover:bg-red-100 border border-red-100 text-red-600 hover:text-red-700 rounded-xl transition-all cursor-pointer text-[10px] font-black uppercase tracking-wider" title="Questions">
+                                                        <HelpCircle className="w-3.5 h-3.5" />
+                                                        <span>Questions</span>
+                                                    </button>
+                                                    <button onClick={() => handleOpenEditModal(cert)} className="p-2.5 bg-slate-50 border border-slate-200/80 hover:border-slate-300 text-slate-600 hover:text-slate-950 rounded-xl transition-colors cursor-pointer" title="Modifier">
+                                                        <Edit className="w-4 h-4" />
+                                                    </button>
+                                                    <button onClick={() => handleDeleteCert(cert.id, cert.nom)} className="p-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-xl transition-colors cursor-pointer" title="Supprimer">
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 ))}
                             </div>
 
-                            {/* Version Desktop : Tableau Épuré */}
-                            <div className="hidden lg:block overflow-x-auto">
-                                <table className="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr className="border-b border-slate-200/80 text-slate-500 text-[10px] font-black uppercase tracking-widest">
-                                            <th className="py-5 px-6">Code / Examen</th>
-                                            <th className="py-5 px-6">Nom</th>
-                                            <th className="py-5 px-6">Fournisseur</th>
-                                            <th className="py-5 px-6">Modules</th>
-                                            <th className="py-5 px-6 text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-900/60 text-slate-700 text-sm">
-                                        {filteredCerts.map((cert) => (
-                                            <tr
-                                                key={cert.id}
-                                                className="hover:bg-white shadow-sm transition-colors group"
-                                            >
-                                                <td className="py-4 px-6 font-bold text-red-600">
-                                                    {cert.codeExamen || 'N/A'}
-                                                </td>
+                            {/* Pagination Premium */}
+                            {totalPages > 1 && (
+                                <div className="p-6 border-t border-slate-200/80 flex items-center justify-between">
+                                    <button
+                                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                        disabled={currentPage === 1}
+                                        className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
+                                    >
+                                        <ArrowLeft className="w-3.5 h-3.5" />
+                                        <span>Précédent</span>
+                                    </button>
 
-                                                <td className="py-4 px-6 text-left">
-                                                    <div>
-                                                        <span className="font-bold text-slate-950 group-hover:text-red-600 transition-colors block">
-                                                            {cert.nom}
-                                                        </span>
-                                                        <span className="text-xs text-slate-500 line-clamp-1 max-w-md mt-0.5 font-medium">
-                                                            {cert.description}
-                                                        </span>
-                                                    </div>
-                                                </td>
+                                    <div className="flex items-center gap-1">
+                                        {Array.from({ length: totalPages }).map((_, index) => {
+                                            const pageNum = index + 1;
+                                            const isActive = currentPage === pageNum;
+                                            return (
+                                                <button
+                                                    key={pageNum}
+                                                    onClick={() => setCurrentPage(pageNum)}
+                                                    className={`w-9 h-9 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center ${isActive ? 'bg-slate-950 text-white shadow-md' : 'bg-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-950'}`}
+                                                >
+                                                    {pageNum}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
 
-                                                <td className="py-4 px-6 font-bold text-slate-600">
-                                                    {cert.fournisseur.nom}
-                                                </td>
-
-                                                <td className="py-4 px-6 text-slate-500 font-bold">
-                                                    {cert.modules?.length || 0} module{cert.modules?.length > 1 ? 's' : ''}
-                                                </td>
-
-                                                <td className="py-4 px-6 text-right">
-                                                     <div className="flex items-center justify-end gap-1.5">
-                                                         <button
-                                                             onClick={() => handleOpenQuestionsModal(cert)}
-                                                             className="flex items-center gap-1 px-3 py-2 bg-red-50 hover:bg-red-100 border border-red-100 text-red-600 hover:text-red-700 rounded-xl transition-all cursor-pointer text-[10px] font-extrabold uppercase tracking-wider"
-                                                             title="Questions"
-                                                         >
-                                                             <HelpCircle className="w-3.5 h-3.5" />
-                                                             <span>Questions</span>
-                                                         </button>
-                                                         
-                                                         <button
-                                                             onClick={() => handleOpenEditModal(cert)}
-                                                             className="p-2 bg-slate-50 border border-slate-200/80 hover:border-slate-200 text-slate-600 hover:text-slate-950 rounded-xl transition-colors cursor-pointer"
-                                                             title="Modifier la certification"
-                                                         >
-                                                             <Edit className="w-4 h-4" />
-                                                         </button>
-                                                         
-                                                         <button
-                                                             onClick={() => handleDeleteCert(cert.id, cert.nom)}
-                                                             className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-xl transition-colors cursor-pointer"
-                                                             title="Supprimer la certification"
-                                                         >
-                                                             <Trash2 className="w-4 h-4" />
-                                                         </button>
-                                                     </div>
-                                                 </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                    <button
+                                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                        disabled={currentPage === totalPages}
+                                        className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
+                                    >
+                                        <span>Suivant</span>
+                                        <ArrowRight className="w-3.5 h-3.5" />
+                                    </button>
+                                </div>
+                            )}
                         </>
                     )}
                 </div>
