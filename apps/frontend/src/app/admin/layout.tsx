@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { LayoutDashboard, Users, Award, Settings, LogOut, ShieldCheck, Menu, X, User, Sun, Moon } from 'lucide-react';
+import { Users, Award, Settings, LogOut, ShieldCheck, Menu, X, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -12,7 +12,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [userRole, setUserRole] = useState<string>('');
   const [userEmail, setUserEmail] = useState<string>('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [isMobile, setIsMobile] = useState(false);
 
   // Détection de la taille d'écran et écoute des changements
@@ -31,18 +30,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Initialisation du thème et authentification
+  // Initialisation forcée en thème sombre et authentification
   useEffect(() => {
-    // 1. Gestion du thème
-    const savedTheme = (localStorage.getItem('theme') as 'light' | 'dark') || 'dark';
-    setTheme(savedTheme);
-    if (savedTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    document.documentElement.classList.add('dark');
+    localStorage.setItem('theme', 'dark');
 
-    // 2. Vérification token
+    // Vérification token
     const token = localStorage.getItem('token');
     if (!token) {
       router.push('/login');
@@ -73,17 +66,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, [router]);
 
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  };
-
   const handleLogout = () => {
     localStorage.removeItem('token');
     router.push('/login');
@@ -96,6 +78,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     disabled?: boolean;
     badge?: string;
   }
+  
   const navItems: NavItem[] = [
     { name: 'Utilisateurs', href: '/admin', icon: Users },
     { name: 'Certifications', href: '/admin/certifications', icon: Award },
@@ -104,19 +87,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (!authorized) {
     return (
-      <div className="min-h-screen bg-white dark:bg-slate-950 flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 gap-4">
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-400 gap-4">
         <span className="w-10 h-10 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
-        <p className="text-sm font-semibold uppercase tracking-widest text-indigo-500 dark:text-indigo-400">Chargement sécurisé...</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-indigo-400">Chargement sécurisé...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex relative overflow-hidden font-sans transition-colors duration-300">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex relative overflow-hidden font-sans">
 
       {/* Halos lumineux d'ambiance d'arrière-plan */}
-      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/5 dark:bg-indigo-950/15 rounded-full blur-[140px] pointer-events-none z-0" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-purple-500/5 dark:bg-purple-950/15 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="absolute top-[-20%] left-[-10%] w-[55%] h-[55%] bg-indigo-550/5 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[55%] h-[55%] bg-purple-550/5 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff01_1px,transparent_1px),linear-gradient(to_bottom,#ffffff01_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none z-0" />
 
       {/* Sidebar mobile avec overlay de fond */}
       <AnimatePresence>
@@ -134,20 +118,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               animate={{ x: 0 }}
               exit={{ x: -280 }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 bottom-0 left-0 z-50 w-[260px] flex flex-col bg-slate-50/95 dark:bg-slate-900/95 backdrop-blur-md border-r border-slate-200 dark:border-slate-800/80 h-screen"
+              className="fixed top-0 bottom-0 left-0 z-50 w-[260px] flex flex-col bg-slate-900/90 backdrop-blur-xl border-r border-slate-900 h-screen"
             >
-              <div className="h-20 flex items-center justify-between px-6 border-b border-slate-200 dark:border-slate-800/80">
+              <div className="h-20 flex items-center justify-between px-6 border-b border-slate-900">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-500 dark:text-indigo-400">
-                    <ShieldCheck className="w-6 h-6" />
+                  <div className="w-9 h-9 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-400">
+                    <ShieldCheck className="w-5.5 h-5.5" />
                   </div>
-                  <span className="font-extrabold text-lg text-slate-800 dark:text-white tracking-tight">
+                  <span className="font-extrabold text-base text-white tracking-tight">
                     EthicalData
                   </span>
                 </div>
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-slate-500 dark:text-slate-400"
+                  className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -163,17 +147,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       key={index}
                       href={item.href}
                       onClick={() => setSidebarOpen(false)}
-                      className={`flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-semibold transition-all duration-200 group relative ${isActive
-                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/15'
+                      className={`flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-250 group relative ${isActive
+                        ? 'bg-white text-slate-950 shadow-lg'
                         : item.disabled
-                          ? 'text-slate-400 dark:text-slate-600 cursor-not-allowed opacity-60'
-                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50 cursor-pointer'
+                          ? 'text-slate-650 cursor-not-allowed opacity-40'
+                          : 'text-slate-400 hover:text-white hover:bg-slate-850 cursor-pointer'
                         }`}
                     >
-                      <Icon className={`w-5.5 h-5.5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400 dark:text-slate-400 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors'}`} />
+                      <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-slate-950' : 'text-slate-500 group-hover:text-indigo-400 transition-colors'}`} />
                       <span className="truncate flex-1">{item.name}</span>
                       {item.badge && (
-                        <span className="text-[10px] bg-slate-200 dark:bg-slate-800 text-indigo-600 dark:text-indigo-300 border border-indigo-500/20 px-2 py-0.5 rounded-full shrink-0 font-bold uppercase tracking-wider">
+                        <span className="text-[9px] bg-slate-800 text-indigo-400 border border-indigo-500/20 px-2 py-0.5 rounded-full shrink-0 font-extrabold uppercase tracking-wider">
                           {item.badge}
                         </span>
                       )}
@@ -182,22 +166,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 })}
               </nav>
 
-              <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-950/5 dark:bg-slate-950/20">
+              <div className="p-4 border-t border-slate-900 bg-slate-950/40">
                 <div className="flex items-center gap-3 p-2 rounded-xl mb-2 overflow-hidden">
-                  <div className="w-10 h-10 bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700/80 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-300 shrink-0">
-                    <User className="w-5.5 h-5.5" />
+                  <div className="w-9 h-9 bg-slate-800 border border-slate-700/80 rounded-xl flex items-center justify-center text-slate-300 shrink-0">
+                    <User className="w-5 h-5" />
                   </div>
                   <div className="truncate flex-1 min-w-0">
-                    <p className="text-sm font-bold text-slate-800 dark:text-white truncate leading-none mb-1">{userEmail}</p>
-                    <p className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold uppercase tracking-wider leading-none">{userRole}</p>
+                    <p className="text-xs font-bold text-white truncate leading-none mb-1">{userEmail}</p>
+                    <p className="text-[9px] text-indigo-400 font-extrabold uppercase tracking-wider leading-none">{userRole}</p>
                   </div>
                 </div>
 
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-semibold text-rose-500 dark:text-rose-400 hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-300 transition-all cursor-pointer group"
+                  className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-all cursor-pointer group"
                 >
-                  <LogOut className="w-5.5 h-5.5 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                  <LogOut className="w-5 h-5 shrink-0 group-hover:translate-x-0.5 transition-transform" />
                   <span>Déconnexion</span>
                 </button>
               </div>
@@ -211,18 +195,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <motion.aside
           animate={{ width: sidebarOpen ? 260 : 80 }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
-          className="hidden md:flex flex-col bg-slate-50/90 dark:bg-slate-900/80 backdrop-blur-md border-r border-slate-200 dark:border-slate-800/80 relative z-10 shrink-0 h-screen transition-colors duration-300"
+          className="hidden md:flex flex-col bg-slate-900/20 backdrop-blur-xl border-r border-slate-900 relative z-10 shrink-0 h-screen"
         >
-          <div className="h-20 flex items-center justify-between px-6 border-b border-slate-200 dark:border-slate-800/80">
+          <div className="h-20 flex items-center justify-between px-6 border-b border-slate-900">
             <div className="flex items-center gap-3 overflow-hidden">
-              <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-500 dark:text-indigo-400 shrink-0">
+              <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-400 shrink-0">
                 <ShieldCheck className="w-6 h-6" />
               </div>
               {sidebarOpen && (
                 <motion.span
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="font-extrabold text-lg text-slate-800 dark:text-white tracking-tight shrink-0"
+                  className="font-extrabold text-base text-white tracking-tight shrink-0"
                 >
                   EthicalData
                 </motion.span>
@@ -239,14 +223,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <a
                   key={index}
                   href={item.href}
-                  className={`flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-semibold transition-all duration-200 group relative ${isActive
-                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/15'
+                  className={`flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 group relative ${isActive
+                    ? 'bg-white text-slate-950 shadow-lg shadow-white/5'
                     : item.disabled
-                      ? 'text-slate-400 dark:text-slate-600 cursor-not-allowed opacity-60'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800/50 cursor-pointer'
+                      ? 'text-slate-650 cursor-not-allowed opacity-40'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-900/60 cursor-pointer'
                     }`}
                 >
-                  <Icon className={`w-5.5 h-5.5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400 dark:text-slate-400 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors'}`} />
+                  <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-slate-950' : 'text-slate-500 group-hover:text-indigo-400 transition-colors'}`} />
                   {sidebarOpen && (
                     <motion.span
                       initial={{ opacity: 0 }}
@@ -257,7 +241,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </motion.span>
                   )}
                   {sidebarOpen && item.badge && (
-                    <span className="text-[10px] bg-slate-200 dark:bg-slate-800 text-indigo-600 dark:text-indigo-300 border border-indigo-500/20 px-2 py-0.5 rounded-full shrink-0 font-bold uppercase tracking-wider">
+                    <span className="text-[9px] bg-slate-800 text-indigo-400 border border-indigo-500/20 px-2 py-0.5 rounded-full shrink-0 font-bold uppercase tracking-wider">
                       {item.badge}
                     </span>
                   )}
@@ -266,9 +250,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             })}
           </nav>
 
-          <div className="p-4 border-t border-slate-200 dark:border-slate-800/80 bg-slate-950/5 dark:bg-slate-950/20">
+          <div className="p-4 border-t border-slate-900 bg-slate-950/40">
             <div className="flex items-center gap-3 p-2 rounded-xl mb-2 overflow-hidden">
-              <div className="w-10 h-10 bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700/80 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-300 shrink-0">
+              <div className="w-10 h-10 bg-slate-900 border border-slate-850 rounded-xl flex items-center justify-center text-slate-400 shrink-0">
                 <User className="w-5.5 h-5.5" />
               </div>
               {sidebarOpen && (
@@ -277,15 +261,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   animate={{ opacity: 1 }}
                   className="truncate flex-1 min-w-0"
                 >
-                  <p className="text-sm font-bold text-slate-800 dark:text-white truncate leading-none mb-1">{userEmail}</p>
-                  <p className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold uppercase tracking-wider leading-none">{userRole}</p>
+                  <p className="text-xs font-bold text-white truncate leading-none mb-1">{userEmail}</p>
+                  <p className="text-[9px] text-indigo-400 font-extrabold uppercase tracking-wider leading-none">{userRole}</p>
                 </motion.div>
               )}
             </div>
 
             <button
               onClick={handleLogout}
-              className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-semibold text-rose-500 dark:text-rose-400 hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-300 transition-all cursor-pointer group`}
+              className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold text-rose-450 hover:bg-rose-500/10 hover:text-rose-400 transition-all cursor-pointer group`}
             >
               <LogOut className="w-5.5 h-5.5 shrink-0 group-hover:translate-x-0.5 transition-transform" />
               {sidebarOpen && <span>Déconnexion</span>}
@@ -297,36 +281,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Contenu de droite */}
       <div className="flex-1 flex flex-col min-h-screen overflow-y-auto relative z-10">
 
-        {/* Header avec switch de Thème */}
-        <header className="h-20 border-b border-slate-200 dark:border-slate-800/80 bg-slate-50/40 dark:bg-slate-900/40 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-20 transition-colors duration-300">
+        {/* Header (Fini les boutons de Thème, uniquement mode sombre) */}
+        <header className="h-20 border-b border-slate-900 bg-slate-950/40 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-20">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl cursor-pointer"
+            className="p-2 bg-slate-900 border border-slate-850 text-slate-400 hover:text-white rounded-xl cursor-pointer"
           >
             {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
 
           <div className="flex items-center gap-4">
-            {/* Bouton de bascule Mode Sombre / Mode Clair */}
-            <button
-              onClick={toggleTheme}
-              className="p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-xl cursor-pointer transition-colors"
-              title={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
-            >
-              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </button>
-
             <div className="flex flex-col text-right hidden sm:flex">
-              <span className="text-sm font-bold text-slate-800 dark:text-white">{userEmail}</span>
-              <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">{userRole}</span>
+              <span className="text-xs font-bold text-white">{userEmail}</span>
+              <span className="text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest">{userRole}</span>
             </div>
-            <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-full flex items-center justify-center text-indigo-500 dark:text-indigo-400 font-bold">
+            <div className="w-9 h-9 bg-indigo-500/10 border border-indigo-500/20 rounded-full flex items-center justify-center text-indigo-400 font-bold">
               {userEmail.charAt(0).toUpperCase()}
             </div>
           </div>
         </header>
 
-        <main className="flex-1 p-4 md:p-10">
+        <main className="flex-1 p-4 md:p-10 relative z-10">
           {children}
         </main>
       </div>

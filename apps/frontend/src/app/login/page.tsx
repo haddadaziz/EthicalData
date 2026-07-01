@@ -1,46 +1,33 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { Mail, Lock, ShieldCheck, Eye, EyeOff, Sun, Moon } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Mail, Lock, ShieldCheck, Eye, EyeOff, User } from 'lucide-react';
 import { apiFetch } from '../../lib/api';
 import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
     const router = useRouter();
+    const [mode, setMode] = useState<'login' | 'register'>('login');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [prenom, setPrenom] = useState('');
+    const [nom, setNom] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const mouseRef = useRef({ x: 0, y: 0, active: false });
 
-    // Initialisation du thème réactif
+    // Initialisation forcée du thème sombre global
     useEffect(() => {
-        const savedTheme = (localStorage.getItem('theme') as 'light' | 'dark') || 'dark';
-        setTheme(savedTheme);
-        if (savedTheme === 'dark') {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
     }, []);
 
-    const toggleTheme = () => {
-        const newTheme = theme === 'dark' ? 'light' : 'dark';
-        setTheme(newTheme);
-        localStorage.setItem('theme', newTheme);
-        if (newTheme === 'dark') {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    };
-
-    // Effet pour dessiner l'animation de particules style antigravité interactif
+    // Effet pour l'animation de fond de particules interactives style antigravité
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -67,20 +54,20 @@ export default function LoginPage() {
 
         const initParticles = () => {
             particles = [];
-            const particleCount = Math.min(Math.floor((canvas.width * canvas.height) / 12000), 120);
+            const particleCount = Math.min(Math.floor((canvas.width * canvas.height) / 15000), 75);
             for (let i = 0; i < particleCount; i++) {
-                const radius = Math.random() * 1.8 + 1.2; // Tailles légèrement augmentées (1.2px à 3.0px au lieu de 0.8px à 2.6px)
+                const radius = Math.random() * 1.3 + 0.8;
                 const x = Math.random() * canvas.width;
                 const y = Math.random() * canvas.height;
-                const targetVy = -(Math.random() * 0.4 + 0.1);
-                const targetVx = (Math.random() * 0.4 - 0.2);
+                const targetVy = -(Math.random() * 0.25 + 0.05);
+                const targetVx = (Math.random() * 0.2 - 0.1);
                 particles.push({
                     x,
                     y,
                     vx: targetVx,
                     vy: targetVy,
                     radius,
-                    alpha: Math.random() * 0.4 + 0.4, // Opacité plus lumineuse (de 0.4 à 0.8 au lieu de 0.2 à 0.7)
+                    alpha: Math.random() * 0.25 + 0.25,
                     targetVx,
                     targetVy
                 });
@@ -103,14 +90,13 @@ export default function LoginPage() {
         window.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseleave', handleMouseLeave);
 
-        const repelRadius = 140;
-        const maxConnectionDist = 110;
+        const repelRadius = 160;
+        const maxConnectionDist = 130;
 
         const render = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             const m = mouseRef.current;
-            const isDark = document.documentElement.classList.contains('dark');
 
             particles.forEach((p) => {
                 p.x += p.vx;
@@ -132,8 +118,8 @@ export default function LoginPage() {
                     if (dist < repelRadius) {
                         const force = (repelRadius - dist) / repelRadius;
                         const angle = Math.atan2(dy, dx);
-                        const pushX = Math.cos(angle) * force * 3.5;
-                        const pushY = Math.sin(angle) * force * 3.5;
+                        const pushX = Math.cos(angle) * force * 2.5;
+                        const pushY = Math.sin(angle) * force * 2.5;
                         p.vx += (pushX - p.vx) * 0.15;
                         p.vy += (pushY - p.vy) * 0.15;
                     } else {
@@ -145,9 +131,7 @@ export default function LoginPage() {
                     p.vy += (p.targetVy - p.vy) * 0.04;
                 }
 
-                ctx.fillStyle = isDark
-                    ? `rgba(165, 180, 252, ${p.alpha})`
-                    : `rgba(79, 70, 229, ${p.alpha * 0.7})`;
+                ctx.fillStyle = `rgba(165, 180, 252, ${p.alpha})`;
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
                 ctx.fill();
@@ -162,11 +146,9 @@ export default function LoginPage() {
                     const dist = Math.sqrt(dx * dx + dy * dy);
 
                     if (dist < maxConnectionDist) {
-                        const lineAlpha = (1 - dist / maxConnectionDist) * (isDark ? 0.12 : 0.08);
-                        ctx.strokeStyle = isDark
-                            ? `rgba(129, 140, 248, ${lineAlpha})`
-                            : `rgba(79, 70, 229, ${lineAlpha})`;
-                        ctx.lineWidth = 0.6;
+                        const lineAlpha = (1 - dist / maxConnectionDist) * 0.06;
+                        ctx.strokeStyle = `rgba(129, 140, 248, ${lineAlpha})`;
+                        ctx.lineWidth = 0.4;
                         ctx.beginPath();
                         ctx.moveTo(p1.x, p1.y);
                         ctx.lineTo(p2.x, p2.y);
@@ -192,137 +174,239 @@ export default function LoginPage() {
         e.preventDefault();
         setLoading(true);
         setError(null);
+        setSuccessMessage(null);
 
         try {
-            const data = await apiFetch('/auth/login', {
-                method: 'POST',
-                body: { email, motDePasse: password },
-            });
+            if (mode === 'login') {
+                const data = await apiFetch('/auth/login', {
+                    method: 'POST',
+                    body: { email, motDePasse: password },
+                });
 
-            localStorage.setItem('token', data.access_token);
-            router.push('/admin');
+                localStorage.setItem('token', data.access_token);
+
+                const payloadBase64 = data.access_token.split('.')[1];
+                const decodedPayload = JSON.parse(atob(payloadBase64));
+                const roles = decodedPayload.roles || [];
+
+                if (roles.includes('SUPER_ADMIN') || roles.includes('ADMIN')) {
+                    router.push('/admin');
+                } else {
+                    router.push('/dashboard');
+                }
+                // --------------------------------------------------------
+            } else {
+                // Inscription
+                await apiFetch('/users', {
+                    method: 'POST',
+                    body: {
+                        prenom,
+                        nom,
+                        email,
+                        motDePasse: password,
+                        roles: ['APPRENANT']
+                    },
+                });
+
+                setSuccessMessage('Inscription réussie ! Connexion automatique...');
+
+                const data = await apiFetch('/auth/login', {
+                    method: 'POST',
+                    body: { email, motDePasse: password },
+                });
+
+                localStorage.setItem('token', data.access_token);
+
+                // Rediriger l'apprenant fraîchement inscrit
+                setTimeout(() => {
+                    router.push('/dashboard');
+                }, 1000);
+            }
         } catch (err: any) {
-            setError(err.message || 'Une erreur est survenue lors de la connexion.');
+            setError(err.message || 'Une erreur est survenue.');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-white dark:bg-slate-950 flex items-center justify-center p-6 selection:bg-indigo-500 selection:text-white relative overflow-hidden transition-colors duration-300">
+        <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6 selection:bg-indigo-500 selection:text-white relative overflow-hidden">
 
-            {/* Bouton de bascule de thème flottant dans le coin supérieur droit */}
-            <div className="absolute top-6 right-6 z-20">
-                <button
-                    onClick={toggleTheme}
-                    className="p-3 bg-white/80 dark:bg-slate-900/60 backdrop-blur-md border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-2xl cursor-pointer transition-all shadow-sm"
-                    title={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
-                >
-                    {theme === 'dark' ? <Sun className="w-5.5 h-5.5" /> : <Moon className="w-5.5 h-5.5" />}
-                </button>
-            </div>
+            {/* Grille d'arrière-plan ultra-discrète */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff01_1px,transparent_1px),linear-gradient(to_bottom,#ffffff01_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none z-0" />
 
-            {/* Halos lumineux d'arrière-plan */}
-            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/5 dark:bg-indigo-900/20 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-500/5 dark:bg-purple-900/20 rounded-full blur-[120px] pointer-events-none" />
+            {/* Halos lumineux floutés */}
+            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/[0.04] rounded-full blur-[130px] pointer-events-none" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-500/[0.04] rounded-full blur-[130px] pointer-events-none" />
 
-            {/* Canvas pour l'animation de particules */}
+            {/* Canvas de fond */}
             <canvas
                 ref={canvasRef}
                 className="absolute inset-0 w-full h-full pointer-events-none z-0"
             />
 
-            {/* Carte de connexion agrandie et dépolie */}
+            {/* Boîte principale de connexion (Design Glassmorphic Premium Flottant) */}
             <motion.div
-                initial={{ opacity: 0, y: 25 }}
+                layout
+                initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: 'easeOut' }}
-                className="w-full max-w-[620px] bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200 dark:border-slate-800/80 rounded-[28px] sm:rounded-[36px] shadow-2xl p-8 sm:p-12 md:p-16 relative z-10 hover:border-indigo-500/20 dark:hover:border-indigo-500/30 hover:shadow-[0_0_50px_rgba(99,102,241,0.06)] dark:hover:shadow-[0_0_50px_rgba(99,102,241,0.1)] transition-all duration-500 group/card"
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+                className="w-full max-w-[420px] bg-slate-900/15 backdrop-blur-2xl border border-slate-800 rounded-[32px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] p-8 sm:p-10 relative z-10 hover:border-slate-700 hover:shadow-[0_25px_60px_-15px_rgba(99,102,241,0.05)] transition-all duration-500 group/card"
             >
-
-                {/* Logo & Titre */}
-                <div className="flex flex-col items-center mb-12">
-                    <motion.div
-                        initial={{ scale: 0.8 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: 0.2, type: 'spring', stiffness: 120 }}
-                        className="w-16 h-16 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-5 shadow-[0_0_20px_rgba(99,102,241,0.05)] dark:shadow-[0_0_20px_rgba(99,102,241,0.1)] group-hover/card:shadow-[0_0_25px_rgba(99,102,241,0.2)] transition-shadow duration-500"
+                {/* Logo & En-tête */}
+                <div className="flex flex-col items-center mb-8">
+                    <div className="w-11 h-11 bg-white/[0.03] border border-white/[0.08] rounded-2xl flex items-center justify-center text-white mb-4 shadow-[0_0_15px_rgba(255,255,255,0.02)] group-hover/card:border-indigo-500/30 group-hover/card:text-indigo-400 transition-all duration-500">
+                        <ShieldCheck className="w-5 h-5" />
+                    </div>
+                    <motion.h1
+                        layout="position"
+                        className="text-xl font-bold text-white tracking-tight"
                     >
-                        <ShieldCheck className="w-8 h-8" />
-                    </motion.div>
-                    <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight bg-clip-text bg-gradient-to-b from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">EthicalData</h1>
+                        {mode === 'login' ? 'Connexion' : 'Inscription'}
+                    </motion.h1>
+                    <p className="text-[11px] text-slate-500 mt-1.5 font-semibold uppercase tracking-wider">
+                        {mode === 'login' ? 'Préparation aux Certifications IT' : 'Créez votre accès étudiant'}
+                    </p>
                 </div>
 
                 {/* Formulaire */}
-                <form onSubmit={handleSubmit} className="space-y-8">
-                    {error && (
-                        <motion.div
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="p-4 bg-rose-500/10 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 rounded-2xl text-sm font-semibold shadow-inner"
-                        >
-                            {error}
-                        </motion.div>
-                    )}
+                <form onSubmit={handleSubmit} className="space-y-6">
+
+                    <AnimatePresence mode="wait">
+                        {error && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -5 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0 }}
+                                className="p-3.5 bg-rose-500/5 border border-rose-500/10 text-rose-400 rounded-xl text-xs font-semibold text-left"
+                            >
+                                {error}
+                            </motion.div>
+                        )}
+
+                        {successMessage && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -5 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0 }}
+                                className="p-3.5 bg-emerald-500/5 border border-emerald-500/10 text-emerald-400 rounded-xl text-xs font-semibold text-left"
+                            >
+                                {successMessage}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Inputs spécifiques inscription */}
+                    <AnimatePresence>
+                        {mode === 'register' && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.25 }}
+                                className="space-y-6 overflow-hidden"
+                            >
+                                {/* Prénom */}
+                                <div className="space-y-2 text-left group">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Prénom</label>
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            required
+                                            value={prenom}
+                                            onChange={(e) => setPrenom(e.target.value)}
+                                            placeholder="Ex: Jean"
+                                            className="w-full pl-5 pr-5 py-3.5 bg-white/[0.02] border border-slate-800 hover:border-slate-700 focus:border-indigo-500 focus:bg-white/[0.04] focus:ring-4 focus:ring-indigo-500/5 rounded-2xl text-white placeholder-slate-650 transition-all text-sm outline-none font-medium"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Nom */}
+                                <div className="space-y-2 text-left group">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Nom</label>
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            required
+                                            value={nom}
+                                            onChange={(e) => setNom(e.target.value)}
+                                            placeholder="Ex: Dupont"
+                                            className="w-full pl-5 pr-5 py-3.5 bg-white/[0.02] border border-slate-800 hover:border-slate-700 focus:border-indigo-500 focus:bg-white/[0.04] focus:ring-4 focus:ring-indigo-500/5 rounded-2xl text-white placeholder-slate-650 transition-all text-sm outline-none font-medium"
+                                        />
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     {/* E-mail */}
-                    <div className="space-y-3 group">
-                        <label className="text-sm font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider pl-2 group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400 transition-colors duration-200">Adresse e-mail</label>
+                    <div className="space-y-2 text-left group">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Adresse e-mail</label>
                         <div className="relative">
-                            <span className="absolute inset-y-0 left-0 flex items-center pl-6 text-slate-400 dark:text-slate-500 group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400 transition-colors duration-200">
-                                <Mail className="w-6 h-6" />
-                            </span>
                             <input
                                 type="email"
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                placeholder="admin@ethicaldata.local"
-                                className="w-full pl-16 pr-6 py-5 bg-slate-50/50 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:bg-white dark:focus:bg-slate-950/60 rounded-[20px] text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-600 transition-all text-lg shadow-inner focus:shadow-[0_0_20px_rgba(99,102,241,0.06)] dark:focus:shadow-[0_0_20px_rgba(99,102,241,0.12)] outline-none"
+                                placeholder="nom@exemple.com"
+                                className="w-full pl-5 pr-5 py-3.5 bg-white/[0.02] border border-slate-800 hover:border-slate-700 focus:border-indigo-500 focus:bg-white/[0.04] focus:ring-4 focus:ring-indigo-500/5 rounded-2xl text-white placeholder-slate-650 transition-all text-sm outline-none font-medium"
                             />
                         </div>
                     </div>
 
                     {/* Mot de passe */}
-                    <div className="space-y-3 group">
-                        <label className="text-sm font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider pl-2 group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400 transition-colors duration-200">Mot de passe</label>
+                    <div className="space-y-2 text-left group">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Mot de passe</label>
                         <div className="relative">
-                            <span className="absolute inset-y-0 left-0 flex items-center pl-6 text-slate-400 dark:text-slate-500 group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400 transition-colors duration-200">
-                                <Lock className="w-6 h-6" />
-                            </span>
                             <input
                                 type={showPassword ? "text" : "password"}
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
-                                className="w-full pl-16 pr-16 py-5 bg-slate-50/50 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:bg-white dark:focus:bg-slate-950/60 rounded-[20px] text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-600 transition-all text-lg shadow-inner focus:shadow-[0_0_20px_rgba(99,102,241,0.06)] dark:focus:shadow-[0_0_20px_rgba(99,102,241,0.12)] outline-none"
+                                className="w-full pl-5 pr-12 py-3.5 bg-white/[0.02] border border-slate-800 hover:border-slate-700 focus:border-indigo-500 focus:bg-white/[0.04] focus:ring-4 focus:ring-indigo-500/5 rounded-2xl text-white placeholder-slate-650 transition-all text-sm outline-none font-medium"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute inset-y-0 right-0 flex items-center pr-6 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer"
+                                className="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-500 hover:text-white transition-colors cursor-pointer"
                             >
-                                {showPassword ? <EyeOff className="w-6 h-6" /> : <Eye className="w-6 h-6" />}
+                                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                             </button>
                         </div>
                     </div>
 
-                    {/* Bouton de soumission animé */}
+                    {/* Bouton Soumettre */}
                     <motion.button
-                        whileHover={{ scale: 1.02, y: -2 }}
-                        whileTap={{ scale: 0.98 }}
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
                         type="submit"
                         disabled={loading}
-                        className="w-full py-5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-extrabold rounded-[20px] text-lg transition-all duration-300 shadow-lg shadow-indigo-500/20 hover:shadow-xl hover:shadow-indigo-500/30 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-950 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-8"
+                        className="w-full py-3.5 bg-white hover:bg-slate-100 text-slate-950 font-black rounded-2xl text-[11px] uppercase tracking-widest transition-all focus:outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-8 shadow-md"
                     >
                         {loading ? (
-                            <span className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            <span className="w-4 h-4 border-2 border-slate-950/30 border-t-slate-950 rounded-full animate-spin" />
                         ) : (
-                            'Se connecter'
+                            mode === 'login' ? 'Se connecter' : 'Valider'
                         )}
                     </motion.button>
                 </form>
+
+                {/* Séparateur & Bascule de mode */}
+                <div className="mt-8 pt-6 border-t border-white/[0.05] text-center">
+                    <button
+                        onClick={() => {
+                            setMode(mode === 'login' ? 'register' : 'login');
+                            setError(null);
+                            setSuccessMessage(null);
+                        }}
+                        className="text-xs text-slate-500 hover:text-white font-bold transition-colors cursor-pointer"
+                    >
+                        {mode === 'login'
+                            ? "Pas encore de compte ? Créer un compte"
+                            : "Déjà inscrit ? Se connecter"}
+                    </button>
+                </div>
             </motion.div>
         </div>
     );

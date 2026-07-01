@@ -4,10 +4,11 @@ import { CreateCertificationDto } from './dto/create-certification.dto';
 import { UpdateCertificationDto } from './dto/update-certification.dto';
 import { CreateFournisseurDto } from './dto/create-fournisseur.dto';
 import { UpdateFournisseurDto } from './dto/update-fournisseur.dto';
+import { CreateQuestionDto } from './dto/create-question.dto';
 
 @Injectable()
 export class CertificationsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   private slugify(text: string): string {
     return text
@@ -156,15 +157,15 @@ export class CertificationsService {
         ...c.fournisseur,
         id: c.fournisseur.id.toString()
       },
-      modules: c.modules.map(m => ({ 
-        ...m, 
-        id: m.id.toString(), 
-        certificationId: m.certificationId.toString() 
+      modules: c.modules.map(m => ({
+        ...m,
+        id: m.id.toString(),
+        certificationId: m.certificationId.toString()
       })),
-      ressources: c.ressources.map(r => ({ 
-        ...r, 
-        id: r.id.toString(), 
-        certificationId: r.certificationId?.toString() 
+      ressources: c.ressources.map(r => ({
+        ...r,
+        id: r.id.toString(),
+        certificationId: r.certificationId?.toString()
       }))
     }));
   }
@@ -192,15 +193,15 @@ export class CertificationsService {
         ...cert.fournisseur,
         id: cert.fournisseur.id.toString()
       },
-      modules: cert.modules.map(m => ({ 
-        ...m, 
-        id: m.id.toString(), 
-        certificationId: m.certificationId.toString() 
+      modules: cert.modules.map(m => ({
+        ...m,
+        id: m.id.toString(),
+        certificationId: m.certificationId.toString()
       })),
-      ressources: cert.ressources.map(r => ({ 
-        ...r, 
-        id: r.id.toString(), 
-        certificationId: r.certificationId?.toString() 
+      ressources: cert.ressources.map(r => ({
+        ...r,
+        id: r.id.toString(),
+        certificationId: r.certificationId?.toString()
       }))
     };
   }
@@ -311,5 +312,122 @@ export class CertificationsService {
     });
 
     return { message: 'Certification supprimée avec succès.' };
+  }
+  async findQuestions(certId: number) {
+    const questions = await this.prisma.question.findMany({
+      where: { certificationId: BigInt(certId) },
+      include: { options: true }
+    });
+
+    return questions.map(q => ({
+      ...q,
+      id: q.id.toString(),
+      certificationId: q.certificationId.toString(),
+      options: q.options.map(opt => ({
+        ...opt,
+        id: opt.id.toString(),
+        questionId: opt.questionId.toString()
+      }))
+    }));
+  }
+
+  async createQuestion(certId: number, dto: CreateQuestionDto) {
+    const cert = await this.prisma.certification.findFirst({
+      where: { id: BigInt(certId), deletedAt: null }
+    });
+
+    if (!cert) {
+      throw new NotFoundException("La certification demandée n'existe pas.");
+    }
+
+    const optionsData = dto.options && dto.options.length > 0 
+      ? {
+          create: dto.options.map((opt: any) => ({
+            lettre: opt.lettre,
+            texte: opt.texte
+          }))
+        }
+      : undefined;
+
+    const question = await this.prisma.question.create({
+      data: {
+        enonce: dto.enonce,
+        explication: dto.explication || null,
+        reponseCorrecte: dto.reponseCorrecte,
+        grilleNotation: dto.grilleNotation || null,
+        categorie: dto.categorie || null,
+        type: dto.type || "QCM",
+        certificationId: BigInt(certId),
+        options: optionsData
+      },
+      include: { options: true }
+    });
+    return {
+      ...question,
+      id: question.id.toString(),
+      certificationId: question.certificationId.toString(),
+      options: question.options.map(opt => ({
+        ...opt,
+        id: opt.id.toString(),
+        questionId: opt.questionId.toString()
+      }))
+    };
+  }
+
+  async createTentative(userId: number, certId: number, score: number) {
+    const cert = await this.prisma.certification.findFirst({
+      where: { id: BigInt(certId), deletedAt: null }
+    });
+
+    if (!cert) {
+      throw new NotFoundException("La certification demandée n'existe pas.");
+    }
+
+    const tentative = await this.prisma.tentative.create({
+      data: {
+        score,
+        utilisateurId: BigInt(userId),
+        certificationId: BigInt(certId)
+      }
+    });
+
+    return {
+      ...tentative,
+      id: tentative.id.toString(),
+      utilisateurId: tentative.utilisateurId.toString(),
+      certificationId: tentative.certificationId.toString()
+    };
+  }
+
+  async getUserStats(userId: number) {
+    const tentatives = await this.prisma.tentative.findMany({
+      where: { utilisateurId: BigInt(userId) },
+      include: { certification: true },
+      orderBy: { datePassage: 'desc' }
+    });
+
+    const total = tentatives.length;
+    const avgScore = total > 0
+      ? Math.round(tentatives.reduce((acc, curr) => acc + curr.score, 0) / total)
+      : 0;
+
+    return {
+      totalAttempts: total,
+      averageScore: avgScore,
+      history: tentatives.map(t => ({
+        id: t.id.toString(),
+        score: t.score,
+        datePassage: t.datePassage,
+        certificationName: t.certification.nom,
+        certificationSlug: t.certification.slug
+      }))
+    };
+  }
+
+  async removeQuestion(questionId: number) {
+    await this.prisma.question.delete({
+      where: { id: BigInt(questionId) }
+    });
+    return { message: 'Question supprimée avec succès.' };
   }
 }

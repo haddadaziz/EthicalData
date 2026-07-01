@@ -20,10 +20,10 @@ model Utilisateur {
   dateInscription DateTime        @default(now())
   deletedAt       DateTime?       @map("deleted_at")
   
-  // Relations
   roles           Role[]          @relation("UtilisateurRoles")
   telechargements Telechargement[]
-
+  tentatives      Tentative[]
+  
   @@map("utilisateurs")
 }
 
@@ -58,11 +58,14 @@ model Certification {
   image           String?
   dateCreation    DateTime    @default(now())
   deletedAt       DateTime?   @map("deleted_at")
-  // Relations
+
   fournisseurId   BigInt
   fournisseur     Fournisseur @relation(fields: [fournisseurId], references: [id], onDelete: Cascade)
   modules         Module[]
   ressources      Ressource[]
+  questions       Question[]
+  tentatives      Tentative[]
+
   @@map("certifications")
 }
 
@@ -113,6 +116,47 @@ model Telechargement {
   utilisateur  Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
 
   @@map("telechargements")
+}
+
+model Question {
+  id              BigInt        @id @default(autoincrement())
+  enonce          String        @db.Text
+  explication     String?       @db.Text
+  reponseCorrecte String        @db.Text
+  grilleNotation  String?       @db.Text
+  categorie       String?
+  type            String        @default("QCM")
+  dateCreation    DateTime      @default(now())
+
+  certificationId BigInt
+  certification   Certification @relation(fields: [certificationId], references: [id], onDelete: Cascade)
+  options         Option[]
+
+  @@map("questions")
+}
+
+model Option {
+  id              BigInt        @id @default(autoincrement())
+  lettre          String
+  texte           String        @db.Text
+
+  questionId      BigInt
+  question        Question      @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("options")
+}
+
+model Tentative {
+  id              BigInt        @id @default(autoincrement())
+  score           Int
+  datePassage     DateTime      @default(now())
+
+  utilisateurId   BigInt
+  utilisateur     Utilisateur   @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+  certificationId BigInt
+  certification   Certification @relation(fields: [certificationId], references: [id], onDelete: Cascade)
+
+  @@map("tentatives")
 }
 
 enum Statut {
