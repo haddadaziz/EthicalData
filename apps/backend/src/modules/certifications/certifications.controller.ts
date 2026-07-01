@@ -146,4 +146,14 @@ export class CertificationsController {
   async removeQuestion(@Param('questionId', ParseIntPipe) questionId: number) {
     return this.certificationsService.removeQuestion(questionId);
   }
+
+  // Évaluer une réponse ouverte avec l'IA
+  @UseGuards(JwtAuthGuard)
+  @Post('evaluer-ia')
+  async evaluateWithAi(
+    @Body('questionId', ParseIntPipe) questionId: number,
+    @Body('reponseCandidat') reponseCandidat: string,
+  ) {
+    return this.certificationsService.evaluateQuestionWithAi(questionId, reponseCandidat);
+  }
 }

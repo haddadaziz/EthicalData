@@ -9,10 +9,14 @@ import { UpdateCertificationDto } from './dto/update-certification.dto';
 import { CreateFournisseurDto } from './dto/create-fournisseur.dto';
 import { UpdateFournisseurDto } from './dto/update-fournisseur.dto';
 import { CreateQuestionDto } from './dto/create-question.dto';
+import { AiService } from './ai.service';
 
 @Injectable()
 export class CertificationsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private aiService: AiService,
+  ) {}
 
   private slugify(text: string): string {
     return text
@@ -442,5 +446,20 @@ export class CertificationsService {
       where: { id: BigInt(questionId) },
     });
     return { message: 'Question supprimée avec succès.' };
+  }
+
+  async evaluateQuestionWithAi(questionId: number, reponseCandidat: string) {
+    const question = await this.prisma.question.findUnique({
+      where: { id: BigInt(questionId) },
+    });
+    if (!question) {
+      throw new NotFoundException("La question demandée n'existe pas.");
+    }
+    return this.aiService.evaluerReponseOuverte(
+      question.enonce,
+      question.reponseCorrecte,
+      question.grilleNotation,
+      reponseCandidat,
+    );
   }
 }

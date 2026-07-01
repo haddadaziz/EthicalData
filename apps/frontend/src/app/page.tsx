@@ -44,6 +44,17 @@ export default function LandingPage() {
     setTimeout(() => setNewsletterSubmitted(false), 3000);
   };
 
+  const partnerLogos = [
+    { name: "Microsoft", path: "/logos/microsoft.png" },
+    { name: "PECB", path: "/logos/pecb.png" },
+    { name: "AWS", path: "/logos/aws.svg" },
+    { name: "Palo Alto", path: "/logos/paloalto.png" },
+    { name: "Fortinet", path: "/logos/fortinet.png" },
+    { name: "CompTIA", path: "/logos/comptia.png" },
+    { name: "Cisco", path: "/logos/cisco.svg" },
+    { name: "Pearson VUE", path: "/logos/pearsonvue.png" }
+  ];
+
   const clients = [
     { name: "AXA", logo: "/logos/axa.png" },
     { name: "Heuris", logo: "/logos/heuris.png" },
@@ -284,19 +295,33 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════ */}
       {/* BANDE DE PARTENAIRES CERTIFICATS (Bleu)    */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="relative z-10 w-full bg-blue-700 py-3 border-y border-blue-600 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 flex justify-around items-center gap-8 flex-wrap text-white text-[10px] sm:text-xs font-black uppercase tracking-widest">
-          <span>Microsoft</span>
-          <span>•</span>
-          <span>PECB</span>
-          <span>•</span>
-          <span>CompTIA</span>
-          <span>•</span>
-          <span>Palo Alto</span>
-          <span>•</span>
-          <span>Fortinet</span>
-          <span>•</span>
-          <span>AWS</span>
+      <section className="relative z-10 w-full bg-blue-700 py-3.5 border-y border-blue-600 overflow-hidden">
+        <div className="relative w-full overflow-hidden">
+          {/* Floutage des bords */}
+          <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-blue-700 to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-blue-700 to-transparent z-10 pointer-events-none" />
+          
+          <div className="flex gap-12 animate-marquee-reverse whitespace-nowrap items-center">
+            {[...partnerLogos, ...partnerLogos, ...partnerLogos, ...partnerLogos].map((partner, idx) => (
+              <div key={idx} className="inline-flex items-center justify-center bg-white/95 border border-white/20 rounded-xl px-4 py-1.5 shrink-0 shadow-sm">
+                <img 
+                  src={partner.path} 
+                  alt={partner.name} 
+                  className="h-5 sm:h-6 object-contain block max-w-[90px]"
+                  onError={(e) => {
+                    (e.target as HTMLElement).style.display = 'none';
+                    const parent = (e.target as HTMLElement).parentElement;
+                    if (parent && !parent.querySelector('.fallback-text')) {
+                      const textSpan = document.createElement('span');
+                      textSpan.className = "fallback-text text-[10px] font-black text-slate-800 uppercase tracking-widest";
+                      textSpan.innerText = partner.name;
+                      parent.appendChild(textSpan);
+                    }
+                  }}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

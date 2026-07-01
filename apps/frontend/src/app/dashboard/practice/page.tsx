@@ -24,6 +24,7 @@ export default function PracticePage() {
   const [timeLeft, setTimeLeft] = useState(600);
   const [isPaused, setIsPaused] = useState(false);
   const [score, setScore] = useState(0);
+  const [aiFeedbacks, setAiFeedbacks] = useState<{ [key: string]: { score: number; critique: string; suggestions: string } }>({});
 
   useEffect(() => {
     const fetchCerts = async () => {
@@ -52,16 +53,46 @@ export default function PracticePage() {
   };
 
   const handleFinishExam = async () => {
-    let correctCount = 0;
+    setLoadingQuestions(true);
+    const openQuestions = questions.filter(q => q.type === 'OUVERTE' || q.type === 'CAS_PRATIQUE');
+    const aiEvaluations: { [key: string]: { score: number; critique: string; suggestions: string } } = {};
+
+    if (openQuestions.length > 0) {
+      try {
+        const evalPromises = openQuestions.map(async (q) => {
+          const res = await apiFetch('/certifications/evaluer-ia', {
+            method: 'POST',
+            body: {
+              questionId: parseInt(q.id),
+              reponseCandidat: selectedAnswers[q.id] || ''
+            }
+          });
+          aiEvaluations[q.id] = res;
+        });
+        await Promise.all(evalPromises);
+        setAiFeedbacks(aiEvaluations);
+      } catch (err) {
+        console.error("Erreur d'évaluation IA:", err);
+      }
+    }
+
+    let totalPoints = 0;
     questions.forEach(q => {
-      if (selectedAnswers[q.id] === q.reponseCorrecte) {
-        correctCount++;
+      if (q.type === 'QCM' || q.type === 'VRAI_FAUX') {
+        if (selectedAnswers[q.id] === q.reponseCorrecte) {
+          totalPoints += 100;
+        }
+      } else {
+        // OUVERTE or CAS_PRATIQUE
+        const aiScore = aiEvaluations[q.id]?.score ?? 0;
+        totalPoints += aiScore;
       }
     });
 
-    const finalScore = Math.round((correctCount / questions.length) * 100);
+    const finalScore = questions.length > 0 ? Math.round(totalPoints / questions.length) : 0;
     setScore(finalScore);
     setExamFinished(true);
+    setLoadingQuestions(false);
 
     try {
       const currentCert = certs.find(c => c.slug === certSlug);
@@ -83,6 +114,7 @@ export default function PracticePage() {
     setCurrentIdx(0);
     setSelectedAnswers({});
     setFlaggedQuestions([]);
+    setAiFeedbacks({});
     setTimeLeft(questions.length * 120);
     setIsPaused(false);
   };
@@ -226,29 +258,41 @@ export default function PracticePage() {
             </div>
 
             <div className="space-y-3">
-              {(currentQuestion.options || []).map((opt: any) => {
-                const isSelected = selectedAnswers[currentQuestion.id] === opt.lettre;
-                return (
-                  <button
-                    key={opt.id}
-                    onClick={() => handleSelectAnswer(opt.lettre)}
-                    className={`w-full p-4 border text-left rounded-2xl transition-all cursor-pointer flex items-center gap-4 group ${
-                      isSelected 
-                        ? 'border-red-600 bg-red-600/5 text-slate-950' 
-                        : 'border-slate-200/80 hover:border-slate-200 bg-slate-50/20 text-slate-350 hover:text-slate-950'
-                    }`}
-                  >
-                    <span className={`w-7 h-7 rounded-lg border font-bold text-xs uppercase flex items-center justify-center shrink-0 transition-colors ${
-                      isSelected 
-                        ? 'border-red-600 bg-red-50 text-red-600' 
-                        : 'border-slate-200 bg-slate-50 text-slate-500 group-hover:border-slate-700'
-                    }`}>
-                      {opt.lettre}
-                    </span>
-                    <span className="text-sm font-semibold">{opt.texte}</span>
-                  </button>
-                );
-              })}
+              {currentQuestion.type === 'OUVERTE' || currentQuestion.type === 'CAS_PRATIQUE' ? (
+                <div className="space-y-2 text-left">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Saisissez votre réponse rédigée :</label>
+                  <textarea
+                    value={selectedAnswers[currentQuestion.id] || ''}
+                    onChange={(e) => handleSelectAnswer(e.target.value)}
+                    placeholder="Tapez votre réponse détaillée ici. L'évaluation prendra en compte votre rigueur, vos arguments et le vocabulaire technique..."
+                    className="w-full h-44 p-4 border border-slate-200 focus:border-red-600 focus:bg-white rounded-2xl text-slate-800 transition-all text-sm outline-none font-semibold resize-none shadow-sm"
+                  />
+                </div>
+              ) : (
+                (currentQuestion.options || []).map((opt: any) => {
+                  const isSelected = selectedAnswers[currentQuestion.id] === opt.lettre;
+                  return (
+                    <button
+                      key={opt.id}
+                      onClick={() => handleSelectAnswer(opt.lettre)}
+                      className={`w-full p-4 border text-left rounded-2xl transition-all cursor-pointer flex items-center gap-4 group ${
+                        isSelected 
+                          ? 'border-red-600 bg-red-600/5 text-slate-950' 
+                          : 'border-slate-200/80 hover:border-slate-200 bg-slate-50/20 text-slate-400 hover:text-slate-950'
+                      }`}
+                    >
+                      <span className={`w-7 h-7 rounded-lg border font-bold text-xs uppercase flex items-center justify-center shrink-0 transition-colors ${
+                        isSelected 
+                          ? 'border-red-600 bg-red-50 text-red-600' 
+                          : 'border-slate-200 bg-slate-50 text-slate-500 group-hover:border-slate-700'
+                      }`}>
+                        {opt.lettre}
+                      </span>
+                      <span className="text-sm font-semibold">{opt.texte}</span>
+                    </button>
+                  );
+                })
+              )}
             </div>
           </div>
 
@@ -392,7 +436,9 @@ export default function PracticePage() {
           <div className="space-y-6">
             {questions.map((q, idx) => {
               const userAnswer = selectedAnswers[q.id];
-              const isCorrect = userAnswer === q.reponseCorrecte;
+              const isOpen = q.type === 'OUVERTE' || q.type === 'CAS_PRATIQUE';
+              const aiFeedback = aiFeedbacks[q.id];
+              const isCorrect = isOpen ? (aiFeedback?.score >= 80) : (userAnswer === q.reponseCorrecte);
 
               return (
                 <div 
@@ -405,54 +451,103 @@ export default function PracticePage() {
                 >
                   <div className="flex justify-between items-center">
                     <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{q.categorie || "Général"}</span>
-                    <span className={`text-[9px] px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider flex items-center gap-1.5 ${
-                      isCorrect 
-                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
-                        : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
-                    }`}>
-                      {isCorrect ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
-                      {isCorrect ? 'Correct' : 'Incorrect'}
-                    </span>
+                    {isOpen ? (
+                      <span className={`text-[9px] px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider flex items-center gap-1.5 ${
+                        isCorrect
+                          ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                          : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
+                      }`}>
+                        {isCorrect ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                        {aiFeedback ? `Score IA : ${aiFeedback.score}/100` : "IA non évaluée"}
+                      </span>
+                    ) : (
+                      <span className={`text-[9px] px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider flex items-center gap-1.5 ${
+                        isCorrect 
+                          ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
+                          : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
+                      }`}>
+                        {isCorrect ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                        {isCorrect ? 'Correct' : 'Incorrect'}
+                      </span>
+                    )}
                   </div>
 
                   <p className="text-base font-bold text-slate-950 leading-relaxed">
                     <span className="text-slate-500">{idx + 1}.</span> {q.enonce}
                   </p>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                    {(q.options || []).map((opt: any) => {
-                      const wasSelected = userAnswer === opt.lettre;
-                      const isOptionCorrect = q.reponseCorrecte === opt.lettre;
+                  {isOpen ? (
+                    <div className="space-y-4 pt-2">
+                      {/* Candidate response */}
+                      <div className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-1.5 text-xs">
+                        <p className="font-bold text-slate-500 uppercase tracking-wider text-[9px]">Votre Réponse Rédigée :</p>
+                        <p className="text-slate-800 font-semibold whitespace-pre-line">{userAnswer || "Aucune réponse n'a été fournie pour cette question."}</p>
+                      </div>
 
-                      let style = "border-slate-200/80 bg-slate-50/20 text-slate-600";
-                      if (wasSelected && !isOptionCorrect) {
-                        style = "border-rose-500/30 bg-rose-500/5 text-rose-350";
-                      } else if (isOptionCorrect) {
-                        style = "border-emerald-500/30 bg-emerald-500/5 text-emerald-355";
-                      }
-
-                      return (
-                        <div key={opt.id} className={`p-4 border rounded-2xl flex items-center gap-3 ${style}`}>
-                          <span className={`w-7 h-7 rounded-lg border font-bold text-xs flex items-center justify-center shrink-0 ${
-                            isOptionCorrect 
-                              ? 'border-emerald-400 bg-emerald-500/10 text-emerald-400' 
-                              : wasSelected 
-                                ? 'border-rose-400 bg-rose-500/10 text-rose-500' 
-                                : 'border-slate-200 bg-slate-50 text-slate-500'
-                          }`}>
-                            {opt.lettre}
-                          </span>
-                          <span className="text-xs font-semibold leading-snug">{opt.texte}</span>
+                      {/* AI evaluation details */}
+                      {aiFeedback && (
+                        <div className="p-5 bg-red-50/20 border border-red-150 rounded-2xl space-y-3.5 text-xs text-left">
+                          <div className="flex items-center justify-between border-b border-red-100 pb-2">
+                            <span className="text-[9px] font-black text-red-600 uppercase tracking-widest">Analyse Éducative IA (Gemini)</span>
+                            <span className="text-[10px] font-black text-red-650 bg-red-50 border border-red-100 px-2.5 py-0.5 rounded-full">{aiFeedback.score}/100</span>
+                          </div>
+                          <div className="space-y-2">
+                            <p className="text-slate-700 leading-relaxed">
+                              <strong className="text-slate-950 block font-bold uppercase text-[9px] tracking-wider mb-0.5">Critique détaillée :</strong>
+                              {aiFeedback.critique}
+                            </p>
+                            <p className="text-slate-700 leading-relaxed">
+                              <strong className="text-slate-955 block font-bold uppercase text-[9px] tracking-wider mb-0.5">Suggestions d'amélioration :</strong>
+                              {aiFeedback.suggestions}
+                            </p>
+                          </div>
                         </div>
-                      );
-                    })}
-                  </div>
+                      )}
 
-                  {q.explication && (
-                    <div className="mt-4 p-4 bg-white shadow-sm border border-slate-200/80 rounded-2xl space-y-1.5 text-xs leading-relaxed">
-                      <p className="font-bold text-red-600 uppercase tracking-wider text-[9px]">Explication :</p>
-                      <p className="text-slate-350 font-medium">{q.explication}</p>
+                      {/* Official model answer */}
+                      <div className="p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl space-y-1.5 text-xs leading-relaxed">
+                        <p className="font-bold text-emerald-600 uppercase tracking-wider text-[9px]">Corrigé Type Officiel :</p>
+                        <p className="text-slate-800 font-semibold">{q.reponseCorrecte}</p>
+                      </div>
                     </div>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                        {(q.options || []).map((opt: any) => {
+                          const wasSelected = userAnswer === opt.lettre;
+                          const isOptionCorrect = q.reponseCorrecte === opt.lettre;
+
+                          let style = "border-slate-200/80 bg-slate-50/20 text-slate-600";
+                          if (wasSelected && !isOptionCorrect) {
+                            style = "border-rose-500/30 bg-rose-500/5 text-rose-350";
+                          } else if (isOptionCorrect) {
+                            style = "border-emerald-500/30 bg-emerald-500/5 text-emerald-355";
+                          }
+
+                          return (
+                            <div key={opt.id} className={`p-4 border rounded-2xl flex items-center gap-3 ${style}`}>
+                              <span className={`w-7 h-7 rounded-lg border font-bold text-xs flex items-center justify-center shrink-0 ${
+                                isOptionCorrect 
+                                  ? 'border-emerald-400 bg-emerald-500/10 text-emerald-400' 
+                                  : wasSelected 
+                                    ? 'border-rose-400 bg-rose-500/10 text-rose-500' 
+                                    : 'border-slate-200 bg-slate-50 text-slate-500'
+                              }`}>
+                                {opt.lettre}
+                              </span>
+                              <span className="text-xs font-semibold leading-snug">{opt.texte}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {q.explication && (
+                        <div className="mt-4 p-4 bg-white shadow-sm border border-slate-200/80 rounded-2xl space-y-1.5 text-xs leading-relaxed">
+                          <p className="font-bold text-red-600 uppercase tracking-wider text-[9px]">Explication :</p>
+                          <p className="text-slate-350 font-medium">{q.explication}</p>
+                        </div>
+                      )}
+                    </>
                   )}
 
                 </div>
