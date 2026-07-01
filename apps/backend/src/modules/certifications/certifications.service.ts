@@ -448,6 +448,55 @@ export class CertificationsService {
     return { message: 'Question supprimée avec succès.' };
   }
 
+  async updateQuestion(questionId: number, dto: CreateQuestionDto) {
+    const existing = await this.prisma.question.findUnique({
+      where: { id: BigInt(questionId) },
+    });
+    if (!existing) {
+      throw new NotFoundException("La question demandée n'existe pas.");
+    }
+
+    // Delete existing options associated with this question
+    await this.prisma.option.deleteMany({
+      where: { questionId: BigInt(questionId) },
+    });
+
+    const optionsData =
+      dto.options && dto.options.length > 0
+        ? {
+            create: dto.options.map((opt: any) => ({
+              lettre: opt.lettre,
+              texte: opt.texte,
+            })),
+          }
+        : undefined;
+
+    const updated = await this.prisma.question.update({
+      where: { id: BigInt(questionId) },
+      data: {
+        enonce: dto.enonce,
+        explication: dto.explication || null,
+        reponseCorrecte: dto.reponseCorrecte,
+        grilleNotation: dto.grilleNotation || null,
+        categorie: dto.categorie || null,
+        type: dto.type || 'QCM',
+        options: optionsData,
+      },
+      include: { options: true },
+    });
+
+    return {
+      ...updated,
+      id: updated.id.toString(),
+      certificationId: updated.certificationId.toString(),
+      options: updated.options.map((opt) => ({
+        ...opt,
+        id: opt.id.toString(),
+        questionId: opt.questionId.toString(),
+      })),
+    };
+  }
+
   async evaluateQuestionWithAi(questionId: number, reponseCandidat: string) {
     const question = await this.prisma.question.findUnique({
       where: { id: BigInt(questionId) },

@@ -147,6 +147,17 @@ export class CertificationsController {
     return this.certificationsService.removeQuestion(questionId);
   }
 
+  // Modifier une question (réservé aux admins)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPER_ADMIN', 'ADMIN')
+  @Patch('questions/:questionId')
+  async updateQuestion(
+    @Param('questionId', ParseIntPipe) questionId: number,
+    @Body() dto: CreateQuestionDto,
+  ) {
+    return this.certificationsService.updateQuestion(questionId, dto);
+  }
+
   // Évaluer une réponse ouverte avec l'IA
   @UseGuards(JwtAuthGuard)
   @Post('evaluer-ia')

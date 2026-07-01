@@ -84,6 +84,7 @@ export default function CertificationsAdmin() {
     const [optD, setOptD] = useState('');
     const [questionError, setQuestionError] = useState<string | null>(null);
     const [questionLoading, setQuestionLoading] = useState(false);
+    const [editingQuestion, setEditingQuestion] = useState<any | null>(null);
 
     const handleOpenQuestionsModal = async (cert: Certification) => {
         setSelectedCertForQuestions(cert);
@@ -116,6 +117,29 @@ export default function CertificationsAdmin() {
         }
     };
 
+    const handleEditQuestion = (q: any) => {
+        setEditingQuestion(q);
+        setQuestionType(q.type || 'QCM');
+        setQuestionEnonce(q.enonce);
+        setQuestionExplication(q.explication || '');
+        setQuestionReponseCorrecte(q.reponseCorrecte);
+        setQuestionGrilleNotation(q.grilleNotation || '');
+        setQuestionCategorie(q.categorie || '');
+        
+        if (q.type === 'QCM' && q.options) {
+            setOptA(q.options.find((o: any) => o.lettre === 'A')?.texte || '');
+            setOptB(q.options.find((o: any) => o.lettre === 'B')?.texte || '');
+            setOptC(q.options.find((o: any) => o.lettre === 'C')?.texte || '');
+            setOptD(q.options.find((o: any) => o.lettre === 'D')?.texte || '');
+        } else {
+            setOptA('');
+            setOptB('');
+            setOptC('');
+            setOptD('');
+        }
+        setIsQuestionFormOpen(true);
+    };
+
     const handleSaveQuestion = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedCertForQuestions) return;
@@ -129,8 +153,8 @@ export default function CertificationsAdmin() {
 
         const payload: any = {
             enonce: questionEnonce.trim(),
-            explication: questionExplication.trim() || undefined,
-            categorie: questionCategorie.trim() || undefined,
+            explication: questionExplication.trim() || null,
+            categorie: questionCategorie.trim() || null,
             type: questionType
         };
 
@@ -167,13 +191,21 @@ export default function CertificationsAdmin() {
             }
             payload.reponseCorrecte = questionReponseCorrecte.trim();
             payload.grilleNotation = questionGrilleNotation.trim();
+            payload.options = [];
         }
 
         try {
-            await apiFetch(`/certifications/${selectedCertForQuestions.id}/questions`, {
-                method: 'POST',
-                body: payload
-            });
+            if (editingQuestion) {
+                await apiFetch(`/certifications/questions/${editingQuestion.id}`, {
+                    method: 'PATCH',
+                    body: payload
+                });
+            } else {
+                await apiFetch(`/certifications/${selectedCertForQuestions.id}/questions`, {
+                    method: 'POST',
+                    body: payload
+                });
+            }
 
             const data = await apiFetch(`/certifications/${selectedCertForQuestions.id}/questions`);
             setQuestionsList(data);
@@ -188,6 +220,7 @@ export default function CertificationsAdmin() {
     };
 
     const resetQuestionForm = () => {
+        setEditingQuestion(null);
         setQuestionType('QCM');
         setQuestionEnonce('');
         setQuestionExplication('');
@@ -719,6 +752,35 @@ export default function CertificationsAdmin() {
                                                 <td className="py-4 px-6 text-slate-500 font-bold">
                                                     {cert.modules?.length || 0} module{cert.modules?.length > 1 ? 's' : ''}
                                                 </td>
+
+                                                <td className="py-4 px-6 text-right">
+                                                     <div className="flex items-center justify-end gap-1.5">
+                                                         <button
+                                                             onClick={() => handleOpenQuestionsModal(cert)}
+                                                             className="flex items-center gap-1 px-3 py-2 bg-red-50 hover:bg-red-100 border border-red-100 text-red-600 hover:text-red-700 rounded-xl transition-all cursor-pointer text-[10px] font-extrabold uppercase tracking-wider"
+                                                             title="Questions"
+                                                         >
+                                                             <HelpCircle className="w-3.5 h-3.5" />
+                                                             <span>Questions</span>
+                                                         </button>
+                                                         
+                                                         <button
+                                                             onClick={() => handleOpenEditModal(cert)}
+                                                             className="p-2 bg-slate-50 border border-slate-200/80 hover:border-slate-200 text-slate-600 hover:text-slate-950 rounded-xl transition-colors cursor-pointer"
+                                                             title="Modifier la certification"
+                                                         >
+                                                             <Edit className="w-4 h-4" />
+                                                         </button>
+                                                         
+                                                         <button
+                                                             onClick={() => handleDeleteCert(cert.id, cert.nom)}
+                                                             className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-xl transition-colors cursor-pointer"
+                                                             title="Supprimer la certification"
+                                                         >
+                                                             <Trash2 className="w-4 h-4" />
+                                                         </button>
+                                                     </div>
+                                                 </td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -1471,7 +1533,7 @@ export default function CertificationsAdmin() {
                                             onSubmit={handleSaveQuestion}
                                             className="bg-white border border-slate-200/80 rounded-3xl p-6 space-y-4 overflow-hidden text-left animate-fadeIn"
                                         >
-                                            <h3 className="font-extrabold text-sm text-slate-950 uppercase tracking-wider">Nouvelle Question</h3>
+                                            <h3 className="font-extrabold text-sm text-slate-950 uppercase tracking-wider">{editingQuestion ? "Modifier la Question" : "Nouvelle Question"}</h3>
 
                                             {questionError && (
                                                 <div className="p-3 bg-rose-500/5 border border-rose-500/25 text-rose-400 text-xs font-bold rounded-xl">
@@ -1655,7 +1717,7 @@ export default function CertificationsAdmin() {
                                                     disabled={questionLoading}
                                                     className="px-4 py-2 bg-white text-slate-950 text-xs font-black uppercase tracking-widest rounded-xl shadow-md cursor-pointer"
                                                 >
-                                                    Enregistrer la question
+                                                    {editingQuestion ? "Enregistrer les modifications" : "Enregistrer la question"}
                                                 </button>
                                             </div>
                                         </motion.form>
@@ -1708,13 +1770,22 @@ export default function CertificationsAdmin() {
                                                         )}
                                                     </div>
 
-                                                    <button
-                                                        onClick={() => handleDeleteQuestion(q.id)}
-                                                        className="p-1.5 hover:bg-rose-500/10 text-slate-500 hover:text-rose-400 rounded-lg transition-colors cursor-pointer"
-                                                        title="Supprimer la question"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
+                                                    <div className="flex items-center gap-1">
+                                                        <button
+                                                            onClick={() => handleEditQuestion(q)}
+                                                            className="p-1.5 hover:bg-slate-100 text-slate-500 hover:text-slate-950 rounded-lg transition-colors cursor-pointer"
+                                                            title="Modifier la question"
+                                                        >
+                                                            <Edit className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDeleteQuestion(q.id)}
+                                                            className="p-1.5 hover:bg-rose-500/10 text-slate-500 hover:text-rose-400 rounded-lg transition-colors cursor-pointer"
+                                                            title="Supprimer la question"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
                                                 </div>
 
                                                 <p className="text-sm font-bold text-slate-950 leading-relaxed">{q.enonce}</p>

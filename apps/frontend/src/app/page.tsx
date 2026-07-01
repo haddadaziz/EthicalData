@@ -293,28 +293,31 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════════════════════════════════════ */}
-      {/* BANDE DE PARTENAIRES CERTIFICATS (Bleu)    */}
+      {/* BANDE DES LOGOS CLIENTS                    */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="relative z-10 w-full bg-blue-700 py-3.5 border-y border-blue-600 overflow-hidden">
+      <section className="relative z-10 w-full border-y border-slate-200/60 py-5 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 mb-3 text-left">
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Ils nous font confiance :</span>
+        </div>
         <div className="relative w-full overflow-hidden">
           {/* Floutage des bords */}
-          <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-blue-700 to-transparent z-10 pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-blue-700 to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-slate-50 to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none" />
           
           <div className="flex gap-12 animate-marquee-reverse whitespace-nowrap items-center">
-            {[...partnerLogos, ...partnerLogos, ...partnerLogos, ...partnerLogos].map((partner, idx) => (
-              <div key={idx} className="inline-flex items-center justify-center bg-white/95 border border-white/20 rounded-xl px-4 py-1.5 shrink-0 shadow-sm">
+            {[...clients, ...clients, ...clients, ...clients].map((client, idx) => (
+              <div key={idx} className="inline-flex items-center justify-center bg-white border border-slate-100 rounded-xl px-4 py-1.5 shrink-0 shadow-sm">
                 <img 
-                  src={partner.path} 
-                  alt={partner.name} 
+                  src={client.logo} 
+                  alt={client.name} 
                   className="h-5 sm:h-6 object-contain block max-w-[90px]"
                   onError={(e) => {
                     (e.target as HTMLElement).style.display = 'none';
                     const parent = (e.target as HTMLElement).parentElement;
                     if (parent && !parent.querySelector('.fallback-text')) {
                       const textSpan = document.createElement('span');
-                      textSpan.className = "fallback-text text-[10px] font-black text-slate-800 uppercase tracking-widest";
-                      textSpan.innerText = partner.name;
+                      textSpan.className = "fallback-text text-[10px] font-black text-slate-400 uppercase tracking-widest";
+                      textSpan.innerText = client.name;
                       parent.appendChild(textSpan);
                     }
                   }}
@@ -615,33 +618,30 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════════════════════════════════════ */}
-      {/* SECTION CAROUSEL LOGOS CLIENTS            */}
+      {/* SECTION CAROUSEL LOGOS FOURNISSEURS (Bleu) */}
       {/* ═══════════════════════════════════════════ */}
       <section className="relative z-10 w-full border-t border-slate-200/60 py-16 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 mb-10 text-left">
-          <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">Nos Clients</h3>
+          <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">Nos Partenaires Certifications</h3>
         </div>
         <div className="relative w-full overflow-hidden">
           <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-slate-50 to-transparent z-10 pointer-events-none" />
           <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none" />
           
-          <div className="flex gap-16 animate-marquee whitespace-nowrap items-center">
-            {[...clients, ...clients, ...clients, ...clients].map((client, cIdx) => (
-              <div
-                key={cIdx}
-                className="inline-flex items-center justify-center w-36 h-12 bg-white border border-slate-100 rounded-xl px-4 py-2 shrink-0 shadow-sm"
-              >
-                <img
-                  src={client.logo}
-                  alt={client.name}
-                  className="max-h-8 max-w-[110px] object-contain block"
+          <div className="flex gap-12 animate-marquee whitespace-nowrap items-center">
+            {[...partnerLogos, ...partnerLogos, ...partnerLogos, ...partnerLogos].map((partner, idx) => (
+              <div key={idx} className="inline-flex items-center justify-center bg-white border border-slate-100 rounded-xl px-4 py-1.5 shrink-0 shadow-sm">
+                <img 
+                  src={partner.path} 
+                  alt={partner.name} 
+                  className="h-5 sm:h-6 object-contain block max-w-[90px]"
                   onError={(e) => {
                     (e.target as HTMLElement).style.display = 'none';
                     const parent = (e.target as HTMLElement).parentElement;
                     if (parent && !parent.querySelector('.fallback-text')) {
                       const textSpan = document.createElement('span');
-                      textSpan.className = "fallback-text text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase";
-                      textSpan.innerText = client.name;
+                      textSpan.className = "fallback-text text-[10px] font-black text-slate-400 uppercase tracking-widest";
+                      textSpan.innerText = partner.name;
                       parent.appendChild(textSpan);
                     }
                   }}

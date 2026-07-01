@@ -88,7 +88,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!authorized) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-slate-500 gap-4">
-        <span className="w-10 h-10 border-4 border-red-600/10 border-t-red-650 rounded-full animate-spin" />
+        <span className="w-10 h-10 border-4 border-red-600/10 border-t-red-600 rounded-full animate-spin" />
         <p className="text-xs font-bold uppercase tracking-widest text-red-600">Chargement sécurisé...</p>
       </div>
     );
@@ -240,7 +240,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </motion.span>
                   )}
                   {sidebarOpen && item.badge && (
-                    <span className="text-[9px] bg-red-50 text-red-655 border border-red-100 px-2 py-0.5 rounded-full shrink-0 font-bold uppercase tracking-wider">
+                    <span className="text-[9px] bg-red-50 text-red-600 border border-red-100 px-2 py-0.5 rounded-full shrink-0 font-bold uppercase tracking-wider">
                       {item.badge}
                     </span>
                   )}
@@ -268,7 +268,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
             <button
               onClick={handleLogout}
-              className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold text-red-655 hover:bg-red-50 hover:text-red-700 transition-all cursor-pointer group`}
+              className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 hover:text-red-700 transition-all cursor-pointer group`}
             >
               <LogOut className="w-5.5 h-5.5 shrink-0 group-hover:translate-x-0.5 transition-transform" />
               {sidebarOpen && <span>Déconnexion</span>}
