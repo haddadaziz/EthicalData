@@ -1,24 +1,31 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import { ShieldCheck, ArrowRight, Layers, Sparkles, Award, Clock, ArrowUpRight, BookOpen, Check, X as XIcon, HelpCircle, Download, FileText, ChevronRight, CheckCircle2, ChevronDown, Send } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useState, useRef } from 'react';
+import { ShieldCheck, ArrowRight, Sparkles, Award, Clock, ArrowUpRight, BookOpen, Check, X as XIcon, HelpCircle, Download, FileText, ChevronRight, CheckCircle2, ChevronDown, Send, Menu, X, Play, Star, Calendar, ChevronLeft } from 'lucide-react';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
+import Link from 'next/link';
+
+function AnimatedSection({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-60px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 25 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay, ease: "easeOut" }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 export default function LandingPage() {
   const [isConnected, setIsConnected] = useState(false);
-  
-  // États pour le mini-quiz interactif (Démo Simulateur déplacé)
-  const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const correctOptionIndex = 2; // Option C (IaaS)
-
-  // États pour la Bento Grid (Section Piliers)
-  const [activeStep, setActiveStep] = useState<number | null>(null);
-  const [downloadProgress, setDownloadProgress] = useState<{[key: number]: number}>({});
-
-  // État pour la FAQ interactive
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
-
-  // État pour la newsletter
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const [newsletterSubmitted, setNewsletterSubmitted] = useState(false);
 
@@ -27,34 +34,7 @@ export default function LandingPage() {
     setIsConnected(!!token);
   }, []);
 
-  const handleOptionClick = (index: number) => {
-    if (selectedOption !== null) return;
-    setSelectedOption(index);
-  };
-
-  const handleResetQuiz = () => {
-    setSelectedOption(null);
-  };
-
-  // Simule le téléchargement d'une ressource
-  const startDownload = (idx: number) => {
-    if (downloadProgress[idx] !== undefined) return;
-    
-    let progress = 0;
-    setDownloadProgress((prev) => ({ ...prev, [idx]: 0 }));
-    
-    const interval = setInterval(() => {
-      progress += 10;
-      setDownloadProgress((prev) => ({ ...prev, [idx]: progress }));
-      if (progress >= 100) {
-        clearInterval(interval);
-      }
-    }, 60);
-  };
-
-  const toggleFaq = (idx: number) => {
-    setActiveFaq(activeFaq === idx ? null : idx);
-  };
+  const toggleFaq = (idx: number) => setActiveFaq(activeFaq === idx ? null : idx);
 
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,6 +43,15 @@ export default function LandingPage() {
     setNewsletterEmail("");
     setTimeout(() => setNewsletterSubmitted(false), 3000);
   };
+
+  const clients = [
+    { name: "AXA", logo: "/logos/axa.png" },
+    { name: "Heuris", logo: "/logos/heuris.png" },
+    { name: "CTM", logo: "/logos/ctm.png" },
+    { name: "TCS", logo: "/logos/tcs.png" },
+    { name: "Zen Networks", logo: "/logos/zennetworks.png" },
+    { name: "Adaptive IT", logo: "/logos/adaptiveit.png" }
+  ];
 
   const faqData = [
     {
@@ -80,205 +69,553 @@ export default function LandingPage() {
     {
       q: "Puis-je réinitialiser mes tentatives pour recommencer ma préparation ?",
       a: "Oui, vous pouvez réinitialiser vos statistiques et votre progression de simulation à tout moment depuis votre tableau de bord. Cela vous permet de repartir sur un nouveau cycle d'apprentissage à blanc si nécessaire."
+    }
+  ];
+
+  const courses = [
+    {
+      title: "Microsoft Azure Fundamentals",
+      code: "AZ-900",
+      provider: "Microsoft",
+      successRate: "98%",
+      badge: "Offre",
+      badgeClass: "bg-red-600 text-white",
+      logo: "/logos/microsoft.png"
     },
     {
-      q: "Proposez-vous un accompagnement en cas de difficultés sur un concept ?",
-      a: "Oui, en plus des analyses automatiques assistées par IA pour comprendre vos erreurs, EthicalData intègre un système de prise de rendez-vous de coaching pour lever vos doutes avec des formateurs experts certifiés."
+      title: "PECB ISO 27001 Lead Implementer",
+      code: "ISO-27001",
+      provider: "PECB",
+      successRate: "95%",
+      badge: "Hot",
+      badgeClass: "bg-amber-500 text-slate-900",
+      logo: "/logos/pecb.png"
+    },
+    {
+      title: "AWS Certified Cloud Practitioner",
+      code: "CLF-C02",
+      provider: "AWS",
+      successRate: "97%",
+      badge: "Nouveau",
+      badgeClass: "bg-blue-600 text-white",
+      logo: "/logos/aws.svg"
+    },
+    {
+      title: "Palo Alto Networks Certified Network Security",
+      code: "PCNSA",
+      provider: "Palo Alto Networks",
+      successRate: "96%",
+      badge: "Plus Vendu",
+      badgeClass: "bg-emerald-600 text-white",
+      logo: "/logos/paloalto.png"
     }
   ];
 
-  // Liste des partenaires certificateurs
-  const partners = [
-    { name: "Microsoft", logo: "/logos/microsoft.png" },
-    { name: "PearsonVue", logo: "/logos/pearsonvue.png" },
-    { name: "PECB", logo: "/logos/pecb.png" },
-    { name: "Palo Alto", logo: "/logos/paloalto.png" },
-    { name: "Fortinet", logo: "/logos/fortinet.png" },
-    { name: "CompTIA", logo: "/logos/comptia.png" }
-  ];
-  const infinitePartners = [...partners, ...partners, ...partners, ...partners];
-
-  // Liste des clients entreprises (B2B)
-  const clients = [
-    { name: "AXA", logo: "/logos/axa.png" },
-    { name: "Heuris", logo: "/logos/heuris.png" },
-    { name: "CTM", logo: "/logos/ctm.png" },
-    { name: "TCS", logo: "/logos/tcs.png" },
-    { name: "Zen Networks", logo: "/logos/zennetworks.png" },
-    { name: "Adaptive IT", logo: "/logos/adaptiveit.png" }
-  ];
-  const infiniteClients = [...clients, ...clients, ...clients, ...clients];
-
-  // Animation pour le conteneur des étapes (Stagger)
-  const timelineContainerVariants = {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: 0.25
-      }
+  const testimonials = [
+    {
+      name: "Yassine M.",
+      role: "Ingénieur Cloud & SecOps",
+      text: "Grâce aux simulations d'Ethical Data, j'ai obtenu ma certification AZ-900 avec un score de 940/1000 dès ma première tentative. Le simulateur est incroyablement fidèle à l'examen officiel !",
+      stars: 5
+    },
+    {
+      name: "Sanaa K.",
+      role: "Responsable Conformité GRC",
+      text: "La préparation PECB ISO 27001 est très bien structurée. Les fiches mémos synthétisent parfaitement les concepts complexes et la grille d'évaluation IA m'a énormément aidée.",
+      stars: 5
+    },
+    {
+      name: "Karim T.",
+      role: "Administrateur Réseaux & Sécurité",
+      text: "Le Technopark de Casablanca accueille un centre d'excellence. La formation Palo Alto PCNSA est de haute qualité avec des cas pratiques réalistes. Recommandé à 100%.",
+      stars: 5
     }
-  };
+  ];
 
-  // Animation pour chaque étape individuelle
-  const timelineItemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.6, ease: "easeOut" }
-    }
-  };
+  const services = [
+    { title: "Formations", desc: "Formations certifiantes en Cybersécurité, Gouvernance des SI (ISO 27001) et Cloud Computing." },
+    { title: "Préparations aux examens", desc: "Simulateurs d'entraînement complets pour valider vos compétences avant l'examen réel." },
+    { title: "Diagnostics IA", desc: "Analyse automatisée de vos tentatives pour mettre en évidence vos lacunes spécifiques." },
+    { title: "Fiches Mémo", desc: "Supports de cours synthétiques et fiches de révision téléchargeables à tout moment." },
+    { title: "Simulateur interactif", desc: "Entraînement chronométré avec correction détaillée et explications pédagogiques." },
+    { title: "Coaching & Mentorat", desc: "Sessions d'échange avec des instructeurs certifiés et ingénieurs expérimentés." },
+    { title: "Mises à jour continues", desc: "Contenu mis à jour sous 48h en cas de modification des programmes officiels." }
+  ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 relative overflow-hidden font-sans selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-slate-50 text-slate-900 relative overflow-hidden font-sans selection:bg-red-600 selection:text-white">
       
-      {/* 1. GRILLE FINE D'ARRIÈRE-PLAN */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none z-0" />
-      
-      {/* Halos d'ambiance */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none z-0" />
+      {/* Grille fine d'arrière-plan claire */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000003_1px,transparent_1px),linear-gradient(to_bottom,#00000003_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,#dc262605_0%,transparent_70%)] pointer-events-none z-0" />
 
-      {/* 2. BARRE DE NAVIGATION */}
-      <header className="sticky top-0 z-40 w-full border-b border-slate-900 bg-slate-950/60 backdrop-blur-md transition-colors duration-300">
+      {/* ═══════════════════════════════════════════ */}
+      {/* HEADER & NAV                               */}
+      {/* ═══════════════════════════════════════════ */}
+      <header className="sticky top-0 z-50 w-full border-b border-slate-200/60 bg-white/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-400">
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-red-600/10 border border-red-600/20 flex items-center justify-center text-red-600">
               <ShieldCheck className="w-5 h-5" />
             </div>
-            <span className="font-extrabold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-slate-300">
-              EthicalData
+            <span className="font-extrabold text-base tracking-tight text-slate-950 uppercase">
+              Ethical Data Security
             </span>
-          </div>
+          </Link>
 
-          <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-400">
-            <a href="#formations" className="hover:text-white transition-colors">Formations</a>
-            <a href="#features" className="hover:text-white transition-colors">Piliers</a>
-            <a href="#process" className="hover:text-white transition-colors">Méthode</a>
-            <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
+          <nav className="hidden md:flex items-center gap-8 text-xs font-black uppercase tracking-widest text-slate-650">
+            <a href="#about" className="hover:text-slate-950 transition-colors">Qui Sommes-Nous</a>
+            <a href="#formations" className="hover:text-slate-950 transition-colors">Formations</a>
+            <a href="#services" className="hover:text-slate-950 transition-colors">Nos Services</a>
+            <a href="#testimonials" className="hover:text-slate-950 transition-colors">Avis</a>
+            <a href="#faq" className="hover:text-slate-950 transition-colors">FAQ</a>
           </nav>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {isConnected ? (
               <a
-                href="/admin"
-                className="flex items-center gap-1.5 px-4.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-500/10 transition-all cursor-pointer"
+                href="/dashboard"
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-md cursor-pointer"
               >
-                <span>Tableau de bord</span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
+                Mon Espace
               </a>
             ) : (
               <>
-                <a href="/login" className="text-xs font-bold text-slate-400 hover:text-white transition-colors">
+                <a href="/login" className="text-xs font-black uppercase tracking-wider text-slate-600 hover:text-slate-950 transition-colors">
                   Connexion
                 </a>
-                <a
-                  href="/login"
-                  className="px-4.5 py-2 bg-white hover:bg-slate-100 text-slate-950 text-xs font-black rounded-xl transition-all shadow-sm cursor-pointer"
+                <Link
+                  href="/register"
+                  className="px-4 py-2 bg-slate-950 hover:bg-slate-900 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm cursor-pointer"
                 >
-                  S'inscrire
-                </a>
+                  S&apos;inscrire
+                </Link>
               </>
             )}
+
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 text-slate-600 hover:text-slate-950 cursor-pointer"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
         </div>
+
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="md:hidden border-t border-slate-200 bg-white/95 backdrop-blur-xl overflow-hidden"
+            >
+              <nav className="flex flex-col p-4 gap-1 text-xs font-black uppercase tracking-widest">
+                <a href="#about" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Qui Sommes-Nous</a>
+                <a href="#formations" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Formations</a>
+                <a href="#services" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Nos Services</a>
+                <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Avis</a>
+                <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">FAQ</a>
+              </nav>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
-      {/* 3. SECTION HERO (Titre + Descriptif + CTA) */}
-      <main className="relative z-10 max-w-7xl mx-auto px-6 pt-16 pb-12 md:pt-24 md:pb-16 flex flex-col items-center text-center">
+      {/* ═══════════════════════════════════════════ */}
+      {/* HERO SECTION                               */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="relative z-10 max-w-7xl mx-auto px-6 pt-16 pb-12 flex flex-col items-center text-center">
         
-        {/* Badge d'introduction */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-slate-900 border border-slate-800 rounded-full text-xs font-bold text-slate-400 mb-8"
+        {/* Logo géant avec halo rouge en fond */}
+        <motion.div 
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          className="relative w-32 h-32 md:w-36 md:h-36 flex items-center justify-center mb-8"
         >
-          <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-          <span>La préparation moderne aux certifications de sécurité</span>
+          {/* Halo rouge circulaire */}
+          <div className="absolute inset-0 bg-red-600/10 rounded-full blur-[45px] animate-pulse pointer-events-none" />
+          
+          {/* Symbole géométrique triangulaire (EDS) */}
+          <svg className="w-24 h-24 text-red-600 relative z-10 filter drop-shadow-[0_4px_15px_rgba(220,38,38,0.2)]" viewBox="0 0 100 100" fill="currentColor">
+            <polygon points="50,15 15,85 85,85" className="fill-none stroke-red-600 stroke-[6]" />
+            <polygon points="50,30 28,75 72,75" className="fill-none stroke-slate-900 stroke-[4]" />
+            <polygon points="50,45 40,65 60,65" className="fill-red-600" />
+          </svg>
         </motion.div>
 
-        {/* Titre Principal */}
+        {/* Titres de la maquette */}
         <motion.h1
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white max-w-4xl leading-[1.1] md:leading-[1.05]"
+          className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-950 max-w-4xl uppercase leading-none"
         >
-          Validez vos compétences. Accélérez votre{' '}
-          <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 via-white to-slate-400 animate-shimmer bg-[size:200%_auto]">
-            Crédibilité
-          </span>
+          Ethical Data Security – L&apos;essentiel en un clic !
         </motion.h1>
 
-        {/* Paragraphe descriptif */}
         <motion.p
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-base sm:text-lg text-slate-400 max-w-2xl mt-8 leading-relaxed"
+          className="text-xs sm:text-sm md:text-base text-slate-600 max-w-3xl mt-6 uppercase tracking-widest font-black leading-relaxed"
         >
-          Une plateforme d'apprentissage intelligente combinant diagnostics précis, plans de révision assistés par IA, et simulations conformes aux examens officiels Microsoft et Cloud.
+          SUPPORT DE COURS ET ENTRAÎNEMENT PRATIQUE POUR VOS CERTIFICATIONS EN CYBERSÉCURITÉ ET EN CLOUD
         </motion.p>
 
-        {/* CTAs d'action */}
+        {/* Boutons CTA */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center gap-4 mt-10"
+          className="flex flex-col sm:flex-row items-center gap-4 mt-8"
         >
           <a
             href="/login"
-            className="w-full sm:w-auto px-6 py-4 bg-slate-900 border border-slate-800 hover:border-indigo-500/40 text-white font-extrabold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group relative overflow-hidden cursor-pointer"
+            className="w-full sm:w-auto px-8 py-3.5 bg-red-600 hover:bg-red-750 text-white font-extrabold rounded-xl transition-all duration-300 flex items-center justify-center gap-2.5 cursor-pointer shadow-lg shadow-red-600/15 text-sm uppercase tracking-wider animate-fadeIn"
           >
-            <span>Démarrer ma préparation</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </a>
-
-          <a
-            href="#formations"
-            className="w-full sm:w-auto px-6 py-4 bg-transparent text-slate-400 hover:text-white font-extrabold rounded-xl transition-colors flex items-center justify-center gap-1.5 group cursor-pointer"
-          >
-            <span>Découvrir le catalogue</span>
-            <ArrowUpRight className="w-4.5 h-4.5 group-hover:translate-y-[-1px] group-hover:translate-x-[1px] transition-transform" />
+            <span>Lancer mon diagnostic gratuit</span>
+            <ArrowRight className="w-4 h-4" />
           </a>
         </motion.div>
+      </section>
 
-      </main>
+      {/* ═══════════════════════════════════════════ */}
+      {/* BANDE DE PARTENAIRES CERTIFICATS (Bleu)    */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="relative z-10 w-full bg-blue-700 py-3 border-y border-blue-600 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 flex justify-around items-center gap-8 flex-wrap text-white text-[10px] sm:text-xs font-black uppercase tracking-widest">
+          <span>Microsoft</span>
+          <span>•</span>
+          <span>PECB</span>
+          <span>•</span>
+          <span>CompTIA</span>
+          <span>•</span>
+          <span>Palo Alto</span>
+          <span>•</span>
+          <span>Fortinet</span>
+          <span>•</span>
+          <span>AWS</span>
+        </div>
+      </section>
 
-      {/* 4. SECTION CLIENTS ENTREPRISES (B2B Trust Band - Placé sous le Hero) */}
-      <section className="relative z-10 w-full max-w-7xl mx-auto px-6 py-12 border-t border-slate-900/40">
-        <p className="text-center text-[10px] font-black tracking-[0.25em] text-slate-500 uppercase mb-8">
-          Ils nous font confiance pour leur cybersécurité & la formation de leurs équipes
-        </p>
-        <div className="relative w-full overflow-hidden">
-          <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-slate-950 to-transparent z-10 pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-slate-950 to-transparent z-10 pointer-events-none" />
+      {/* ═══════════════════════════════════════════ */}
+      {/* INTRO DU CENTRE & STATS (EDS)              */}
+      {/* ═══════════════════════════════════════════ */}
+      <section id="about" className="relative z-10 max-w-7xl mx-auto px-6 py-20 md:py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
-          <motion.div 
-            className="flex gap-24 whitespace-nowrap items-center"
-            animate={{ x: [0, -900] }}
-            transition={{
-              ease: "linear",
-              duration: 25,
-              repeat: Infinity
-            }}
+          <AnimatedSection className="lg:col-span-6 space-y-6 text-left">
+            <div className="flex items-center gap-3">
+              <span className="w-8 h-px bg-red-600" />
+              <span className="text-[10px] font-black text-red-600 uppercase tracking-widest">Présentation</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-950 uppercase leading-tight">
+              Ethical Data Security
+            </h2>
+            <p className="text-slate-650 text-sm leading-relaxed font-semibold">
+              La plateforme de préparation intelligente pour valider vos compétences Cloud et Cybersécurité en toute confiance. Apprenez, entraînez-vous et mesurez votre préparation aux examens officiels.
+            </p>
+            
+            {/* Stats en ligne horizontal */}
+            <div className="grid grid-cols-4 gap-4 pt-4 border-t border-slate-200">
+              {[
+                { value: "20+", label: "Certifications" },
+                { value: "85%+", label: "Réussite" },
+                { value: "4500+", label: "Quiz" },
+                { value: "300+", label: "Apprenants" }
+              ].map((stat, i) => (
+                <div key={i} className="text-center sm:text-left">
+                  <p className="text-xl sm:text-2xl font-black text-red-600">{stat.value}</p>
+                  <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+          </AnimatedSection>
+
+          {/* Slider Technopark Casablanca */}
+          <AnimatedSection className="lg:col-span-6 relative" delay={0.2}>
+            <div className="w-full h-80 rounded-3xl overflow-hidden border border-slate-200/80 relative group shadow-xl shadow-slate-200/40">
+              {/* Image générée du Casablanca Technopark */}
+              <img 
+                src="/technopark.png" 
+                alt="Casablanca Technopark" 
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+              />
+              
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent z-10" />
+
+              {/* Carte superposée floutée */}
+              <div className="absolute bottom-4 left-4 right-4 z-20 bg-white/90 backdrop-blur-md border border-slate-100 rounded-2xl p-4 flex gap-4 items-center text-left shadow-lg">
+                <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center shrink-0">
+                  <img src="/cyber_hand.png" alt="Cybersécurité" className="w-10 h-10 object-contain rounded-lg" />
+                </div>
+                <div className="space-y-0.5">
+                  <p className="text-[9px] font-black text-red-600 uppercase tracking-widest">Qui sommes-nous ?</p>
+                  <p className="text-xs font-semibold text-slate-700 leading-relaxed">
+                    Ethical Data Security est un centre de formation de référence en cybersécurité et cloud computing, situé au cœur du Technopark de Casablanca.
+                  </p>
+                </div>
+              </div>
+
+              {/* Flèches de navigation (esthétique) */}
+              <button className="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-red-600/90 border border-red-500/25 flex items-center justify-center text-white cursor-pointer hover:bg-red-750 transition-colors z-20">
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-red-600/90 border border-red-500/25 flex items-center justify-center text-white cursor-pointer hover:bg-red-750 transition-colors z-20">
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </AnimatedSection>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* SECTION FORMATIONS (Catalog)               */}
+      {/* ═══════════════════════════════════════════ */}
+      <section id="formations" className="relative z-10 max-w-7xl mx-auto px-6 py-20 border-t border-slate-200/60">
+        
+        <AnimatedSection className="text-center max-w-2xl mx-auto mb-16">
+          <span className="text-xs font-bold text-red-600 uppercase tracking-widest">Offres phares</span>
+          <h2 className="text-3xl font-black text-slate-950 mt-3 uppercase tracking-tight">Formations</h2>
+          <p className="text-sm text-slate-600 mt-4 leading-relaxed font-semibold">
+            Sélectionnez votre parcours, entraînez-vous sur nos simulateurs et décrochez votre certification internationale.
+          </p>
+        </AnimatedSection>
+
+        {/* Grille de 4 cartes blanches */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {courses.map((course, idx) => (
+            <AnimatedSection key={idx} delay={idx * 0.12}>
+              <div className="bg-white border border-slate-100 hover:border-slate-200 hover:shadow-xl rounded-3xl p-6 flex flex-col justify-between min-h-[380px] transition-all duration-300 group text-left relative overflow-hidden shadow-md">
+                
+                {/* Badge d'état (Offre, Hot, Nouveau) */}
+                <div className="absolute top-4 left-4 z-10">
+                  <span className={`text-[8px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${course.badgeClass}`}>
+                    {course.badge}
+                  </span>
+                </div>
+
+                <div className="space-y-4 pt-6">
+                  {/* Logo de la certification */}
+                  <div className="w-10 h-10 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center p-1.5 shrink-0">
+                    <img 
+                      src={course.logo} 
+                      alt={course.provider} 
+                      className="max-w-full max-h-full object-contain"
+                      onError={(e) => {
+                        (e.target as HTMLElement).style.display = 'none';
+                        const parent = (e.target as HTMLElement).parentElement;
+                        if (parent && !parent.querySelector('.fallback-icon')) {
+                          const iconSpan = document.createElement('span');
+                          iconSpan.className = "fallback-icon text-[9px] font-bold text-slate-500 uppercase";
+                          iconSpan.innerText = course.provider.substring(0, 3);
+                          parent.appendChild(iconSpan);
+                        }
+                      }}
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <span className="text-[9px] font-bold text-red-600 uppercase tracking-widest">{course.code}</span>
+                    <h3 className="font-extrabold text-slate-900 group-hover:text-red-600 transition-colors leading-snug">
+                      {course.title}
+                    </h3>
+                  </div>
+                </div>
+
+                <div className="space-y-4 mt-6">
+                  <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold border-t border-slate-100 pt-3">
+                    <span>Certificat : {course.provider}</span>
+                    <span className="text-emerald-600 font-extrabold">{course.successRate} Réussite</span>
+                  </div>
+
+                  <button 
+                    onClick={() => window.location.href = '/login'}
+                    className="w-full flex items-center justify-between p-3 bg-slate-50 border border-slate-100 hover:border-red-600/30 text-[10px] font-black uppercase tracking-wider text-slate-600 hover:text-red-600 rounded-xl transition-all cursor-pointer group/btn"
+                  >
+                    <span>S&apos;entraîner</span>
+                    <Play className="w-3.5 h-3.5 fill-red-600 text-red-600 group-hover/btn:scale-110 transition-transform" />
+                  </button>
+                </div>
+              </div>
+            </AnimatedSection>
+          ))}
+        </div>
+
+        <AnimatedSection className="flex justify-center mt-12">
+          <button 
+            onClick={() => window.location.href = '/login'}
+            className="px-6 py-2.5 bg-red-600 hover:bg-red-750 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-md transition-all cursor-pointer"
           >
-            {infiniteClients.map((client, cIdx) => (
-              <div 
-                key={cIdx} 
-                className="inline-flex items-center justify-center w-44 h-16 bg-white/95 hover:bg-white border border-white/20 rounded-2xl px-5 py-3 transition-all duration-300 shrink-0 shadow-lg shadow-black/10"
+            Voir Tous
+          </button>
+        </AnimatedSection>
+      </section>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* SECTION NOS SERVICES                       */}
+      {/* ═══════════════════════════════════════════ */}
+      <section id="services" className="relative z-10 w-full border-t border-slate-200/60">
+        <div className="grid grid-cols-1 lg:grid-cols-2 items-stretch">
+          
+          {/* Côté Gauche : Professionnel invitant sur dégradé bleu/cyan */}
+          <div className="bg-gradient-to-br from-cyan-600 via-blue-600 to-indigo-700 min-h-[400px] lg:min-h-full flex items-end justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#ffffff10_0%,transparent_70%)] pointer-events-none" />
+            <img 
+              src="/welcoming_professional.png" 
+              alt="Bienvenue chez Ethical Data" 
+              className="max-h-[85%] lg:max-h-[92%] object-contain relative z-10 select-none pointer-events-none" 
+            />
+          </div>
+
+          {/* Côté Droit : Liste des services sur fond blanc */}
+          <div className="bg-white p-8 sm:p-12 md:p-16 text-left flex flex-col justify-center space-y-8">
+            <div className="space-y-2">
+              <span className="text-[10px] font-black text-red-600 uppercase tracking-widest">Nos prestations</span>
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-950 uppercase tracking-tight">Nos Services</h2>
+            </div>
+
+            <div className="space-y-4 max-w-lg">
+              {services.map((srv, i) => (
+                <div key={i} className="flex gap-4 items-start border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                  <div className="w-5 h-5 rounded-full bg-red-50 border border-red-100 flex items-center justify-center text-red-600 shrink-0 mt-0.5">
+                    <Check className="w-3 h-3" />
+                  </div>
+                  <div className="space-y-0.5">
+                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">{srv.title}</h4>
+                    <p className="text-xs text-slate-500 font-semibold leading-relaxed">{srv.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* SECTION TÉMOIGNAGES (Avis Google)          */}
+      {/* ═══════════════════════════════════════════ */}
+      <section id="testimonials" className="relative z-10 max-w-7xl mx-auto px-6 py-20 border-t border-slate-200/60">
+        
+        {/* En-tête Témoignages */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 text-left">
+          <div className="space-y-2">
+            <span className="text-xs font-bold text-red-600 uppercase tracking-widest">Satisfaction</span>
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-955 uppercase tracking-tight">Ce que disent nos clients</h2>
+          </div>
+
+          {/* Bloc de notation Google blanc */}
+          <div className="bg-white border border-slate-100 p-4 rounded-2xl flex items-center gap-4 shrink-0 shadow-sm">
+            <div className="space-y-0.5">
+              <p className="text-xs font-black text-slate-900 uppercase tracking-wider">Excellent</p>
+              <div className="flex gap-0.5">
+                {[...Array(5)].map((_, i) => <Star key={i} className="w-3.5 h-3.5 fill-red-600 text-red-600" />)}
+              </div>
+              <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">478 avis sur Google</p>
+            </div>
+            <div className="border-l border-slate-100 pl-4 py-1">
+              <span className="text-xl font-black text-slate-950 tracking-tight">Google</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Grille d'avis blanche */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {testimonials.map((test, idx) => (
+            <AnimatedSection key={idx} delay={idx * 0.12}>
+              <div className="bg-white border border-slate-100 rounded-3xl p-6 text-left space-y-4 shadow-md hover:shadow-lg transition-shadow">
+                <div className="flex gap-0.5">
+                  {[...Array(test.stars)].map((_, i) => <Star key={i} className="w-3 h-3 fill-red-600 text-red-600" />)}
+                </div>
+                <p className="text-xs font-semibold text-slate-650 leading-relaxed italic">
+                  &quot;{test.text}&quot;
+                </p>
+                <div className="border-t border-slate-100 pt-3">
+                  <p className="text-xs font-black text-slate-900 uppercase tracking-wider">{test.name}</p>
+                  <p className="text-[9px] text-slate-500 font-bold uppercase mt-0.5">{test.role}</p>
+                </div>
+              </div>
+            </AnimatedSection>
+          ))}
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* SECTION ACTUALITÉS / EVENEMENTS (News)      */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="relative z-10 max-w-7xl mx-auto px-6 py-20 border-t border-slate-200/60">
+        
+        <div className="text-center max-w-2xl mx-auto mb-16">
+          <span className="text-xs font-bold text-red-600 uppercase tracking-widest">Événements</span>
+          <h2 className="text-3xl font-black text-slate-950 mt-3 uppercase tracking-tight">News / Events</h2>
+        </div>
+
+        {/* Bloc Événement blanc */}
+        <AnimatedSection className="max-w-4xl mx-auto">
+          <div className="bg-white border border-slate-100 hover:border-slate-200 hover:shadow-xl rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row gap-6 sm:gap-8 items-center text-left relative overflow-hidden shadow-lg transition-all">
+            
+            {/* Badge de date rouge */}
+            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-red-600 text-white flex flex-col items-center justify-center shrink-0 shadow-lg shadow-red-600/10">
+              <span className="text-3xl sm:text-4xl font-black leading-none">12</span>
+              <span className="text-[10px] font-black uppercase tracking-widest mt-1.5">Mai</span>
+            </div>
+
+            <div className="flex-1 space-y-4">
+              <div className="space-y-1">
+                <span className="text-[9px] font-bold text-red-600 uppercase tracking-widest flex items-center gap-1">
+                  <Calendar className="w-3.5 h-3.5" />
+                  Atelier en présentiel
+                </span>
+                <h3 className="font-extrabold text-slate-900 text-base sm:text-lg leading-snug">
+                  Atelier pratique : Évaluation de vulnérabilité & diagnostics Cloud
+                </h3>
+              </div>
+              <p className="text-xs text-slate-500 leading-relaxed font-semibold">
+                Rejoignez nos experts au Technopark de Casablanca pour une session pratique d&apos;analyse de conformité sécurité, d&apos;audit de subnets cloud et de simulation d&apos;attaques guidée par IA. Places limitées.
+              </p>
+              
+              <div className="pt-2">
+                <button 
+                  onClick={() => window.location.href = '/register'}
+                  className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all cursor-pointer shadow-md"
+                >
+                  S&apos;inscrire
+                </button>
+              </div>
+            </div>
+          </div>
+        </AnimatedSection>
+      </section>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* SECTION CAROUSEL LOGOS CLIENTS            */}
+      {/* ═══════════════════════════════════════════ */}
+      <section className="relative z-10 w-full border-t border-slate-200/60 py-16 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 mb-10 text-left">
+          <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">Nos Clients</h3>
+        </div>
+        <div className="relative w-full overflow-hidden">
+          <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-slate-50 to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none" />
+          
+          <div className="flex gap-16 animate-marquee whitespace-nowrap items-center">
+            {[...clients, ...clients, ...clients, ...clients].map((client, cIdx) => (
+              <div
+                key={cIdx}
+                className="inline-flex items-center justify-center w-36 h-12 bg-white border border-slate-100 rounded-xl px-4 py-2 shrink-0 shadow-sm"
               >
-                <img 
-                  src={client.logo} 
-                  alt={client.name} 
-                  className="max-h-11 max-w-[150px] object-contain block w-full h-full"
+                <img
+                  src={client.logo}
+                  alt={client.name}
+                  className="max-h-8 max-w-[110px] object-contain block"
                   onError={(e) => {
                     (e.target as HTMLElement).style.display = 'none';
                     const parent = (e.target as HTMLElement).parentElement;
                     if (parent && !parent.querySelector('.fallback-text')) {
                       const textSpan = document.createElement('span');
-                      textSpan.className = "fallback-text text-xs font-black tracking-[0.25em] text-slate-600 uppercase";
+                      textSpan.className = "fallback-text text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase";
                       textSpan.innerText = client.name;
                       parent.appendChild(textSpan);
                     }
@@ -286,802 +623,139 @@ export default function LandingPage() {
                 />
               </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* 5. SECTION BENTO GRID INTERACTIVE (Piliers pédagogiques) */}
-      <section id="features" className="relative z-10 max-w-7xl mx-auto px-6 py-24 border-t border-slate-900/60">
-        
-        <div className="text-center md:text-left max-w-2xl mb-20">
-          <span className="text-xs font-bold text-indigo-400 uppercase tracking-widest">Une méthodologie éprouvée</span>
-          <h2 className="text-3xl sm:text-4xl font-black text-white mt-2 leading-tight">
-            Conçu pour l'excellence pédagogique.
-          </h2>
-          <p className="text-sm sm:text-base text-slate-400 mt-4 leading-relaxed">
-            Nous combinons la rigueur des examens officiels avec la puissance d'outils d'apprentissage modernes.
-          </p>
-        </div>
+      {/* ═══════════════════════════════════════════ */}
+      {/* SECTION FAQ (Accordéons)                  */}
+      {/* ═══════════════════════════════════════════ */}
+      <section id="faq" className="relative z-10 max-w-4xl mx-auto px-6 py-20 border-t border-slate-200/60">
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          
-          {/* CARTE 1 : Plan de révision */}
-          <div className="md:col-span-2 bg-slate-900/10 backdrop-blur-md border border-slate-900 hover:border-slate-800/80 rounded-3xl p-8 flex flex-col justify-between min-h-[380px] group transition-all duration-500 relative overflow-hidden">
-            <div className="space-y-3 relative z-10">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/5 border border-indigo-500/10 flex items-center justify-center text-indigo-400">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <h3 className="text-xl font-bold text-white">Plan de révision sur-mesure</h3>
-              <p className="text-xs text-slate-400 max-w-md leading-relaxed">
-                Survolez les modules ci-dessous pour explorez l'arborescence de compétences générée automatiquement par notre IA pour vos lacunes.
-              </p>
-            </div>
-            
-            <div className="mt-10 relative flex flex-col sm:flex-row items-center justify-between gap-6 p-4 bg-slate-950/40 rounded-2xl border border-slate-900/80">
-              
-              <svg className="absolute hidden sm:block top-1/2 left-[10%] right-[10%] h-0.5 -translate-y-1/2 pointer-events-none z-0">
-                <line x1="0" y1="0" x2="100%" y2="0" className="stroke-slate-900" strokeWidth="2" />
-                <motion.line 
-                  x1="0" y1="0" x2="100%" y2="0" 
-                  className="stroke-indigo-500/40" 
-                  strokeWidth="2" 
-                  initial={{ strokeDasharray: "10 100", strokeDashoffset: 0 }}
-                  animate={{ strokeDashoffset: -200 }}
-                  transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
-                />
-              </svg>
+        <AnimatedSection className="text-center mb-16">
+          <span className="text-xs font-bold text-red-600 uppercase tracking-widest">Support</span>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-950 mt-3 uppercase tracking-tight">Questions Fréquentes</h2>
+        </AnimatedSection>
 
-              {[
-                { idx: 0, label: "Sécurité & IAM", details: "Diagnostic OK • Azure AD • MFA & RBAC" },
-                { idx: 1, label: "Réseau Virtuel", details: "À réviser • Subnets • NSG & Azure Firewall" },
-                { idx: 2, label: "Calcul Cloud", details: "Prêt • VMs • App Services & Container Instances" }
-              ].map((step, sIdx) => {
-                const isHovered = activeStep === sIdx;
-                return (
-                  <div 
-                    key={sIdx} 
-                    onMouseEnter={() => setActiveStep(sIdx)}
-                    onMouseLeave={() => setActiveStep(null)}
-                    className="relative z-10 flex flex-col items-center text-center cursor-pointer group/node w-full sm:w-auto"
-                  >
-                    <div className={`w-10 h-10 rounded-xl border flex items-center justify-center font-bold text-xs transition-all duration-300 ${isHovered ? 'bg-indigo-600 border-indigo-500 text-white scale-110 shadow-lg shadow-indigo-500/20' : 'bg-slate-900 border-slate-800 text-slate-400'}`}>
-                      {sIdx + 1}
-                    </div>
-                    <p className="text-xs font-bold text-slate-300 mt-2.5 transition-colors group-hover/node:text-indigo-400">{step.label}</p>
-                    
-                    <AnimatePresence>
-                      {isHovered && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                          className="absolute bottom-12 w-48 bg-slate-900 border border-slate-800 rounded-xl p-3 shadow-xl z-20 pointer-events-none text-left"
-                        >
-                          <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Contenu du plan</p>
-                          <p className="text-[11px] text-slate-300 mt-1 leading-snug font-medium">{step.details}</p>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* CARTE 2 : Readiness Score */}
-          <div className="bg-slate-900/10 backdrop-blur-md border border-slate-900 hover:border-slate-800/80 rounded-3xl p-8 flex flex-col justify-between min-h-[380px] group transition-all duration-500 relative overflow-hidden">
-            <div className="space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/5 border border-indigo-500/10 flex items-center justify-center text-indigo-400">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <h3 className="text-xl font-bold text-white">Readiness Score</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Notre algorithme évalue en temps réel vos compétences clés pour vous indiquer si vous êtes prêt.
-              </p>
-            </div>
-            
-            <div className="mt-6 p-4 bg-slate-950/40 rounded-2xl border border-slate-900 flex items-center justify-between gap-6">
-              <div className="relative w-20 h-20 shrink-0 flex items-center justify-center">
-                <svg className="absolute w-full h-full -rotate-90">
-                  <circle cx="40" cy="40" r="34" className="stroke-slate-900 fill-none" strokeWidth="5.5" />
-                  <motion.circle 
-                    cx="40" 
-                    cy="40" 
-                    r="34" 
-                    className="stroke-indigo-500 fill-none" 
-                    strokeWidth="5.5"
-                    strokeDasharray={2 * Math.PI * 34}
-                    initial={{ strokeDashoffset: 2 * Math.PI * 34 }}
-                    whileInView={{ strokeDashoffset: 2 * Math.PI * 34 * (1 - 0.87) }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1.5, ease: "easeOut" }}
-                    strokeLinecap="round"
-                  />
-                </svg>
-                <div className="text-center z-10">
-                  <span className="text-lg font-black text-white">87%</span>
-                </div>
-              </div>
-
-              <div className="flex-1 space-y-2.5">
-                {[
-                  { name: 'Identité & IAM', val: '90%' },
-                  { name: 'Réseau Virtuel', val: '80%' },
-                  { name: 'Chiffrement', val: '92%' }
-                ].map((comp, cIdx) => (
-                  <div key={cIdx} className="space-y-1 text-left">
-                    <div className="flex items-center justify-between text-[9px] font-black uppercase text-slate-500">
-                      <span>{comp.name}</span>
-                      <span className="text-slate-300">{comp.val}</span>
-                    </div>
-                    <div className="w-full h-1 bg-slate-900 rounded-full overflow-hidden">
-                      <motion.div 
-                        className="bg-indigo-500/80 h-full rounded-full"
-                        initial={{ width: 0 }}
-                        whileInView={{ width: comp.val }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1.2, delay: 0.2 + cIdx * 0.1, ease: "easeOut" }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* CARTE 3 : Ressources */}
-          <div className="bg-slate-900/10 backdrop-blur-md border border-slate-900 hover:border-slate-800/80 rounded-3xl p-8 flex flex-col justify-between min-h-[380px] group transition-all duration-500 relative">
-            <div className="space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/5 border border-indigo-500/10 flex items-center justify-center text-indigo-400">
-                <BookOpen className="w-5 h-5" />
-              </div>
-              <h3 className="text-xl font-bold text-white">Ressources & Guides</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Cliquez pour simuler le téléchargement de vos fiches mémo et guides de révision de sécurité.
-              </p>
-            </div>
-            
-            <div className="mt-8 space-y-2">
-              {[
-                { id: 0, title: "Fiche Mémo Azure AD.pdf" },
-                { id: 1, title: "Architecture Hybride NSG.pdf" }
-              ].map((file) => {
-                const progress = downloadProgress[file.id];
-                const isFinished = progress >= 100;
-                const isDownloading = progress !== undefined && !isFinished;
-
-                return (
-                  <div 
-                    key={file.id} 
-                    onClick={() => startDownload(file.id)}
-                    className="p-3 bg-slate-950/40 border border-slate-900 rounded-xl flex items-center justify-between gap-4 cursor-pointer hover:border-slate-800 transition-colors relative overflow-hidden group/file"
-                  >
-                    {isDownloading && (
-                      <div 
-                        className="absolute inset-y-0 left-0 bg-indigo-500/5 transition-all duration-100 pointer-events-none"
-                        style={{ width: `${progress}%` }}
-                      />
-                    )}
-
-                    <div className="flex items-center gap-2.5 min-w-0 z-10">
-                      <FileText className={`w-4 h-4 shrink-0 ${isFinished ? 'text-emerald-400' : 'text-slate-500'}`} />
-                      <span className={`text-xs font-bold truncate transition-colors ${isFinished ? 'text-emerald-400' : 'text-slate-400'}`}>
-                        {file.title}
-                      </span>
-                    </div>
-
-                    <div className="shrink-0 z-10">
-                      {isFinished ? (
-                        <Check className="w-4 h-4 text-emerald-400" />
-                      ) : isDownloading ? (
-                        <span className="text-[9px] font-black text-indigo-400">{progress}%</span>
-                      ) : (
-                        <Download className="w-4 h-4 text-slate-500 group-hover/file:text-white transition-colors" />
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* CARTE 4 : Simulations */}
-          <div className="md:col-span-2 bg-slate-900/10 backdrop-blur-md border border-slate-900 hover:border-slate-800/80 rounded-3xl p-8 flex flex-col md:flex-row items-stretch gap-8 min-h-[380px] group transition-all duration-500 relative overflow-hidden">
-            
-            <div className="flex-1 flex flex-col justify-between items-start space-y-4">
-              <div className="space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-500/5 border border-indigo-500/10 flex items-center justify-center text-indigo-400">
-                  <Award className="w-5 h-5" />
-                </div>
-                <h3 className="text-xl font-bold text-white">Simulations conformes aux examens</h3>
-                <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
-                  Entraînez-vous dans les conditions réelles des examens de certification officiels. Maîtrisez le temps imparti et le format des questions.
-                </p>
-              </div>
-
-              <a 
-                href="/login" 
-                className="inline-flex items-center gap-1.5 px-4.5 py-2.5 bg-slate-900 border border-slate-800 hover:border-indigo-500/40 text-xs font-bold text-white rounded-xl transition-all cursor-pointer group/btn mt-4"
-              >
-                <span>Parcourir le catalogue</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
-              </a>
-            </div>
-
-            <div className="flex-1 bg-slate-950/40 border border-slate-900 rounded-2xl p-6 flex flex-col justify-center">
-              <div className="grid grid-cols-2 gap-4">
-                
-                <div className="space-y-1 text-left">
-                  <div className="flex items-center gap-2 text-indigo-400">
-                    <Clock className="w-4 h-4" />
-                    <span className="text-[10px] font-black uppercase text-slate-500 tracking-wider">Durée</span>
-                  </div>
-                  <p className="text-xs font-bold text-slate-350 pl-6">45 à 180 minutes</p>
-                </div>
-
-                <div className="space-y-1 text-left">
-                  <div className="flex items-center gap-2 text-indigo-400">
-                    <Layers className="w-4 h-4" />
-                    <span className="text-[10px] font-black uppercase text-slate-500 tracking-wider">Questions</span>
-                  </div>
-                  <p className="text-xs font-bold text-slate-350 pl-6">36 à 65 QCM</p>
-                </div>
-
-                <div className="space-y-1 text-left">
-                  <div className="flex items-center gap-2 text-indigo-400">
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span className="text-[10px] font-black uppercase text-slate-500 tracking-wider">Format</span>
-                  </div>
-                  <p className="text-xs font-bold text-slate-350 pl-6">Scénarios réels</p>
-                </div>
-
-                <div className="space-y-1 text-left">
-                  <div className="flex items-center gap-2 text-indigo-400">
-                    <Sparkles className="w-4 h-4" />
-                    <span className="text-[10px] font-black uppercase text-slate-500 tracking-wider">Correction</span>
-                  </div>
-                  <p className="text-xs font-bold text-slate-350 pl-6">IA Assistée</p>
-                </div>
-
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      {/* 6. SECTION DEMO SIMULATEUR (Mini-Quiz Déplacé Ici) */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 py-24 border-t border-slate-900/60 flex flex-col items-center">
-        
-        <div className="text-center max-w-2xl mb-12">
-          <span className="text-xs font-bold text-indigo-400 uppercase tracking-widest">Démonstration Live</span>
-          <h2 className="text-2xl sm:text-3xl font-black text-white mt-2 leading-tight">
-            Testez notre simulateur d'examen
-          </h2>
-          <p className="text-sm text-slate-400 mt-3 leading-relaxed">
-            Répondez à la question interactive ci-dessous et découvrez la correction assistée par IA d'EthicalData.
-          </p>
-        </div>
-
-        {/* MINI-QUIZ INTERACTIF */}
-        <div className="w-full max-w-2xl text-left bg-slate-900/30 backdrop-blur-md border border-slate-900 rounded-3xl p-6 md:p-8 hover:border-slate-800 transition-colors duration-300 relative group">
-          
-          <div className="flex items-center justify-between pb-4 border-b border-slate-900">
-            <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full bg-rose-500/70" />
-              <span className="w-3 h-3 rounded-full bg-amber-500/70" />
-              <span className="w-3 h-3 rounded-full bg-emerald-500/70" />
-            </div>
-            <span className="text-[10px] text-slate-500 uppercase tracking-widest font-extrabold flex items-center gap-1.5">
-              <HelpCircle className="w-3.5 h-3.5 text-indigo-500" />
-              Mode Entraînement — Azure AZ-900
-            </span>
-          </div>
-
-          <div className="mt-6">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Question 01</p>
-            <h3 className="text-base md:text-lg font-extrabold text-white mt-1.5 leading-snug">
-              Quelle catégorie de service cloud décrit au mieux les Machines Virtuelles (VM) sur Microsoft Azure ?
-            </h3>
-          </div>
-
-          <div className="mt-6 space-y-3">
-            {[
-              { letter: 'A', text: 'SaaS (Software as a Service)' },
-              { letter: 'B', text: 'PaaS (Platform as a Service)' },
-              { letter: 'C', text: 'IaaS (Infrastructure as a Service)' }
-            ].map((option, idx) => {
-              const isSelected = selectedOption === idx;
-              const isCorrect = idx === correctOptionIndex;
-              const hasAnswered = selectedOption !== null;
-
-              let btnStyle = "border-slate-900 bg-slate-950/30 hover:border-slate-800 text-slate-350";
-              let badgeStyle = "bg-slate-900 border-slate-800 text-slate-400";
-              let statusIcon = null;
-
-              if (hasAnswered) {
-                if (isCorrect) {
-                  btnStyle = "border-emerald-500/30 bg-emerald-500/5 text-emerald-300";
-                  badgeStyle = "bg-emerald-500/20 border-emerald-500/30 text-emerald-400";
-                  statusIcon = <Check className="w-4 h-4 text-emerald-400 shrink-0" />;
-                } else if (isSelected) {
-                  btnStyle = "border-rose-500/30 bg-rose-500/5 text-rose-300";
-                  badgeStyle = "bg-rose-500/20 border-rose-500/30 text-rose-450";
-                  statusIcon = <XIcon className="w-4 h-4 text-rose-400 shrink-0" />;
-                } else {
-                  btnStyle = "border-slate-900 bg-slate-950/10 text-slate-600 opacity-60";
-                  badgeStyle = "bg-slate-950 border-slate-900 text-slate-600";
-                }
-              }
-
-              return (
-                <button
-                  key={idx}
-                  onClick={() => handleOptionClick(idx)}
-                  disabled={hasAnswered}
-                  className={`w-full flex items-center justify-between p-4 border rounded-2xl text-sm font-semibold transition-all duration-200 outline-none text-left ${btnStyle} ${!hasAnswered ? 'cursor-pointer' : ''}`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className={`w-7 h-7 rounded-xl border flex items-center justify-center text-xs font-black ${badgeStyle}`}>
-                      {option.letter}
-                    </span>
-                    <span>{option.text}</span>
-                  </div>
-                  {statusIcon}
-                </button>
-              );
-            })}
-          </div>
-
-          <AnimatePresence>
-            {selectedOption !== null && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                className="mt-6 pt-6 border-t border-slate-900 space-y-4"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-indigo-400" />
-                    <span className="text-xs font-black text-white uppercase tracking-wider">Analyse Pédagogique de l'IA</span>
-                  </div>
-                  <button
-                    onClick={handleResetQuiz}
-                    className="text-xs text-slate-500 hover:text-white transition-colors cursor-pointer font-bold"
-                  >
-                    Recommencer
-                  </button>
-                </div>
-
-                <div className="p-4 bg-slate-950/60 border border-slate-900 rounded-2xl text-xs text-slate-400 leading-relaxed space-y-3">
-                  <p>
-                    {selectedOption === correctOptionIndex ? (
-                      <span className="font-extrabold text-emerald-400 block mb-1">Excellent choix !</span>
-                    ) : (
-                      <span className="font-extrabold text-rose-450 block mb-1">Incorrect.</span>
-                    )}
-                    Les Machines Virtuelles (VM) appartiennent à la catégorie **IaaS (Infrastructure as a Service)**. Microsoft Azure met à disposition le matériel physique, la connectivité réseau et la couche de virtualisation (hyperviseur).
-                  </p>
-                  <p>
-                    En tant qu'utilisateur, vous gardez le contrôle total du système d'exploitation (mises à jour, sécurité), de la configuration réseau interne, ainsi que de tous les middlewares et applications installés.
-                  </p>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-        </div>
-      </section>
-
-      {/* 7. SECTION APERÇU DU CATALOGUE (Certifications) */}
-      <section id="formations" className="relative z-10 max-w-7xl mx-auto px-6 py-24 border-t border-slate-900/60">
-        
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <span className="text-xs font-bold text-indigo-400 uppercase tracking-widest">Formations & Préparations</span>
-          <h2 className="text-3xl sm:text-4xl font-black text-white mt-2 leading-tight">
-            Propulsez votre carrière avec nos programmes phares.
-          </h2>
-          <p className="text-sm sm:text-base text-slate-400 mt-4 leading-relaxed">
-            Sélectionnez votre parcours, entraînez-vous sur nos simulateurs et décrochez votre certification internationale du premier coup.
-          </p>
-        </div>
-
-        {/* 7a. CAROUSEL DYNAMIQUE DES PARTENAIRES CERTIFICATEURS */}
-        <div className="relative w-full overflow-hidden py-8 mb-20 bg-slate-950/20 border-y border-slate-900/50">
-          <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-slate-950 to-transparent z-10 pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-slate-950 to-transparent z-10 pointer-events-none" />
-          
-          <motion.div 
-            className="flex gap-24 whitespace-nowrap items-center"
-            animate={{ x: [0, -900] }}
-            transition={{
-              ease: "linear",
-              duration: 25,
-              repeat: Infinity
-            }}
-          >
-            {infinitePartners.map((partner, pIdx) => (
-              <div 
-                key={pIdx} 
-                className="inline-flex items-center justify-center w-44 h-16 bg-white/95 hover:bg-white border border-white/20 rounded-2xl px-5 py-3 transition-all duration-300 shrink-0 shadow-lg shadow-black/10"
-              >
-                <img 
-                  src={partner.logo} 
-                  alt={partner.name} 
-                  className="max-h-11 max-w-[150px] object-contain block w-full h-full"
-                  onError={(e) => {
-                    (e.target as HTMLElement).style.display = 'none';
-                    const parent = (e.target as HTMLElement).parentElement;
-                    if (parent && !parent.querySelector('.fallback-text')) {
-                      const textSpan = document.createElement('span');
-                      textSpan.className = "fallback-text text-xs font-black tracking-[0.25em] text-slate-600 uppercase";
-                      textSpan.innerText = partner.name;
-                      parent.appendChild(textSpan);
-                    }
-                  }}
-                />
-              </div>
-            ))}
-          </motion.div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          
-          {[
-            {
-              title: "Microsoft Azure Fundamentals",
-              code: "AZ-900",
-              provider: "Microsoft",
-              duration: "15 heures",
-              successRate: "98%",
-              level: "Débutant",
-              desc: "Maîtrisez les concepts fondamentaux de Microsoft Azure. Comprenez les services cloud globaux, les mécanismes de sécurité, la conformité et les coûts d'infrastructure.",
-              glowClass: "hover:border-indigo-500/20 hover:shadow-indigo-500/5",
-              leftStripeColor: "bg-indigo-500",
-              btnHoverClass: "hover:bg-indigo-500/10 hover:text-indigo-400 hover:border-indigo-500/30",
-              badgeColor: "text-indigo-400 bg-indigo-500/10 border-indigo-500/20"
-            },
-            {
-              title: "AWS Certified Cloud Practitioner",
-              code: "CLF-C02",
-              provider: "Amazon Web Services",
-              duration: "18 heures",
-              successRate: "97%",
-              level: "Débutant",
-              desc: "Acquérez une vision globale de l'écosystème AWS. Apprenez les bases de l'infrastructure mondiale, la sécurité globale, les modèles tarifaires et de support.",
-              glowClass: "hover:border-amber-500/20 hover:shadow-amber-500/5",
-              leftStripeColor: "bg-amber-500",
-              btnHoverClass: "hover:bg-amber-500/10 hover:text-amber-400 hover:border-amber-500/30",
-              badgeColor: "text-amber-400 bg-amber-500/10 border-amber-500/20"
-            },
-            {
-              title: "CompTIA Security+",
-              code: "SY0-701",
-              provider: "CompTIA",
-              duration: "25 heures",
-              successRate: "95%",
-              level: "Intermédiaire",
-              desc: "Développez les bases requises pour entamer une carrière en cybersécurité. Apprenez la détection de menaces, le chiffrement fort et la gestion globale des risques.",
-              glowClass: "hover:border-emerald-500/20 hover:shadow-emerald-500/5",
-              leftStripeColor: "bg-emerald-500",
-              btnHoverClass: "hover:bg-emerald-500/10 hover:text-emerald-400 hover:border-emerald-500/30",
-              badgeColor: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
-            }
-          ].map((course, idx) => (
-            <div 
-              key={idx}
-              className={`bg-slate-900/10 backdrop-blur-xl bg-gradient-to-br from-slate-900/40 to-slate-950/20 border border-slate-900 rounded-3xl p-6 flex flex-col justify-between min-h-[420px] transition-all duration-500 group relative overflow-hidden hover:bg-slate-900/20 ${course.glowClass}`}
-            >
-              <div className={`absolute left-0 top-0 bottom-0 w-0.5 transition-all duration-300 group-hover:w-1 ${course.leftStripeColor}`} />
-
-              <div className="space-y-4">
-                <div className="flex items-center justify-between pl-1">
-                  <span className="text-[9px] px-2 py-0.5 bg-slate-950 border border-slate-900 text-slate-400 rounded-full font-bold uppercase">
-                    {course.provider}
-                  </span>
-                  <span className="text-[9px] px-2 py-0.5 bg-slate-900 text-slate-400 rounded-full font-bold">
-                    {course.level}
-                  </span>
-                </div>
-
-                <div className="space-y-1.5 text-left pl-1">
-                  <span className={`text-[10px] px-2.5 py-0.5 rounded-full border font-bold ${course.badgeColor}`}>
-                    {course.code}
-                  </span>
-                  <h3 className="text-lg font-bold text-white leading-snug pt-1">
-                    {course.title}
-                  </h3>
-                </div>
-
-                <p className="text-xs text-slate-400 text-left leading-relaxed pl-1">
-                  {course.desc}
-                </p>
-              </div>
-
-              <div className="space-y-4 mt-6 pl-1">
-                <div className="grid grid-cols-2 gap-2 border-y border-slate-900 py-4 text-left">
-                  <div>
-                    <span className="text-[9px] text-slate-500 uppercase tracking-wider font-extrabold block">Durée</span>
-                    <span className="text-xs font-bold text-slate-350">{course.duration}</span>
-                  </div>
-                  <div>
-                    <span className="text-[9px] text-slate-500 uppercase tracking-wider font-extrabold block">Taux de réussite</span>
-                    <span className="text-xs font-bold text-emerald-450">{course.successRate} de réussite</span>
-                  </div>
-                </div>
-
-                <a 
-                  href="/login" 
-                  className={`w-full flex items-center justify-between p-3.5 bg-slate-950 border border-slate-900 text-xs font-bold text-slate-400 rounded-xl transition-all cursor-pointer group/btn-course ${course.btnHoverClass}`}
-                >
-                  <span>Démarrer ce parcours</span>
-                  <ChevronRight className="w-4 h-4 group-hover/btn-course:translate-x-1 transition-transform" />
-                </a>
-              </div>
-            </div>
-          ))}
-
-        </div>
-      </section>
-
-      {/* 8. SECTION COMMENT CA MARCHE / TIMELINE INTERACTIVE */}
-      <section id="process" className="relative z-10 max-w-7xl mx-auto px-6 py-24 border-t border-slate-900/60">
-        
-        {/* En-tête de section */}
-        <div className="text-center max-w-3xl mx-auto mb-20">
-          <span className="text-xs font-bold text-indigo-400 uppercase tracking-widest">Le Parcours de Réussite</span>
-          <h2 className="text-3xl sm:text-4xl font-black text-white mt-2 leading-tight">
-            Préparez, mesurez et réussissez en 3 étapes.
-          </h2>
-          <p className="text-sm sm:text-base text-slate-400 mt-4 leading-relaxed">
-            Notre plateforme vous accompagne de l'évaluation de votre niveau jusqu'à l'obtention de votre certification officielle.
-          </p>
-        </div>
-
-        {/* Chronologie */}
-        <div className="relative">
-          
-          <div className="absolute hidden md:block top-7 left-[15%] right-[15%] h-[1px] bg-slate-900/40 z-0">
-            <motion.div 
-              className="h-full bg-indigo-500/40 animate-pulse" 
-              initial={{ width: 0 }}
-              whileInView={{ width: "100%" }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.2, ease: "easeInOut" }}
-            />
-          </div>
-
-          <motion.div 
-            variants={timelineContainerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-12 relative"
-          >
-            {[
-              {
-                step: "01",
-                title: "Évaluez vos lacunes",
-                desc: "Passez un premier test de diagnostic rapide assisté par IA pour identifier précisément les concepts théoriques et pratiques à consolider."
-              },
-              {
-                step: "02",
-                title: "Entraînez-vous",
-                desc: "Accédez à des questionnaires dynamiques avec explications instantanées de l'IA et téléchargez nos fiches mémo pour réviser à votre rythme."
-              },
-              {
-                step: "03",
-                title: "Obtenez le feu vert",
-                desc: "Dès que votre Readiness Score dépasse 85%, vous êtes prêt à 100%. Inscrivez-vous sereinement à l'examen officiel."
-              }
-            ].map((item, idx) => (
-              <motion.div 
-                key={idx} 
-                variants={timelineItemVariants}
-                className="relative z-10 flex flex-col items-center text-center space-y-4 group"
-              >
-                <motion.div 
-                  className="w-14 h-14 rounded-2xl bg-slate-900 border border-slate-800 text-indigo-400 flex items-center justify-center font-black text-base shadow-lg transition-all duration-300 group-hover:border-indigo-500/30 group-hover:shadow-indigo-500/5 group-hover:scale-105"
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                >
-                  {item.step}
-                </motion.div>
-                <h3 className="text-lg font-bold text-white pt-2">{item.title}</h3>
-                <p className="text-xs text-slate-400 leading-relaxed max-w-xs">{item.desc}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-
-        </div>
-      </section>
-
-      {/* 9. SECTION FAQ ACCORDÉON INTERACTIF */}
-      <section id="faq" className="relative z-10 max-w-4xl mx-auto px-6 py-24 border-t border-slate-900/60">
-        
-        <div className="text-center mb-16">
-          <span className="text-xs font-bold text-indigo-400 uppercase tracking-widest">Questions Fréquentes</span>
-          <h2 className="text-2xl sm:text-3xl font-black text-white mt-2 leading-tight">
-            Des réponses claires à vos questions.
-          </h2>
-        </div>
-
-        <div className="space-y-4">
+        <div className="space-y-3">
           {faqData.map((item, idx) => {
             const isOpen = activeFaq === idx;
             return (
-              <div 
-                key={idx}
-                className="bg-slate-900/10 backdrop-blur-md border border-slate-900 rounded-2xl overflow-hidden transition-all duration-300 hover:border-slate-800"
-              >
-                <button
-                  onClick={() => toggleFaq(idx)}
-                  className="w-full flex items-center justify-between p-6 text-left font-bold text-sm md:text-base text-white outline-none cursor-pointer"
-                >
-                  <span>{item.q}</span>
-                  <motion.div
-                    animate={{ rotate: isOpen ? 180 : 0 }}
-                    transition={{ duration: 0.25 }}
-                    className="text-slate-500 shrink-0 ml-4"
+              <AnimatedSection key={idx} delay={idx * 0.08}>
+                <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden transition-all duration-300 hover:border-slate-200 shadow-sm">
+                  <button
+                    onClick={() => toggleFaq(idx)}
+                    className="w-full flex items-center justify-between p-5 text-left font-bold text-xs sm:text-sm text-slate-800 outline-none cursor-pointer"
                   >
-                    <ChevronDown className="w-5 h-5" />
-                  </motion.div>
-                </button>
-
-                <AnimatePresence initial={false}>
-                  {isOpen && (
+                    <span className="pr-4 uppercase tracking-wider">{item.q}</span>
                     <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                      animate={{ rotate: isOpen ? 180 : 0 }}
+                      transition={{ duration: 0.25 }}
+                      className="text-slate-500 shrink-0"
                     >
-                      <div className="px-6 pb-6 text-xs md:text-sm text-slate-400 leading-relaxed border-t border-slate-900/60 pt-4">
-                        {item.a}
-                      </div>
+                      <ChevronDown className="w-4 h-4" />
                     </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+                  </button>
+
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: "easeInOut" }}
+                      >
+                        <div className="px-5 pb-5 text-xs text-slate-500 leading-relaxed border-t border-slate-100 pt-3">
+                          {item.a}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </AnimatedSection>
             );
           })}
         </div>
-
       </section>
 
-      {/* 10. SECTION CTA FINAL D'INSCRIPTION */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 py-12 border-t border-slate-900/60">
-        <div className="w-full bg-gradient-to-br from-slate-900/30 to-slate-950/20 backdrop-blur-xl border border-slate-900 hover:border-slate-850 transition-all duration-500 rounded-3xl p-8 md:p-16 text-center max-w-4xl mx-auto relative overflow-hidden group">
-          
-          <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-indigo-500/20 to-transparent -translate-y-px pointer-events-none z-0" />
-          
-          <div className="relative z-10 max-w-xl mx-auto space-y-6">
-            <span className="text-[10px] px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-full font-bold uppercase tracking-wider">
-              Accès Immédiat
-            </span>
-            <h2 className="text-3xl md:text-4xl font-black text-white leading-tight">
-              Prêt à franchir le cap de la certification ?
-            </h2>
-            <p className="text-xs md:text-sm text-slate-400 leading-relaxed">
-              Rejoignez les professionnels qui accélèrent leur crédibilité. Commencez à évaluer vos compétences gratuitement dès aujourd'hui.
-            </p>
-            
-            <div className="pt-4 flex justify-center">
-              <a 
-                href="/login" 
-                className="w-full sm:w-auto px-8 py-4 bg-white hover:bg-slate-100 text-slate-950 font-extrabold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer text-sm"
-              >
-                <span>Créer mon compte gratuit</span>
-                <ArrowRight className="w-4 h-4" />
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 11. FOOTER SÉMANTIQUE & SEO */}
-      <footer className="relative z-10 bg-slate-950 border-t border-slate-900 pt-20 pb-10">
+      {/* ═══════════════════════════════════════════ */}
+      {/* FOOTER                                     */}
+      {/* ═══════════════════════════════════════════ */}
+      <footer className="relative z-10 bg-black border-t border-slate-900 pt-16 pb-8">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8">
-          
-          {/* Col 1 : Pitch */}
+
           <div className="space-y-4 text-left">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-indigo-500/10 border border-indigo-500/20 rounded-lg flex items-center justify-center text-indigo-400">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 bg-red-600/10 border border-red-600/20 rounded-lg flex items-center justify-center text-red-500">
                 <ShieldCheck className="w-4.5 h-4.5" />
               </div>
-              <span className="font-extrabold text-base tracking-tight text-white">
-                EthicalData
-              </span>
+              <span className="font-extrabold text-base tracking-tight text-white uppercase">Ethical Data Security</span>
             </div>
-            <p className="text-xs text-slate-500 leading-relaxed max-w-xs">
-              La plateforme de préparation intelligente pour valider vos compétences Cloud et Cybersécurité en toute confiance.
+            <p className="text-xs text-slate-400 leading-relaxed max-w-xs font-semibold">
+              La plateforme de préparation intelligente pour valider vos compétences Cloud et Cybersécurité en toute confiance au cœur de Casablanca.
             </p>
           </div>
 
-          {/* Col 2 : Catalogue */}
           <div className="text-left">
             <h4 className="text-xs font-black text-white uppercase tracking-widest mb-4">Formations</h4>
-            <ul className="space-y-2.5 text-xs text-slate-500 font-semibold">
-              <li>
-                <a href="#formations" className="hover:text-white transition-colors">Microsoft Azure AZ-900</a>
-              </li>
-              <li>
-                <a href="#formations" className="hover:text-white transition-colors">AWS Cloud Practitioner</a>
-              </li>
-              <li>
-                <a href="#formations" className="hover:text-white transition-colors">CompTIA Security+</a>
-              </li>
-              <li>
-                <a href="#formations" className="hover:text-white transition-colors">Sécurité Réseau Cloud</a>
-              </li>
+            <ul className="space-y-2.5 text-xs text-slate-400 font-semibold uppercase">
+              <li><a href="#formations" className="hover:text-white transition-colors">Azure AZ-900</a></li>
+              <li><a href="#formations" className="hover:text-white transition-colors">PECB ISO 27001</a></li>
+              <li><a href="#formations" className="hover:text-white transition-colors">AWS Cloud Practitioner</a></li>
+              <li><a href="#formations" className="hover:text-white transition-colors">Palo Alto PCNSA</a></li>
             </ul>
           </div>
 
-          {/* Col 3 : Légal */}
           <div className="text-left">
             <h4 className="text-xs font-black text-white uppercase tracking-widest mb-4">Légal & Contact</h4>
-            <ul className="space-y-2.5 text-xs text-slate-500 font-semibold">
-              <li>
-                <a href="/login" className="hover:text-white transition-colors">Mentions Légales</a>
-              </li>
-              <li>
-                <a href="/login" className="hover:text-white transition-colors">Politique de Confidentialité</a>
-              </li>
-              <li>
-                <a href="/login" className="hover:text-white transition-colors">Conditions Générales (CGU)</a>
-              </li>
-              <li>
-                <a href="/login" className="hover:text-white transition-colors">Contacter le support</a>
-              </li>
+            <ul className="space-y-2.5 text-xs text-slate-400 font-semibold uppercase">
+              <li><a href="/login" className="hover:text-white transition-colors">Mentions Légales</a></li>
+              <li><a href="/login" className="hover:text-white transition-colors">Confidentialité</a></li>
+              <li><a href="/login" className="hover:text-white transition-colors">Conditions Générales</a></li>
+              <li><a href="/login" className="hover:text-white transition-colors">Support Technique</a></li>
             </ul>
           </div>
 
-          {/* Col 4 : Newsletter */}
           <div className="text-left space-y-4">
-            <h4 className="text-xs font-black text-white uppercase tracking-widest">Lettre d'Information</h4>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Recevez nos conseils de sécurité et alertes de mise à jour des examens.
+            <h4 className="text-xs font-black text-white uppercase tracking-widest">Lettre d&apos;information</h4>
+            <p className="text-xs text-slate-400 font-semibold leading-relaxed">
+              Recevez nos conseils de sécurité et alertes de mise à jour des examens officiels.
             </p>
-            
+
             <form onSubmit={handleNewsletterSubmit} className="flex gap-2">
-              <input 
-                type="email" 
+              <input
+                type="email"
                 required
                 value={newsletterEmail}
                 onChange={(e) => setNewsletterEmail(e.target.value)}
-                placeholder="Votre e-mail" 
-                className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 outline-none focus:border-indigo-500/50 transition-colors"
+                placeholder="Votre e-mail"
+                className="flex-1 bg-slate-900/60 border border-slate-850 rounded-xl px-3 py-2.5 text-xs text-white placeholder-slate-500 outline-none focus:border-red-600/50 transition-colors"
               />
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="w-10 h-10 bg-white hover:bg-slate-100 text-slate-950 rounded-xl flex items-center justify-center shrink-0 transition-colors cursor-pointer"
               >
                 <Send className="w-4 h-4" />
               </button>
             </form>
-            
+
             <AnimatePresence>
               {newsletterSubmitted && (
-                <motion.p 
+                <motion.p
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="text-[10px] text-emerald-455 font-bold"
+                  className="text-[10px] text-red-500 font-bold"
                 >
-                  Inscription validée avec succès !
+                  Inscription validée !
                 </motion.p>
               )}
             </AnimatePresence>
           </div>
-
         </div>
 
-        {/* Sub-footer copyright */}
-        <div className="max-w-7xl mx-auto px-6 border-t border-slate-900/60 mt-16 pt-8 flex flex-col md:flex-row items-center justify-between text-[11px] text-slate-600 font-semibold gap-4">
-          <p>© {new Date().getFullYear()} EthicalData. Tous droits réservés.</p>
+        <div className="max-w-7xl mx-auto px-6 border-t border-slate-900/60 mt-16 pt-8 flex flex-col md:flex-row items-center justify-between text-[10px] text-slate-500 font-semibold uppercase gap-4">
+          <p>© {new Date().getFullYear()} Ethical Data Security. Tous droits réservés.</p>
           <div className="flex items-center gap-6">
             <a href="/login" className="hover:text-slate-400 transition-colors">Politique RGPD</a>
             <a href="/login" className="hover:text-slate-400 transition-colors">Gestion des Cookies</a>

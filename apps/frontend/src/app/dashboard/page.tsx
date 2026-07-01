@@ -54,12 +54,12 @@ export default function StudentDashboard() {
   };
 
   return (
-    <div className="space-y-10 text-slate-100 text-left">
+    <div className="space-y-10 text-slate-800 text-left">
       
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-white tracking-tight">Bonjour, {firstName} 👋</h1>
-          <p className="text-slate-400 text-xs mt-1.5 font-semibold uppercase tracking-wider">
+          <h1 className="text-3xl font-black text-slate-950 tracking-tight">Bonjour, {firstName} 👋</h1>
+          <p className="text-slate-600 text-xs mt-1.5 font-semibold uppercase tracking-wider">
             Suivez vos entraînements et votre niveau de préparation aux examens.
           </p>
         </div>
@@ -69,13 +69,13 @@ export default function StudentDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Readiness Score Moyen */}
-        <div className="bg-slate-900/20 backdrop-blur-xl border border-slate-900 rounded-3xl p-6 flex items-center justify-between min-h-[160px]">
+        <div className="bg-white shadow-sm backdrop-blur-xl border border-slate-200/80 rounded-3xl p-6 flex items-center justify-between min-h-[160px]">
           <div className="space-y-2 text-left">
             <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Readiness Score Moyen</p>
-            <h3 className="text-2xl font-black text-white">
+            <h3 className="text-2xl font-black text-slate-950">
               {stats.averageScore >= 80 ? 'Prêt pour l\'examen' : 'En préparation'}
             </h3>
-            <p className="text-xs text-slate-400 font-semibold">Seuil de réussite conseillé : 80%</p>
+            <p className="text-xs text-slate-600 font-semibold">Seuil de réussite conseillé : 80%</p>
           </div>
           
           <div className="relative w-24 h-24 shrink-0 flex items-center justify-center">
@@ -85,7 +85,7 @@ export default function StudentDashboard() {
                 cx="48" 
                 cy="48" 
                 r="38" 
-                className={`fill-none ${stats.averageScore >= 80 ? 'stroke-emerald-555' : 'stroke-indigo-500'}`}
+                className={`fill-none ${stats.averageScore >= 80 ? 'stroke-emerald-500' : 'stroke-red-600'}`}
                 strokeWidth="6"
                 strokeDasharray={2 * Math.PI * 38}
                 initial={{ strokeDashoffset: 2 * Math.PI * 38 }}
@@ -95,27 +95,27 @@ export default function StudentDashboard() {
               />
             </svg>
             <div className="text-center z-10">
-              <span className="text-xl font-black text-white">{stats.averageScore}%</span>
+              <span className="text-xl font-black text-slate-950">{stats.averageScore}%</span>
             </div>
           </div>
         </div>
 
         {/* Nombre de simulations passées */}
-        <div className="bg-slate-900/20 backdrop-blur-xl border border-slate-900 rounded-3xl p-6 flex flex-col justify-between min-h-[160px]">
+        <div className="bg-white shadow-sm backdrop-blur-xl border border-slate-200/80 rounded-3xl p-6 flex flex-col justify-between min-h-[160px]">
           <div className="flex items-center justify-between">
             <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Simulations Complétées</p>
-            <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+            <div className="w-8 h-8 rounded-lg bg-red-50 border border-red-100 flex items-center justify-center text-red-600">
               <BookOpen className="w-4 h-4" />
             </div>
           </div>
           <div className="space-y-1 text-left">
-            <h3 className="text-3xl font-black text-white">{stats.totalAttempts}</h3>
+            <h3 className="text-3xl font-black text-slate-950">{stats.totalAttempts}</h3>
             <p className="text-xs text-slate-450 font-semibold">Examens blancs passés en conditions réelles</p>
           </div>
         </div>
 
         {/* Chapitres et modules */}
-        <div className="bg-slate-900/20 backdrop-blur-xl border border-slate-900 rounded-3xl p-6 flex flex-col justify-between min-h-[160px]">
+        <div className="bg-white shadow-sm backdrop-blur-xl border border-slate-200/80 rounded-3xl p-6 flex flex-col justify-between min-h-[160px]">
           <div className="flex items-center justify-between">
             <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Formations du Catalogue</p>
             <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
@@ -123,7 +123,7 @@ export default function StudentDashboard() {
             </div>
           </div>
           <div className="space-y-1 text-left">
-            <h3 className="text-3xl font-black text-white">{certs.length}</h3>
+            <h3 className="text-3xl font-black text-slate-950">{certs.length}</h3>
             <p className="text-xs text-slate-450 font-semibold">Certifications professionnelles prêtes à réviser</p>
           </div>
         </div>
@@ -135,17 +135,17 @@ export default function StudentDashboard() {
         
         <div className="xl:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-black text-white uppercase tracking-widest">Catalogue d'Entraînement</h2>
+            <h2 className="text-lg font-black text-slate-950 uppercase tracking-widest">Catalogue d'Entraînement</h2>
           </div>
 
           {loading ? (
             <div className="space-y-4">
               {Array.from({ length: 2 }).map((_, i) => (
-                <div key={i} className="h-44 bg-slate-900/10 border border-slate-900 rounded-3xl animate-pulse" />
+                <div key={i} className="h-44 bg-white border border-slate-200/80 rounded-3xl animate-pulse" />
               ))}
             </div>
           ) : certs.length === 0 ? (
-            <div className="p-8 text-center bg-slate-900/10 border border-slate-900 rounded-3xl text-slate-500 font-semibold">
+            <div className="p-8 text-center bg-white border border-slate-200/80 rounded-3xl text-slate-500 font-semibold">
               Aucune certification disponible.
             </div>
           ) : (
@@ -159,10 +159,10 @@ export default function StudentDashboard() {
                 return (
                   <div 
                     key={cert.id}
-                    className="bg-slate-900/20 border border-slate-900 hover:border-slate-800 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between transition-all duration-300 group"
+                    className="bg-white shadow-sm border border-slate-200/80 hover:border-slate-200 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between transition-all duration-300 group"
                   >
                     <div className="flex gap-4 items-center">
-                      <div className="w-16 h-16 bg-white border border-slate-850 rounded-2xl flex items-center justify-center p-2 shrink-0">
+                      <div className="w-16 h-16 bg-white border border-slate-200 rounded-2xl flex items-center justify-center p-2 shrink-0">
                         {cert.image ? (
                           <img src={cert.image} alt={cert.nom} className="max-w-full max-h-full object-contain" />
                         ) : (
@@ -173,7 +173,7 @@ export default function StudentDashboard() {
                         <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${getLevelBadgeStyle(cert.niveau)}`}>
                           {cert.niveau}
                         </span>
-                        <h3 className="font-extrabold text-white text-base leading-snug group-hover:text-indigo-400 transition-colors">
+                        <h3 className="font-extrabold text-slate-950 text-base leading-snug group-hover:text-red-600 transition-colors">
                           {cert.nom}
                         </h3>
                         <p className="text-xs text-slate-450 font-semibold">{cert.codeExamen || 'Examen'}</p>
@@ -188,15 +188,15 @@ export default function StudentDashboard() {
                         </span>
                       </div>
                       
-                      <div className="w-full h-1.5 bg-slate-950 border border-slate-900 rounded-full overflow-hidden">
+                      <div className="w-full h-1.5 bg-slate-50 border border-slate-200/80 rounded-full overflow-hidden">
                         <div 
-                          className={`h-full rounded-full transition-all duration-500 ${bestScore >= 80 ? 'bg-emerald-500' : 'bg-indigo-500'}`} 
+                          className={`h-full rounded-full transition-all duration-500 ${bestScore >= 80 ? 'bg-emerald-500' : 'bg-red-600'}`} 
                           style={{ width: `${bestScore}%` }} 
                         />
                       </div>
 
                       <div className="flex justify-between items-center pt-2">
-                        <span className="text-[10px] text-slate-550 font-bold uppercase tracking-wider">{cert.dureeIndicative || 'Non spécifiée'}</span>
+                        <span className="text-[10px] text-slate-600 font-bold uppercase tracking-wider">{cert.dureeIndicative || 'Non spécifiée'}</span>
                         
                         <a 
                           href={`/dashboard/practice?cert=${cert.slug}`}
@@ -216,9 +216,9 @@ export default function StudentDashboard() {
 
         {/* Colonne Droite : Historique des tentatives de test de l'utilisateur */}
         <div className="space-y-6 text-left">
-          <h2 className="text-lg font-black text-white uppercase tracking-widest">Dernières Tentatives</h2>
+          <h2 className="text-lg font-black text-slate-950 uppercase tracking-widest">Dernières Tentatives</h2>
           
-          <div className="bg-slate-900/10 border border-slate-900 rounded-3xl p-6 space-y-4">
+          <div className="bg-white border border-slate-200/80 rounded-3xl p-6 space-y-4">
             {stats.history.length === 0 ? (
               <p className="text-xs text-slate-500 font-semibold text-center py-6">
                 Aucun historique d'examen disponible. Vos tentatives apparaîtront ici.
@@ -235,12 +235,12 @@ export default function StudentDashboard() {
                   return (
                     <div 
                       key={attempt.id}
-                      className="flex items-center justify-between p-3.5 bg-slate-950/40 border border-slate-900 rounded-2xl"
+                      className="flex items-center justify-between p-3.5 bg-slate-50/40 border border-slate-200/80 rounded-2xl"
                     >
                       <div className="min-w-0 text-left">
-                        <p className="text-xs font-bold text-slate-200 truncate">{attempt.certificationName}</p>
-                        <div className="flex items-center gap-1.5 text-[9px] text-slate-555 font-bold uppercase tracking-wider mt-1">
-                          <Calendar className="w-3 h-3 text-slate-555" />
+                        <p className="text-xs font-bold text-slate-800 truncate">{attempt.certificationName}</p>
+                        <div className="flex items-center gap-1.5 text-[9px] text-slate-500 font-bold uppercase tracking-wider mt-1">
+                          <Calendar className="w-3 h-3 text-slate-500" />
                           <span>Le {dateFormatee}</span>
                         </div>
                       </div>
@@ -258,7 +258,7 @@ export default function StudentDashboard() {
 
             <a 
               href="/dashboard/practice"
-              className="flex items-center justify-center gap-1 w-full py-3 border border-slate-900 hover:border-slate-800 bg-slate-950/20 hover:bg-slate-900 text-xs font-bold text-slate-400 hover:text-white rounded-xl transition-all uppercase tracking-wider cursor-pointer"
+              className="flex items-center justify-center gap-1 w-full py-3 border border-slate-200/80 hover:border-slate-200 bg-slate-50/20 hover:bg-slate-50 text-xs font-bold text-slate-600 hover:text-slate-950 rounded-xl transition-all uppercase tracking-wider cursor-pointer"
             >
               <span>Lancer un nouvel examen</span>
               <ChevronRight className="w-4 h-4" />

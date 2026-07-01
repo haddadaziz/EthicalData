@@ -1,31 +1,39 @@
-import { IsNotEmpty, IsOptional, IsString, IsEnum, IsNumber } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsEnum,
+  IsNumber,
+} from 'class-validator';
 import { Niveau } from '@prisma/client';
 
 export class CreateCertificationDto {
-    @IsString()
-    @IsNotEmpty({ message: 'Le nom de la certification est obligatoire.' })
-    nom: string;
+  @IsString()
+  @IsNotEmpty({ message: 'Le nom de la certification est obligatoire.' })
+  nom: string;
 
-    @IsString()
-    @IsOptional()
-    codeExamen?: string;
+  @IsString()
+  @IsOptional()
+  codeExamen?: string;
 
-    @IsString()
-    @IsNotEmpty({ message: 'La description est obligatoire.' })
-    description: string;
+  @IsString()
+  @IsNotEmpty({ message: 'La description est obligatoire.' })
+  description: string;
 
-    @IsEnum(['DEBUTANT', 'INTERMEDIAIRE', 'AVANCE'], { message: 'Le niveau doit être DEBUTANT, INTERMEDIAIRE ou AVANCE.' })
-    niveau: Niveau;
+  @IsEnum(['DEBUTANT', 'INTERMEDIAIRE', 'AVANCE'], {
+    message: 'Le niveau doit être DEBUTANT, INTERMEDIAIRE ou AVANCE.',
+  })
+  niveau: Niveau;
 
-    @IsString()
-    @IsOptional()
-    dureeIndicative?: string;
+  @IsString()
+  @IsOptional()
+  dureeIndicative?: string;
 
-    @IsNumber({}, { message: 'Le fournisseurId doit être un nombre.' })
-    @IsNotEmpty({ message: 'Le fournisseur est obligatoire.' })
-    fournisseurId: number;
+  @IsNumber({}, { message: 'Le fournisseurId doit être un nombre.' })
+  @IsNotEmpty({ message: 'Le fournisseur est obligatoire.' })
+  fournisseurId: number;
 
-    @IsString()
-    @IsOptional()
-    image?: string;
+  @IsString()
+  @IsOptional()
+  image?: string;
 }

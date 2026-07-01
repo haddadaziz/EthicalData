@@ -10,7 +10,9 @@ export class CreateQuestionDto {
   explication?: string;
 
   @IsString()
-  @IsNotEmpty({ message: "La réponse correcte ou la réponse modèle est obligatoire." })
+  @IsNotEmpty({
+    message: 'La réponse correcte ou la réponse modèle est obligatoire.',
+  })
   reponseCorrecte: string;
 
   @IsString()

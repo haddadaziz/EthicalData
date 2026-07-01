@@ -51,28 +51,30 @@ export default function PracticePage() {
     }
   };
 
-  useEffect(() => {
-    if (!loading && certSlug && certs.length > 0) {
+  const handleFinishExam = async () => {
+    let correctCount = 0;
+    questions.forEach(q => {
+      if (selectedAnswers[q.id] === q.reponseCorrecte) {
+        correctCount++;
+      }
+    });
+
+    const finalScore = Math.round((correctCount / questions.length) * 100);
+    setScore(finalScore);
+    setExamFinished(true);
+
+    try {
       const currentCert = certs.find(c => c.slug === certSlug);
       if (currentCert) {
-        loadQuestions(currentCert.id);
+        await apiFetch(`/certifications/${currentCert.id}/tentatives`, {
+          method: 'POST',
+          body: { score: finalScore }
+        });
       }
+    } catch (err) {
+      console.error("Erreur enregistrement tentative :", err);
     }
-  }, [certSlug, certs, loading]);
-
-  useEffect(() => {
-    if (!examStarted || examFinished || isPaused) return;
-    if (timeLeft <= 0) {
-      handleFinishExam();
-      return;
-    }
-
-    const timer = setInterval(() => {
-      setTimeLeft(prev => prev - 1);
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [examStarted, examFinished, isPaused, timeLeft]);
+  };
 
   const handleStartExam = () => {
     if (questions.length === 0) return;
@@ -101,30 +103,28 @@ export default function PracticePage() {
     }
   };
 
-  const handleFinishExam = async () => {
-    let correctCount = 0;
-    questions.forEach(q => {
-      if (selectedAnswers[q.id] === q.reponseCorrecte) {
-        correctCount++;
-      }
-    });
-
-    const finalScore = Math.round((correctCount / questions.length) * 100);
-    setScore(finalScore);
-    setExamFinished(true);
-
-    try {
+  useEffect(() => {
+    if (!loading && certSlug && certs.length > 0) {
       const currentCert = certs.find(c => c.slug === certSlug);
       if (currentCert) {
-        await apiFetch(`/certifications/${currentCert.id}/tentatives`, {
-          method: 'POST',
-          body: { score: finalScore }
-        });
+        loadQuestions(currentCert.id);
       }
-    } catch (err) {
-      console.error("Erreur enregistrement tentative :", err);
     }
-  };
+  }, [certSlug, certs, loading]);
+
+  useEffect(() => {
+    if (!examStarted || examFinished || isPaused) return;
+    if (timeLeft <= 0) {
+      handleFinishExam();
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft(prev => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [examStarted, examFinished, isPaused, timeLeft]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -134,9 +134,9 @@ export default function PracticePage() {
 
   if (loading || loadingQuestions) {
     return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center text-slate-400 gap-4">
-        <span className="w-10 h-10 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
-        <p className="text-xs font-bold uppercase tracking-widest text-indigo-400">Chargement du simulateur...</p>
+      <div className="min-h-[50vh] flex flex-col items-center justify-center text-slate-600 gap-4">
+        <span className="w-10 h-10 border-4 border-red-100 border-t-red-600 rounded-full animate-spin" />
+        <p className="text-xs font-bold uppercase tracking-widest text-red-600">Chargement du simulateur...</p>
       </div>
     );
   }
@@ -145,25 +145,25 @@ export default function PracticePage() {
     return (
       <div className="space-y-8 text-left">
         <div>
-          <h1 className="text-3xl font-black text-white tracking-tight">Simulateur d'Examen</h1>
-          <p className="text-slate-400 text-xs mt-1.5 font-semibold uppercase tracking-wider">Sélectionnez la certification pour lancer l'entraînement interactif.</p>
+          <h1 className="text-3xl font-black text-slate-950 tracking-tight">Simulateur d'Examen</h1>
+          <p className="text-slate-600 text-xs mt-1.5 font-semibold uppercase tracking-wider">Sélectionnez la certification pour lancer l'entraînement interactif.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {certs.map((cert) => (
             <div 
               key={cert.id}
-              className="bg-slate-900/20 border border-slate-900 hover:border-slate-800 rounded-3xl p-6 flex flex-col justify-between group transition-all duration-300 animate-fadeIn"
+              className="bg-white shadow-sm border border-slate-200/80 hover:border-slate-200 rounded-3xl p-6 flex flex-col justify-between group transition-all duration-300 animate-fadeIn"
             >
               <div className="space-y-4">
-                <div className="w-12 h-12 bg-white border border-slate-850 rounded-xl flex items-center justify-center p-2">
+                <div className="w-12 h-12 bg-white border border-slate-200 rounded-xl flex items-center justify-center p-2">
                   {cert.image ? <img src={cert.image} alt={cert.nom} className="max-w-full max-h-full object-contain" /> : <Award className="text-slate-800" />}
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-indigo-400 block uppercase tracking-wider">{cert.codeExamen || 'Examen'}</span>
-                  <h3 className="font-extrabold text-white text-base leading-snug group-hover:text-indigo-400 transition-colors">{cert.nom}</h3>
+                  <span className="text-[10px] font-bold text-red-600 block uppercase tracking-wider">{cert.codeExamen || 'Examen'}</span>
+                  <h3 className="font-extrabold text-slate-950 text-base leading-snug group-hover:text-red-600 transition-colors">{cert.nom}</h3>
                 </div>
-                <p className="text-xs text-slate-400 line-clamp-3 leading-relaxed">{cert.description}</p>
+                <p className="text-xs text-slate-600 line-clamp-3 leading-relaxed">{cert.description}</p>
               </div>
 
               <button 
@@ -185,9 +185,9 @@ export default function PracticePage() {
     
     if (!currentQuestion) {
       return (
-        <div className="min-h-[50vh] flex flex-col items-center justify-center text-slate-405 gap-4">
-          <p className="text-sm font-semibold text-slate-400">Aucune question n'est configurée pour cette certification.</p>
-          <button onClick={() => router.push('/dashboard/practice')} className="px-5 py-2.5 bg-slate-900 border border-slate-800 text-white font-bold rounded-xl text-xs">
+        <div className="min-h-[50vh] flex flex-col items-center justify-center text-slate-400 gap-4">
+          <p className="text-sm font-semibold text-slate-600">Aucune question n'est configurée pour cette certification.</p>
+          <button onClick={() => router.push('/dashboard/practice')} className="px-5 py-2.5 bg-slate-50 border border-slate-200 text-slate-950 font-bold rounded-xl text-xs">
             Retour
           </button>
         </div>
@@ -198,11 +198,11 @@ export default function PracticePage() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 text-left">
         
         <div className="lg:col-span-3 space-y-6">
-          <div className="bg-slate-900/20 border border-slate-900 rounded-3xl p-6 sm:p-8 space-y-6 relative overflow-hidden">
+          <div className="bg-white shadow-sm border border-slate-200/80 rounded-3xl p-6 sm:p-8 space-y-6 relative overflow-hidden">
             
-            <div className="flex items-center justify-between border-b border-slate-900 pb-4">
+            <div className="flex items-center justify-between border-b border-slate-200/80 pb-4">
               <div>
-                <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">{currentQuestion.categorie || "Général"}</span>
+                <span className="text-[10px] font-black text-red-600 uppercase tracking-widest">{currentQuestion.categorie || "Général"}</span>
                 <h2 className="text-sm font-bold text-slate-450 mt-1">Question {currentIdx + 1} sur {questions.length}</h2>
               </div>
 
@@ -212,7 +212,7 @@ export default function PracticePage() {
                   className={`p-2 rounded-lg border transition-all cursor-pointer ${
                     flaggedQuestions.includes(currentQuestion.id) 
                       ? 'border-amber-500/30 bg-amber-500/10 text-amber-400' 
-                      : 'border-slate-800 text-slate-450 hover:text-white'
+                      : 'border-slate-200 text-slate-450 hover:text-slate-950'
                   }`}
                   title="Marquer pour révision"
                 >
@@ -222,7 +222,7 @@ export default function PracticePage() {
             </div>
 
             <div className="py-4">
-              <p className="text-base sm:text-lg font-bold text-white leading-relaxed">{currentQuestion.enonce}</p>
+              <p className="text-base sm:text-lg font-bold text-slate-950 leading-relaxed">{currentQuestion.enonce}</p>
             </div>
 
             <div className="space-y-3">
@@ -234,14 +234,14 @@ export default function PracticePage() {
                     onClick={() => handleSelectAnswer(opt.lettre)}
                     className={`w-full p-4 border text-left rounded-2xl transition-all cursor-pointer flex items-center gap-4 group ${
                       isSelected 
-                        ? 'border-indigo-500 bg-indigo-500/5 text-white' 
-                        : 'border-slate-900 hover:border-slate-800 bg-slate-950/20 text-slate-350 hover:text-white'
+                        ? 'border-red-600 bg-red-600/5 text-slate-950' 
+                        : 'border-slate-200/80 hover:border-slate-200 bg-slate-50/20 text-slate-350 hover:text-slate-950'
                     }`}
                   >
                     <span className={`w-7 h-7 rounded-lg border font-bold text-xs uppercase flex items-center justify-center shrink-0 transition-colors ${
                       isSelected 
-                        ? 'border-indigo-400 bg-indigo-500/10 text-indigo-400' 
-                        : 'border-slate-800 bg-slate-950 text-slate-500 group-hover:border-slate-700'
+                        ? 'border-red-600 bg-red-50 text-red-600' 
+                        : 'border-slate-200 bg-slate-50 text-slate-500 group-hover:border-slate-700'
                     }`}>
                       {opt.lettre}
                     </span>
@@ -256,7 +256,7 @@ export default function PracticePage() {
             <button
               onClick={() => setCurrentIdx(prev => Math.max(0, prev - 1))}
               disabled={currentIdx === 0}
-              className="flex items-center gap-2 px-5 py-3 border border-slate-900 rounded-2xl hover:border-slate-800 text-slate-400 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer text-xs uppercase font-bold tracking-wider"
+              className="flex items-center gap-2 px-5 py-3 border border-slate-200/80 rounded-2xl hover:border-slate-200 text-slate-600 hover:text-slate-950 transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer text-xs uppercase font-bold tracking-wider"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Précédent</span>
@@ -273,7 +273,7 @@ export default function PracticePage() {
             ) : (
               <button
                 onClick={handleFinishExam}
-                className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-2xl transition-all cursor-pointer text-xs uppercase tracking-widest shadow-lg shadow-indigo-600/15"
+                className="flex items-center gap-2 px-6 py-3 bg-red-700 hover:bg-red-600 text-slate-950 font-black rounded-2xl transition-all cursor-pointer text-xs uppercase tracking-widest shadow-lg shadow-red-700/15"
               >
                 <span>Soumettre l'Examen</span>
                 <Check className="w-4 h-4" />
@@ -283,23 +283,23 @@ export default function PracticePage() {
         </div>
 
         <div className="space-y-6">
-          <div className="bg-slate-900/20 border border-slate-900 rounded-3xl p-6 text-center space-y-4">
-            <div className="flex items-center justify-center gap-2.5 text-white">
-              <Clock className="w-5 h-5 text-indigo-400" />
+          <div className="bg-white shadow-sm border border-slate-200/80 rounded-3xl p-6 text-center space-y-4">
+            <div className="flex items-center justify-center gap-2.5 text-slate-950">
+              <Clock className="w-5 h-5 text-red-600" />
               <span className="text-2xl font-black tabular-nums">{formatTime(timeLeft)}</span>
             </div>
             
             <div className="flex gap-2">
               <button
                 onClick={() => setIsPaused(!isPaused)}
-                className="flex-1 py-2 border border-slate-850 hover:border-slate-800 text-slate-400 hover:text-white rounded-xl text-xs font-bold transition-all cursor-pointer uppercase tracking-wider"
+                className="flex-1 py-2 border border-slate-200 hover:border-slate-200 text-slate-600 hover:text-slate-950 rounded-xl text-xs font-bold transition-all cursor-pointer uppercase tracking-wider"
               >
                 {isPaused ? 'Reprendre' : 'Pause'}
               </button>
             </div>
           </div>
 
-          <div className="bg-slate-900/20 border border-slate-900 rounded-3xl p-6 space-y-4">
+          <div className="bg-white shadow-sm border border-slate-200/80 rounded-3xl p-6 space-y-4">
             <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Grille des questions</p>
             
             <div className="grid grid-cols-5 gap-2.5">
@@ -314,12 +314,12 @@ export default function PracticePage() {
                     onClick={() => setCurrentIdx(idx)}
                     className={`h-9 rounded-xl border text-xs font-bold transition-all cursor-pointer relative flex items-center justify-center ${
                       isSelected
-                        ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400 font-extrabold ring-2 ring-indigo-500/20'
+                        ? 'border-red-600 bg-red-50 text-red-600 font-extrabold ring-2 ring-red-100'
                         : isFlagged
                           ? 'border-amber-500 bg-amber-500/10 text-amber-400'
                           : isAnswered
-                            ? 'border-slate-800 bg-slate-900 text-slate-300'
-                            : 'border-slate-900 bg-transparent text-slate-500 hover:border-slate-800'
+                            ? 'border-slate-200 bg-slate-50 text-slate-700'
+                            : 'border-slate-200/80 bg-transparent text-slate-500 hover:border-slate-200'
                     }`}
                   >
                     {idx + 1}
@@ -343,15 +343,15 @@ export default function PracticePage() {
     return (
       <div className="max-w-4xl mx-auto space-y-8 text-left">
         
-        <div className="bg-slate-900/20 border border-slate-900 rounded-[32px] p-8 sm:p-10 text-center space-y-6 relative overflow-hidden">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-indigo-500/5 blur-3xl pointer-events-none" />
+        <div className="bg-white shadow-sm border border-slate-200/80 rounded-[32px] p-8 sm:p-10 text-center space-y-6 relative overflow-hidden">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-red-600/5 blur-3xl pointer-events-none" />
 
           <div className="space-y-2 relative z-10">
             <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Résultats de la simulation</p>
-            <h2 className="text-3xl font-black text-white">
+            <h2 className="text-3xl font-black text-slate-950">
               {success ? 'Félicitations, vous avez réussi ! 🎉' : 'Niveau insuffisant pour l\'instant ❌'}
             </h2>
-            <p className="text-xs text-slate-400 font-semibold max-w-md mx-auto mt-2">
+            <p className="text-xs text-slate-600 font-semibold max-w-md mx-auto mt-2">
               {success 
                 ? 'Votre score est supérieur au seuil requis de 80%. Vous êtes prêt pour passer l\'examen officiel.' 
                 : 'Continuez à vous entraîner. Le seuil officiel d\'obtention est fixé à 80% (ou 700/1000).'}
@@ -378,7 +378,7 @@ export default function PracticePage() {
             
             <button
               onClick={() => router.push('/dashboard')}
-              className="flex items-center gap-2 px-5 py-3.5 border border-slate-900 hover:border-slate-800 text-slate-400 hover:text-white rounded-2xl transition-all cursor-pointer text-xs uppercase font-bold tracking-wider"
+              className="flex items-center gap-2 px-5 py-3.5 border border-slate-200/80 hover:border-slate-200 text-slate-600 hover:text-slate-950 rounded-2xl transition-all cursor-pointer text-xs uppercase font-bold tracking-wider"
             >
               <BookmarkCheck className="w-4 h-4" />
               <span>Retour au Tableau de Bord</span>
@@ -387,7 +387,7 @@ export default function PracticePage() {
         </div>
 
         <div className="space-y-6">
-          <h2 className="text-lg font-black text-white uppercase tracking-widest">Correction Détaillée</h2>
+          <h2 className="text-lg font-black text-slate-950 uppercase tracking-widest">Correction Détaillée</h2>
 
           <div className="space-y-6">
             {questions.map((q, idx) => {
@@ -408,14 +408,14 @@ export default function PracticePage() {
                     <span className={`text-[9px] px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider flex items-center gap-1.5 ${
                       isCorrect 
                         ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
-                        : 'bg-rose-500/10 text-rose-455 border border-rose-500/20'
+                        : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
                     }`}>
                       {isCorrect ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
                       {isCorrect ? 'Correct' : 'Incorrect'}
                     </span>
                   </div>
 
-                  <p className="text-base font-bold text-white leading-relaxed">
+                  <p className="text-base font-bold text-slate-950 leading-relaxed">
                     <span className="text-slate-500">{idx + 1}.</span> {q.enonce}
                   </p>
 
@@ -424,7 +424,7 @@ export default function PracticePage() {
                       const wasSelected = userAnswer === opt.lettre;
                       const isOptionCorrect = q.reponseCorrecte === opt.lettre;
 
-                      let style = "border-slate-900 bg-slate-950/20 text-slate-400";
+                      let style = "border-slate-200/80 bg-slate-50/20 text-slate-600";
                       if (wasSelected && !isOptionCorrect) {
                         style = "border-rose-500/30 bg-rose-500/5 text-rose-350";
                       } else if (isOptionCorrect) {
@@ -437,8 +437,8 @@ export default function PracticePage() {
                             isOptionCorrect 
                               ? 'border-emerald-400 bg-emerald-500/10 text-emerald-400' 
                               : wasSelected 
-                                ? 'border-rose-400 bg-rose-500/10 text-rose-455' 
-                                : 'border-slate-800 bg-slate-950 text-slate-500'
+                                ? 'border-rose-400 bg-rose-500/10 text-rose-500' 
+                                : 'border-slate-200 bg-slate-50 text-slate-500'
                           }`}>
                             {opt.lettre}
                           </span>
@@ -449,8 +449,8 @@ export default function PracticePage() {
                   </div>
 
                   {q.explication && (
-                    <div className="mt-4 p-4 bg-slate-900/20 border border-slate-900 rounded-2xl space-y-1.5 text-xs leading-relaxed">
-                      <p className="font-bold text-indigo-400 uppercase tracking-wider text-[9px]">Explication :</p>
+                    <div className="mt-4 p-4 bg-white shadow-sm border border-slate-200/80 rounded-2xl space-y-1.5 text-xs leading-relaxed">
+                      <p className="font-bold text-red-600 uppercase tracking-wider text-[9px]">Explication :</p>
                       <p className="text-slate-350 font-medium">{q.explication}</p>
                     </div>
                   )}
@@ -469,35 +469,35 @@ export default function PracticePage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-8 text-left relative overflow-hidden">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-indigo-500/5 blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-red-600/5 blur-3xl pointer-events-none" />
 
-      <div className="bg-slate-900/20 border border-slate-900 rounded-[32px] p-8 sm:p-12 space-y-6 relative z-10 text-center">
+      <div className="bg-white shadow-sm border border-slate-200/80 rounded-[32px] p-8 sm:p-12 space-y-6 relative z-10 text-center">
         <div className="flex justify-center">
-          <div className="w-16 h-16 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-400">
+          <div className="w-16 h-16 bg-red-50 border border-red-100 rounded-2xl flex items-center justify-center text-red-600">
             <HelpCircle className="w-8 h-8" />
           </div>
         </div>
 
         <div className="space-y-2">
-          <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest block">Simulateur Officiel</span>
-          <h2 className="text-2xl font-black text-white leading-snug">{currentCert.nom}</h2>
+          <span className="text-[10px] font-black text-red-600 uppercase tracking-widest block">Simulateur Officiel</span>
+          <h2 className="text-2xl font-black text-slate-950 leading-snug">{currentCert.nom}</h2>
           <p className="text-xs text-slate-450 font-semibold max-w-sm mx-auto leading-relaxed mt-2">
             Cet examen blanc reproduit fidèlement la structure de l'examen de certification réel.
           </p>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 py-4 border-y border-slate-900 my-4 text-xs">
+        <div className="grid grid-cols-3 gap-4 py-4 border-y border-slate-200/80 my-4 text-xs">
           <div className="space-y-1">
             <p className="text-slate-500 font-bold uppercase text-[9px] tracking-wider">Questions</p>
-            <p className="font-extrabold text-white">{questions.length} questions</p>
+            <p className="font-extrabold text-slate-950">{questions.length} questions</p>
           </div>
           <div className="space-y-1">
             <p className="text-slate-500 font-bold uppercase text-[9px] tracking-wider">Durée</p>
-            <p className="font-extrabold text-white">{questions.length * 2} minutes</p>
+            <p className="font-extrabold text-slate-950">{questions.length * 2} minutes</p>
           </div>
           <div className="space-y-1">
             <p className="text-slate-500 font-bold uppercase text-[9px] tracking-wider">Seuil</p>
-            <p className="font-extrabold text-white">80% de réussite</p>
+            <p className="font-extrabold text-slate-950">80% de réussite</p>
           </div>
         </div>
 
@@ -512,7 +512,7 @@ export default function PracticePage() {
           
           <button
             onClick={() => router.push('/dashboard')}
-            className="px-6 py-3.5 border border-slate-900 hover:border-slate-800 text-slate-400 hover:text-white rounded-xl text-xs font-bold transition-all cursor-pointer uppercase tracking-wider"
+            className="px-6 py-3.5 border border-slate-200/80 hover:border-slate-200 text-slate-600 hover:text-slate-950 rounded-xl text-xs font-bold transition-all cursor-pointer uppercase tracking-wider"
           >
             Annuler
           </button>

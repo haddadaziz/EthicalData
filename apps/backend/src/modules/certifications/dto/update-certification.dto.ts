@@ -2,31 +2,31 @@ import { IsOptional, IsString, IsEnum, IsNumber } from 'class-validator';
 import { Niveau } from '@prisma/client';
 
 export class UpdateCertificationDto {
-    @IsString()
-    @IsOptional()
-    nom?: string;
+  @IsString()
+  @IsOptional()
+  nom?: string;
 
-    @IsString()
-    @IsOptional()
-    codeExamen?: string;
+  @IsString()
+  @IsOptional()
+  codeExamen?: string;
 
-    @IsString()
-    @IsOptional()
-    description?: string;
+  @IsString()
+  @IsOptional()
+  description?: string;
 
-    @IsEnum(['DEBUTANT', 'INTERMEDIAIRE', 'AVANCE'])
-    @IsOptional()
-    niveau?: Niveau;
+  @IsEnum(['DEBUTANT', 'INTERMEDIAIRE', 'AVANCE'])
+  @IsOptional()
+  niveau?: Niveau;
 
-    @IsString()
-    @IsOptional()
-    dureeIndicative?: string;
+  @IsString()
+  @IsOptional()
+  dureeIndicative?: string;
 
-    @IsNumber()
-    @IsOptional()
-    fournisseurId?: number;
+  @IsNumber()
+  @IsOptional()
+  fournisseurId?: number;
 
-    @IsString()
-    @IsOptional()
-    image?: string;
+  @IsString()
+  @IsOptional()
+  image?: string;
 }

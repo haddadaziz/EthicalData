@@ -26,8 +26,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }, []);
 
   useEffect(() => {
-    document.documentElement.classList.add('dark');
-    localStorage.setItem('theme', 'dark');
+    document.documentElement.classList.remove('dark');
+    localStorage.setItem('theme', 'light');
 
     const token = localStorage.getItem('token');
     if (!token) {
@@ -68,18 +68,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (!authorized) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-400 gap-4">
-        <span className="w-10 h-10 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
-        <p className="text-xs font-bold uppercase tracking-widest text-indigo-400">Chargement de votre espace...</p>
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-slate-600 gap-4">
+        <span className="w-10 h-10 border-4 border-red-100 border-t-red-600 rounded-full animate-spin" />
+        <p className="text-xs font-bold uppercase tracking-widest text-red-600">Chargement de votre espace...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex relative overflow-hidden font-sans">
       
       {/* Halos d'arrière-plan */}
-      <div className="absolute top-[-20%] left-[-10%] w-[55%] h-[55%] bg-indigo-550/5 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="absolute top-[-20%] left-[-10%] w-[55%] h-[55%] bg-red-500/2 rounded-full blur-[140px] pointer-events-none z-0" />
       <div className="absolute bottom-[-20%] right-[-10%] w-[55%] h-[55%] bg-purple-550/5 rounded-full blur-[140px] pointer-events-none z-0" />
 
       {/* Sidebar Mobile */}
@@ -91,23 +91,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSidebarOpen(false)}
-              className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm"
+              className="fixed inset-0 z-40 bg-slate-50/60 backdrop-blur-sm"
             />
             <motion.aside
               initial={{ x: -280 }}
               animate={{ x: 0 }}
               exit={{ x: -280 }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 bottom-0 left-0 z-50 w-[260px] flex flex-col bg-slate-900/90 backdrop-blur-xl border-r border-slate-900 h-screen"
+              className="fixed top-0 bottom-0 left-0 z-50 w-[260px] flex flex-col bg-white backdrop-blur-xl border-r border-slate-200/80 h-screen"
             >
-              <div className="h-20 flex items-center justify-between px-6 border-b border-slate-900">
+              <div className="h-20 flex items-center justify-between px-6 border-b border-slate-200/80">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-400">
+                  <div className="w-9 h-9 bg-red-50 border border-red-100 rounded-xl flex items-center justify-center text-red-600">
                     <ShieldCheck className="w-5.5 h-5.5" />
                   </div>
-                  <span className="font-extrabold text-base text-white tracking-tight">EthicalData</span>
+                  <span className="font-extrabold text-base text-slate-950 tracking-tight">EthicalData</span>
                 </div>
-                <button onClick={() => setSidebarOpen(false)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400">
+                <button onClick={() => setSidebarOpen(false)} className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-600">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -121,7 +121,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       key={index}
                       href={item.href}
                       onClick={() => setSidebarOpen(false)}
-                      className={`flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold transition-all ${isActive ? 'bg-white text-slate-950 shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-900'}`}
+                      className={`flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold transition-all ${isActive ? 'bg-slate-950 text-white shadow-md' : 'text-slate-600 hover:text-slate-950 hover:bg-slate-50'}`}
                     >
                       <Icon className="w-5 h-5" />
                       <span>{item.name}</span>
@@ -130,17 +130,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 })}
               </nav>
 
-              <div className="p-4 border-t border-slate-900 bg-slate-950/40">
+              <div className="p-4 border-t border-slate-200/80 bg-slate-50/40">
                 <div className="flex items-center gap-3 p-2 rounded-xl mb-2">
-                  <div className="w-9 h-9 bg-slate-800 rounded-xl flex items-center justify-center text-slate-300">
+                  <div className="w-9 h-9 bg-slate-100 rounded-xl flex items-center justify-center text-slate-700">
                     <User className="w-5 h-5" />
                   </div>
                   <div className="truncate flex-1">
-                    <p className="text-xs font-bold text-white truncate">{userFirstName}</p>
-                    <p className="text-[9px] text-indigo-400 font-extrabold uppercase tracking-wider">Candidat</p>
+                    <p className="text-xs font-bold text-slate-950 truncate">{userFirstName}</p>
+                    <p className="text-[9px] text-red-600 font-extrabold uppercase tracking-wider">Candidat</p>
                   </div>
                 </div>
-                <button onClick={handleLogout} className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold text-rose-455 hover:bg-rose-500/10 hover:text-rose-400">
+                <button onClick={handleLogout} className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold text-rose-500 hover:bg-rose-500/10 hover:text-rose-400">
                   <LogOut className="w-5 h-5" />
                   <span>Déconnexion</span>
                 </button>
@@ -152,13 +152,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Sidebar Desktop */}
       {!isMobile && (
-        <aside className="w-[260px] flex flex-col bg-slate-900/20 backdrop-blur-xl border-r border-slate-900 shrink-0 h-screen z-10">
-          <div className="h-20 flex items-center px-6 border-b border-slate-900">
+        <aside className="w-[260px] flex flex-col bg-white shadow-sm backdrop-blur-xl border-r border-slate-200/80 shrink-0 h-screen z-10">
+          <div className="h-20 flex items-center px-6 border-b border-slate-200/80">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-400">
+              <div className="w-10 h-10 bg-red-50 border border-red-100 rounded-xl flex items-center justify-center text-red-600">
                 <ShieldCheck className="w-6 h-6" />
               </div>
-              <span className="font-extrabold text-base text-white tracking-tight">EthicalData</span>
+              <span className="font-extrabold text-base text-slate-950 tracking-tight">EthicalData</span>
             </div>
           </div>
 
@@ -170,7 +170,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <a
                   key={index}
                   href={item.href}
-                  className={`flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 ${isActive ? 'bg-white text-slate-955 shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-900/60'}`}
+                  className={`flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 ${isActive ? 'bg-slate-950 text-white shadow-md' : 'text-slate-600 hover:text-slate-950 hover:bg-slate-50/60'}`}
                 >
                   <Icon className="w-5 h-5" />
                   <span>{item.name}</span>
@@ -179,17 +179,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             })}
           </nav>
 
-          <div className="p-4 border-t border-slate-900 bg-slate-950/40">
+          <div className="p-4 border-t border-slate-200/80 bg-slate-50/40">
             <div className="flex items-center gap-3 p-2 rounded-xl mb-2">
-              <div className="w-10 h-10 bg-slate-900 border border-slate-850 rounded-xl flex items-center justify-center text-slate-400">
+              <div className="w-10 h-10 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center text-slate-600">
                 <User className="w-5 h-5" />
               </div>
               <div className="truncate flex-1">
-                <p className="text-xs font-bold text-white truncate">{userFirstName}</p>
-                <p className="text-[9px] text-indigo-400 font-extrabold uppercase tracking-wider">Candidat</p>
+                <p className="text-xs font-bold text-slate-950 truncate">{userFirstName}</p>
+                <p className="text-[9px] text-red-600 font-extrabold uppercase tracking-wider">Candidat</p>
               </div>
             </div>
-            <button onClick={handleLogout} className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold text-rose-450 hover:bg-rose-500/10 hover:text-rose-450">
+            <button onClick={handleLogout} className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold text-rose-500 hover:bg-rose-500/10 hover:text-rose-500">
               <LogOut className="w-5 h-5" />
               <span>Déconnexion</span>
             </button>
@@ -199,16 +199,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Contenu principal */}
       <div className="flex-1 flex flex-col min-h-screen overflow-y-auto relative z-10">
-        <header className="h-20 border-b border-slate-900 bg-slate-955/40 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-20">
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 bg-slate-900 border border-slate-850 text-slate-400 hover:text-white rounded-xl md:hidden">
+        <header className="h-20 border-b border-slate-200/80 bg-white/70 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-20">
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 bg-slate-50 border border-slate-200 text-slate-600 hover:text-slate-950 rounded-xl md:hidden">
             <Menu className="w-5 h-5" />
           </button>
           <div className="hidden md:block text-left">
             <span className="text-xs text-slate-500 font-bold uppercase tracking-widest">Espace Apprenant</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-xs font-bold text-white">{userEmail}</span>
-            <div className="w-9 h-9 bg-indigo-500/10 border border-indigo-500/20 rounded-full flex items-center justify-center text-indigo-400 font-bold">
+            <span className="text-xs font-bold text-slate-950">{userEmail}</span>
+            <div className="w-9 h-9 bg-red-50 border border-red-100 rounded-full flex items-center justify-center text-red-600 font-bold">
               {userEmail.charAt(0).toUpperCase()}
             </div>
           </div>

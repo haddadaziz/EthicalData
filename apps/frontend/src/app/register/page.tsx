@@ -7,20 +7,23 @@ import { apiFetch } from '../../lib/api';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export default function LoginPage() {
+export default function RegisterPage() {
     const router = useRouter();
+    const [prenom, setPrenom] = useState('');
+    const [nom, setNom] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const mouseRef = useRef({ x: 0, y: 0, active: false });
 
     // Configuration SEO de la page
     useEffect(() => {
-        document.title = "Connexion - Ethical Data Security";
+        document.title = "Inscription - Ethical Data Security";
         document.documentElement.classList.remove('dark');
         localStorage.setItem('theme', 'light');
     }, []);
@@ -172,8 +175,22 @@ export default function LoginPage() {
         e.preventDefault();
         setLoading(true);
         setError(null);
+        setSuccessMessage(null);
 
         try {
+            await apiFetch('/users', {
+                method: 'POST',
+                body: {
+                    prenom,
+                    nom,
+                    email,
+                    motDePasse: password,
+                    roles: ['APPRENANT']
+                },
+            });
+
+            setSuccessMessage('Inscription réussie ! Connexion automatique...');
+
             const data = await apiFetch('/auth/login', {
                 method: 'POST',
                 body: { email, motDePasse: password },
@@ -181,17 +198,11 @@ export default function LoginPage() {
 
             localStorage.setItem('token', data.access_token);
 
-            const payloadBase64 = data.access_token.split('.')[1];
-            const decodedPayload = JSON.parse(atob(payloadBase64));
-            const roles = decodedPayload.roles || [];
-
-            if (roles.includes('SUPER_ADMIN') || roles.includes('ADMIN')) {
-                router.push('/admin');
-            } else {
+            setTimeout(() => {
                 router.push('/dashboard');
-            }
+            }, 1000);
         } catch (err: any) {
-            setError(err.message || 'Identifiants invalides.');
+            setError(err.message || 'Une erreur est survenue lors de l&apos;inscription.');
         } finally {
             setLoading(false);
         }
@@ -209,20 +220,20 @@ export default function LoginPage() {
                 className="absolute inset-0 w-full h-full pointer-events-none z-0"
             />
 
-            {/* Boîte de connexion blanche ultra-compacte */}
+            {/* Boîte d&apos;inscription blanche ultra-compacte */}
             <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: 'easeOut' }}
                 className="w-full max-w-[400px] bg-white border border-slate-200/80 rounded-[28px] shadow-xl p-6 sm:p-8 relative z-10 hover:border-slate-350 hover:shadow-2xl transition-all duration-500 group/card"
             >
-                <div className="flex flex-col items-center mb-6">
+                <div className="flex flex-col items-center mb-5">
                     <div className="w-10 h-10 bg-red-50 border border-red-100 rounded-2xl flex items-center justify-center text-red-600 mb-2 group-hover/card:border-red-600/30 transition-all duration-500">
                         <ShieldCheck className="w-5 h-5" />
                     </div>
-                    <h1 className="text-lg font-bold text-slate-900 tracking-tight">Connexion</h1>
+                    <h1 className="text-lg font-bold text-slate-900 tracking-tight">Inscription</h1>
                     <p className="text-[10px] text-slate-500 mt-1 font-bold uppercase tracking-wider">
-                        Préparation aux Certifications IT
+                        Créez votre accès étudiant
                     </p>
                 </div>
 
@@ -232,6 +243,38 @@ export default function LoginPage() {
                             {error}
                         </div>
                     )}
+
+                    {successMessage && (
+                        <div className="p-3 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-xl text-xs font-semibold text-left">
+                            {successMessage}
+                        </div>
+                    )}
+
+                    <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1.5 text-left group">
+                            <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Prénom</label>
+                            <input
+                                type="text"
+                                required
+                                value={prenom}
+                                onChange={(e) => setPrenom(e.target.value)}
+                                placeholder="Jean"
+                                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 hover:border-slate-300 focus:border-red-600 focus:bg-white focus:ring-4 focus:ring-red-600/5 rounded-xl text-slate-900 placeholder-slate-400 transition-all text-xs outline-none font-semibold"
+                            />
+                        </div>
+
+                        <div className="space-y-1.5 text-left group">
+                            <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Nom</label>
+                            <input
+                                type="text"
+                                required
+                                value={nom}
+                                onChange={(e) => setNom(e.target.value)}
+                                placeholder="Dupont"
+                                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 hover:border-slate-300 focus:border-red-600 focus:bg-white focus:ring-4 focus:ring-red-600/5 rounded-xl text-slate-900 placeholder-slate-400 transition-all text-xs outline-none font-semibold"
+                            />
+                        </div>
+                    </div>
 
                     <div className="space-y-1.5 text-left group">
                         <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Adresse e-mail</label>
@@ -276,17 +319,17 @@ export default function LoginPage() {
                         {loading ? (
                             <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         ) : (
-                            'Se connecter'
+                            "S'inscrire"
                         )}
                     </button>
                 </form>
 
                 <div className="mt-5 pt-4 border-t border-slate-100 text-center">
                     <Link
-                        href="/register"
+                        href="/login"
                         className="text-xs text-slate-550 hover:text-slate-900 font-bold transition-colors cursor-pointer"
                     >
-                        Pas encore de compte ? Créer un compte
+                        Déjà inscrit ? Se connecter
                     </Link>
                 </div>
             </motion.div>
