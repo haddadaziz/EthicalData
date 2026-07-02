@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { BookOpen, Award, Settings, LogOut, ShieldCheck, Menu, X, User, DownloadCloud, HelpCircle } from 'lucide-react';
+import { BookOpen, Award, Settings, LogOut, ShieldCheck, Menu, X, User, DownloadCloud, HelpCircle, MessageSquare } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -62,8 +62,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const navItems = [
         { name: 'Mon Tableau de Bord', href: '/dashboard', icon: BookOpen },
         { name: 'Certifications', href: '/dashboard/certifications', icon: Award },
-        { name: 'Entraînement', href: '/dashboard/practice', icon: HelpCircle }, // Changé en icône d'aide/question pour le simulateur
+        { name: 'Entraînement', href: '/dashboard/practice', icon: HelpCircle },
         { name: 'Mes Fiches & Cours', href: '/dashboard/downloads', icon: DownloadCloud },
+        { name: 'Communauté', href: '/dashboard/community', icon: MessageSquare },
     ];
 
     if (!authorized) {

@@ -5,7 +5,8 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { CertificationsModule } from './modules/certifications/certifications.module'; // Import du nouveau module
+import { CertificationsModule } from './modules/certifications/certifications.module';
+import { ForumModule } from './modules/forum/forum.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CertificationsModule } from './modules/certifications/certifications.mo
     UsersModule,
     AuthModule,
     CertificationsModule,
+    ForumModule,
   ],
   controllers: [AppController],
   providers: [AppService],

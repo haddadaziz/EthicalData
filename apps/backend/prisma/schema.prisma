@@ -23,6 +23,12 @@ model Utilisateur {
   roles           Role[]          @relation("UtilisateurRoles")
   telechargements Telechargement[]
   tentatives      Tentative[]
+
+  // Relations forum
+  sujets          Sujet[]
+  commentaires    Commentaire[]
+  likesSujets     LikeSujet[]
+  signalements    SignalementSujet[]
   
   @@map("utilisateurs")
 }
@@ -65,6 +71,9 @@ model Certification {
   ressources      Ressource[]
   questions       Question[]
   tentatives      Tentative[]
+  
+  // Relations forum
+  sujets          Sujet[]
 
   @@map("certifications")
 }
@@ -159,6 +168,70 @@ model Tentative {
   @@map("tentatives")
 }
 
+model Sujet {
+  id              BigInt             @id @default(autoincrement())
+  titre           String
+  contenu         String             @db.Text
+  theme           String             // Azure, Data, IA, Cybersécurité, Carrière, Examen...
+  dateCreation    DateTime           @default(now())
+  deletedAt       DateTime?          @map("deleted_at")
+
+  // Relations
+  auteurId        BigInt
+  auteur          Utilisateur        @relation(fields: [auteurId], references: [id], onDelete: Cascade)
+  certificationId BigInt?
+  certification   Certification?     @relation(fields: [certificationId], references: [id], onDelete: SetNull)
+  commentaires    Commentaire[]
+  likes           LikeSujet[]
+  signalements    SignalementSujet[]
+
+  @@map("sujets")
+}
+
+model Commentaire {
+  id           BigInt      @id @default(autoincrement())
+  contenu      String      @db.Text
+  dateCreation DateTime    @default(now())
+  deletedAt    DateTime?   @map("deleted_at")
+
+  // Relations
+  sujetId      BigInt
+  sujet        Sujet       @relation(fields: [sujetId], references: [id], onDelete: Cascade)
+  auteurId     BigInt
+  auteur       Utilisateur @relation(fields: [auteurId], references: [id], onDelete: Cascade)
+
+  @@map("commentaires")
+}
+
+model LikeSujet {
+  id            BigInt      @id @default(autoincrement())
+  dateLike      DateTime    @default(now())
+  
+  // Relations
+  sujetId       BigInt
+  sujet         Sujet       @relation(fields: [sujetId], references: [id], onDelete: Cascade)
+  utilisateurId BigInt
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+
+  @@unique([sujetId, utilisateurId])
+  @@map("likes_sujets")
+}
+
+model SignalementSujet {
+  id            BigInt      @id @default(autoincrement())
+  motif         String?
+  dateCreation  DateTime    @default(now())
+  traite        Boolean     @default(false)
+
+  // Relations
+  sujetId       BigInt
+  sujet         Sujet       @relation(fields: [sujetId], references: [id], onDelete: Cascade)
+  utilisateurId BigInt
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+
+  @@unique([sujetId, utilisateurId])
+  @@map("signalements_sujets")
+}
 enum Statut {
   ACTIF
   INACTIF
