@@ -9,6 +9,8 @@ import { CertificationsModule } from './modules/certifications/certifications.mo
 import { ForumModule } from './modules/forum/forum.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { AppointmentsModule } from './modules/appointments/appointments.module';
+import { ResourcesModule } from './modules/resources/resources.module';
+import { SimulationsModule } from './modules/simulations/simulations.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { AppointmentsModule } from './modules/appointments/appointments.module';
     UsersModule,
     AuthModule,
     CertificationsModule,
+    ResourcesModule,
+    SimulationsModule,
     ForumModule,
     NotificationsModule,
     AppointmentsModule,
