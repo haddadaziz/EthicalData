@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateCertificationDto } from './dto/create-certification.dto';
@@ -9,6 +10,7 @@ import { UpdateCertificationDto } from './dto/update-certification.dto';
 import { CreateFournisseurDto } from './dto/create-fournisseur.dto';
 import { UpdateFournisseurDto } from './dto/update-fournisseur.dto';
 import { CreateQuestionDto } from './dto/create-question.dto';
+import { CreateRessourceDto } from './dto/create-ressource.dto';
 import { AiService } from './ai.service';
 
 @Injectable()
@@ -16,7 +18,7 @@ export class CertificationsService {
   constructor(
     private prisma: PrismaService,
     private aiService: AiService,
-  ) {}
+  ) { }
 
   private slugify(text: string): string {
     return text
@@ -356,11 +358,11 @@ export class CertificationsService {
     const optionsData =
       dto.options && dto.options.length > 0
         ? {
-            create: dto.options.map((opt: any) => ({
-              lettre: opt.lettre,
-              texte: opt.texte,
-            })),
-          }
+          create: dto.options.map((opt: any) => ({
+            lettre: opt.lettre,
+            texte: opt.texte,
+          })),
+        }
         : undefined;
 
     const question = await this.prisma.question.create({
@@ -424,8 +426,8 @@ export class CertificationsService {
     const avgScore =
       total > 0
         ? Math.round(
-            tentatives.reduce((acc, curr) => acc + curr.score, 0) / total,
-          )
+          tentatives.reduce((acc, curr) => acc + curr.score, 0) / total,
+        )
         : 0;
 
     return {
@@ -464,11 +466,11 @@ export class CertificationsService {
     const optionsData =
       dto.options && dto.options.length > 0
         ? {
-            create: dto.options.map((opt: any) => ({
-              lettre: opt.lettre,
-              texte: opt.texte,
-            })),
-          }
+          create: dto.options.map((opt: any) => ({
+            lettre: opt.lettre,
+            texte: opt.texte,
+          })),
+        }
         : undefined;
 
     const updated = await this.prisma.question.update({
@@ -510,5 +512,155 @@ export class CertificationsService {
       question.grilleNotation,
       reponseCandidat,
     );
+  }
+
+  // ==========================================
+  // GESTION DES RESSOURCES (GUIDES, SLIDES...)
+  // ==========================================
+
+  async createRessource(dto: CreateRessourceDto) {
+    const ressource = await this.prisma.ressource.create({
+      data: {
+        titre: dto.titre,
+        description: dto.description,
+        type: dto.type,
+        url: dto.url,
+        taille: dto.taille || null,
+        version: dto.version || '1.0.0',
+        quotaTelechargement: dto.quotaTelechargement !== undefined ? dto.quotaTelechargement : 10,
+        public: dto.public !== undefined ? dto.public : false,
+        certificationId: dto.certificationId ? BigInt(dto.certificationId) : null,
+      },
+    });
+    return {
+      ...ressource,
+      id: ressource.id.toString(),
+      certificationId: ressource.certificationId?.toString(),
+    };
+  }
+
+  async updateRessource(id: number, dto: Partial<CreateRessourceDto>) {
+    const existing = await this.prisma.ressource.findFirst({
+      where: { id: BigInt(id), deletedAt: null },
+    });
+    if (!existing) {
+      throw new NotFoundException("La ressource demandée n'existe pas.");
+    }
+    const updated = await this.prisma.ressource.update({
+      where: { id: BigInt(id) },
+      data: {
+        titre: dto.titre,
+        description: dto.description,
+        type: dto.type,
+        url: dto.url,
+        taille: dto.taille,
+        version: dto.version,
+        quotaTelechargement: dto.quotaTelechargement,
+        public: dto.public,
+        certificationId: dto.certificationId ? BigInt(dto.certificationId) : null,
+      },
+    });
+    return {
+      ...updated,
+      id: updated.id.toString(),
+      certificationId: updated.certificationId?.toString(),
+    };
+  }
+
+  async removeRessource(id: number) {
+    const existing = await this.prisma.ressource.findFirst({
+      where: { id: BigInt(id), deletedAt: null },
+    });
+    if (!existing) {
+      throw new NotFoundException("La ressource demandée n'existe pas.");
+    }
+    await this.prisma.ressource.update({
+      where: { id: BigInt(id) },
+      data: { deletedAt: new Date() },
+    });
+    return { message: 'Ressource supprimée avec succès.' };
+  }
+
+  async findAllRessources() {
+    const resources = await this.prisma.ressource.findMany({
+      where: { deletedAt: null },
+      include: { certification: true },
+      orderBy: { dateCreation: 'desc' },
+    });
+    return resources.map((r) => ({
+      ...r,
+      id: r.id.toString(),
+      certificationId: r.certificationId?.toString(),
+      certification: r.certification ? {
+        id: r.certification.id.toString(),
+        nom: r.certification.nom,
+        slug: r.certification.slug,
+        codeExamen: r.certification.codeExamen,
+      } : null,
+    }));
+  }
+  // Enregistrer et autoriser le téléchargement d'un document (avec contrôle de quota)
+  async downloadRessource(userId: number, resourceId: number, ipAddress: string) {
+    const resource = await this.prisma.ressource.findFirst({
+      where: { id: BigInt(resourceId), deletedAt: null },
+    });
+
+    if (!resource) {
+      throw new NotFoundException("La ressource demandée n'existe pas.");
+    }
+
+    // Si la ressource n'est pas publique, on applique la vérification du quota
+    if (!resource.public) {
+      const quota = resource.quotaTelechargement ?? 10;
+
+      const downloadCount = await this.prisma.telechargement.count({
+        where: {
+          utilisateurId: BigInt(userId),
+          ressourceId: BigInt(resourceId),
+        },
+      });
+
+      if (downloadCount >= quota) {
+        throw new ForbiddenException(
+          `Vous avez atteint votre quota maximum de ${quota} téléchargements pour cette ressource.`
+        );
+      }
+    }
+
+    // Enregistrer le téléchargement dans l'historique
+    await this.prisma.telechargement.create({
+      data: {
+        ressourceId: BigInt(resourceId),
+        utilisateurId: BigInt(userId),
+        ip: ipAddress,
+      },
+    });
+
+    return {
+      url: resource.url,
+      message: 'Téléchargement autorisé.',
+    };
+  }
+
+  // Récupérer le statut des quotas d'un utilisateur
+  async getUserResourceQuotas(userId: number) {
+    const resources = await this.prisma.ressource.findMany({
+      where: { deletedAt: null, public: false },
+    });
+
+    const downloads = await this.prisma.telechargement.findMany({
+      where: { utilisateurId: BigInt(userId) },
+    });
+
+    return resources.map(r => {
+      const userDownloads = downloads.filter(d => d.ressourceId === r.id).length;
+      const quotaMax = r.quotaTelechargement ?? 10;
+      return {
+        resourceId: r.id.toString(),
+        downloadsCount: userDownloads,
+        quotaMax,
+        remaining: Math.max(0, quotaMax - userDownloads),
+      };
+    });
   }
 }

@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Users, Award, Settings, LogOut, ShieldCheck, Menu, X, User } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Users, Award, Settings, LogOut, ShieldCheck, Menu, X, User, FileText } from 'lucide-react'; import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -78,10 +77,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     disabled?: boolean;
     badge?: string;
   }
-  
+
   const navItems: NavItem[] = [
     { name: 'Utilisateurs', href: '/admin', icon: Users },
     { name: 'Certifications', href: '/admin/certifications', icon: Award },
+    { name: 'Ressources', href: '/admin/resources', icon: FileText },
     { name: 'Paramètres', href: '#', icon: Settings, disabled: true },
   ];
 
@@ -94,8 +94,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
+  // Déterminer le titre et sous-titre selon la page courante
+  const getPageTitleAndSubtitle = () => {
+    if (pathname === '/admin') {
+      return { title: 'Utilisateurs', subtitle: 'Gestion des comptes et des rôles d\'accès' };
+    }
+    if (pathname === '/admin/certifications') {
+      return { title: 'Certifications', subtitle: 'Gestion du catalogue d\'examens et questions' };
+    }
+    return { title: 'Administration', subtitle: 'Console de gestion Ethical Data' };
+  };
+  const { title, subtitle } = getPageTitleAndSubtitle();
+
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 flex relative overflow-hidden font-sans">
+    <div className="h-screen bg-slate-50 text-slate-800 flex relative overflow-hidden font-sans">
 
       {/* Arrière-plan texturé clair */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000002_1px,transparent_1px),linear-gradient(to_bottom,#00000002_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none z-0" />
@@ -113,11 +125,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               className="fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-sm"
             />
             <motion.aside
-              initial={{ x: -280 }}
+              initial={{ x: -260 }}
               animate={{ x: 0 }}
-              exit={{ x: -280 }}
+              exit={{ x: -260 }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 bottom-0 left-0 z-50 w-[260px] flex flex-col bg-white border-r border-slate-200/80 h-screen shadow-2xl"
+              className="fixed top-0 bottom-0 left-0 z-50 w-[260px] flex flex-col bg-white border-r border-slate-200/80 h-screen shadow-2xl overflow-hidden"
             >
               <div className="h-20 flex items-center justify-between px-6 border-b border-slate-200/80">
                 <div className="flex items-center gap-3">
@@ -194,9 +206,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <motion.aside
           animate={{ width: sidebarOpen ? 260 : 80 }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
-          className="hidden md:flex flex-col bg-white border-r border-slate-200/80 relative z-10 shrink-0 h-screen shadow-sm"
+          className="hidden md:flex flex-col bg-white border-r border-slate-200/80 relative z-10 shrink-0 sticky top-0 h-screen shadow-sm overflow-y-auto overflow-x-hidden"
         >
-          <div className="h-20 flex items-center justify-between px-6 border-b border-slate-200/80">
+          {/* Logo */}
+          <div className={`h-20 flex items-center ${sidebarOpen ? 'justify-between px-6' : 'justify-center px-0'} border-b border-slate-200/80`}>
             <div className="flex items-center gap-3 overflow-hidden">
               <div className="w-10 h-10 bg-red-50 border border-red-100 rounded-xl flex items-center justify-center text-red-600 shrink-0">
                 <ShieldCheck className="w-6 h-6" />
@@ -205,7 +218,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <motion.span
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="font-extrabold text-base text-slate-950 tracking-tight shrink-0 uppercase"
+                  className="font-extrabold text-base text-slate-950 tracking-tight shrink-0 uppercase animate-fade-in"
                 >
                   EthicalData
                 </motion.span>
@@ -213,6 +226,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
           </div>
 
+          {/* Liens de navigation */}
           <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
             {navItems.map((item, index) => {
               const isActive = pathname === item.href;
@@ -222,7 +236,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <a
                   key={index}
                   href={item.href}
-                  className={`flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 group relative ${isActive
+                  className={`flex items-center ${sidebarOpen ? 'gap-4 px-4' : 'justify-center px-0'} py-3.5 rounded-xl text-sm font-bold transition-all duration-200 group relative ${isActive
                     ? 'bg-slate-950 text-white shadow-md'
                     : item.disabled
                       ? 'text-slate-400 cursor-not-allowed opacity-40'
@@ -249,8 +263,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             })}
           </nav>
 
+          {/* Profil & Déconnexion en bas */}
           <div className="p-4 border-t border-slate-200/80 bg-slate-50/50">
-            <div className="flex items-center gap-3 p-2 rounded-xl mb-2 overflow-hidden">
+            <div className={`flex items-center ${sidebarOpen ? 'gap-3 p-2' : 'justify-center p-0'} rounded-xl mb-2 overflow-hidden`}>
               <div className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-500 shrink-0">
                 <User className="w-5.5 h-5.5" />
               </div>
@@ -268,7 +283,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
             <button
               onClick={handleLogout}
-              className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 hover:text-red-700 transition-all cursor-pointer group`}
+              className={`w-full flex items-center ${sidebarOpen ? 'gap-4 px-4' : 'justify-center px-0'} py-3.5 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 hover:text-red-700 transition-all cursor-pointer group`}
             >
               <LogOut className="w-5.5 h-5.5 shrink-0 group-hover:translate-x-0.5 transition-transform" />
               {sidebarOpen && <span>Déconnexion</span>}
@@ -278,24 +293,41 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       )}
 
       {/* Contenu de droite */}
-      <div className="flex-1 flex flex-col min-h-screen overflow-y-auto relative z-10">
+      <div className="flex-1 flex flex-col h-screen overflow-y-auto relative z-10">
 
-        {/* Header */}
-        <header className="h-20 border-b border-slate-200/80 bg-white/70 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-20">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 bg-slate-50 border border-slate-200/80 text-slate-500 hover:text-slate-900 rounded-xl cursor-pointer"
-          >
-            {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+        {/* Header Premium */}
+        {/* Header Premium */}
+        <header className="py-5 md:py-6 border-b border-slate-200/50 bg-white/80 backdrop-blur-xl flex items-center justify-between px-8 md:px-12 sticky top-0 z-20 transition-all duration-300">
 
-          <div className="flex items-center gap-4">
-            <div className="flex flex-col text-right hidden sm:flex">
-              <span className="text-xs font-bold text-slate-900">{userEmail}</span>
-              <span className="text-[10px] font-extrabold text-red-600 uppercase tracking-widest">{userRole}</span>
+          {/* Gauche : Bouton Sidebar & Titre Dynamique */}
+          <div className="flex items-center gap-6">
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="p-3 bg-slate-50 border border-slate-200 hover:border-red-600 hover:bg-red-50/30 text-slate-600 hover:text-red-600 rounded-xl transition-all duration-200 cursor-pointer shadow-sm flex items-center justify-center"
+              title={sidebarOpen ? "Réduire le menu" : "Agrandir le menu"}
+            >
+              {sidebarOpen ? <X className="w-5.5 h-5.5" /> : <Menu className="w-5.5 h-5.5" />}
+            </button>
+
+            <div className="flex flex-col text-left justify-center">
+              <h1 className="text-xl md:text-2xl font-black text-slate-950 tracking-tight leading-none mb-2">{title}</h1>
+              <p className="text-xs text-slate-400 font-bold hidden md:block leading-none">{subtitle}</p>
             </div>
-            <div className="w-9 h-9 bg-red-50 border border-red-100 rounded-full flex items-center justify-center text-red-600 font-bold">
-              {userEmail.charAt(0).toUpperCase()}
+          </div>
+
+          {/* Droite : Profil Utilisateur */}
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col text-right justify-center hidden sm:flex">
+              <span className="text-sm font-bold text-slate-900 leading-none mb-1.5">{userEmail}</span>
+              <span className="text-[10px] font-black text-red-600 uppercase tracking-widest leading-none">{userRole}</span>
+            </div>
+
+            {/* Avatar Stylisé avec Dégradé */}
+            <div className="relative group cursor-pointer shrink-0">
+              <div className="absolute inset-0 bg-gradient-to-tr from-red-600 to-rose-500 rounded-full blur-md opacity-25 group-hover:opacity-40 transition-opacity" />
+              <div className="relative w-12 h-12 bg-gradient-to-tr from-slate-950 to-slate-900 border border-slate-800 rounded-full flex items-center justify-center text-white font-extrabold text-sm shadow-md transition-transform duration-200 group-hover:scale-105">
+                {userEmail.charAt(0).toUpperCase()}
+              </div>
             </div>
           </div>
         </header>

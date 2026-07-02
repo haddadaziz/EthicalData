@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../lib/api';
-import { Users, UserCheck, ShieldAlert, Award, Search, Plus, RefreshCw, X, Eye, EyeOff, Edit, Trash2, SlidersHorizontal, User as UserIcon, Mail, Phone, Lock } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Users, UserCheck, ShieldAlert, Award, Search, Plus, RefreshCw, X, Eye, EyeOff, Edit, Trash2, SlidersHorizontal, User as UserIcon, Mail, Phone, Lock, ArrowLeft, ArrowRight } from 'lucide-react'; import { motion, AnimatePresence } from 'framer-motion';
 
 interface Role {
   id: string;
@@ -31,6 +30,15 @@ export default function AdminDashboard() {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedRoleFilter, setSelectedRoleFilter] = useState<'TOUS' | 'APPRENANT' | 'FORMATEUR' | 'ADMIN' | 'SUPER_ADMIN'>('TOUS');
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<'TOUS' | 'ACTIF' | 'INACTIF' | 'BANNI'>('TOUS');
+
+  // États pour la pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
+  // Remettre à la page 1 si les filtres changent
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedRoleFilter, selectedStatusFilter]);
 
   // États pour le modal de création d'utilisateur
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -97,6 +105,12 @@ export default function AdminDashboard() {
 
     return matchesSearch && matchesRole && matchesStatus;
   });
+
+  // Calculs pour la pagination
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
 
   const totalUsers = users.length;
   const activeUsers = users.filter(u => u.statut === 'ACTIF').length;
@@ -389,8 +403,8 @@ export default function AdminDashboard() {
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={`flex items-center gap-2 px-4 py-3 border rounded-xl font-bold text-xs uppercase tracking-widest transition-all cursor-pointer ${showFilters || hasActiveFilters
-                  ? 'border-red-600 bg-red-50 text-red-600 font-black'
-                  : 'border-slate-200 hover:border-slate-350 text-slate-600 bg-white'
+                ? 'border-red-600 bg-red-50 text-red-600 font-black'
+                : 'border-slate-200 hover:border-slate-350 text-slate-600 bg-white'
                 }`}
             >
               <SlidersHorizontal className="w-4 h-4" />
@@ -442,8 +456,8 @@ export default function AdminDashboard() {
                         key={role.val}
                         onClick={() => setSelectedRoleFilter(role.val as any)}
                         className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${selectedRoleFilter === role.val
-                            ? 'bg-slate-950 text-white shadow-md'
-                            : 'bg-white border border-slate-200 hover:border-slate-300 text-slate-650'
+                          ? 'bg-slate-950 text-white shadow-md'
+                          : 'bg-white border border-slate-200 hover:border-slate-300 text-slate-650'
                           }`}
                       >
                         {role.label}
@@ -466,8 +480,8 @@ export default function AdminDashboard() {
                         key={status.val}
                         onClick={() => setSelectedStatusFilter(status.val as any)}
                         className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${selectedStatusFilter === status.val
-                            ? 'bg-slate-950 text-white shadow-md'
-                            : 'bg-white border border-slate-200 hover:border-slate-300 text-slate-650'
+                          ? 'bg-slate-950 text-white shadow-md'
+                          : 'bg-white border border-slate-200 hover:border-slate-300 text-slate-650'
                           }`}
                       >
                         {status.label}
@@ -505,78 +519,78 @@ export default function AdminDashboard() {
             </div>
           ) : (
             <>
-              {/* Version Mobile */}
-              <div className="block lg:hidden space-y-4 p-4">
-                {filteredUsers.map((user) => (
+              {/* Grille unifiée de cartes d'utilisateurs */}
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 p-6 text-left">
+                {currentUsers.map((user) => (
                   <div
                     key={user.id}
-                    className="bg-white border border-slate-100 rounded-2xl p-5 space-y-4 transition-all duration-300 hover:border-slate-200 shadow-sm"
+                    className="bg-white border border-slate-200/80 rounded-2xl p-5 flex flex-col justify-between group transition-all duration-300 hover:border-slate-350 hover:shadow-md"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-red-50 border border-red-100 text-red-600 rounded-xl flex items-center justify-center font-black shrink-0 text-sm">
-                        {user.prenom.charAt(0).toUpperCase()}{user.nom.charAt(0).toUpperCase()}
-                      </div>
-                      <div className="min-w-0 flex-1 text-left">
-                        <span className="font-extrabold text-slate-950 text-base block truncate">
-                          {user.prenom} {user.nom}
-                        </span>
-                        {user.telephone && (
-                          <span className="text-xs text-slate-500 font-semibold mt-0.5 block">{user.telephone}</span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="space-y-2 text-xs">
-                      <div className="flex justify-between items-center">
-                        <span className="text-slate-500 font-medium">E-mail</span>
-                        <span className="font-bold text-slate-700">{user.email}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-slate-500 font-medium">Statut</span>
-                        <span className={`inline-flex items-center gap-1.5 text-[9px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${getStatutBadgeStyle(user.statut)}`}>
-                          <span className={`w-1 h-1 rounded-full ${user.statut === 'ACTIF' ? 'bg-emerald-500' : user.statut === 'INACTIF' ? 'bg-amber-500' : 'bg-red-500'}`} />
+                    <div className="space-y-4">
+                      {/* Avatar & Statut */}
+                      <div className="flex items-start justify-between">
+                        <div className="relative">
+                          <div className="w-12 h-12 bg-red-50 border border-red-100 text-red-600 rounded-xl flex items-center justify-center font-black text-sm">
+                            {user.prenom.charAt(0).toUpperCase()}{user.nom.charAt(0).toUpperCase()}
+                          </div>
+                          <span className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${
+                            user.statut === 'ACTIF' ? 'bg-emerald-500' : user.statut === 'INACTIF' ? 'bg-amber-500' : 'bg-rose-500'
+                          }`} />
+                        </div>
+                        <span className={`text-[9px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${getStatutBadgeStyle(user.statut)}`}>
                           {user.statut}
                         </span>
                       </div>
-                      <div className="flex justify-between items-start">
-                        <span className="text-slate-500 font-medium mt-0.5">Rôles</span>
-                        <div className="flex flex-wrap gap-1 justify-end max-w-[200px]">
-                          {user.roles.length === 0 ? (
-                            <span className="text-[9px] bg-slate-50 text-slate-400 px-2 py-0.5 rounded-md font-semibold">Aucun</span>
-                          ) : (
-                            user.roles.map((role) => (
-                              <span
-                                key={role.id}
-                                className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${getRoleBadgeStyle(role.nom)}`}
-                              >
-                                {role.nom}
-                              </span>
-                            ))
-                          )}
+
+                      {/* Détails de l'utilisateur */}
+                      <div className="space-y-1 text-left min-w-0">
+                        <h4 className="font-extrabold text-slate-950 text-base leading-snug group-hover:text-red-600 transition-colors truncate">
+                          {user.prenom} {user.nom}
+                        </h4>
+                        <div className="flex items-center gap-1.5 text-xs text-slate-500 font-bold truncate">
+                          <Mail className="w-3.5 h-3.5 shrink-0 text-slate-400" />
+                          <span className="truncate">{user.email}</span>
                         </div>
+                        {user.telephone && (
+                          <div className="flex items-center gap-1.5 text-xs text-slate-500 font-bold">
+                            <Phone className="w-3.5 h-3.5 shrink-0 text-slate-400" />
+                            <span className="truncate">{user.telephone}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Rôles */}
+                      <div className="flex flex-wrap gap-1 pt-1">
+                        {user.roles.map((role) => (
+                          <span
+                            key={role.id}
+                            className={`text-[9px] px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider ${getRoleBadgeStyle(role.nom)}`}>
+                            {role.nom}
+                          </span>
+                        ))}
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                      <span className="text-xs text-slate-500 font-semibold">
+                    {/* Footer de la carte */}
+                    <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-5">
+                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
                         Inscrit le {new Date(user.dateInscription).toLocaleDateString('fr-FR', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric'
+                          day: 'numeric',
+                          month: 'short'
                         })}
                       </span>
 
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1">
                         <button
                           onClick={() => handleOpenEditModal(user)}
-                          className="p-2.5 bg-slate-50 border border-slate-200 hover:border-slate-350 text-slate-500 hover:text-slate-800 rounded-xl transition-colors cursor-pointer"
+                          className="p-2 bg-slate-50 border border-slate-200/80 hover:border-slate-350 text-slate-600 hover:text-slate-950 rounded-xl transition-colors cursor-pointer"
                           title="Modifier"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteUser(user.id, `${user.prenom} ${user.nom}`)}
-                          className="p-2.5 bg-red-50 border border-red-100 text-red-600 hover:bg-red-100 rounded-xl transition-colors cursor-pointer"
+                          className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-xl transition-colors cursor-pointer"
                           title="Supprimer"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -587,98 +601,44 @@ export default function AdminDashboard() {
                 ))}
               </div>
 
-              {/* Version Desktop */}
-              <div className="hidden lg:block overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-slate-200 text-slate-500 text-[10px] font-black uppercase tracking-widest">
-                      <th className="py-5 px-6">Nom</th>
-                      <th className="py-5 px-6">Adresse e-mail</th>
-                      <th className="py-5 px-6">Rôles</th>
-                      <th className="py-5 px-6">Statut</th>
-                      <th className="py-5 px-6">Date d&apos;inscription</th>
-                      <th className="py-5 px-6 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-700 text-sm">
-                    {filteredUsers.map((user) => (
-                      <tr
-                        key={user.id}
-                        className="hover:bg-slate-50/50 transition-colors group"
-                      >
-                        <td className="py-4 px-6 flex items-center gap-3">
-                          <div className="w-9 h-9 bg-red-50 border border-red-100 text-red-600 rounded-xl flex items-center justify-center font-bold">
-                            {user.prenom.charAt(0).toUpperCase()}{user.nom.charAt(0).toUpperCase()}
-                          </div>
-                          <div className="text-left">
-                            <span className="font-bold text-slate-900 group-hover:text-red-600 transition-colors">
-                              {user.prenom} {user.nom}
-                            </span>
-                            {user.telephone && (
-                              <span className="block text-xs text-slate-550 font-semibold mt-0.5">{user.telephone}</span>
-                            )}
-                          </div>
-                        </td>
+              {/* Pagination Premium */}
+              {totalPages > 1 && (
+                <div className="p-6 border-t border-slate-200/60 flex items-center justify-between">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    <span>Précédent</span>
+                  </button>
 
-                        <td className="py-4 px-6 font-semibold text-slate-600">
-                          {user.email}
-                        </td>
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: totalPages }).map((_, index) => {
+                      const pageNum = index + 1;
+                      const isActive = currentPage === pageNum;
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={`w-9 h-9 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center ${isActive ? 'bg-slate-950 text-white shadow-md' : 'bg-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-950'}`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
+                  </div>
 
-                        <td className="py-4 px-6">
-                          <div className="flex flex-wrap gap-1.5">
-                            {user.roles.length === 0 ? (
-                              <span className="text-xs bg-slate-50 text-slate-400 px-2 py-0.5 rounded-md font-semibold">Aucun</span>
-                            ) : (
-                              user.roles.map((role) => (
-                                <span
-                                  key={role.id}
-                                  className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${getRoleBadgeStyle(role.nom)}`}
-                                >
-                                  {role.nom}
-                                </span>
-                              ))
-                            )}
-                          </div>
-                        </td>
-
-                        <td className="py-4 px-6">
-                          <span className={`inline-flex items-center gap-1.5 text-[10px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider ${getStatutBadgeStyle(user.statut)}`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${user.statut === 'ACTIF' ? 'bg-emerald-600' : user.statut === 'INACTIF' ? 'bg-amber-600' : 'bg-red-600'}`} />
-                            {user.statut}
-                          </span>
-                        </td>
-
-                        <td className="py-4 px-6 text-slate-500 font-semibold">
-                          {new Date(user.dateInscription).toLocaleDateString('fr-FR', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })}
-                        </td>
-
-                        <td className="py-4 px-6 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <button
-                              onClick={() => handleOpenEditModal(user)}
-                              className="p-2 hover:bg-slate-50 text-slate-400 hover:text-slate-800 rounded-xl transition-colors cursor-pointer"
-                              title="Modifier"
-                            >
-                              <Edit className="w-4.5 h-4.5" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteUser(user.id, `${user.prenom} ${user.nom}`)}
-                              className="p-2 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded-xl transition-colors cursor-pointer"
-                              title="Supprimer"
-                            >
-                              <Trash2 className="w-4.5 h-4.5" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                    className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
+                  >
+                    <span>Suivant</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
             </>
           )}
         </div>
@@ -828,8 +788,8 @@ export default function AdminDashboard() {
                           type="button"
                           onClick={() => toggleRoleSelection(role.nom)}
                           className={`p-3.5 border rounded-2xl text-center font-bold text-xs uppercase transition-all cursor-pointer ${isSelected
-                              ? 'border-red-600 bg-red-50 text-red-600 shadow-sm'
-                              : 'border-slate-200 hover:border-slate-350 bg-white text-slate-600 shadow-sm'
+                            ? 'border-red-600 bg-red-50 text-red-600 shadow-sm'
+                            : 'border-slate-200 hover:border-slate-350 bg-white text-slate-600 shadow-sm'
                             }`}
                         >
                           {role.label}
@@ -985,8 +945,8 @@ export default function AdminDashboard() {
                           type="button"
                           onClick={() => setEditStatut(statusObj.val as any)}
                           className={`p-3 border rounded-2xl text-center font-bold text-xs uppercase transition-all cursor-pointer ${isSelected
-                              ? statusObj.style
-                              : 'border-slate-200 hover:border-slate-350 bg-white text-slate-500 shadow-sm'
+                            ? statusObj.style
+                            : 'border-slate-200 hover:border-slate-350 bg-white text-slate-500 shadow-sm'
                             }`}
                         >
                           {statusObj.label}
@@ -1035,8 +995,8 @@ export default function AdminDashboard() {
                           type="button"
                           onClick={() => toggleEditRoleSelection(role.nom)}
                           className={`p-3.5 border rounded-2xl text-center font-bold text-xs uppercase transition-all cursor-pointer ${isSelected
-                              ? 'border-red-600 bg-red-50 text-red-600 shadow-sm'
-                              : 'border-slate-200 hover:border-slate-350 bg-white text-slate-600 shadow-sm'
+                            ? 'border-red-600 bg-red-50 text-red-600 shadow-sm'
+                            : 'border-slate-200 hover:border-slate-350 bg-white text-slate-600 shadow-sm'
                             }`}
                         >
                           {role.label}
