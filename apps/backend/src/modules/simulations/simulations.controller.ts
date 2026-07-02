@@ -78,4 +78,16 @@ export class SimulationsController {
     async getUserStats(@Req() req: any) {
         return this.simulationsService.getUserStats(req.user.id);
     }
+
+    @Get('certifications/:certId/readiness')
+    @UseGuards(JwtAuthGuard)
+    async getReadinessScoreForCertification(
+        @Req() req: any,
+        @Param('certId', ParseIntPipe) certId: number,
+    ) {
+        return this.simulationsService.getReadinessScoreForCertification(
+            req.user.id,
+            certId,
+        );
+    }
 }

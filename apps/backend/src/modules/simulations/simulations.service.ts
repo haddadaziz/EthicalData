@@ -174,7 +174,7 @@ export class SimulationsService {
         };
     }
 
-    // 7. Obtenir les statistiques et le Readiness Score IA de l'utilisateur
+    // 7. Obtenir les statistiques utilisateur
     async getUserStats(userId: number) {
         const tentatives = await this.prisma.tentative.findMany({
             where: { utilisateurId: BigInt(userId) },
@@ -190,7 +190,6 @@ export class SimulationsService {
                 )
                 : 0;
 
-        // Calcul du Readiness Score global
         const readinessScore = Math.min(100, Math.round(avgScore * 1.05));
         let readinessLabel = 'NON_PRET';
         if (readinessScore >= 80) readinessLabel = 'PRET';
@@ -208,6 +207,82 @@ export class SimulationsService {
                 certificationName: t.certification.nom,
                 certificationSlug: t.certification.slug,
             })),
+        };
+    }
+
+    // 8. Obtenir le Readiness Score IA et le Plan de Révision pour une certification
+    async getReadinessScoreForCertification(userId: number, certId: number) {
+        const cert = await this.prisma.certification.findFirst({
+            where: { id: BigInt(certId), deletedAt: null },
+        });
+
+        if (!cert) {
+            throw new NotFoundException("La certification demandée n'existe pas.");
+        }
+
+        const tentatives = await this.prisma.tentative.findMany({
+            where: {
+                utilisateurId: BigInt(userId),
+                certificationId: BigInt(certId),
+            },
+            orderBy: { datePassage: 'desc' },
+            take: 5,
+        });
+
+        if (tentatives.length === 0) {
+            return {
+                certificationNom: cert.nom,
+                readinessScore: 0,
+                statut: 'NON_EVALUE',
+                conseil: `Vous n'avez pas encore effectué de simulation pour ${cert.nom}. Lancez votre premier examen blanc pour évaluer votre niveau !`,
+                planRevision: [
+                    `Effectuez une première simulation complète de ${cert.nom}.`,
+                    `Consultez le guide de préparation et le programme officiel de l'examen.`,
+                ],
+            };
+        }
+
+        const scores = tentatives.map((t) => t.score);
+        const dernierScore = scores[0];
+        const moyenneScores = Math.round(
+            scores.reduce((a, b) => a + b, 0) / scores.length,
+        );
+
+        const readinessScore = Math.min(
+            100,
+            Math.round(moyenneScores * 0.6 + dernierScore * 0.4),
+        );
+
+        let statut = 'NON_PRET';
+        let conseil = '';
+
+        if (readinessScore >= 80) {
+            statut = 'PRET';
+            conseil = `Excellent niveau de préparation pour ${cert.nom} ! Vos résultats sont très stables. Vous pouvez vous inscrire à l'examen officiel en toute sérénité.`;
+        } else if (readinessScore >= 65) {
+            statut = 'PRESQUE_PRET';
+            conseil = `Vous approchez du seuil de réussite pour ${cert.nom}. Nous vous recommandons de réserver une séance de coaching individuel avec un formateur avant de réserver votre date d'examen.`;
+        } else {
+            statut = 'NON_PRET';
+            conseil = `Des lacunes subsistent sur les concepts clés de ${cert.nom}. Consolidez vos révisions sur les fiches de cours et refaites des quiz d'entraînement.`;
+        }
+
+        const planRevision = [
+            `Révisez en priorité les fiches et cours théoriques de ${cert.nom}.`,
+            `Consultez les supports PDF autorisés téléchargeables dans votre bibliothèque.`,
+            `Réservez un créneau individuel avec un coach certifié pour éclaircir les points bloquants.`,
+            `Effectuez 2 simulations supplémentaires chrono pour stabiliser votre score au-dessus de 80%.`,
+        ];
+
+        return {
+            certificationNom: cert.nom,
+            readinessScore,
+            statut,
+            dernierScore,
+            moyenneScores,
+            totalTentatives: tentatives.length,
+            conseil,
+            planRevision,
         };
     }
 }

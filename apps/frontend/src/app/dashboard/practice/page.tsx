@@ -44,6 +44,7 @@ export default function PracticePage() {
     const [isPaused, setIsPaused] = useState(false);
     const [score, setScore] = useState(0);
     const [aiFeedbacks, setAiFeedbacks] = useState<{ [key: string]: { score: number; critique: string; suggestions: string } }>({});
+    const [readinessData, setReadinessData] = useState<any | null>(null);
 
     useEffect(() => {
         const fetchCerts = async () => {
@@ -116,13 +117,16 @@ export default function PracticePage() {
         try {
             const currentCert = certs.find(c => c.slug === certSlug);
             if (currentCert) {
-                await apiFetch(`/certifications/${currentCert.id}/tentatives`, {
+                await apiFetch(`/simulations/certifications/${currentCert.id}/tentatives`, {
                     method: 'POST',
                     body: { score: finalScore }
                 });
+                
+                const readiness = await apiFetch(`/simulations/certifications/${currentCert.id}/readiness`);
+                setReadinessData(readiness);
             }
         } catch (err) {
-            console.error("Erreur enregistrement tentative :", err);
+            console.error("Erreur enregistrement ou Readiness Score :", err);
         }
     };
 
@@ -464,8 +468,8 @@ export default function PracticePage() {
                     {/* Badge circulaire de score */}
                     <div className="flex justify-center py-2 relative z-10">
                         <div className={`w-36 h-36 rounded-full border-4 flex flex-col items-center justify-center shadow-lg transition-transform duration-300 hover:scale-105 ${success
-                                ? 'border-emerald-500/20 bg-emerald-50/30 text-emerald-600'
-                                : 'border-rose-500/20 bg-rose-50/30 text-rose-600'
+                            ? 'border-emerald-500/20 bg-emerald-50/30 text-emerald-600'
+                            : 'border-rose-500/20 bg-rose-50/30 text-rose-600'
                             }`}>
                             <span className="text-4xl font-black tracking-tight">{score}%</span>
                             <span className="text-[9px] font-black uppercase tracking-wider mt-1.5">Score obtenu</span>
@@ -492,6 +496,52 @@ export default function PracticePage() {
                     </div>
                 </div>
 
+                {/* SECTION READINESS SCORE & PLAN DE RÉVISION IA */}
+                {readinessData && (
+                    <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 rounded-3xl p-6 md:p-8 text-white space-y-6 shadow-xl relative overflow-hidden text-left">
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border-b border-white/10 pb-6">
+                            <div className="space-y-1">
+                                <span className="px-3 py-1 bg-red-500/20 border border-red-500/30 text-red-400 font-extrabold text-[10px] rounded-full uppercase tracking-wider">
+                                    Analyse d'Éligibilité par IA
+                                </span>
+                                <h3 className="text-xl font-black text-white">
+                                    Readiness Score : {readinessData.readinessScore}%
+                                </h3>
+                                <p className="text-xs text-slate-300 font-medium leading-relaxed max-w-xl">
+                                    {readinessData.conseil}
+                                </p>
+                            </div>
+
+                            <div className="px-5 py-3 rounded-2xl bg-white/10 border border-white/20 text-center shrink-0">
+                                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Statut d'Examen</span>
+                                <span className={`text-xs font-black uppercase tracking-wider ${readinessData.statut === 'PRET' ? 'text-emerald-400' : readinessData.statut === 'PRESQUE_PRET' ? 'text-amber-400' : 'text-rose-400'
+                                    }`}>
+                                    {readinessData.statut === 'PRET' ? 'Prêt à Passer' : readinessData.statut === 'PRESQUE_PRET' ? 'Presque Prêt' : 'Lacunes Détectées'}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* PLAN DE RÉVISION SUR-MESURE */}
+                        {readinessData.planRevision && readinessData.planRevision.length > 0 && (
+                            <div className="space-y-3">
+                                <h4 className="text-xs font-black uppercase tracking-wider text-slate-400">
+                                    Plan de Révision Recommandé
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    {readinessData.planRevision.map((etape: string, idx: number) => (
+                                        <div key={idx} className="p-3.5 bg-white/5 border border-white/10 rounded-2xl flex items-start gap-3 text-xs text-slate-200 font-medium">
+                                            <span className="w-5 h-5 rounded-lg bg-red-600 text-white font-black text-[10px] flex items-center justify-center shrink-0 mt-0.5">
+                                                {idx + 1}
+                                            </span>
+                                            <span>{etape}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 {/* Liste de Correction */}
                 <div className="space-y-6">
                     <h2 className="text-sm font-black text-slate-500 uppercase tracking-widest">Rapport de Correction Détaillé</h2>
@@ -507,24 +557,24 @@ export default function PracticePage() {
                                 <div
                                     key={q.id}
                                     className={`border rounded-3xl p-6 sm:p-8 space-y-5 text-left transition-all ${isCorrect
-                                            ? 'border-emerald-500/15 bg-emerald-500/[0.01]'
-                                            : 'border-rose-500/15 bg-rose-500/[0.01]'
+                                        ? 'border-emerald-500/15 bg-emerald-500/[0.01]'
+                                        : 'border-rose-500/15 bg-rose-500/[0.01]'
                                         }`}
                                 >
                                     <div className="flex justify-between items-center border-b border-slate-100 pb-3">
                                         <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{q.categorie || "Général"}</span>
                                         {isOpen ? (
                                             <span className={`text-[9px] px-2.5 py-1 rounded-lg font-black uppercase tracking-wider flex items-center gap-1.5 ${isCorrect
-                                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                                                    : 'bg-rose-50 text-rose-600 border border-rose-100'
+                                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                                                : 'bg-rose-50 text-rose-600 border border-rose-100'
                                                 }`}>
                                                 {isCorrect ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
                                                 {aiFeedback ? `Score IA : ${aiFeedback.score}/100` : "IA non évaluée"}
                                             </span>
                                         ) : (
                                             <span className={`text-[9px] px-2.5 py-1 rounded-lg font-black uppercase tracking-wider flex items-center gap-1.5 ${isCorrect
-                                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                                                    : 'bg-rose-50 text-rose-600 border border-rose-100'
+                                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                                                : 'bg-rose-50 text-rose-600 border border-rose-100'
                                                 }`}>
                                                 {isCorrect ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
                                                 {isCorrect ? 'Correct' : 'Incorrect'}
@@ -587,10 +637,10 @@ export default function PracticePage() {
                                                     return (
                                                         <div key={opt.id} className={`p-4 border rounded-2xl flex items-center gap-3 ${style}`}>
                                                             <span className={`w-7 h-7 rounded-lg border font-bold text-xs flex items-center justify-center shrink-0 ${isOptionCorrect
-                                                                    ? 'border-emerald-450 bg-emerald-500/15 text-emerald-600'
-                                                                    : wasSelected
-                                                                        ? 'border-rose-450 bg-rose-500/15 text-rose-600'
-                                                                        : 'border-slate-200 bg-white text-slate-500'
+                                                                ? 'border-emerald-450 bg-emerald-500/15 text-emerald-600'
+                                                                : wasSelected
+                                                                    ? 'border-rose-450 bg-rose-500/15 text-rose-600'
+                                                                    : 'border-slate-200 bg-white text-slate-500'
                                                                 }`}>
                                                                 {opt.lettre}
                                                             </span>
