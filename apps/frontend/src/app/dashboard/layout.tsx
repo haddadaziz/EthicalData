@@ -284,22 +284,32 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         </div>
                     </div>
 
-                    {/* Droite : Profil Utilisateur & Notifications */}
+                    {/* Droite : Profil Utilisateur Cliquable & Notifications */}
                     <div className="flex items-center gap-4">
                         <NotificationBell />
 
-                        <div className="flex flex-col text-right justify-center hidden sm:flex">
-                            <span className="text-sm font-bold text-slate-900 leading-none mb-1.5">{userEmail}</span>
-                            <span className="text-[10px] font-black text-red-650 uppercase tracking-widest leading-none">Candidat</span>
-                        </div>
-
-                        {/* Avatar Stylisé avec Dégradé */}
-                        <div className="relative group cursor-pointer shrink-0">
-                            <div className="absolute inset-0 bg-gradient-to-tr from-red-600 to-rose-500 rounded-full blur-md opacity-25 group-hover:opacity-40 transition-opacity" />
-                            <div className="relative w-12 h-12 bg-gradient-to-tr from-slate-950 to-slate-900 border border-slate-800 rounded-full flex items-center justify-center text-white font-extrabold text-sm shadow-md transition-transform duration-200 group-hover:scale-105">
-                                {userEmail.charAt(0).toUpperCase()}
+                        <a
+                            href="/dashboard/profile"
+                            className="flex items-center gap-3 p-1.5 hover:bg-slate-100/80 rounded-2xl transition-all cursor-pointer group"
+                            title="Voir et modifier mon profil"
+                        >
+                            <div className="flex flex-col text-right justify-center hidden sm:flex">
+                                <span className="text-xs font-black text-slate-950 leading-none mb-1 group-hover:text-red-600 transition-colors">
+                                    {userFirstName}
+                                </span>
+                                <span className="text-[9px] font-black text-red-600 uppercase tracking-wider leading-none">
+                                    Candidat Apprenant
+                                </span>
                             </div>
-                        </div>
+
+                            {/* Avatar Stylisé */}
+                            <div className="relative shrink-0">
+                                <div className="absolute inset-0 bg-gradient-to-tr from-red-600 to-rose-500 rounded-2xl blur-md opacity-20 group-hover:opacity-40 transition-opacity" />
+                                <div className="relative w-10 h-10 bg-gradient-to-tr from-slate-950 to-slate-900 border border-slate-800 rounded-2xl flex items-center justify-center text-white font-black text-xs shadow-md transition-transform duration-200 group-hover:scale-105">
+                                    {userFirstName ? userFirstName[0].toUpperCase() : 'U'}
+                                </div>
+                            </div>
+                        </a>
                     </div>
                 </header>
 

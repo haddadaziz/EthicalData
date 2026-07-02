@@ -90,11 +90,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   const navItems: NavItem[] = [
-    { name: 'Utilisateurs', href: '/admin', icon: Users },
-    { name: 'Certifications', href: '/admin/certifications', icon: Award },
-    { name: 'Ressources', href: '/admin/resources', icon: FileText },
-    { name: 'Communauté', href: '/admin/community', icon: MessageSquare },
-    { name: 'Paramètres', href: '#', icon: Settings, disabled: true },
+    { name: 'Tableau de Bord', href: '/admin', icon: LayoutDashboard },
+    { name: 'Gestion Formations', href: '/admin/certifications', icon: Award },
+    { name: 'Ressources & Fiches', href: '/admin/downloads', icon: DownloadCloud },
+    { name: 'Modération Forum', href: '/admin/community', icon: MessageSquare },
+    { name: 'Planning & Coaching', href: '/admin/coaching', icon: Calendar },
+    { name: 'Utilisateurs & Rôles', href: '/admin/users', icon: Users },
   ];
 
   if (!authorized) {
@@ -109,12 +110,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // Déterminer le titre et sous-titre selon la page courante
   const getPageTitleAndSubtitle = () => {
     if (pathname === '/admin') {
-      return { title: 'Utilisateurs', subtitle: 'Gestion des comptes et des rôles d\'accès' };
+      return { title: 'Tableau de Bord Général', subtitle: 'Console de supervision Ethical Data' };
     }
     if (pathname === '/admin/certifications') {
-      return { title: 'Certifications', subtitle: 'Gestion du catalogue d\'examens et questions' };
+      return { title: 'Gestion des Certifications', subtitle: 'Catalogue et banques de questions' };
     }
-    return { title: 'Administration', subtitle: 'Console de gestion Ethical Data' };
+    if (pathname === '/admin/downloads') {
+      return { title: 'Ressources Téléchargeables', subtitle: 'Gestion des fiches et quotas' };
+    }
+    if (pathname === '/admin/community') {
+      return { title: 'Modération du Forum', subtitle: 'Gestion des sujets et des signalements' };
+    }
+    if (pathname === '/admin/coaching') {
+      return { title: 'Planning & Coaching', subtitle: 'Ouverture des créneaux et rendez-vous' };
+    }
+    if (pathname === '/admin/users') {
+      return { title: 'Gestion des Utilisateurs', subtitle: 'Administration des comptes et attribution des rôles' };
+    }
+    return { title: 'Administration', subtitle: 'Ethical Data' };
   };
   const { title, subtitle } = getPageTitleAndSubtitle();
 
@@ -327,22 +340,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
           </div>
 
-          {/* Droite : Profil Utilisateur & Notifications */}
+          {/* Droite : Profil Utilisateur Cliquable & Notifications */}
           <div className="flex items-center gap-4">
             <NotificationBell />
 
-            <div className="flex flex-col text-right justify-center hidden sm:flex">
-              <span className="text-sm font-bold text-slate-900 leading-none mb-1.5">{userEmail}</span>
-              <span className="text-[10px] font-black text-red-600 uppercase tracking-widest leading-none">{userRole}</span>
-            </div>
-
-            {/* Avatar Stylisé avec Dégradé */}
-            <div className="relative group cursor-pointer shrink-0">
-              <div className="absolute inset-0 bg-gradient-to-tr from-red-600 to-rose-500 rounded-full blur-md opacity-25 group-hover:opacity-40 transition-opacity" />
-              <div className="relative w-12 h-12 bg-gradient-to-tr from-slate-950 to-slate-900 border border-slate-800 rounded-full flex items-center justify-center text-white font-extrabold text-sm shadow-md transition-transform duration-200 group-hover:scale-105">
-                {userEmail.charAt(0).toUpperCase()}
+            <a
+              href="/dashboard/profile"
+              className="flex items-center gap-3 p-1.5 hover:bg-slate-100/80 rounded-2xl transition-all cursor-pointer group"
+              title="Voir et modifier mon profil"
+            >
+              <div className="flex flex-col text-right justify-center hidden sm:flex">
+                <span className="text-xs font-black text-slate-950 leading-none mb-1 group-hover:text-red-600 transition-colors">
+                  {userEmail.split('@')[0]}
+                </span>
+                <span className="text-[9px] font-black text-red-600 uppercase tracking-wider leading-none">
+                  {userRole}
+                </span>
               </div>
-            </div>
+
+              {/* Avatar Stylisé */}
+              <div className="relative shrink-0">
+                <div className="absolute inset-0 bg-gradient-to-tr from-red-600 to-rose-500 rounded-2xl blur-md opacity-20 group-hover:opacity-40 transition-opacity" />
+                <div className="relative w-10 h-10 bg-gradient-to-tr from-slate-950 to-slate-900 border border-slate-800 rounded-2xl flex items-center justify-center text-white font-black text-xs shadow-md transition-transform duration-200 group-hover:scale-105">
+                  {userEmail.charAt(0).toUpperCase()}
+                </div>
+              </div>
+            </a>
           </div>
         </header>
 

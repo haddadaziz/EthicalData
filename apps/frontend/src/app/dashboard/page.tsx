@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../lib/api';
-import { Award, Clock, BookOpen, ChevronRight, Play, FileText, CheckCircle2, Download, Calendar } from 'lucide-react';
+import { Award, Clock, BookOpen, ChevronRight, Play, CheckCircle2, Calendar, Video, Sparkles, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function StudentDashboard() {
     const [certs, setCerts] = useState<any[]>([]);
-    const [stats, setStats] = useState<any>({ totalAttempts: 0, averageScore: 0, history: [] });
+    const [stats, setStats] = useState<any>({ totalAttempts: 0, averageScore: 0, readinessScore: 0, readinessLabel: 'NON_PRET', history: [] });
+    const [upcomingRdv, setUpcomingRdv] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [firstName, setFirstName] = useState('Étudiant');
 
@@ -25,14 +26,20 @@ export default function StudentDashboard() {
 
         const loadDashboardData = async () => {
             try {
-                const [certsData, statsData] = await Promise.all([
+                const [certsData, statsData, rdvData] = await Promise.all([
                     apiFetch('/certifications'),
-                    apiFetch('/certifications/practice/stats')
+                    apiFetch('/simulations/me/stats'),
+                    apiFetch('/appointments/mes-rdv'),
                 ]);
                 setCerts(certsData);
                 setStats(statsData);
+                
+                // Filtrer les RDV confirmés à venir
+                const now = new Date();
+                const upcoming = rdvData.filter((r: any) => r.statut === 'CONFIRME' && new Date(r.creneau.dateDebut) >= now);
+                setUpcomingRdv(upcoming);
             } catch (err) {
-                console.error("Erreur de chargement du catalogue:", err);
+                console.error("Erreur de chargement du tableau de bord:", err);
             } finally {
                 setLoading(false);
             }
@@ -53,56 +60,68 @@ export default function StudentDashboard() {
         }
     };
 
+    const formatDate = (dateStr: string) => {
+        return new Date(dateStr).toLocaleDateString('fr-FR', {
+            weekday: 'short',
+            day: 'numeric',
+            month: 'short',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    };
+
     return (
         <div className="space-y-10 text-slate-800 text-left">
 
+            {/* EN-TÊTE BONJOUR */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-black text-slate-950 tracking-tight">Bonjour, {firstName} 👋</h1>
                     <p className="text-slate-600 text-xs mt-1.5 font-semibold uppercase tracking-wider">
-                        Suivez vos entraînements et votre niveau de préparation aux examens.
+                        Suivez vos entraînements, votre éligibilité IA et vos rendez-vous de coaching.
                     </p>
                 </div>
             </div>
 
-            {/* Grid de Statistiques Dynamiques */}
-            {/* Grid de Statistiques Dynamiques */}
+            {/* GRID DES STATISTIQUES DYNAMIQUES */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                {/* Readiness Score Moyen */}
+                {/* READINESS SCORE MOYEN IA */}
                 <div className="bg-white shadow-sm border border-slate-200/80 rounded-3xl p-6 flex items-center justify-between min-h-[160px] transition-all hover:shadow-md">
                     <div className="space-y-2 text-left">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Readiness Score Moyen</p>
+                        <div className="flex items-center gap-1.5 text-red-600 font-extrabold text-[10px] uppercase tracking-wider">
+                            <Sparkles className="w-3.5 h-3.5" />
+                            <span>Readiness Score IA</span>
+                        </div>
                         <h3 className="text-xl sm:text-2xl font-black text-slate-950">
-                            {stats.averageScore >= 80 ? 'Prêt pour l\'examen' : 'En préparation'}
+                            {stats.readinessScore >= 80 ? 'Prêt pour l\'examen' : stats.readinessScore >= 65 ? 'Presque Prêt' : 'En préparation'}
                         </h3>
-                        <p className="text-xs text-slate-550 font-semibold">Seuil requis conseillé : 80%</p>
+                        <p className="text-xs text-slate-550 font-semibold">Seuil d'éligibilité conseillé : 80%</p>
                     </div>
 
                     <div className="relative w-24 h-24 shrink-0 flex items-center justify-center">
                         <svg className="absolute w-full h-full -rotate-90">
-                            {/* Cercle de fond gris clair au lieu de noir */}
                             <circle cx="48" cy="48" r="38" className="stroke-slate-100 fill-none" strokeWidth="6" />
                             <motion.circle
                                 cx="48"
                                 cy="48"
                                 r="38"
-                                className={`fill-none ${stats.averageScore >= 80 ? 'stroke-emerald-500' : 'stroke-red-650'}`}
+                                className={`fill-none ${stats.readinessScore >= 80 ? 'stroke-emerald-500' : stats.readinessScore >= 65 ? 'stroke-amber-500' : 'stroke-red-650'}`}
                                 strokeWidth="6"
                                 strokeDasharray={2 * Math.PI * 38}
                                 initial={{ strokeDashoffset: 2 * Math.PI * 38 }}
-                                animate={{ strokeDashoffset: 2 * Math.PI * 38 * (1 - stats.averageScore / 100) }}
+                                animate={{ strokeDashoffset: 2 * Math.PI * 38 * (1 - (stats.readinessScore || 0) / 100) }}
                                 transition={{ duration: 1.5, ease: "easeOut" }}
                                 strokeLinecap="round"
                             />
                         </svg>
                         <div className="text-center z-10">
-                            <span className="text-xl font-black text-slate-950">{stats.averageScore}%</span>
+                            <span className="text-xl font-black text-slate-950">{stats.readinessScore || 0}%</span>
                         </div>
                     </div>
                 </div>
 
-                {/* Nombre de simulations passées */}
+                {/* SIMULATIONS COMPLÉTÉES */}
                 <div className="bg-white shadow-sm border border-slate-200/80 rounded-3xl p-6 flex flex-col justify-between min-h-[160px] transition-all hover:shadow-md">
                     <div className="flex items-center justify-between">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Simulations Complétées</p>
@@ -116,7 +135,7 @@ export default function StudentDashboard() {
                     </div>
                 </div>
 
-                {/* Formations disponibles */}
+                {/* FORMATIONS DU CATALOGUE */}
                 <div className="bg-white shadow-sm border border-slate-200/80 rounded-3xl p-6 flex flex-col justify-between min-h-[160px] transition-all hover:shadow-md">
                     <div className="flex items-center justify-between">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Formations du Catalogue</p>
@@ -132,7 +151,7 @@ export default function StudentDashboard() {
 
             </div>
 
-            {/* Certifications et Fiches */}
+            {/* CATALOGUE ET COLONNE DROITE */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
 
                 <div className="xl:col-span-2 space-y-6">
@@ -153,8 +172,7 @@ export default function StudentDashboard() {
                     ) : (
                         <div className="space-y-4">
                             {certs.map((cert) => {
-                                // Trouver le dernier score ou la tentative la plus haute pour cette certif
-                                const certAttempts = stats.history.filter((h: any) => h.certificationSlug === cert.slug);
+                                const certAttempts = stats.history ? stats.history.filter((h: any) => h.certificationSlug === cert.slug) : [];
                                 const hasTaken = certAttempts.length > 0;
                                 const bestScore = hasTaken ? Math.max(...certAttempts.map((h: any) => h.score)) : 0;
 
@@ -216,57 +234,105 @@ export default function StudentDashboard() {
                     )}
                 </div>
 
-                {/* Colonne Droite : Historique des tentatives */}
+                {/* COLONNE DROITE : HISTORIQUE ET PROCHAIN RDV */}
                 <div className="space-y-6 text-left">
-                    <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest">Dernières Tentatives</h2>
+                    {/* WIDGET PROCHAIN RDV */}
+                    <div className="space-y-3">
+                        <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest">Prochain Rendez-vous</h2>
+                        {upcomingRdv.length > 0 ? (
+                            <div className="p-5 bg-gradient-to-r from-slate-950 to-slate-900 rounded-3xl text-white space-y-3 shadow-md border border-slate-800">
+                                <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                                    <span className="px-2.5 py-0.5 bg-red-500/20 text-red-400 font-extrabold text-[9px] rounded-full uppercase tracking-wider">
+                                        {upcomingRdv[0].type}
+                                    </span>
+                                    <span className="text-[10px] text-slate-400 font-bold">Confirmé</span>
+                                </div>
 
-                    <div className="bg-white border border-slate-200/80 rounded-3xl p-6 space-y-4">
-                        {stats.history.length === 0 ? (
-                            <p className="text-xs text-slate-500 font-semibold text-center py-6">
-                                Aucun historique d'examen disponible. Vos tentatives apparaîtront ici.
-                            </p>
+                                <p className="text-xs font-black text-white capitalize flex items-center gap-2">
+                                    <Calendar className="w-3.5 h-3.5 text-red-500" />
+                                    <span>{formatDate(upcomingRdv[0].creneau.dateDebut)}</span>
+                                </p>
+
+                                <p className="text-xs text-slate-300 font-medium flex items-center gap-2">
+                                    <User className="w-3.5 h-3.5 text-slate-400" />
+                                    <span>Formateur : {upcomingRdv[0].formateur.prenom} {upcomingRdv[0].formateur.nom}</span>
+                                </p>
+
+                                <a
+                                    href="/dashboard/appointments"
+                                    className="w-full py-2 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer block text-center"
+                                >
+                                    <Video className="w-3.5 h-3.5 text-red-400" />
+                                    <span>Gérer mes RDV</span>
+                                </a>
+                            </div>
                         ) : (
-                            <div className="space-y-3.5">
-                                {stats.history.slice(0, 4).map((attempt: any) => {
-                                    const passed = attempt.score >= 80;
-                                    const dateFormatee = new Date(attempt.datePassage).toLocaleDateString('fr-FR', {
-                                        day: 'numeric',
-                                        month: 'short'
-                                    });
-
-                                    return (
-                                        <div
-                                            key={attempt.id}
-                                            className="flex items-center justify-between p-3.5 bg-slate-50/40 border border-slate-200/80 rounded-2xl"
-                                        >
-                                            <div className="min-w-0 text-left">
-                                                <p className="text-xs font-bold text-slate-800 truncate">{attempt.certificationName}</p>
-                                                <div className="flex items-center gap-1.5 text-[9px] text-slate-500 font-bold uppercase tracking-wider mt-1">
-                                                    <Calendar className="w-3 h-3 text-slate-500" />
-                                                    <span>Le {dateFormatee}</span>
-                                                </div>
-                                            </div>
-
-                                            <span className={`text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider shrink-0 ${passed
-                                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                                                    : 'bg-rose-50 text-rose-600 border border-rose-100'
-                                                }`}>
-                                                {attempt.score}%
-                                            </span>
-                                        </div>
-                                    );
-                                })}
+                            <div className="p-5 bg-white border border-slate-200/80 rounded-3xl text-center space-y-2">
+                                <Calendar className="w-6 h-6 text-slate-300 mx-auto" />
+                                <p className="text-xs text-slate-500 font-semibold">Aucun rendez-vous planifié</p>
+                                <a
+                                    href="/dashboard/appointments"
+                                    className="text-xs font-extrabold text-red-600 hover:underline inline-block"
+                                >
+                                    Réserver une séance coaching →
+                                </a>
                             </div>
                         )}
-
-                        <a
-                            href="/dashboard/practice"
-                            className="flex items-center justify-center gap-1 w-full py-3 border border-slate-200/80 hover:border-slate-350 bg-slate-50/20 hover:bg-slate-50 text-xs font-bold text-slate-600 hover:text-slate-955 rounded-xl transition-all uppercase tracking-wider cursor-pointer shadow-sm"
-                        >
-                            <span>Lancer un nouvel examen</span>
-                            <ChevronRight className="w-4 h-4" />
-                        </a>
                     </div>
+
+                    {/* HISTORIQUE TENTATIVES */}
+                    <div className="space-y-3">
+                        <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest">Dernières Tentatives</h2>
+
+                        <div className="bg-white border border-slate-200/80 rounded-3xl p-6 space-y-4">
+                            {!stats.history || stats.history.length === 0 ? (
+                                <p className="text-xs text-slate-500 font-semibold text-center py-4">
+                                    Aucun historique d'examen disponible.
+                                </p>
+                            ) : (
+                                <div className="space-y-3.5">
+                                    {stats.history.slice(0, 4).map((attempt: any) => {
+                                        const passed = attempt.score >= 80;
+                                        const dateFormatee = new Date(attempt.datePassage).toLocaleDateString('fr-FR', {
+                                            day: 'numeric',
+                                            month: 'short'
+                                        });
+
+                                        return (
+                                            <div
+                                                key={attempt.id}
+                                                className="flex items-center justify-between p-3.5 bg-slate-50/40 border border-slate-200/80 rounded-2xl"
+                                            >
+                                                <div className="min-w-0 text-left">
+                                                    <p className="text-xs font-bold text-slate-800 truncate">{attempt.certificationName}</p>
+                                                    <div className="flex items-center gap-1.5 text-[9px] text-slate-500 font-bold uppercase tracking-wider mt-1">
+                                                        <Calendar className="w-3 h-3 text-slate-500" />
+                                                        <span>Le {dateFormatee}</span>
+                                                    </div>
+                                                </div>
+
+                                                <span className={`text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider shrink-0 ${passed
+                                                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                                                        : 'bg-rose-50 text-rose-600 border border-rose-100'
+                                                    }`}>
+                                                    {attempt.score}%
+                                                </span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+
+                            <a
+                                href="/dashboard/practice"
+                                className="flex items-center justify-center gap-1 w-full py-3 border border-slate-200/80 hover:border-slate-350 bg-slate-50/20 hover:bg-slate-50 text-xs font-bold text-slate-600 hover:text-slate-955 rounded-xl transition-all uppercase tracking-wider cursor-pointer shadow-sm"
+                            >
+                                <span>Lancer un nouvel examen</span>
+                                <ChevronRight className="w-4 h-4" />
+                            </a>
+                        </div>
+                    </div>
+
                 </div>
 
             </div>
