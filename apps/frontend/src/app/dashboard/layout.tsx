@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { BookOpen, Award, Settings, LogOut, ShieldCheck, Menu, X, User, DownloadCloud, HelpCircle, MessageSquare } from 'lucide-react';
+import { BookOpen, Award, Settings, LogOut, ShieldCheck, Menu, X, User, DownloadCloud, HelpCircle, MessageSquare, Calendar } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import NotificationBell from '../../components/NotificationBell';
 
@@ -66,6 +66,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         { name: 'Entraînement', href: '/dashboard/practice', icon: HelpCircle },
         { name: 'Mes Fiches & Cours', href: '/dashboard/downloads', icon: DownloadCloud },
         { name: 'Communauté', href: '/dashboard/community', icon: MessageSquare },
+        { name: 'Rendez-vous & Coaching', href: '/dashboard/appointments', icon: Calendar },
         { name: 'Mon Profil', href: '/dashboard/profile', icon: User },
     ];
 
@@ -94,6 +95,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         }
         if (pathname === '/dashboard/profile') {
             return { title: 'Mon Profil Apprenant', subtitle: 'Gérez vos informations personnelles, votre sécurité et vos préférences' };
+        }
+        if (pathname === '/dashboard/appointments') {
+            return { title: 'Rendez-vous & Coaching', subtitle: 'Réservez un créneau individuel avec un formateur ou coach certifié' };
         }
         return { title: 'Mon Espace', subtitle: 'Ethical Data' };
     };

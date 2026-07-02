@@ -8,6 +8,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CertificationsModule } from './modules/certifications/certifications.module';
 import { ForumModule } from './modules/forum/forum.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { AppointmentsModule } from './modules/appointments/appointments.module';
 
 @Module({
   imports: [
@@ -20,8 +21,9 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     CertificationsModule,
     ForumModule,
     NotificationsModule,
+    AppointmentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

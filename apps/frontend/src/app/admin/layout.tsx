@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Users, Award, Settings, LogOut, ShieldCheck, Menu, X, User, FileText, MessageSquare } from 'lucide-react'; import { motion, AnimatePresence } from 'framer-motion';
+import { LayoutDashboard, Users, BookOpen, MessageSquare, ShieldCheck, LogOut, DownloadCloud, Award, Bell, Calendar, FileText, Settings, User, X, Menu } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import NotificationBell from '../../components/NotificationBell';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -41,6 +42,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       router.push('/login');
       return;
     }
+
+    const adminNavItems = [
+      { name: 'Vue Générale', href: '/admin', icon: LayoutDashboard },
+      { name: 'Gestion Formations', href: '/admin/certifications', icon: Award },
+      { name: 'Ressources & Fiches', href: '/admin/downloads', icon: DownloadCloud },
+      { name: 'Modération Forum', href: '/admin/community', icon: MessageSquare },
+      { name: 'Planning & Coaching', href: '/admin/coaching', icon: Calendar },
+      { name: 'Utilisateurs & Rôles', href: '/admin/users', icon: Users },
+    ];
 
     try {
       const payloadBase64 = token.split('.')[1];

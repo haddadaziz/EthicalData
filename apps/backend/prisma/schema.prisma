@@ -25,6 +25,11 @@ model Utilisateur {
   telechargements Telechargement[]
   tentatives      Tentative[]
 
+  // Relations Coaching & RDV
+  creneauxProposes CreneauDisponibilite[] @relation("FormateurCreneaux")
+  rdvCandidat      RendezVous[]          @relation("CandidatRendezVous")
+  rdvFormateur     RendezVous[]          @relation("FormateurRendezVous")
+
   // Relations forum
   sujets          Sujet[]
   commentaires    Commentaire[]
@@ -265,4 +270,57 @@ enum Niveau {
   DEBUTANT
   INTERMEDIAIRE
   AVANCE
+}
+
+enum TypeRendezVous {
+  ORIENTATION
+  COACHING_TECHNIQUE
+  PREPARATION_EXAMEN
+  BILAN_CARRIERE
+}
+
+enum StatutRendezVous {
+  CONFIRME
+  ANNULE
+  TERMINE
+}
+
+model CreneauDisponibilite {
+  id           BigInt           @id @default(autoincrement())
+  dateDebut    DateTime         @map("date_debut")
+  dateFin      DateTime         @map("date_fin")
+  estReserve   Boolean          @default(false) @map("est_reserve")
+  dateCreation DateTime         @default(now()) @map("date_creation")
+
+  // Formateur proposant le créneau
+  formateurId  BigInt           @map("formateur_id")
+  formateur    Utilisateur      @relation("FormateurCreneaux", fields: [formateurId], references: [id], onDelete: Cascade)
+
+  // Relation vers le rendez-vous si réservé
+  rendezVous   RendezVous?
+
+  @@map("creneaux_disponibilite")
+}
+
+model RendezVous {
+  id           BigInt           @id @default(autoincrement())
+  type         TypeRendezVous   @default(COACHING_TECHNIQUE)
+  motif        String?          @db.Text
+  notes        String?          @db.Text
+  statut       StatutRendezVous @default(CONFIRME)
+  dateCreation DateTime         @default(now()) @map("date_creation")
+
+  // Candidat ayant réservé
+  candidatId   BigInt           @map("candidat_id")
+  candidat     Utilisateur      @relation("CandidatRendezVous", fields: [candidatId], references: [id], onDelete: Cascade)
+
+  // Formateur encadrant
+  formateurId  BigInt           @map("formateur_id")
+  formateur    Utilisateur      @relation("FormateurRendezVous", fields: [formateurId], references: [id], onDelete: Cascade)
+
+  // Créneau associé
+  creneauId    BigInt           @unique @map("creneau_id")
+  creneau      CreneauDisponibilite @relation(fields: [creneauId], references: [id], onDelete: Cascade)
+
+  @@map("rendez_vous")
 }
