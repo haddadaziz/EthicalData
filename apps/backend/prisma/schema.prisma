@@ -71,6 +71,7 @@ model Certification {
   image           String?
   dateCreation    DateTime    @default(now())
   deletedAt       DateTime?   @map("deleted_at")
+  @@index([fournisseurId, deletedAt])
 
   fournisseurId   BigInt
   fournisseur     Fournisseur @relation(fields: [fournisseurId], references: [id], onDelete: Cascade)
@@ -166,6 +167,7 @@ model Tentative {
   id              BigInt        @id @default(autoincrement())
   score           Int
   datePassage     DateTime      @default(now())
+  @@index([utilisateurId, certificationId])
 
   utilisateurId   BigInt
   utilisateur     Utilisateur   @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
@@ -200,7 +202,7 @@ model Commentaire {
   contenu               String       @db.Text
   dateCreation          DateTime     @default(now())
   deletedAt             DateTime?    @map("deleted_at")
-
+  @@index([sujetId, dateCreation])
   // Parent / Réponses aux commentaires
   parentCommentaireId   BigInt?      @map("parent_commentaire_id")
   parentCommentaire     Commentaire? @relation("ReponsesCommentaire", fields: [parentCommentaireId], references: [id], onDelete: Cascade)
@@ -254,8 +256,8 @@ model Notification {
   lien            String?
   lue             Boolean      @default(false)
   dateCreation    DateTime     @default(now()) @map("date_creation")
-
   destinataire    Utilisateur  @relation(fields: [destinataireId], references: [id], onDelete: Cascade)
+  @@index([destinataireId, lue])
 
   @@map("notifications")
 }
@@ -291,6 +293,7 @@ model CreneauDisponibilite {
   dateFin      DateTime         @map("date_fin")
   estReserve   Boolean          @default(false) @map("est_reserve")
   dateCreation DateTime         @default(now()) @map("date_creation")
+  @@index([formateurId, estReserve])
 
   // Formateur proposant le créneau
   formateurId  BigInt           @map("formateur_id")

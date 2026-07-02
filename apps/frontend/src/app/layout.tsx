@@ -16,8 +16,25 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EthicalData",
-  description: "Plateforme de certification et d'apprentissage",
+  title: {
+    default: 'Ethical Data - Plateforme de Formation & Certification Tech',
+    template: '%s | Ethical Data Security',
+  },
+  description: 'Préparez vos certifications Microsoft Azure, AWS, Data, IA et Cybersécurité avec des tests blancs, une correction assistée par IA et du coaching individuel.',
+  keywords: ['Certification Microsoft', 'Azure AZ-104', 'Examen blanc IA', 'Coaching IT', 'Ethical Data', 'Cybersécurité', 'Data AI'],
+  authors: [{ name: 'Ethical Data Security' }],
+  openGraph: {
+    title: 'Ethical Data - Formation & Certification Cloud, IA et Sécurité',
+    description: 'Préparez et réussissez vos examens de certification officielle grâce à nos simulations et notre correction intelligente par IA.',
+    url: 'https://ethicaldatasecurity.ma',
+    siteName: 'Ethical Data',
+    locale: 'fr_FR',
+    type: 'website',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

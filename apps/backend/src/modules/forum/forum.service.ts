@@ -11,8 +11,12 @@ export class ForumService {
     private readonly notificationsService: NotificationsService,
   ) { }
 
-  // 1. Récupérer toutes les discussions
-  async findAllSujets(filters?: { theme?: string; certificationId?: number }) {
+  // 1. Récupérer les discussions paginées
+  async findAllSujets(filters?: { theme?: string; certificationId?: number; page?: number; limit?: number }) {
+    const page = Number(filters?.page) || 1;
+    const limit = Number(filters?.limit) || 10;
+    const skip = (page - 1) * limit;
+
     const where: any = {};
     if (filters?.theme && filters.theme !== 'TOUS') {
       where.theme = filters.theme;
@@ -21,25 +25,31 @@ export class ForumService {
       where.certificationId = BigInt(filters.certificationId);
     }
 
-    const sujets = await this.prisma.sujet.findMany({
-      where,
-      orderBy: { dateCreation: 'desc' },
-      include: {
-        auteur: {
-          select: {
-            id: true,
-            prenom: true,
-            nom: true,
-            avatar: true,
-            roles: { select: { nom: true } },
+    // Exécution paginée native PostgreSQL (take = LIMIT, skip = OFFSET)
+    const [sujets, total] = await Promise.all([
+      this.prisma.sujet.findMany({
+        where,
+        take: limit,
+        skip: skip,
+        orderBy: { dateCreation: 'desc' },
+        include: {
+          auteur: {
+            select: {
+              id: true,
+              prenom: true,
+              nom: true,
+              avatar: true,
+              roles: { select: { nom: true } },
+            },
           },
+          certification: { select: { id: true, nom: true, codeExamen: true } },
+          _count: { select: { likes: true, commentaires: true } },
         },
-        certification: { select: { id: true, nom: true, codeExamen: true } },
-        _count: { select: { likes: true, commentaires: true } },
-      },
-    });
+      }),
+      this.prisma.sujet.count({ where }),
+    ]);
 
-    return sujets.map((s) => ({
+    const formattedSujets = sujets.map((s) => ({
       ...s,
       id: s.id.toString(),
       auteurId: s.auteurId.toString(),
@@ -55,6 +65,13 @@ export class ForumService {
       likesCount: s._count.likes,
       commentairesCount: s._count.commentaires,
     }));
+
+    return {
+      data: formattedSujets,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   // 2. Créer une nouvelle publication
