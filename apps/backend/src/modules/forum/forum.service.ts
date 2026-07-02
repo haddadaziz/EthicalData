@@ -2,19 +2,69 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateSujetDto } from './dto/create-sujet.dto';
 import { CreateCommentaireDto } from './dto/create-commentaire.dto';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class ForumService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationsService: NotificationsService,
+  ) { }
 
-  // 1. Créer un nouveau sujet de discussion
-  async createSujet(auteurId: number, dto: CreateSujetDto) {
+  // 1. Récupérer toutes les discussions
+  async findAllSujets(filters?: { theme?: string; certificationId?: number }) {
+    const where: any = {};
+    if (filters?.theme && filters.theme !== 'TOUS') {
+      where.theme = filters.theme;
+    }
+    if (filters?.certificationId) {
+      where.certificationId = BigInt(filters.certificationId);
+    }
+
+    const sujets = await this.prisma.sujet.findMany({
+      where,
+      orderBy: { dateCreation: 'desc' },
+      include: {
+        auteur: {
+          select: {
+            id: true,
+            prenom: true,
+            nom: true,
+            avatar: true,
+            roles: { select: { nom: true } },
+          },
+        },
+        certification: { select: { id: true, nom: true, codeExamen: true } },
+        _count: { select: { likes: true, commentaires: true } },
+      },
+    });
+
+    return sujets.map((s) => ({
+      ...s,
+      id: s.id.toString(),
+      auteurId: s.auteurId.toString(),
+      certificationId: s.certificationId ? s.certificationId.toString() : null,
+      auteur: {
+        ...s.auteur,
+        id: s.auteur.id.toString(),
+        role: s.auteur.roles[0]?.nom || 'APPRENANT',
+      },
+      certification: s.certification
+        ? { ...s.certification, id: s.certification.id.toString() }
+        : null,
+      likesCount: s._count.likes,
+      commentairesCount: s._count.commentaires,
+    }));
+  }
+
+  // 2. Créer une nouvelle publication
+  async createSujet(userId: number, dto: CreateSujetDto) {
     const sujet = await this.prisma.sujet.create({
       data: {
         titre: dto.titre,
         contenu: dto.contenu,
         theme: dto.theme,
-        auteurId: BigInt(auteurId),
+        auteurId: BigInt(userId),
         certificationId: dto.certificationId ? BigInt(dto.certificationId) : null,
       },
     });
@@ -23,73 +73,14 @@ export class ForumService {
       ...sujet,
       id: sujet.id.toString(),
       auteurId: sujet.auteurId.toString(),
-      certificationId: sujet.certificationId?.toString(),
+      certificationId: sujet.certificationId ? sujet.certificationId.toString() : null,
     };
   }
 
-  // 2. Lister tous les sujets avec filtres et compteurs de likes/commentaires
-  async findAllSujets(filters: { theme?: string; certificationId?: number }) {
-    const whereClause: any = { deletedAt: null };
-    
-    if (filters.theme && filters.theme !== 'TOUS') {
-      whereClause.theme = filters.theme;
-    }
-    if (filters.certificationId) {
-      whereClause.certificationId = BigInt(filters.certificationId);
-    }
-
-    const sujets = await this.prisma.sujet.findMany({
-      where: whereClause,
-      include: {
-        auteur: {
-          select: {
-            prenom: true,
-            nom: true,
-            avatar: true,
-            roles: { select: { nom: true } },
-          },
-        },
-        certification: {
-          select: {
-            id: true,
-            nom: true,
-            codeExamen: true,
-          },
-        },
-        commentaires: {
-          where: { deletedAt: null },
-        },
-        likes: true,
-      },
-      orderBy: { dateCreation: 'desc' },
-    });
-
-    return sujets.map((s) => ({
-      id: s.id.toString(),
-      titre: s.titre,
-      contenu: s.contenu,
-      theme: s.theme,
-      dateCreation: s.dateCreation,
-      auteur: {
-        prenom: s.auteur.prenom,
-        nom: s.auteur.nom,
-        avatar: s.auteur.avatar,
-        role: s.auteur.roles[0]?.nom || 'APPRENANT',
-      },
-      certification: s.certification ? {
-        id: s.certification.id.toString(),
-        nom: s.certification.nom,
-        codeExamen: s.certification.codeExamen,
-      } : null,
-      commentairesCount: s.commentaires.length,
-      likesCount: s.likes.length,
-    }));
-  }
-
-  // 3. Récupérer un sujet en détail avec ses commentaires et savoir si l'utilisateur l'a aimé
-  async findOneSujet(id: number, currentUserId: number) {
-    const sujet = await this.prisma.sujet.findFirst({
-      where: { id: BigInt(id), deletedAt: null },
+  // 3. Récupérer le détail d'une publication
+  async findOneSujet(sujetId: number, currentUserId: number) {
+    const sujet = await this.prisma.sujet.findUnique({
+      where: { id: BigInt(sujetId) },
       include: {
         auteur: {
           select: {
@@ -100,15 +91,9 @@ export class ForumService {
             roles: { select: { nom: true } },
           },
         },
-        certification: {
-          select: {
-            id: true,
-            nom: true,
-            codeExamen: true,
-          },
-        },
+        certification: { select: { id: true, nom: true, codeExamen: true } },
         commentaires: {
-          where: { deletedAt: null },
+          orderBy: { dateCreation: 'asc' },
           include: {
             auteur: {
               select: {
@@ -120,55 +105,61 @@ export class ForumService {
               },
             },
           },
-          orderBy: { dateCreation: 'asc' },
         },
-        likes: true,
+        _count: { select: { likes: true, commentaires: true } },
       },
     });
 
     if (!sujet) {
-      throw new NotFoundException("Ce sujet n'existe pas ou a été supprimé.");
+      throw new NotFoundException('Publication non trouvée.');
     }
 
-    const isLikedByUser = sujet.likes.some((l) => l.utilisateurId === BigInt(currentUserId));
+    const userLike = await this.prisma.likeSujet.findUnique({
+      where: {
+        sujetId_utilisateurId: {
+          sujetId: BigInt(sujetId),
+          utilisateurId: BigInt(currentUserId),
+        },
+      },
+    });
 
     return {
+      ...sujet,
       id: sujet.id.toString(),
-      titre: sujet.titre,
-      contenu: sujet.contenu,
-      theme: sujet.theme,
-      dateCreation: sujet.dateCreation,
-      isLikedByUser,
-      likesCount: sujet.likes.length,
+      auteurId: sujet.auteurId.toString(),
+      certificationId: sujet.certificationId ? sujet.certificationId.toString() : null,
       auteur: {
+        ...sujet.auteur,
         id: sujet.auteur.id.toString(),
-        prenom: sujet.auteur.prenom,
-        nom: sujet.auteur.nom,
-        avatar: sujet.auteur.avatar,
         role: sujet.auteur.roles[0]?.nom || 'APPRENANT',
       },
-      certification: sujet.certification ? {
-        id: sujet.certification.id.toString(),
-        nom: sujet.certification.nom,
-        codeExamen: sujet.certification.codeExamen,
-      } : null,
-      commentaires: sujet.commentaires.map((c) => ({
+      certification: sujet.certification
+        ? { ...sujet.certification, id: sujet.certification.id.toString() }
+        : null,
+      isLikedByUser: !!userLike,
+      likesCount: sujet._count.likes,
+      commentairesCount: sujet._count.commentaires,
+      commentaires: sujet.commentaires.map((c: any) => ({
         id: c.id.toString(),
         contenu: c.contenu,
         dateCreation: c.dateCreation,
+        sujetId: c.sujetId.toString(),
+        auteurId: c.auteurId.toString(),
+        parentCommentaireId: c.parentCommentaireId ? c.parentCommentaireId.toString() : null,
         auteur: {
+          ...c.auteur,
           id: c.auteur.id.toString(),
-          prenom: c.auteur.prenom,
-          nom: c.auteur.nom,
-          avatar: c.auteur.avatar,
           role: c.auteur.roles[0]?.nom || 'APPRENANT',
         },
       })),
     };
   }
 
-  // 4. Liker / Enlever un like sur un sujet (Toggle)
+  // 4. Liker ou Unliker une publication (+ NOTIFICATION)
   async toggleLikeSujet(userId: number, sujetId: number) {
+    const sujet = await this.prisma.sujet.findUnique({ where: { id: BigInt(sujetId) } });
+    if (!sujet) throw new NotFoundException('Publication non trouvée.');
+
     const existingLike = await this.prisma.likeSujet.findUnique({
       where: {
         sujetId_utilisateurId: {
@@ -180,7 +171,12 @@ export class ForumService {
 
     if (existingLike) {
       await this.prisma.likeSujet.delete({
-        where: { id: existingLike.id },
+        where: {
+          sujetId_utilisateurId: {
+            sujetId: BigInt(sujetId),
+            utilisateurId: BigInt(userId),
+          },
+        },
       });
       return { liked: false };
     } else {
@@ -190,12 +186,32 @@ export class ForumService {
           utilisateurId: BigInt(userId),
         },
       });
+
+      // Envoyer une notification à l'auteur si ce n'est pas lui-même
+      if (sujet.auteurId !== BigInt(userId)) {
+        const liker = await this.prisma.utilisateur.findUnique({ where: { id: BigInt(userId) } });
+        await this.notificationsService.createNotification(
+          sujet.auteurId.toString(),
+          "Nouveau J'aime",
+          `${liker?.prenom} ${liker?.nom} a aimé votre publication "${sujet.titre}"`,
+          "FORUM_LIKE",
+          "/dashboard/community",
+        );
+      }
+
       return { liked: true };
     }
   }
 
-  // 5. Signaler un sujet
+  // 5. Signaler un sujet à la modération (+ NOTIFICATION ADMINS)
   async reportSujet(userId: number, sujetId: number, motif?: string) {
+    const sujet = await this.prisma.sujet.findUnique({ where: { id: BigInt(sujetId) } });
+    if (!sujet) throw new NotFoundException('Publication non trouvée.');
+
+    if (sujet.auteurId === BigInt(userId)) {
+      throw new ForbiddenException('Vous ne pouvez pas signaler votre propre publication.');
+    }
+
     const existingReport = await this.prisma.signalementSujet.findUnique({
       where: {
         sujetId_utilisateurId: {
@@ -217,24 +233,59 @@ export class ForumService {
       },
     });
 
+    // Notifier tous les administrateurs
+    const reporter = await this.prisma.utilisateur.findUnique({ where: { id: BigInt(userId) } });
+    await this.notificationsService.notifyAdmins(
+      "Nouveau Signalement",
+      `${reporter?.prenom} ${reporter?.nom} a signalé la publication "${sujet.titre}". Motif: ${motif || 'Non précisé'}`,
+      "FORUM_REPORT",
+      "/admin/community",
+    );
+
     return { message: 'Signalement envoyé à la modération.' };
   }
 
-  // 6. Ajouter un commentaire sous un sujet
-  async createCommentaire(auteurId: number, sujetId: number, dto: CreateCommentaireDto) {
-    const sujet = await this.prisma.sujet.findFirst({
-      where: { id: BigInt(sujetId), deletedAt: null },
-    });
+  // 6. Supprimer un sujet (Auteur ou Admin)
+  async deleteSujet(userId: number, userRoles: string[], sujetId: number) {
+    const sujet = await this.prisma.sujet.findUnique({ where: { id: BigInt(sujetId) } });
+    if (!sujet) throw new NotFoundException('Publication non trouvée.');
 
-    if (!sujet) {
-      throw new NotFoundException("Le sujet associé n'existe pas.");
+    const isAdmin = userRoles.includes('SUPER_ADMIN') || userRoles.includes('ADMIN');
+    const isOwner = sujet.auteurId === BigInt(userId);
+
+    if (!isAdmin && !isOwner) {
+      throw new ForbiddenException('Vous ne pouvez pas supprimer cette publication.');
     }
 
-    const comm = await this.prisma.commentaire.create({
+    await this.prisma.sujet.delete({ where: { id: BigInt(sujetId) } });
+
+    // Si supprimé par un admin, notifier l'auteur
+    if (isAdmin && !isOwner) {
+      await this.notificationsService.createNotification(
+        sujet.auteurId.toString(),
+        "Publication supprimée",
+        `Votre publication "${sujet.titre}" a été retirée par la modération.`,
+        "SYSTEM",
+        "/dashboard/community",
+      );
+    }
+
+    return { message: 'Publication supprimée avec succès.' };
+  }
+
+  // 7. Ajouter un commentaire (+ NOTIFICATIONS SUJET & PARENT COMMENT)
+  async createCommentaire(userId: number, sujetId: number, dto: CreateCommentaireDto) {
+    const sujet = await this.prisma.sujet.findUnique({ where: { id: BigInt(sujetId) } });
+    if (!sujet) throw new NotFoundException('Publication non trouvée.');
+
+    const commAuthor = await this.prisma.utilisateur.findUnique({ where: { id: BigInt(userId) } });
+
+    const commentaire = await (this.prisma.commentaire as any).create({
       data: {
         contenu: dto.contenu,
         sujetId: BigInt(sujetId),
-        auteurId: BigInt(auteurId),
+        auteurId: BigInt(userId),
+        parentCommentaireId: dto.parentCommentaireId ? BigInt(dto.parentCommentaireId) : null,
       },
       include: {
         auteur: {
@@ -249,67 +300,143 @@ export class ForumService {
       },
     });
 
+    // 1. Envoyer une notification à l'auteur du sujet si ce n'est pas lui
+    if (sujet.auteurId !== BigInt(userId)) {
+      await this.notificationsService.createNotification(
+        sujet.auteurId.toString(),
+        "Nouveau commentaire",
+        `${commAuthor?.prenom} ${commAuthor?.nom} a commenté votre publication "${sujet.titre}"`,
+        "FORUM_REPLY",
+        "/dashboard/community",
+      );
+    }
+
+    // 2. Si c'est une réponse à un commentaire spécifique, notifier l'auteur du commentaire parent
+    if (dto.parentCommentaireId) {
+      const parentComm = await this.prisma.commentaire.findUnique({
+        where: { id: BigInt(dto.parentCommentaireId) },
+      });
+      if (
+        parentComm &&
+        parentComm.auteurId !== BigInt(userId) &&
+        parentComm.auteurId !== sujet.auteurId
+      ) {
+        await this.notificationsService.createNotification(
+          parentComm.auteurId.toString(),
+          "Réponse à votre commentaire",
+          `${commAuthor?.prenom} ${commAuthor?.nom} a répondu à votre commentaire dans "${sujet.titre}"`,
+          "FORUM_REPLY",
+          "/dashboard/community",
+        );
+      }
+    }
+
     return {
-      id: comm.id.toString(),
-      contenu: comm.contenu,
-      dateCreation: comm.dateCreation,
+      id: commentaire.id.toString(),
+      contenu: commentaire.contenu,
+      dateCreation: commentaire.dateCreation,
+      sujetId: commentaire.sujetId.toString(),
+      auteurId: commentaire.auteurId.toString(),
+      parentCommentaireId: commentaire.parentCommentaireId ? commentaire.parentCommentaireId.toString() : null,
       auteur: {
-        id: comm.auteur.id.toString(),
-        prenom: comm.auteur.prenom,
-        nom: comm.auteur.nom,
-        avatar: comm.auteur.avatar,
-        role: comm.auteur.roles[0]?.nom || 'APPRENANT',
+        ...commentaire.auteur,
+        id: commentaire.auteur.id.toString(),
+        role: commentaire.auteur.roles[0]?.nom || 'APPRENANT',
       },
     };
   }
 
-  // 7. Supprimer un sujet (seulement auteur ou admin)
-  async deleteSujet(userId: number, userRoles: string[], sujetId: number) {
-    const sujet = await this.prisma.sujet.findFirst({
-      where: { id: BigInt(sujetId), deletedAt: null },
-    });
+  // 8. Supprimer un commentaire
+  async deleteCommentaire(userId: number, userRoles: string[], commentId: number) {
+    const commentaire = await this.prisma.commentaire.findUnique({ where: { id: BigInt(commentId) } });
+    if (!commentaire) throw new NotFoundException('Commentaire non trouvé.');
 
-    if (!sujet) {
-      throw new NotFoundException("Ce sujet n'existe pas.");
+    const isAdmin = userRoles.includes('SUPER_ADMIN') || userRoles.includes('ADMIN');
+    const isOwner = commentaire.auteurId === BigInt(userId);
+
+    if (!isAdmin && !isOwner) {
+      throw new ForbiddenException('Vous ne pouvez pas supprimer ce commentaire.');
     }
 
-    const isAdmin = userRoles.includes('ADMIN') || userRoles.includes('SUPER_ADMIN');
-    const isAuthor = sujet.auteurId === BigInt(userId);
-
-    if (!isAdmin && !isAuthor) {
-      throw new ForbiddenException("Vous n'avez pas l'autorisation de supprimer ce sujet.");
-    }
-
-    await this.prisma.sujet.update({
-      where: { id: BigInt(sujetId) },
-      data: { deletedAt: new Date() },
-    });
-
-    return { message: 'Sujet supprimé avec succès.' };
+    await this.prisma.commentaire.delete({ where: { id: BigInt(commentId) } });
+    return { message: 'Commentaire supprimé.' };
   }
 
-  // 8. Supprimer un commentaire (seulement auteur ou admin)
-  async deleteCommentaire(userId: number, userRoles: string[], commentId: number) {
-    const comm = await this.prisma.commentaire.findFirst({
-      where: { id: BigInt(commentId), deletedAt: null },
+  // 9. Stats Admin
+  async getAdminStats() {
+    const [totalSujets, totalCommentaires, totalLikes, signalementsPending] = await Promise.all([
+      this.prisma.sujet.count(),
+      this.prisma.commentaire.count(),
+      this.prisma.likeSujet.count(),
+      this.prisma.signalementSujet.count({ where: { traite: false } }),
+    ]);
+
+    return {
+      totalSujets,
+      totalCommentaires,
+      totalLikes,
+      signalementsPending,
+    };
+  }
+
+  // 10. Signalements Admin
+  async getReportedSujets(traite: boolean = false) {
+    const signalements = await this.prisma.signalementSujet.findMany({
+      where: { traite },
+      orderBy: { dateCreation: 'desc' },
+      include: {
+        utilisateur: {
+          select: { id: true, prenom: true, nom: true, email: true },
+        },
+        sujet: {
+          include: {
+            auteur: { select: { id: true, prenom: true, nom: true, email: true } },
+            _count: { select: { commentaires: true, likes: true } },
+          },
+        },
+      },
     });
 
-    if (!comm) {
-      throw new NotFoundException("Ce commentaire n'existe pas.");
-    }
+    return signalements.map((sig) => ({
+      id: sig.id.toString(),
+      motif: sig.motif,
+      dateCreation: sig.dateCreation,
+      traite: sig.traite,
+      signalePar: {
+        ...sig.utilisateur,
+        id: sig.utilisateur.id.toString(),
+      },
+      sujet: {
+        id: sig.sujet.id.toString(),
+        titre: sig.sujet.titre,
+        contenu: sig.sujet.contenu,
+        theme: sig.sujet.theme,
+        dateCreation: sig.sujet.dateCreation,
+        auteur: {
+          ...sig.sujet.auteur,
+          id: sig.sujet.auteur.id.toString(),
+        },
+        commentairesCount: sig.sujet._count.commentaires,
+        likesCount: sig.sujet._count.likes,
+      },
+    }));
+  }
 
-    const isAdmin = userRoles.includes('ADMIN') || userRoles.includes('SUPER_ADMIN');
-    const isAuthor = comm.auteurId === BigInt(userId);
-
-    if (!isAdmin && !isAuthor) {
-      throw new ForbiddenException("Vous n'avez pas l'autorisation de supprimer ce commentaire.");
-    }
-
-    await this.prisma.commentaire.update({
-      where: { id: BigInt(commentId) },
-      data: { deletedAt: new Date() },
+  // 11. Résoudre signalement
+  async resolveSignalement(id: number) {
+    await this.prisma.signalementSujet.update({
+      where: { id: BigInt(id) },
+      data: { traite: true },
     });
+    return { message: 'Signalement marqué comme traité.' };
+  }
 
-    return { message: 'Commentaire supprimé avec succès.' };
+  // 12. Annuler résolution signalement
+  async unresolveSignalement(id: number) {
+    await this.prisma.signalementSujet.update({
+      where: { id: BigInt(id) },
+      data: { traite: false },
+    });
+    return { message: 'Signalement remis en attente.' };
   }
 }

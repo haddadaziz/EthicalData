@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Users, Award, Settings, LogOut, ShieldCheck, Menu, X, User, FileText } from 'lucide-react'; import { motion, AnimatePresence } from 'framer-motion';
+import { Users, Award, Settings, LogOut, ShieldCheck, Menu, X, User, FileText, MessageSquare } from 'lucide-react'; import { motion, AnimatePresence } from 'framer-motion';
+import NotificationBell from '../../components/NotificationBell';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -82,6 +83,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: 'Utilisateurs', href: '/admin', icon: Users },
     { name: 'Certifications', href: '/admin/certifications', icon: Award },
     { name: 'Ressources', href: '/admin/resources', icon: FileText },
+    { name: 'Communauté', href: '/admin/community', icon: MessageSquare },
     { name: 'Paramètres', href: '#', icon: Settings, disabled: true },
   ];
 
@@ -315,8 +317,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
           </div>
 
-          {/* Droite : Profil Utilisateur */}
+          {/* Droite : Profil Utilisateur & Notifications */}
           <div className="flex items-center gap-4">
+            <NotificationBell />
+
             <div className="flex flex-col text-right justify-center hidden sm:flex">
               <span className="text-sm font-bold text-slate-900 leading-none mb-1.5">{userEmail}</span>
               <span className="text-[10px] font-black text-red-600 uppercase tracking-widest leading-none">{userRole}</span>

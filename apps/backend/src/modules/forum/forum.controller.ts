@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Delete,
   Body,
   Param,
@@ -14,6 +15,8 @@ import { ForumService } from './forum.service';
 import { CreateSujetDto } from './dto/create-sujet.dto';
 import { CreateCommentaireDto } from './dto/create-commentaire.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('forum')
 @UseGuards(JwtAuthGuard) // Sécurise toutes les routes du forum par défaut
@@ -29,6 +32,47 @@ export class ForumController {
     const certId = certificationId ? parseInt(certificationId) : undefined;
     return this.forumService.findAllSujets({ theme, certificationId: certId });
   }
+
+  // ==========================================
+  // ROUTES ADMIN & MODÉRATION (Placées AVANT :id)
+  // ==========================================
+
+  // Récupérer les statistiques globales du forum
+  @UseGuards(RolesGuard)
+  @Roles('SUPER_ADMIN', 'ADMIN')
+  @Get('admin/stats')
+  async getAdminStats() {
+    return this.forumService.getAdminStats();
+  }
+
+  // Récupérer les signalements (filtrés par statut traite)
+  @UseGuards(RolesGuard)
+  @Roles('SUPER_ADMIN', 'ADMIN')
+  @Get('admin/signalements')
+  async getReportedSujets(@Query('traite') traite?: string) {
+    const isTraite = traite === 'true';
+    return this.forumService.getReportedSujets(isTraite);
+  }
+
+  // Marquer un signalement comme résolu
+  @UseGuards(RolesGuard)
+  @Roles('SUPER_ADMIN', 'ADMIN')
+  @Patch('admin/signalements/:id/traiter')
+  async resolveSignalement(@Param('id', ParseIntPipe) id: number) {
+    return this.forumService.resolveSignalement(id);
+  }
+
+  // Annuler / remettre un signalement en attente
+  @UseGuards(RolesGuard)
+  @Roles('SUPER_ADMIN', 'ADMIN')
+  @Patch('admin/signalements/:id/annuler')
+  async unresolveSignalement(@Param('id', ParseIntPipe) id: number) {
+    return this.forumService.unresolveSignalement(id);
+  }
+
+  // ==========================================
+  // ROUTES AVEC PARAMÈTRES ET ACTIONS USERS
+  // ==========================================
 
   // 2. Créer une nouvelle publication
   @Post()
@@ -61,7 +105,6 @@ export class ForumController {
   // 6. Supprimer un sujet (Auteur ou Admin uniquement)
   @Delete(':id')
   async deleteSujet(@Param('id', ParseIntPipe) id: number, @Req() req: any) {
-    // req.user.roles est un tableau d'objets ou de chaînes selon l'auth, on extrait les noms de rôles
     const roles = req.user.roles ? req.user.roles.map((r: any) => typeof r === 'string' ? r : r.nom) : [];
     return this.forumService.deleteSujet(req.user.id, roles, id);
   }

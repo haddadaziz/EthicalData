@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { BookOpen, Award, Settings, LogOut, ShieldCheck, Menu, X, User, DownloadCloud, HelpCircle, MessageSquare } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import NotificationBell from '../../components/NotificationBell';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -65,6 +66,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         { name: 'Entraînement', href: '/dashboard/practice', icon: HelpCircle },
         { name: 'Mes Fiches & Cours', href: '/dashboard/downloads', icon: DownloadCloud },
         { name: 'Communauté', href: '/dashboard/community', icon: MessageSquare },
+        { name: 'Mon Profil', href: '/dashboard/profile', icon: User },
     ];
 
     if (!authorized) {
@@ -86,6 +88,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         }
         if (pathname === '/dashboard/downloads') {
             return { title: 'Fiches & Guides de Cours', subtitle: 'Supports de révision condensés et téléchargements autorisés' };
+        }
+        if (pathname === '/dashboard/community') {
+            return { title: 'Communauté & Entraide', subtitle: 'Échangez avec les apprenants et posez vos questions d\'examen' };
+        }
+        if (pathname === '/dashboard/profile') {
+            return { title: 'Mon Profil Apprenant', subtitle: 'Gérez vos informations personnelles, votre sécurité et vos préférences' };
         }
         return { title: 'Mon Espace', subtitle: 'Ethical Data' };
     };
@@ -272,8 +280,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         </div>
                     </div>
 
-                    {/* Droite : Profil Utilisateur */}
+                    {/* Droite : Profil Utilisateur & Notifications */}
                     <div className="flex items-center gap-4">
+                        <NotificationBell />
+
                         <div className="flex flex-col text-right justify-center hidden sm:flex">
                             <span className="text-sm font-bold text-slate-900 leading-none mb-1.5">{userEmail}</span>
                             <span className="text-[10px] font-black text-red-650 uppercase tracking-widest leading-none">Candidat</span>

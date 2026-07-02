@@ -17,6 +17,7 @@ model Utilisateur {
   statut          Statut          @default(ACTIF)
   preferences     Json            @default("{}")
   avatar          String?   
+  bio             String?         @db.Text
   dateInscription DateTime        @default(now())
   deletedAt       DateTime?       @map("deleted_at")
   
@@ -29,6 +30,7 @@ model Utilisateur {
   commentaires    Commentaire[]
   likesSujets     LikeSujet[]
   signalements    SignalementSujet[]
+  notifications Notification[]
   
   @@map("utilisateurs")
 }
@@ -189,16 +191,21 @@ model Sujet {
 }
 
 model Commentaire {
-  id           BigInt      @id @default(autoincrement())
-  contenu      String      @db.Text
-  dateCreation DateTime    @default(now())
-  deletedAt    DateTime?   @map("deleted_at")
+  id                    BigInt       @id @default(autoincrement())
+  contenu               String       @db.Text
+  dateCreation          DateTime     @default(now())
+  deletedAt             DateTime?    @map("deleted_at")
+
+  // Parent / Réponses aux commentaires
+  parentCommentaireId   BigInt?      @map("parent_commentaire_id")
+  parentCommentaire     Commentaire? @relation("ReponsesCommentaire", fields: [parentCommentaireId], references: [id], onDelete: Cascade)
+  reponses              Commentaire[] @relation("ReponsesCommentaire")
 
   // Relations
-  sujetId      BigInt
-  sujet        Sujet       @relation(fields: [sujetId], references: [id], onDelete: Cascade)
-  auteurId     BigInt
-  auteur       Utilisateur @relation(fields: [auteurId], references: [id], onDelete: Cascade)
+  sujetId               BigInt
+  sujet                 Sujet        @relation(fields: [sujetId], references: [id], onDelete: Cascade)
+  auteurId              BigInt
+  auteur                Utilisateur  @relation(fields: [auteurId], references: [id], onDelete: Cascade)
 
   @@map("commentaires")
 }
@@ -232,6 +239,22 @@ model SignalementSujet {
   @@unique([sujetId, utilisateurId])
   @@map("signalements_sujets")
 }
+
+model Notification {
+  id              BigInt       @id @default(autoincrement())
+  destinataireId  BigInt       @map("destinataire_id")
+  titre           String
+  message         String       @db.Text
+  type            String       // "FORUM_REPLY", "FORUM_LIKE", "FORUM_REPORT", "SYSTEM"
+  lien            String?
+  lue             Boolean      @default(false)
+  dateCreation    DateTime     @default(now()) @map("date_creation")
+
+  destinataire    Utilisateur  @relation(fields: [destinataireId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
 enum Statut {
   ACTIF
   INACTIF

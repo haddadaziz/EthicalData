@@ -7,6 +7,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CertificationsModule } from './modules/certifications/certifications.module';
 import { ForumModule } from './modules/forum/forum.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ForumModule } from './modules/forum/forum.module';
     AuthModule,
     CertificationsModule,
     ForumModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
