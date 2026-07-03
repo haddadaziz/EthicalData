@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { LayoutDashboard, Users, BookOpen, MessageSquare, ShieldCheck, LogOut, DownloadCloud, Award, Bell, Calendar, FileText, Settings, User, X, Menu } from 'lucide-react';
+import { LayoutDashboard, Users, BookOpen, MessageSquare, ShieldCheck, LogOut, DownloadCloud, Award, Bell, Calendar, FileText, Settings, User, X, Menu, Activity } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import NotificationBell from '../../components/NotificationBell';
 
@@ -42,15 +42,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       router.push('/login');
       return;
     }
-
-    const adminNavItems = [
-      { name: 'Vue Générale', href: '/admin', icon: LayoutDashboard },
-      { name: 'Gestion Formations', href: '/admin/certifications', icon: Award },
-      { name: 'Ressources & Fiches', href: '/admin/downloads', icon: DownloadCloud },
-      { name: 'Modération Forum', href: '/admin/community', icon: MessageSquare },
-      { name: 'Planning & Coaching', href: '/admin/coaching', icon: Calendar },
-      { name: 'Utilisateurs & Rôles', href: '/admin/users', icon: Users },
-    ];
 
     try {
       const payloadBase64 = token.split('.')[1];
@@ -96,6 +87,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: 'Modération Forum', href: '/admin/community', icon: MessageSquare },
     { name: 'Planning & Coaching', href: '/admin/coaching', icon: Calendar },
     { name: 'Utilisateurs & Rôles', href: '/admin/users', icon: Users },
+    { name: 'Santé Système', href: '/admin/health', icon: Activity },
   ];
 
   if (!authorized) {
@@ -126,6 +118,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
     if (pathname === '/admin/users') {
       return { title: 'Gestion des Utilisateurs', subtitle: 'Administration des comptes et attribution des rôles' };
+    }
+    if (pathname === '/admin/health') {
+      return { title: 'Santé & Monitoring Système', subtitle: 'Surveillance des performances serveur, BDD et RAM' };
     }
     return { title: 'Administration', subtitle: 'Ethical Data' };
   };
@@ -320,7 +315,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Contenu de droite */}
       <div className="flex-1 flex flex-col h-screen overflow-y-auto relative z-10">
 
-        {/* Header Premium */}
         {/* Header Premium */}
         <header className="py-5 md:py-6 border-b border-slate-200/50 bg-white/80 backdrop-blur-xl flex items-center justify-between px-8 md:px-12 sticky top-0 z-20 transition-all duration-300">
 
