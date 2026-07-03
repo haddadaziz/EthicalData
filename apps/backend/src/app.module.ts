@@ -14,6 +14,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { AppointmentsModule } from './modules/appointments/appointments.module';
 import { ResourcesModule } from './modules/resources/resources.module';
 import { SimulationsModule } from './modules/simulations/simulations.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { SimulationsModule } from './modules/simulations/simulations.module';
       },
     ]),
     PrismaModule,
+    HealthModule,
     UsersModule,
     AuthModule,
     CertificationsModule,
