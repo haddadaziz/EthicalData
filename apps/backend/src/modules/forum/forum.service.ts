@@ -25,7 +25,6 @@ export class ForumService {
       where.certificationId = BigInt(filters.certificationId);
     }
 
-    // Exécution paginée native PostgreSQL (take = LIMIT, skip = OFFSET)
     const [sujets, total] = await Promise.all([
       this.prisma.sujet.findMany({
         where,
@@ -49,7 +48,7 @@ export class ForumService {
       this.prisma.sujet.count({ where }),
     ]);
 
-    const formattedSujets = sujets.map((s) => ({
+    const formattedSujets = sujets.map((s: any) => ({
       ...s,
       id: s.id.toString(),
       auteurId: s.auteurId.toString(),
@@ -57,13 +56,13 @@ export class ForumService {
       auteur: {
         ...s.auteur,
         id: s.auteur.id.toString(),
-        role: s.auteur.roles[0]?.nom || 'APPRENANT',
+        role: s.auteur.roles?.[0]?.nom || 'APPRENANT',
       },
       certification: s.certification
         ? { ...s.certification, id: s.certification.id.toString() }
         : null,
-      likesCount: s._count.likes,
-      commentairesCount: s._count.commentaires,
+      likesCount: s._count?.likes || 0,
+      commentairesCount: s._count?.commentaires || 0,
     }));
 
     return {
@@ -148,7 +147,7 @@ export class ForumService {
       auteur: {
         ...sujet.auteur,
         id: sujet.auteur.id.toString(),
-        role: sujet.auteur.roles[0]?.nom || 'APPRENANT',
+        role: sujet.auteur.roles?.[0]?.nom || 'APPRENANT',
       },
       certification: sujet.certification
         ? { ...sujet.certification, id: sujet.certification.id.toString() }
@@ -166,7 +165,7 @@ export class ForumService {
         auteur: {
           ...c.auteur,
           id: c.auteur.id.toString(),
-          role: c.auteur.roles[0]?.nom || 'APPRENANT',
+          role: c.auteur.roles?.[0]?.nom || 'APPRENANT',
         },
       })),
     };
@@ -204,7 +203,6 @@ export class ForumService {
         },
       });
 
-      // Envoyer une notification à l'auteur si ce n'est pas lui-même
       if (sujet.auteurId !== BigInt(userId)) {
         const liker = await this.prisma.utilisateur.findUnique({ where: { id: BigInt(userId) } });
         await this.notificationsService.createNotification(
@@ -250,7 +248,6 @@ export class ForumService {
       },
     });
 
-    // Notifier tous les administrateurs
     const reporter = await this.prisma.utilisateur.findUnique({ where: { id: BigInt(userId) } });
     await this.notificationsService.notifyAdmins(
       "Nouveau Signalement",
@@ -276,7 +273,6 @@ export class ForumService {
 
     await this.prisma.sujet.delete({ where: { id: BigInt(sujetId) } });
 
-    // Si supprimé par un admin, notifier l'auteur
     if (isAdmin && !isOwner) {
       await this.notificationsService.createNotification(
         sujet.auteurId.toString(),
@@ -290,14 +286,14 @@ export class ForumService {
     return { message: 'Publication supprimée avec succès.' };
   }
 
-  // 7. Ajouter un commentaire (+ NOTIFICATIONS SUJET & PARENT COMMENT)
+  // 7. Ajouter un commentaire (+ NOTIFICATIONS)
   async createCommentaire(userId: number, sujetId: number, dto: CreateCommentaireDto) {
     const sujet = await this.prisma.sujet.findUnique({ where: { id: BigInt(sujetId) } });
     if (!sujet) throw new NotFoundException('Publication non trouvée.');
 
     const commAuthor = await this.prisma.utilisateur.findUnique({ where: { id: BigInt(userId) } });
 
-    const commentaire = await (this.prisma.commentaire as any).create({
+    const commentaire = await this.prisma.commentaire.create({
       data: {
         contenu: dto.contenu,
         sujetId: BigInt(sujetId),
@@ -317,7 +313,6 @@ export class ForumService {
       },
     });
 
-    // 1. Envoyer une notification à l'auteur du sujet si ce n'est pas lui
     if (sujet.auteurId !== BigInt(userId)) {
       await this.notificationsService.createNotification(
         sujet.auteurId.toString(),
@@ -328,7 +323,6 @@ export class ForumService {
       );
     }
 
-    // 2. Si c'est une réponse à un commentaire spécifique, notifier l'auteur du commentaire parent
     if (dto.parentCommentaireId) {
       const parentComm = await this.prisma.commentaire.findUnique({
         where: { id: BigInt(dto.parentCommentaireId) },
@@ -348,17 +342,18 @@ export class ForumService {
       }
     }
 
+    const c = commentaire as any;
     return {
-      id: commentaire.id.toString(),
-      contenu: commentaire.contenu,
-      dateCreation: commentaire.dateCreation,
-      sujetId: commentaire.sujetId.toString(),
-      auteurId: commentaire.auteurId.toString(),
-      parentCommentaireId: commentaire.parentCommentaireId ? commentaire.parentCommentaireId.toString() : null,
+      id: c.id.toString(),
+      contenu: c.contenu,
+      dateCreation: c.dateCreation,
+      sujetId: c.sujetId.toString(),
+      auteurId: c.auteurId.toString(),
+      parentCommentaireId: c.parentCommentaireId ? c.parentCommentaireId.toString() : null,
       auteur: {
-        ...commentaire.auteur,
-        id: commentaire.auteur.id.toString(),
-        role: commentaire.auteur.roles[0]?.nom || 'APPRENANT',
+        ...c.auteur,
+        id: c.auteur.id.toString(),
+        role: c.auteur.roles?.[0]?.nom || 'APPRENANT',
       },
     };
   }
@@ -414,7 +409,7 @@ export class ForumService {
       },
     });
 
-    return signalements.map((sig) => ({
+    return signalements.map((sig: any) => ({
       id: sig.id.toString(),
       motif: sig.motif,
       dateCreation: sig.dateCreation,

@@ -1,6 +1,6 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
-interface FetchOptions extends RequestInit {
+export interface FetchOptions extends Omit<RequestInit, 'body'> {
   body?: any;
 }
 
@@ -9,7 +9,7 @@ export async function apiFetch(endpoint: string, options: FetchOptions = {}) {
 
   const headers = new Headers(options.headers || {});
   
-  if (!(options.body instanceof FormData)) {
+  if (options.body && !(options.body instanceof FormData)) {
     headers.set('Content-Type', 'application/json');
   }
 
@@ -23,11 +23,8 @@ export async function apiFetch(endpoint: string, options: FetchOptions = {}) {
   const config: RequestInit = {
     ...options,
     headers,
+    body: options.body && !(options.body instanceof FormData) ? JSON.stringify(options.body) : options.body,
   };
-
-  if (options.body && !(options.body instanceof FormData)) {
-    config.body = JSON.stringify(options.body);
-  }
 
   const response = await fetch(url, config);
 
