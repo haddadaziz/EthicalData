@@ -1,3 +1,4 @@
+// Force Vercel trigger build with updated variables env
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 export interface FetchOptions extends Omit<RequestInit, 'body'> {
