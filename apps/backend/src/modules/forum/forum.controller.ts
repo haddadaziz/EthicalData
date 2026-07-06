@@ -26,11 +26,13 @@ export class ForumController {
   // 1. Récupérer toutes les discussions (avec filtres optionnels)
   @Get()
   async getSujets(
+    @Req() req: any,
     @Query('theme') theme?: string,
     @Query('certificationId') certificationId?: string,
   ) {
     const certId = certificationId ? parseInt(certificationId) : undefined;
-    return this.forumService.findAllSujets({ theme, certificationId: certId });
+    const userId = req.user?.id ? Number(req.user.id) : undefined;
+    return this.forumService.findAllSujets({ theme, certificationId: certId, userId });
   }
 
   // ==========================================
@@ -127,5 +129,14 @@ export class ForumController {
   ) {
     const roles = req.user.roles ? req.user.roles.map((r: any) => typeof r === 'string' ? r : r.nom) : [];
     return this.forumService.deleteCommentaire(req.user.id, roles, commentId);
+  }
+
+  // 9. Liker ou enlever un like sur un commentaire (Toggle)
+  @Post('commentaires/:commentId/like')
+  async toggleLikeCommentaire(
+    @Param('commentId', ParseIntPipe) commentId: number,
+    @Req() req: any,
+  ) {
+    return this.forumService.toggleLikeCommentaire(req.user.id, commentId);
   }
 }

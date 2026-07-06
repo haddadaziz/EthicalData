@@ -2,9 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { LayoutDashboard, Users, BookOpen, MessageSquare, ShieldCheck, LogOut, DownloadCloud, Award, Bell, Calendar, FileText, Settings, User, X, Menu, Activity } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import NotificationBell from '../../components/NotificationBell';
+
+import { apiFetch } from '../../lib/api';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -12,6 +15,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [authorized, setAuthorized] = useState(false);
   const [userRole, setUserRole] = useState<string>('');
   const [userEmail, setUserEmail] = useState<string>('');
+  const [userName, setUserName] = useState<string>('');
+  const [userAvatar, setUserAvatar] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -31,7 +36,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Initialisation en thème clair
+  // Initialisation en thème clair & Chargement du profil
   useEffect(() => {
     document.documentElement.classList.remove('dark');
     localStorage.setItem('theme', 'light');
@@ -60,6 +65,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       setUserRole(roles.includes('SUPER_ADMIN') ? 'Super Admin' : 'Admin');
       setUserEmail(decodedPayload.email || 'admin@ethicaldata.local');
       setAuthorized(true);
+
+      apiFetch('/users/me/profile').then(profile => {
+        if (profile) {
+          setUserAvatar(profile.avatar || null);
+          if (profile.prenom || profile.nom) {
+            setUserName(`${profile.prenom || ''} ${profile.nom || ''}`.trim());
+          }
+        }
+      }).catch(err => console.error("Erreur chargement profil admin layout:", err));
+
     } catch (error) {
       console.error("Erreur d'authentification :", error);
       localStorage.removeItem('token');
@@ -93,8 +108,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!authorized) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-slate-500 gap-4">
-        <span className="w-10 h-10 border-4 border-red-600/10 border-t-red-600 rounded-full animate-spin" />
-        <p className="text-xs font-bold uppercase tracking-widest text-red-600">Chargement sécurisé...</p>
+        <span className="w-10 h-10 border-4 border-blue-600/10 border-t-blue-600 rounded-full animate-spin" />
+        <p className="text-xs font-bold uppercase tracking-widest text-blue-600">Chargement sécurisé...</p>
       </div>
     );
   }
@@ -131,7 +146,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Arrière-plan texturé clair */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000002_1px,transparent_1px),linear-gradient(to_bottom,#00000002_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none z-0" />
-      <div className="absolute top-[-20%] left-[-10%] w-[55%] h-[55%] bg-red-600/[0.01] rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="absolute top-[-20%] left-[-10%] w-[55%] h-[55%] bg-blue-600/[0.01] rounded-full blur-[140px] pointer-events-none z-0" />
 
       {/* Sidebar mobile */}
       <AnimatePresence>
@@ -153,7 +168,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             >
               <div className="h-20 flex items-center justify-between px-6 border-b border-slate-200/80">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 bg-red-50 border border-red-100 rounded-xl flex items-center justify-center text-red-600">
+                  <div className="w-9 h-9 bg-blue-50 border border-blue-100 rounded-xl flex items-center justify-center text-blue-600">
                     <ShieldCheck className="w-5.5 h-5.5" />
                   </div>
                   <span className="font-extrabold text-base text-slate-950 tracking-tight uppercase">
@@ -185,10 +200,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                           : 'text-slate-600 hover:text-slate-950 hover:bg-slate-50 cursor-pointer'
                         }`}
                     >
-                      <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-red-600 transition-colors'}`} />
+                      <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-blue-600 transition-colors'}`} />
                       <span className="truncate flex-1">{item.name}</span>
                       {item.badge && (
-                        <span className="text-[9px] bg-red-50 text-red-600 border border-red-100 px-2 py-0.5 rounded-full shrink-0 font-extrabold uppercase tracking-wider">
+                        <span className="text-[9px] bg-blue-50 text-blue-600 border border-blue-100 px-2 py-0.5 rounded-full shrink-0 font-extrabold uppercase tracking-wider">
                           {item.badge}
                         </span>
                       )}
@@ -198,19 +213,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </nav>
 
               <div className="p-4 border-t border-slate-200/80 bg-slate-50/50">
-                <div className="flex items-center gap-3 p-2 rounded-xl mb-2 overflow-hidden">
-                  <div className="w-9 h-9 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-500 shrink-0">
-                    <User className="w-5 h-5" />
-                  </div>
-                  <div className="truncate flex-1 min-w-0">
-                    <p className="text-xs font-bold text-slate-900 truncate leading-none mb-1">{userEmail}</p>
-                    <p className="text-[9px] text-red-600 font-extrabold uppercase tracking-wider leading-none">{userRole}</p>
-                  </div>
-                </div>
-
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 hover:text-red-700 transition-all cursor-pointer group"
+                  className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-all cursor-pointer group"
                 >
                   <LogOut className="w-5 h-5 shrink-0 group-hover:translate-x-0.5 transition-transform" />
                   <span>Déconnexion</span>
@@ -221,29 +226,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         )}
       </AnimatePresence>
 
-      {/* Sidebar Desktop */}
+      {/* Sidebar Desktop Fixe & Élégante */}
       {!isMobile && (
-        <motion.aside
-          animate={{ width: sidebarOpen ? 260 : 80 }}
-          transition={{ duration: 0.3, ease: 'easeInOut' }}
-          className="hidden md:flex flex-col bg-white border-r border-slate-200/80 relative z-10 shrink-0 sticky top-0 h-screen shadow-sm overflow-y-auto overflow-x-hidden"
-        >
-          {/* Logo */}
-          <div className={`h-20 flex items-center ${sidebarOpen ? 'justify-between px-6' : 'justify-center px-0'} border-b border-slate-200/80`}>
-            <div className="flex items-center gap-3 overflow-hidden">
-              <div className="w-10 h-10 bg-red-50 border border-red-100 rounded-xl flex items-center justify-center text-red-600 shrink-0">
-                <ShieldCheck className="w-6 h-6" />
+        <aside className="hidden md:flex flex-col bg-white border-r border-slate-200/80 relative z-10 shrink-0 sticky top-0 h-screen shadow-sm w-[260px] overflow-y-auto overflow-x-hidden">
+          {/* Logo avec Triangle */}
+          <div className="h-20 flex items-center px-6 border-b border-slate-200/80">
+            <Link href="/" className="flex items-center gap-3 group cursor-pointer">
+              <div className="flex items-center justify-center group-hover:scale-105 transition-transform">
+                <svg className="w-8 h-8 text-red-600" viewBox="0 0 100 100" fill="currentColor">
+                  <polygon points="50,15 15,85 85,85" className="fill-none stroke-red-600 stroke-[6]" />
+                  <polygon points="50,30 28,75 72,75" className="fill-none stroke-slate-900 stroke-[4]" />
+                  <polygon points="50,45 40,65 60,65" className="fill-red-600" />
+                </svg>
               </div>
-              {sidebarOpen && (
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="font-extrabold text-base text-slate-950 tracking-tight shrink-0 uppercase animate-fade-in"
-                >
-                  EthicalData
-                </motion.span>
-              )}
-            </div>
+              <span className="font-extrabold text-base text-slate-950 tracking-tight uppercase">
+                EthicalData
+              </span>
+            </Link>
           </div>
 
           {/* Liens de navigation */}
@@ -256,25 +255,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <a
                   key={index}
                   href={item.href}
-                  className={`flex items-center ${sidebarOpen ? 'gap-4 px-4' : 'justify-center px-0'} py-3.5 rounded-xl text-sm font-bold transition-all duration-200 group relative ${isActive
-                    ? 'bg-slate-950 text-white shadow-md'
+                  className={`flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 group relative ${isActive
+                    ? 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs font-extrabold'
                     : item.disabled
                       ? 'text-slate-400 cursor-not-allowed opacity-40'
                       : 'text-slate-600 hover:text-slate-955 hover:bg-slate-50 cursor-pointer'
                     }`}
                 >
-                  <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-red-600 transition-colors'}`} />
-                  {sidebarOpen && (
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="truncate flex-1"
-                    >
-                      {item.name}
-                    </motion.span>
-                  )}
-                  {sidebarOpen && item.badge && (
-                    <span className="text-[9px] bg-red-50 text-red-600 border border-red-100 px-2 py-0.5 rounded-full shrink-0 font-bold uppercase tracking-wider">
+                  <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600 transition-colors'}`} />
+                  <span className="truncate flex-1">{item.name}</span>
+                  {item.badge && (
+                    <span className="text-[9px] bg-blue-50 text-blue-600 border border-blue-100 px-2 py-0.5 rounded-full shrink-0 font-bold uppercase tracking-wider">
                       {item.badge}
                     </span>
                   )}
@@ -283,33 +274,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             })}
           </nav>
 
-          {/* Profil & Déconnexion en bas */}
+          {/* Déconnexion en bas */}
           <div className="p-4 border-t border-slate-200/80 bg-slate-50/50">
-            <div className={`flex items-center ${sidebarOpen ? 'gap-3 p-2' : 'justify-center p-0'} rounded-xl mb-2 overflow-hidden`}>
-              <div className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-500 shrink-0">
-                <User className="w-5.5 h-5.5" />
-              </div>
-              {sidebarOpen && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="truncate flex-1 min-w-0"
-                >
-                  <p className="text-xs font-bold text-slate-900 truncate leading-none mb-1">{userEmail}</p>
-                  <p className="text-[9px] text-red-600 font-extrabold uppercase tracking-wider leading-none">{userRole}</p>
-                </motion.div>
-              )}
-            </div>
-
             <button
               onClick={handleLogout}
-              className={`w-full flex items-center ${sidebarOpen ? 'gap-4 px-4' : 'justify-center px-0'} py-3.5 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 hover:text-red-700 transition-all cursor-pointer group`}
+              className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-all cursor-pointer group"
             >
               <LogOut className="w-5.5 h-5.5 shrink-0 group-hover:translate-x-0.5 transition-transform" />
-              {sidebarOpen && <span>Déconnexion</span>}
+              <span>Déconnexion</span>
             </button>
           </div>
-        </motion.aside>
+        </aside>
       )}
 
       {/* Contenu de droite */}
@@ -318,14 +293,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Header Premium */}
         <header className="py-5 md:py-6 border-b border-slate-200/50 bg-white/80 backdrop-blur-xl flex items-center justify-between px-8 md:px-12 sticky top-0 z-20 transition-all duration-300">
 
-          {/* Gauche : Bouton Sidebar & Titre Dynamique */}
-          <div className="flex items-center gap-6">
+          {/* Gauche : Titre Dynamique (Bouton Hamburger uniquement sur Mobile) */}
+          <div className="flex items-center gap-4">
             <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-3 bg-slate-50 border border-slate-200 hover:border-red-600 hover:bg-red-50/30 text-slate-600 hover:text-red-600 rounded-xl transition-all duration-200 cursor-pointer shadow-sm flex items-center justify-center"
-              title={sidebarOpen ? "Réduire le menu" : "Agrandir le menu"}
+              onClick={() => setSidebarOpen(true)}
+              className="md:hidden p-3 bg-slate-50 border border-slate-200 hover:border-blue-600 text-slate-600 hover:text-blue-600 rounded-xl transition-all duration-200 cursor-pointer shadow-sm flex items-center justify-center"
+              aria-label="Ouvrir le menu"
             >
-              {sidebarOpen ? <X className="w-5.5 h-5.5" /> : <Menu className="w-5.5 h-5.5" />}
+              <Menu className="w-5 h-5" />
             </button>
 
             <div className="flex flex-col text-left justify-center">
@@ -344,20 +319,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               title="Voir et modifier mon profil"
             >
               <div className="flex flex-col text-right justify-center hidden sm:flex">
-                <span className="text-xs font-black text-slate-950 leading-none mb-1 group-hover:text-red-600 transition-colors">
-                  {userEmail.split('@')[0]}
+                <span className="text-xs font-black text-slate-950 leading-none mb-1 group-hover:text-blue-600 transition-colors">
+                  {userName || userEmail.split('@')[0]}
                 </span>
-                <span className="text-[9px] font-black text-red-600 uppercase tracking-wider leading-none">
+                <span className="text-[9px] font-black text-blue-600 uppercase tracking-wider leading-none">
                   {userRole}
                 </span>
               </div>
 
               {/* Avatar Stylisé */}
               <div className="relative shrink-0">
-                <div className="absolute inset-0 bg-gradient-to-tr from-red-600 to-rose-500 rounded-2xl blur-md opacity-20 group-hover:opacity-40 transition-opacity" />
-                <div className="relative w-10 h-10 bg-gradient-to-tr from-slate-950 to-slate-900 border border-slate-800 rounded-2xl flex items-center justify-center text-white font-black text-xs shadow-md transition-transform duration-200 group-hover:scale-105">
-                  {userEmail.charAt(0).toUpperCase()}
-                </div>
+                <div className="absolute inset-0 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-2xl blur-md opacity-20 group-hover:opacity-40 transition-opacity" />
+                {userAvatar ? (
+                  <img src={userAvatar} alt="Admin Profile" className="relative w-10 h-10 rounded-2xl object-cover border border-slate-200 shadow-md transition-transform duration-200 group-hover:scale-105" />
+                ) : (
+                  <div className="relative w-10 h-10 bg-gradient-to-tr from-slate-950 to-slate-900 border border-slate-800 rounded-2xl flex items-center justify-center text-white font-black text-xs shadow-md transition-transform duration-200 group-hover:scale-105">
+                    {userName ? userName.charAt(0).toUpperCase() : userEmail.charAt(0).toUpperCase()}
+                  </div>
+                )}
               </div>
             </a>
           </div>

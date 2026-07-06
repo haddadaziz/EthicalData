@@ -54,8 +54,8 @@ export default function AdminHealthPage() {
     if (loading) {
         return (
             <div className="p-16 text-center text-slate-400 bg-white border border-slate-200/80 rounded-3xl max-w-5xl mx-auto">
-                <span className="w-10 h-10 border-4 border-red-100 border-t-red-600 rounded-full animate-spin inline-block mb-3" />
-                <p className="text-xs font-bold uppercase tracking-widest text-red-600">Connexion au sondeur de santé...</p>
+                <span className="w-10 h-10 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin inline-block mb-3" />
+                <p className="text-xs font-bold uppercase tracking-widest text-blue-600">Connexion au sondeur de santé...</p>
             </div>
         );
     }

@@ -14,7 +14,7 @@ export async function apiFetch(endpoint: string, options: FetchOptions = {}) {
   }
 
   if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     if (token) {
       headers.set('Authorization', `Bearer ${token}`);
     }

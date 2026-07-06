@@ -2,9 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { BookOpen, Award, Settings, LogOut, ShieldCheck, Menu, X, User, DownloadCloud, HelpCircle, MessageSquare, Calendar } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import NotificationBell from '../../components/NotificationBell';
+import { apiFetch } from '../../lib/api';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -12,6 +14,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const [authorized, setAuthorized] = useState(false);
     const [userEmail, setUserEmail] = useState<string>('');
     const [userFirstName, setUserFirstName] = useState<string>('');
+    const [userLastName, setUserLastName] = useState<string>('');
+    const [userAvatar, setUserAvatar] = useState<string | null>(null);
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
 
@@ -47,7 +51,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             setUserEmail(decodedPayload.email || 'apprenant@ethicaldata.local');
             setUserFirstName(decodedPayload.prenom || decodedPayload.email?.split('@')[0] || 'Étudiant');
+            setUserLastName(decodedPayload.nom || '');
+            setUserAvatar(decodedPayload.avatar || null);
             setAuthorized(true);
+
+            // Charger le profil utilisateur à jour avec sa photo
+            apiFetch('/users/me/profile')
+                .then((profile) => {
+                    if (profile) {
+                        if (profile.prenom) setUserFirstName(profile.prenom);
+                        if (profile.nom) setUserLastName(profile.nom);
+                        if (profile.email) setUserEmail(profile.email);
+                        if (profile.avatar) setUserAvatar(profile.avatar);
+                    }
+                })
+                .catch((err) => console.warn("Impossible de charger l'avatar du profil:", err));
         } catch (error) {
             console.error("Vérification session échouée :", error);
             localStorage.removeItem('token');
@@ -73,8 +91,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (!authorized) {
         return (
             <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-slate-500 gap-4">
-                <span className="w-10 h-10 border-4 border-red-100 border-t-red-600 rounded-full animate-spin" />
-                <p className="text-xs font-bold uppercase tracking-widest text-red-600">Chargement de votre espace...</p>
+                <span className="w-10 h-10 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin" />
+                <p className="text-xs font-bold uppercase tracking-widest text-blue-600">Chargement de votre espace...</p>
             </div>
         );
     }
@@ -82,7 +100,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     // Déterminer le titre et sous-titre de la page selon l'URL
     const getPageTitleAndSubtitle = () => {
         if (pathname === '/dashboard') {
-            return { title: `Bonjour, ${userFirstName} 👋`, subtitle: 'Suivez vos entraînements et votre progression' };
+            return { title: `Bonjour, ${userFirstName}`, subtitle: 'Suivez vos entraînements et votre progression' };
+        }
+        if (pathname === '/dashboard/certifications') {
+            return { title: 'Catalogue des Certifications', subtitle: 'Explorez les certifications et accédez aux fiches de révision' };
         }
         if (pathname === '/dashboard/practice') {
             return { title: 'Simulateur d\'Examen', subtitle: 'Entraînement interactif en conditions réelles' };
@@ -99,7 +120,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         if (pathname === '/dashboard/appointments') {
             return { title: 'Rendez-vous & Coaching', subtitle: 'Réservez un créneau individuel avec un formateur ou coach certifié' };
         }
-        return { title: 'Mon Espace', subtitle: 'Ethical Data' };
+        return { title: 'Catalogue des Certifications', subtitle: 'Explorez les certifications et accédez aux fiches de révision' };
     };
     const { title, subtitle } = getPageTitleAndSubtitle();
 
@@ -107,8 +128,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="h-screen bg-slate-50 text-slate-800 flex relative overflow-hidden font-sans">
 
             {/* Halos d'arrière-plan */}
-            <div className="absolute top-[-20%] left-[-10%] w-[55%] h-[55%] bg-red-500/2 rounded-full blur-[140px] pointer-events-none z-0" />
-            <div className="absolute bottom-[-20%] right-[-10%] w-[55%] h-[55%] bg-red-650/[0.01] rounded-full blur-[140px] pointer-events-none z-0" />
+            <div className="absolute top-[-20%] left-[-10%] w-[55%] h-[55%] bg-blue-500/2 rounded-full blur-[140px] pointer-events-none z-0" />
+            <div className="absolute bottom-[-20%] right-[-10%] w-[55%] h-[55%] bg-blue-600/[0.01] rounded-full blur-[140px] pointer-events-none z-0" />
 
             {/* Sidebar Mobile */}
             <AnimatePresence>
@@ -130,8 +151,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         >
                             <div className="h-20 flex items-center justify-between px-6 border-b border-slate-200/80">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-9 h-9 bg-red-50 border border-red-100 rounded-xl flex items-center justify-center text-red-600">
-                                        <ShieldCheck className="w-5.5 h-5.5" />
+                                    <div className="flex items-center justify-center">
+                                        <svg className="w-7 h-7 text-red-600" viewBox="0 0 100 100" fill="currentColor">
+                                            <polygon points="50,15 15,85 85,85" className="fill-none stroke-red-600 stroke-[6]" />
+                                            <polygon points="50,30 28,75 72,75" className="fill-none stroke-slate-900 stroke-[4]" />
+                                            <polygon points="50,45 40,65 60,65" className="fill-red-600" />
+                                        </svg>
                                     </div>
                                     <span className="font-extrabold text-base text-slate-950 tracking-tight">EthicalData</span>
                                 </div>
@@ -149,9 +174,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                             key={index}
                                             href={item.href}
                                             onClick={() => setSidebarOpen(false)}
-                                            className={`flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold transition-all ${isActive ? 'bg-slate-950 text-white shadow-md' : 'text-slate-600 hover:text-slate-955 hover:bg-slate-50'}`}
+                                            className={`flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-extrabold transition-all ${isActive ? 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs' : 'text-slate-600 hover:text-slate-955 hover:bg-slate-50'}`}
                                         >
-                                            <Icon className="w-5 h-5" />
+                                            <Icon className={`w-5 h-5 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
                                             <span>{item.name}</span>
                                         </a>
                                     );
@@ -159,16 +184,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             </nav>
 
                             <div className="p-4 border-t border-slate-200/80 bg-slate-50/40">
-                                <div className="flex items-center gap-3 p-2 rounded-xl mb-2">
-                                    <div className="w-9 h-9 bg-slate-100 rounded-xl flex items-center justify-center text-slate-700">
-                                        <User className="w-5 h-5" />
-                                    </div>
-                                    <div className="truncate flex-1">
-                                        <p className="text-xs font-bold text-slate-955 truncate">{userFirstName}</p>
-                                        <p className="text-[9px] text-red-650 font-extrabold uppercase tracking-wider">Candidat</p>
-                                    </div>
-                                </div>
-                                <button onClick={handleLogout} className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold text-rose-500 hover:bg-rose-500/10 hover:text-rose-450">
+                                <button onClick={handleLogout} className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold text-rose-500 hover:bg-rose-550/10 hover:text-rose-455">
                                     <LogOut className="w-5 h-5" />
                                     <span>Déconnexion</span>
                                 </button>
@@ -178,29 +194,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 )}
             </AnimatePresence>
 
-            {/* Sidebar Desktop Animée (comme l'admin) */}
+            {/* Sidebar Desktop Fixe et Élégante */}
             {!isMobile && (
-                <motion.aside
-                    animate={{ width: sidebarOpen ? 260 : 80 }}
-                    transition={{ duration: 0.3, ease: 'easeInOut' }}
-                    className="hidden md:flex flex-col bg-white border-r border-slate-200/80 relative z-10 shrink-0 sticky top-0 h-screen shadow-sm overflow-y-auto overflow-x-hidden"
-                >
-                    {/* Logo */}
-                    <div className={`h-20 flex items-center ${sidebarOpen ? 'justify-between px-6' : 'justify-center px-0'} border-b border-slate-200/80`}>
-                        <div className="flex items-center gap-3 overflow-hidden">
-                            <div className="w-10 h-10 bg-red-50 border border-red-100 rounded-xl flex items-center justify-center text-red-600 shrink-0">
-                                <ShieldCheck className="w-6 h-6" />
+                <aside className="hidden md:flex flex-col bg-white border-r border-slate-200/80 relative z-10 shrink-0 sticky top-0 h-screen shadow-sm w-[260px] overflow-y-auto overflow-x-hidden">
+                    {/* Logo Brand avec Triangle */}
+                    <div className="h-20 flex items-center px-6 border-b border-slate-200/80">
+                        <Link href="/" className="flex items-center gap-3 group cursor-pointer">
+                            <div className="flex items-center justify-center group-hover:scale-105 transition-transform">
+                                <svg className="w-8 h-8 text-red-600" viewBox="0 0 100 100" fill="currentColor">
+                                    <polygon points="50,15 15,85 85,85" className="fill-none stroke-red-600 stroke-[6]" />
+                                    <polygon points="50,30 28,75 72,75" className="fill-none stroke-slate-900 stroke-[4]" />
+                                    <polygon points="50,45 40,65 60,65" className="fill-red-600" />
+                                </svg>
                             </div>
-                            {sidebarOpen && (
-                                <motion.span
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    className="font-extrabold text-base text-slate-950 tracking-tight shrink-0 uppercase animate-fade-in"
-                                >
-                                    EthicalData
-                                </motion.span>
-                            )}
-                        </div>
+                            <span className="font-extrabold text-base text-slate-950 tracking-tight uppercase">
+                                EthicalData
+                            </span>
+                        </Link>
                     </div>
 
                     {/* Liens de navigation */}
@@ -213,69 +223,45 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                 <a
                                     key={index}
                                     href={item.href}
-                                    className={`flex items-center ${sidebarOpen ? 'gap-4 px-4' : 'justify-center px-0'} py-3.5 rounded-xl text-sm font-bold transition-all duration-200 group relative ${isActive
-                                        ? 'bg-slate-950 text-white shadow-md'
-                                        : 'text-slate-600 hover:text-slate-955 hover:bg-slate-50 cursor-pointer'
+                                    className={`flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-extrabold transition-all duration-200 group relative ${isActive
+                                        ? 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs'
+                                        : 'text-slate-600 hover:text-slate-950 hover:bg-slate-50 cursor-pointer'
                                         }`}
                                 >
-                                    <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-red-600 transition-colors'}`} />
-                                    {sidebarOpen && (
-                                        <motion.span
-                                            initial={{ opacity: 0 }}
-                                            animate={{ opacity: 1 }}
-                                            className="truncate flex-1"
-                                        >
-                                            {item.name}
-                                        </motion.span>
-                                    )}
+                                    <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600 transition-colors'}`} />
+                                    <span className="truncate flex-1">{item.name}</span>
                                 </a>
                             );
                         })}
                     </nav>
 
-                    {/* Profil & Déconnexion en bas */}
+                    {/* Déconnexion en bas */}
                     <div className="p-4 border-t border-slate-200/80 bg-slate-50/50">
-                        <div className={`flex items-center ${sidebarOpen ? 'gap-3 p-2' : 'justify-center p-0'} rounded-xl mb-2 overflow-hidden`}>
-                            <div className="w-10 h-10 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center text-slate-600 shrink-0">
-                                <User className="w-5.5 h-5.5" />
-                            </div>
-                            {sidebarOpen && (
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    className="truncate flex-1 min-w-0"
-                                >
-                                    <p className="text-xs font-bold text-slate-900 truncate leading-none mb-1">{userFirstName}</p>
-                                    <p className="text-[9px] text-red-600 font-extrabold uppercase tracking-wider leading-none">Candidat</p>
-                                </motion.div>
-                            )}
-                        </div>
-
                         <button
                             onClick={handleLogout}
-                            className={`w-full flex items-center ${sidebarOpen ? 'gap-4 px-4' : 'justify-center px-0'} py-3.5 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 hover:text-red-700 transition-all cursor-pointer group`}
+                            className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-all cursor-pointer group"
                         >
                             <LogOut className="w-5.5 h-5.5 shrink-0 group-hover:translate-x-0.5 transition-transform" />
-                            {sidebarOpen && <span>Déconnexion</span>}
+                            <span>Déconnexion</span>
                         </button>
                     </div>
-                </motion.aside>
+                </aside>
             )}
 
             {/* Contenu principal (h-screen fixe) */}
             <div className="flex-1 flex flex-col h-screen overflow-y-auto relative z-10">
 
-                {/* Header Premium (py-5 md:py-6 comme l'admin) */}
+                {/* Header Premium (Sans bouton Hamburger sur PC) */}
                 <header className="py-5 md:py-6 border-b border-slate-200/50 bg-white/80 backdrop-blur-xl flex items-center justify-between px-8 md:px-12 sticky top-0 z-20 transition-all duration-300">
 
-                    {/* Gauche : Bouton Sidebar & Titre Dynamique */}
-                    <div className="flex items-center gap-6">
+                    {/* Gauche : Titre Dynamique (Bouton Hamburger uniquement sur Mobile) */}
+                    <div className="flex items-center gap-4">
                         <button
-                            onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="p-3 bg-slate-50 border border-slate-200 hover:border-red-650 hover:bg-red-50/30 text-slate-600 hover:text-red-600 rounded-xl transition-all duration-200 cursor-pointer shadow-sm flex items-center justify-center"
-                            title={sidebarOpen ? "Réduire le menu" : "Agrandir le menu"}
+                            onClick={() => setSidebarOpen(true)}
+                            className="md:hidden p-3 bg-slate-50 border border-slate-200 hover:border-blue-600 text-slate-600 hover:text-blue-600 rounded-xl transition-all duration-200 cursor-pointer shadow-sm flex items-center justify-center"
+                            aria-label="Ouvrir le menu"
                         >
-                            {sidebarOpen ? <X className="w-5.5 h-5.5" /> : <Menu className="w-5.5 h-5.5" />}
+                            <Menu className="w-5 h-5" />
                         </button>
 
                         <div className="flex flex-col text-left justify-center">
@@ -294,20 +280,28 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             title="Voir et modifier mon profil"
                         >
                             <div className="flex flex-col text-right justify-center hidden sm:flex">
-                                <span className="text-xs font-black text-slate-950 leading-none mb-1 group-hover:text-red-600 transition-colors">
-                                    {userFirstName}
+                                <span className="text-xs font-black text-slate-950 leading-none mb-1 group-hover:text-blue-600 transition-colors">
+                                    {userFirstName} {userLastName}
                                 </span>
-                                <span className="text-[9px] font-black text-red-600 uppercase tracking-wider leading-none">
-                                    Candidat Apprenant
+                                <span className="text-[9px] font-black text-blue-600 uppercase tracking-wider leading-none">
+                                    Apprenant
                                 </span>
                             </div>
 
-                            {/* Avatar Stylisé */}
+                            {/* Avatar Stylisé avec photo de profil */}
                             <div className="relative shrink-0">
-                                <div className="absolute inset-0 bg-gradient-to-tr from-red-600 to-rose-500 rounded-2xl blur-md opacity-20 group-hover:opacity-40 transition-opacity" />
-                                <div className="relative w-10 h-10 bg-gradient-to-tr from-slate-950 to-slate-900 border border-slate-800 rounded-2xl flex items-center justify-center text-white font-black text-xs shadow-md transition-transform duration-200 group-hover:scale-105">
-                                    {userFirstName ? userFirstName[0].toUpperCase() : 'U'}
-                                </div>
+                                <div className="absolute inset-0 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-2xl blur-md opacity-20 group-hover:opacity-40 transition-opacity" />
+                                {userAvatar ? (
+                                    <img
+                                        src={userAvatar}
+                                        alt={`${userFirstName} ${userLastName}`}
+                                        className="relative w-10 h-10 rounded-2xl object-cover border border-slate-200/80 shadow-md transition-transform duration-200 group-hover:scale-105"
+                                    />
+                                ) : (
+                                    <div className="relative w-10 h-10 bg-gradient-to-tr from-slate-950 to-slate-900 border border-slate-800 rounded-2xl flex items-center justify-center text-white font-black text-xs shadow-md transition-transform duration-200 group-hover:scale-105">
+                                        {userFirstName ? userFirstName[0].toUpperCase() : 'U'}
+                                    </div>
+                                )}
                             </div>
                         </a>
                     </div>

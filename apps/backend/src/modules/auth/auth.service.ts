@@ -18,6 +18,13 @@ export class AuthService {
       const isMatch = await bcrypt.compare(pass, user.motDePasse);
 
       if (isMatch) {
+        if (user.statut === 'BANNI') {
+          throw new UnauthorizedException('Vous êtes banni, vous ne pouvez pas vous connecter.');
+        }
+        if (user.statut === 'INACTIF') {
+          throw new UnauthorizedException('Votre compte est inactif, vous ne pouvez pas vous connecter.');
+        }
+
         const { motDePasse, ...result } = user;
         return {
           ...result,

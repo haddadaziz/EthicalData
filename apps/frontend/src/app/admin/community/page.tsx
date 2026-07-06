@@ -74,7 +74,8 @@ export default function AdminCommunityPage() {
       if (statsData) setStats(statsData);
       setPendingSignalements(pendingData || []);
       setResolvedSignalements(resolvedData || []);
-      setSujets(sujetsData || []);
+      const listSujets = Array.isArray(sujetsData) ? sujetsData : (sujetsData?.data || []);
+      setSujets(listSujets);
     } catch (err: any) {
       console.error("Erreur chargement admin communauté:", err);
       showToast(err.message || 'Erreur d\'accès aux données de modération.', 'error');
@@ -145,13 +146,30 @@ export default function AdminCommunityPage() {
   };
 
   const formatDate = (dateStr: string) => {
+    if (!dateStr) return '';
     const date = new Date(dateStr);
     return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
   };
 
-  const filteredSujets = sujets.filter(s => {
+  const getAuthorFullName = (auteur?: any) => {
+    if (!auteur) return 'Utilisateur anonyme';
+    const prenom = auteur.prenom || '';
+    const nom = auteur.nom || '';
+    const name = `${prenom} ${nom}`.trim();
+    return name || auteur.email || 'Utilisateur';
+  };
+
+  const getAuthorEmail = (auteur?: any) => {
+    if (!auteur) return '';
+    return auteur.email || '';
+  };
+
+  const filteredSujets = (Array.isArray(sujets) ? sujets : []).filter(s => {
+    if (!s) return false;
+    const titre = s.titre || '';
+    const contenu = s.contenu || '';
     const search = searchTerm.toLowerCase().trim();
-    return !search || s.titre.toLowerCase().includes(search) || s.contenu.toLowerCase().includes(search);
+    return !search || titre.toLowerCase().includes(search) || contenu.toLowerCase().includes(search);
   });
 
   const displayedSignalements = signalementStatusFilter === 'PENDING' ? pendingSignalements : resolvedSignalements;
@@ -159,19 +177,12 @@ export default function AdminCommunityPage() {
   return (
     <div className="space-y-10 text-slate-800 text-left">
       
-      {/* En-tête */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-        <div>
-          <h1 className="text-3xl font-black text-slate-950 tracking-tight">Modération & Statistiques Communauté</h1>
-          <p className="text-slate-500 text-xs mt-1.5 font-bold uppercase tracking-wider">
-            Supervisez les échanges de la communauté, traitez les signalements et modérez les publications.
-          </p>
-        </div>
-
+      {/* Actions et Cartes Statistiques (Sans titre redondant) */}
+      <div className="flex justify-end pb-2">
         <button
           onClick={fetchData}
           disabled={loading}
-          className="p-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 hover:text-slate-950 rounded-xl cursor-pointer disabled:opacity-50 transition-colors shadow-sm flex items-center gap-2 text-xs font-bold shrink-0"
+          className="p-2.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 hover:text-slate-950 rounded-xl cursor-pointer disabled:opacity-50 transition-colors shadow-sm flex items-center gap-2 text-xs font-bold shrink-0"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           <span>Actualiser</span>
@@ -301,8 +312,8 @@ export default function AdminCommunityPage() {
 
             {loading ? (
               <div className="p-12 text-center text-slate-400">
-                <span className="w-8 h-8 border-3 border-rose-100 border-t-rose-600 rounded-full animate-spin inline-block mb-2" />
-                <p className="text-xs font-bold uppercase">Chargement des signalements...</p>
+                <span className="w-8 h-8 border-3 border-blue-100 border-t-blue-600 rounded-full animate-spin inline-block mb-2" />
+                <p className="text-xs font-bold uppercase text-blue-600">Chargement des signalements...</p>
               </div>
             ) : displayedSignalements.length === 0 ? (
               <div className="p-12 text-center text-slate-500 font-semibold bg-slate-50/50 rounded-2xl border border-slate-100">
@@ -331,11 +342,11 @@ export default function AdminCommunityPage() {
 
                         {/* Lien Profil Signaleur */}
                         <Link
-                          href={`/admin?search=${encodeURIComponent(sig.signalePar.email)}`}
+                          href={`/admin?search=${encodeURIComponent(getAuthorEmail(sig.signalePar))}`}
                           className="text-[11px] font-bold text-slate-700 hover:text-red-600 hover:underline flex items-center gap-1 bg-white border border-slate-200 px-2.5 py-0.5 rounded-md transition-colors"
                         >
                           <User className="w-3 h-3 text-slate-400" />
-                          <span>Signalé par : {sig.signalePar.prenom} {sig.signalePar.nom}</span>
+                          <span>Signalé par : {getAuthorFullName(sig.signalePar)}</span>
                           <ExternalLink className="w-2.5 h-2.5 text-slate-400" />
                         </Link>
                       </div>
@@ -347,11 +358,11 @@ export default function AdminCommunityPage() {
                     <div className="bg-white border border-slate-200/80 rounded-xl p-4 space-y-3 shadow-sm">
                       <div className="flex items-center justify-between text-xs">
                         <Link
-                          href={`/admin?search=${encodeURIComponent(sig.sujet.auteur.email)}`}
+                          href={`/admin?search=${encodeURIComponent(getAuthorEmail(sig.sujet?.auteur))}`}
                           className="font-extrabold text-slate-900 hover:text-red-600 hover:underline flex items-center gap-1.5"
                         >
                           <User className="w-3.5 h-3.5 text-slate-400" />
-                          <span>Auteur : {sig.sujet.auteur.prenom} {sig.sujet.auteur.nom} ({sig.sujet.auteur.email})</span>
+                          <span>Auteur : {getAuthorFullName(sig.sujet?.auteur)} ({getAuthorEmail(sig.sujet?.auteur)})</span>
                         </Link>
 
                         <span className="text-[9px] font-black text-slate-500 bg-slate-100 px-2 py-0.5 rounded uppercase">
@@ -413,8 +424,8 @@ export default function AdminCommunityPage() {
           <div>
             {loading ? (
               <div className="p-12 text-center text-slate-400">
-                <span className="w-8 h-8 border-3 border-rose-100 border-t-rose-600 rounded-full animate-spin inline-block mb-2" />
-                <p className="text-xs font-bold uppercase">Chargement des sujets...</p>
+                <span className="w-8 h-8 border-3 border-blue-100 border-t-blue-600 rounded-full animate-spin inline-block mb-2" />
+                <p className="text-xs font-bold uppercase text-blue-600">Chargement des sujets...</p>
               </div>
             ) : filteredSujets.length === 0 ? (
               <div className="p-12 text-center text-slate-500 font-semibold bg-slate-50/50 rounded-2xl border border-slate-100">
@@ -427,13 +438,13 @@ export default function AdminCommunityPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Link
-                          href={`/admin?search=${encodeURIComponent(sujet.auteur.email)}`}
+                          href={`/admin?search=${encodeURIComponent(getAuthorEmail(sujet?.auteur))}`}
                           className="font-extrabold text-slate-950 text-sm hover:text-red-600 hover:underline flex items-center gap-1"
                         >
                           <User className="w-3.5 h-3.5 text-slate-400" />
-                          <span>{sujet.auteur.prenom} {sujet.auteur.nom}</span>
+                          <span>{getAuthorFullName(sujet?.auteur)}</span>
                         </Link>
-                        <span className="text-[9px] font-black text-slate-500 bg-slate-100 px-2 py-0.5 rounded uppercase">{sujet.auteur.role}</span>
+                        <span className="text-[9px] font-black text-slate-500 bg-slate-100 px-2 py-0.5 rounded uppercase">{sujet?.auteur?.role || 'APPRENANT'}</span>
                       </div>
                       <span className="text-[10px] text-slate-400 font-semibold">{formatDate(sujet.dateCreation)}</span>
                     </div>
@@ -501,11 +512,11 @@ export default function AdminCommunityPage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between text-xs">
                   <Link
-                    href={`/admin?search=${encodeURIComponent(inspectedSujet.auteur.email)}`}
+                    href={`/admin?search=${encodeURIComponent(getAuthorEmail(inspectedSujet?.auteur))}`}
                     className="font-extrabold text-slate-950 hover:text-red-600 hover:underline flex items-center gap-1.5"
                   >
                     <User className="w-4 h-4 text-slate-400" />
-                    <span>{inspectedSujet.auteur.prenom} {inspectedSujet.auteur.nom} ({inspectedSujet.auteur.email})</span>
+                    <span>{getAuthorFullName(inspectedSujet?.auteur)} ({getAuthorEmail(inspectedSujet?.auteur)})</span>
                   </Link>
                   <span className="text-slate-400 font-semibold">{formatDate(inspectedSujet.dateCreation)}</span>
                 </div>
@@ -530,10 +541,10 @@ export default function AdminCommunityPage() {
                       <div key={c.id} className="p-3.5 bg-slate-50/70 border border-slate-200/60 rounded-xl space-y-1.5 text-xs">
                         <div className="flex items-center justify-between font-bold text-slate-900">
                           <Link
-                            href={`/admin?search=${encodeURIComponent(c.auteur.email)}`}
+                            href={`/admin?search=${encodeURIComponent(getAuthorEmail(c?.auteur))}`}
                             className="hover:text-red-600 hover:underline flex items-center gap-1"
                           >
-                            <span>{c.auteur.prenom} {c.auteur.nom}</span>
+                            <span>{getAuthorFullName(c?.auteur)}</span>
                           </Link>
                           <span className="text-[10px] text-slate-400 font-normal">{formatDate(c.dateCreation)}</span>
                         </div>

@@ -50,8 +50,8 @@ export default function AdminDashboardPage() {
     if (loading) {
         return (
             <div className="p-16 text-center text-slate-400 bg-white border border-slate-200/80 rounded-3xl max-w-5xl mx-auto">
-                <span className="w-10 h-10 border-4 border-red-100 border-t-red-600 rounded-full animate-spin inline-block mb-3" />
-                <p className="text-xs font-bold uppercase tracking-widest text-red-600">Chargement de la console d'administration...</p>
+                <span className="w-10 h-10 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin inline-block mb-3" />
+                <p className="text-xs font-bold uppercase tracking-widest text-blue-600">Chargement de la console d'administration...</p>
             </div>
         );
     }
@@ -61,10 +61,10 @@ export default function AdminDashboardPage() {
 
             {/* EN-TÊTE DU DASHBOARD ADMIN */}
             <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 rounded-3xl p-8 md:p-10 text-white relative overflow-hidden shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
 
                 <div className="space-y-2 relative z-10">
-                    <span className="px-3 py-1 bg-red-500/20 border border-red-500/30 text-red-400 font-extrabold text-[10px] rounded-full uppercase tracking-wider flex items-center gap-1.5 w-max">
+                    <span className="px-3 py-1 bg-blue-500/20 border border-blue-500/30 text-blue-400 font-extrabold text-[10px] rounded-full uppercase tracking-wider flex items-center gap-1.5 w-max">
                         <ShieldCheck className="w-3.5 h-3.5" />
                         Console Super Admin & Direction
                     </span>
@@ -79,7 +79,7 @@ export default function AdminDashboardPage() {
                 <div className="flex items-center gap-3 relative z-10 w-full md:w-auto">
                     <a
                         href="/admin/certifications"
-                        className="px-5 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-red-600/20 cursor-pointer w-full md:w-auto"
+                        className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-blue-600/20 cursor-pointer w-full md:w-auto"
                     >
                         <Plus className="w-4 h-4" />
                         <span>Nouvelle Certification</span>
@@ -163,7 +163,7 @@ export default function AdminDashboardPage() {
                             <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-slate-950 transition-colors" />
                         </div>
                         <div>
-                            <h3 className="text-sm font-black text-slate-950 group-hover:text-red-600 transition-colors">Utilisateurs & Rôles</h3>
+                            <h3 className="text-sm font-black text-slate-950 group-hover:text-blue-600 transition-colors">Utilisateurs & Rôles</h3>
                             <p className="text-xs text-slate-500 font-medium leading-relaxed mt-1">Modération, attribution de rôles Formateurs / Admins et statuts.</p>
                         </div>
                     </a>
@@ -180,7 +180,7 @@ export default function AdminDashboardPage() {
                             <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-slate-950 transition-colors" />
                         </div>
                         <div>
-                            <h3 className="text-sm font-black text-slate-950 group-hover:text-red-600 transition-colors">Catalogue Certifications</h3>
+                            <h3 className="text-sm font-black text-slate-950 group-hover:text-blue-600 transition-colors">Catalogue Certifications</h3>
                             <p className="text-xs text-slate-500 font-medium leading-relaxed mt-1">Ajout d'examens, questions QCM et cas pratiques par domaine.</p>
                         </div>
                     </a>
@@ -197,7 +197,7 @@ export default function AdminDashboardPage() {
                             <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-slate-950 transition-colors" />
                         </div>
                         <div>
-                            <h3 className="text-sm font-black text-slate-950 group-hover:text-red-600 transition-colors">Modération Forum</h3>
+                            <h3 className="text-sm font-black text-slate-950 group-hover:text-blue-600 transition-colors">Modération Forum</h3>
                             <p className="text-xs text-slate-500 font-medium leading-relaxed mt-1">Traitement des signalements et surveillance des discussions.</p>
                         </div>
                     </a>
@@ -214,7 +214,7 @@ export default function AdminDashboardPage() {
                             <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-slate-950 transition-colors" />
                         </div>
                         <div>
-                            <h3 className="text-sm font-black text-slate-950 group-hover:text-red-600 transition-colors">Planning & Coaching</h3>
+                            <h3 className="text-sm font-black text-slate-950 group-hover:text-blue-600 transition-colors">Planning & Coaching</h3>
                             <p className="text-xs text-slate-500 font-medium leading-relaxed mt-1">Ouverture de créneaux horaire et suivi des séances attribuées.</p>
                         </div>
                     </a>
@@ -228,7 +228,7 @@ export default function AdminDashboardPage() {
                         <h3 className="text-base font-black text-slate-950">Derniers Inscrits</h3>
                         <p className="text-xs text-slate-500 font-medium">Les plus récents candidats ayant rejoint la plateforme.</p>
                     </div>
-                    <a href="/admin/users" className="text-xs font-extrabold text-red-600 hover:underline">
+                    <a href="/admin/users" className="text-xs font-extrabold text-blue-600 hover:underline">
                         Voir tous les utilisateurs →
                     </a>
                 </div>

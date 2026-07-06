@@ -2,30 +2,37 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ShieldCheck, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { apiFetch } from '../../lib/api';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+
+const TriangleLogo = ({ className = "w-5 h-5" }: { className?: string }) => (
+    <svg className={`${className} text-red-600`} viewBox="0 0 100 100" fill="currentColor">
+        <polygon points="50,15 15,85 85,85" className="fill-none stroke-red-600 stroke-[6]" />
+        <polygon points="50,30 28,75 72,75" className="fill-none stroke-slate-900 stroke-[4]" />
+        <polygon points="50,45 40,65 60,65" className="fill-red-600" />
+    </svg>
+);
 
 export default function LoginPage() {
     const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [rememberMe, setRememberMe] = useState(true);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const mouseRef = useRef({ x: 0, y: 0, active: false });
 
-    // Configuration SEO de la page
     useEffect(() => {
         document.title = "Connexion - Ethical Data Security";
         document.documentElement.classList.remove('dark');
         localStorage.setItem('theme', 'light');
     }, []);
 
-    // Animation de fond interactive (particules rouges EDS)
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -100,39 +107,36 @@ export default function LoginPage() {
                 p.x += p.vx;
                 p.y += p.vy;
 
-                if (p.x < -10) p.x = canvas.width + 10;
-                if (p.x > canvas.width + 10) p.x = -10;
-                if (p.y < -10) {
-                    p.y = canvas.height + 10;
+                if (p.y < 0) {
+                    p.y = canvas.height;
                     p.x = Math.random() * canvas.width;
                 }
-                if (p.y > canvas.height + 10) p.y = -10;
+                if (p.x < 0) p.x = canvas.width;
+                if (p.x > canvas.width) p.x = 0;
 
                 if (m.active) {
                     const dx = p.x - m.x;
                     const dy = p.y - m.y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
 
-                    if (dist < repelRadius) {
-                        const force = (repelRadius - dist) / repelRadius;
-                        const angle = Math.atan2(dy, dx);
-                        const pushX = Math.cos(angle) * force * 2.5;
-                        const pushY = Math.sin(angle) * force * 2.5;
-                        p.vx += (pushX - p.vx) * 0.15;
-                        p.vy += (pushY - p.vy) * 0.15;
-                    } else {
-                        p.vx += (p.targetVx - p.vx) * 0.04;
-                        p.vy += (p.targetVy - p.vy) * 0.04;
+                    if (dist < repelRadius && dist > 0) {
+                        const force = (1 - dist / repelRadius) * 2.5;
+                        p.vx += (dx / dist) * force;
+                        p.vy += (dy / dist) * force;
                     }
-                } else {
-                    p.vx += (p.targetVx - p.vx) * 0.04;
-                    p.vy += (p.targetVy - p.vy) * 0.04;
                 }
 
-                ctx.fillStyle = `rgba(220, 38, 38, ${p.alpha})`;
+                p.vx += (p.targetVx - p.vx) * 0.05;
+                p.vy += (p.targetVy - p.vy) * 0.05;
+
+                ctx.save();
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(220, 38, 38, ${p.alpha})`;
+                ctx.shadowColor = '#dc2626';
+                ctx.shadowBlur = 8;
                 ctx.fill();
+                ctx.restore();
             });
 
             for (let i = 0; i < particles.length; i++) {
@@ -144,9 +148,9 @@ export default function LoginPage() {
                     const dist = Math.sqrt(dx * dx + dy * dy);
 
                     if (dist < maxConnectionDist) {
-                        const lineAlpha = (1 - dist / maxConnectionDist) * 0.04;
-                        ctx.strokeStyle = `rgba(220, 38, 38, ${lineAlpha})`;
-                        ctx.lineWidth = 0.4;
+                        const alpha = (1 - dist / maxConnectionDist) * 0.15;
+                        ctx.strokeStyle = `rgba(220, 38, 38, ${alpha})`;
+                        ctx.lineWidth = 0.6;
                         ctx.beginPath();
                         ctx.moveTo(p1.x, p1.y);
                         ctx.lineTo(p2.x, p2.y);
@@ -179,7 +183,13 @@ export default function LoginPage() {
                 body: { email, motDePasse: password },
             });
 
-            localStorage.setItem('token', data.access_token);
+            if (rememberMe) {
+                localStorage.setItem('token', data.access_token);
+                sessionStorage.removeItem('token');
+            } else {
+                sessionStorage.setItem('token', data.access_token);
+                localStorage.removeItem('token');
+            }
 
             const payloadBase64 = data.access_token.split('.')[1];
             const decodedPayload = JSON.parse(atob(payloadBase64));
@@ -198,98 +208,133 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="h-screen w-screen bg-slate-50 flex items-center justify-center p-4 sm:p-6 selection:bg-red-600 selection:text-white relative overflow-hidden">
+        <div className="min-h-screen w-screen bg-slate-50 flex flex-col justify-between p-4 sm:p-6 selection:bg-blue-600 selection:text-white relative overflow-hidden">
             
-            {/* Grille d'arrière-plan claire */}
+            <header className="w-full max-w-7xl mx-auto flex items-center justify-between z-20 px-2 sm:px-4 py-2">
+                <Link href="/" className="flex items-center gap-2.5 group cursor-pointer">
+                    <div className="flex items-center justify-center group-hover:scale-105 transition-all">
+                        <TriangleLogo className="w-7 h-7" />
+                    </div>
+                    <span className="font-extrabold text-sm tracking-tight text-slate-950 uppercase">
+                        Ethical Data Security
+                    </span>
+                </Link>
+            </header>
+
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000003_1px,transparent_1px),linear-gradient(to_bottom,#00000003_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none z-0" />
-            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-red-600/[0.02] rounded-full blur-[130px] pointer-events-none z-0" />
+            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/[0.02] rounded-full blur-[130px] pointer-events-none z-0" />
 
             <canvas
                 ref={canvasRef}
                 className="absolute inset-0 w-full h-full pointer-events-none z-0"
             />
 
-            {/* Boîte de connexion blanche ultra-compacte */}
-            <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
-                className="w-full max-w-[400px] bg-white border border-slate-200/80 rounded-[28px] shadow-xl p-6 sm:p-8 relative z-10 hover:border-slate-350 hover:shadow-2xl transition-all duration-500 group/card"
-            >
-                <div className="flex flex-col items-center mb-6">
-                    <div className="w-10 h-10 bg-red-50 border border-red-100 rounded-2xl flex items-center justify-center text-red-600 mb-2 group-hover/card:border-red-600/30 transition-all duration-500">
-                        <ShieldCheck className="w-5 h-5" />
-                    </div>
-                    <h1 className="text-lg font-bold text-slate-900 tracking-tight">Connexion</h1>
-                    <p className="text-[10px] text-slate-500 mt-1 font-bold uppercase tracking-wider">
-                        Préparation aux Certifications IT
-                    </p>
-                </div>
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    {error && (
-                        <div className="p-3 bg-rose-50 border border-rose-100 text-rose-600 rounded-xl text-xs font-semibold text-left">
-                            {error}
+            <div className="flex-1 flex items-center justify-center relative z-10 my-auto py-6">
+                <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, ease: 'easeOut' }}
+                    className="w-full max-w-[400px] bg-white border border-slate-200/80 rounded-[28px] shadow-xl p-6 sm:p-8 relative z-10 hover:border-slate-350 hover:shadow-2xl transition-all duration-500 group/card"
+                >
+                    <div className="flex flex-col items-center mb-6">
+                        <div className="flex items-center justify-center mb-2 group-hover/card:scale-105 transition-transform duration-300">
+                            <TriangleLogo className="w-10 h-10" />
                         </div>
-                    )}
-
-                    <div className="space-y-1.5 text-left group">
-                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Adresse e-mail</label>
-                        <div className="relative">
-                            <input
-                                type="email"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="nom@exemple.com"
-                                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 hover:border-slate-300 focus:border-red-600 focus:bg-white focus:ring-4 focus:ring-red-600/5 rounded-xl text-slate-900 placeholder-slate-400 transition-all text-xs outline-none font-semibold"
-                            />
-                        </div>
+                        <h1 className="text-lg font-bold text-slate-900 tracking-tight">Connexion</h1>
+                        <p className="text-[10px] text-slate-500 mt-1 font-bold uppercase tracking-wider">
+                            Préparation aux Certifications IT
+                        </p>
                     </div>
 
-                    <div className="space-y-1.5 text-left group">
-                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Mot de passe</label>
-                        <div className="relative">
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="••••••••"
-                                className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 hover:border-slate-300 focus:border-red-600 focus:bg-white focus:ring-4 focus:ring-red-600/5 rounded-xl text-slate-900 placeholder-slate-400 transition-all text-xs outline-none font-semibold"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-800 transition-colors cursor-pointer"
-                            >
-                                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                            </button>
-                        </div>
-                    </div>
-
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all focus:outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4 shadow-md"
-                    >
-                        {loading ? (
-                            <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        ) : (
-                            'Se connecter'
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        {error && (
+                            <div className="p-3 bg-rose-50 border border-rose-100 text-rose-600 rounded-xl text-xs font-semibold text-left">
+                                {error}
+                            </div>
                         )}
-                    </button>
-                </form>
 
-                <div className="mt-5 pt-4 border-t border-slate-100 text-center">
-                    <Link
-                        href="/register"
-                        className="text-xs text-slate-550 hover:text-slate-900 font-bold transition-colors cursor-pointer"
-                    >
-                        Pas encore de compte ? Créer un compte
-                    </Link>
-                </div>
-            </motion.div>
+                        <div className="space-y-1.5 text-left group">
+                            <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Adresse e-mail</label>
+                            <div className="relative">
+                                <input
+                                    type="email"
+                                    required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="nom@exemple.com"
+                                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 hover:border-slate-300 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/5 rounded-xl text-slate-900 placeholder-slate-400 transition-all text-xs outline-none font-semibold"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-1.5 text-left group">
+                            <div className="flex justify-between items-center pr-1">
+                                <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Mot de passe</label>
+                            </div>
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    required
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="••••••••"
+                                    className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 hover:border-slate-300 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/5 rounded-xl text-slate-900 placeholder-slate-400 transition-all text-xs outline-none font-semibold"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                                >
+                                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-1">
+                            <label className="flex items-center gap-2 text-xs font-semibold text-slate-600 cursor-pointer select-none">
+                                <input
+                                    type="checkbox"
+                                    checked={rememberMe}
+                                    onChange={(e) => setRememberMe(e.target.checked)}
+                                    className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-600/20 cursor-pointer accent-blue-600"
+                                />
+                                <span>Rester connecté</span>
+                            </label>
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all focus:outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-3 shadow-md"
+                        >
+                            {loading ? (
+                                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            ) : (
+                                'Se connecter'
+                            )}
+                        </button>
+                    </form>
+
+                    <div className="mt-5 pt-4 border-t border-slate-100 flex flex-col items-center gap-2 text-center">
+                        <Link
+                            href="/register"
+                            className="text-xs text-slate-600 hover:text-slate-950 font-bold transition-colors cursor-pointer"
+                        >
+                            Pas encore de compte ? Créer un compte
+                        </Link>
+                        <Link
+                            href="/"
+                            className="text-[11px] text-slate-400 hover:text-blue-600 font-bold tracking-wide uppercase transition-colors cursor-pointer flex items-center gap-1 mt-1"
+                        >
+                            <span>← Retourner à l&apos;accueil</span>
+                        </Link>
+                    </div>
+                </motion.div>
+            </div>
+            
+            <footer className="w-full text-center py-2 text-[11px] text-slate-400 font-medium z-20">
+                © {new Date().getFullYear()} Ethical Data Security. Tous droits réservés.
+            </footer>
         </div>
     );
 }

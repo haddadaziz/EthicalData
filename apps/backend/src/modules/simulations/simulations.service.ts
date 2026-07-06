@@ -204,6 +204,7 @@ export class SimulationsService {
                 id: t.id.toString(),
                 score: t.score,
                 datePassage: t.datePassage,
+                certificationId: t.certificationId.toString(),
                 certificationName: t.certification.nom,
                 certificationSlug: t.certification.slug,
             })),
@@ -214,6 +215,7 @@ export class SimulationsService {
     async getReadinessScoreForCertification(userId: number, certId: number) {
         const cert = await this.prisma.certification.findFirst({
             where: { id: BigInt(certId), deletedAt: null },
+            include: { modules: { orderBy: { ordre: 'asc' } } },
         });
 
         if (!cert) {
@@ -234,11 +236,15 @@ export class SimulationsService {
                 certificationNom: cert.nom,
                 readinessScore: 0,
                 statut: 'NON_EVALUE',
-                conseil: `Vous n'avez pas encore effectué de simulation pour ${cert.nom}. Lancez votre premier examen blanc pour évaluer votre niveau !`,
+                totalTentatives: 0,
+                conseil: "Veuillez passer une simulation afin d'obtenir des recommandations de l'intelligence artificielle",
+                pointsForts: [],
+                lacunes: [],
                 planRevision: [
                     `Effectuez une première simulation complète de ${cert.nom}.`,
                     `Consultez le guide de préparation et le programme officiel de l'examen.`,
                 ],
+                history: [],
             };
         }
 
@@ -267,6 +273,35 @@ export class SimulationsService {
             conseil = `Des lacunes subsistent sur les concepts clés de ${cert.nom}. Consolidez vos révisions sur les fiches de cours et refaites des quiz d'entraînement.`;
         }
 
+        const moduleTitles = cert.modules.map((m) => m.titre);
+        let pointsForts: string[] = [];
+        let lacunes: string[] = [];
+
+        if (moduleTitles.length >= 2) {
+            if (readinessScore >= 80) {
+                pointsForts = moduleTitles.slice(0, Math.min(3, moduleTitles.length));
+                lacunes = moduleTitles.slice(Math.min(3, moduleTitles.length - 1));
+                if (lacunes.length === 0) lacunes = ["Optimisation avancée du temps par question"];
+            } else if (readinessScore >= 65) {
+                pointsForts = moduleTitles.slice(0, Math.ceil(moduleTitles.length / 2));
+                lacunes = moduleTitles.slice(Math.ceil(moduleTitles.length / 2));
+            } else {
+                pointsForts = moduleTitles.slice(0, 1);
+                lacunes = moduleTitles.slice(1);
+            }
+        } else {
+            if (readinessScore >= 80) {
+                pointsForts = ["Architecture & Concepts fondamentaux", "Identity & Access Management (IAM)"];
+                lacunes = ["Optimisation fine des budgets & coûts"];
+            } else if (readinessScore >= 65) {
+                pointsForts = ["Concepts fondamentaux et principes généraux"];
+                lacunes = ["Gestion des coûts et calcul de facturation", "Sécurité des données et stockage Cloud"];
+            } else {
+                pointsForts = ["Notions globales d'introduction"];
+                lacunes = ["Architecture réseau & sécurité", "Stockage et redondance de données", "Gestion des coûts & facturation"];
+            }
+        }
+
         const planRevision = [
             `Révisez en priorité les fiches et cours théoriques de ${cert.nom}.`,
             `Consultez les supports PDF autorisés téléchargeables dans votre bibliothèque.`,
@@ -282,7 +317,17 @@ export class SimulationsService {
             moyenneScores,
             totalTentatives: tentatives.length,
             conseil,
+            pointsForts,
+            lacunes,
             planRevision,
+            history: tentatives.map((t) => ({
+                id: t.id.toString(),
+                score: t.score,
+                datePassage: t.datePassage,
+                certificationId: cert.id.toString(),
+                certificationName: cert.nom,
+                certificationSlug: cert.slug,
+            })),
         };
     }
 }

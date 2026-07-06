@@ -500,17 +500,29 @@ export class CertificationsService {
   }
 
   async evaluateQuestionWithAi(questionId: number, reponseCandidat: string) {
+    const qId = Number(questionId);
+    if (!qId || isNaN(qId)) {
+      return {
+        score: 0,
+        critique: "ID de question invalide.",
+        suggestions: "Veuillez vérifier la question sélectionnée.",
+      };
+    }
     const question = await this.prisma.question.findUnique({
-      where: { id: BigInt(questionId) },
+      where: { id: BigInt(qId) },
     });
     if (!question) {
-      throw new NotFoundException("La question demandée n'existe pas.");
+      return {
+        score: 0,
+        critique: "La question demandée n'existe pas.",
+        suggestions: "Veuillez recharger la banque de questions.",
+      };
     }
     return this.aiService.evaluerReponseOuverte(
       question.enonce,
       question.reponseCorrecte,
       question.grilleNotation,
-      reponseCandidat,
+      reponseCandidat || '',
     );
   }
 

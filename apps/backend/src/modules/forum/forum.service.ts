@@ -12,10 +12,11 @@ export class ForumService {
   ) { }
 
   // 1. Récupérer les discussions paginées
-  async findAllSujets(filters?: { theme?: string; certificationId?: number; page?: number; limit?: number }) {
+  async findAllSujets(filters?: { theme?: string; certificationId?: number; page?: number; limit?: number; userId?: number }) {
     const page = Number(filters?.page) || 1;
     const limit = Number(filters?.limit) || 10;
     const skip = (page - 1) * limit;
+    const userId = filters?.userId;
 
     const where: any = {};
     if (filters?.theme && filters.theme !== 'TOUS') {
@@ -24,6 +25,13 @@ export class ForumService {
     if (filters?.certificationId) {
       where.certificationId = BigInt(filters.certificationId);
     }
+
+    const likesInclude = userId
+      ? {
+          where: { utilisateurId: BigInt(userId) },
+          select: { utilisateurId: true },
+        }
+      : undefined;
 
     const [sujets, total] = await Promise.all([
       this.prisma.sujet.findMany({
@@ -42,28 +50,33 @@ export class ForumService {
             },
           },
           certification: { select: { id: true, nom: true, codeExamen: true } },
+          ...(likesInclude ? { likes: likesInclude } : {}),
           _count: { select: { likes: true, commentaires: true } },
         },
       }),
       this.prisma.sujet.count({ where }),
     ]);
 
-    const formattedSujets = sujets.map((s: any) => ({
-      ...s,
-      id: s.id.toString(),
-      auteurId: s.auteurId.toString(),
-      certificationId: s.certificationId ? s.certificationId.toString() : null,
-      auteur: {
-        ...s.auteur,
-        id: s.auteur.id.toString(),
-        role: s.auteur.roles?.[0]?.nom || 'APPRENANT',
-      },
-      certification: s.certification
-        ? { ...s.certification, id: s.certification.id.toString() }
-        : null,
-      likesCount: s._count?.likes || 0,
-      commentairesCount: s._count?.commentaires || 0,
-    }));
+    const formattedSujets = sujets.map((s: any) => {
+      const { likes, ...rest } = s;
+      return {
+        ...rest,
+        id: s.id.toString(),
+        auteurId: s.auteurId.toString(),
+        certificationId: s.certificationId ? s.certificationId.toString() : null,
+        isLikedByUser: Array.isArray(s.likes) && s.likes.length > 0,
+        auteur: {
+          ...s.auteur,
+          id: s.auteur.id.toString(),
+          role: s.auteur.roles?.[0]?.nom || 'APPRENANT',
+        },
+        certification: s.certification
+          ? { ...s.certification, id: s.certification.id.toString() }
+          : null,
+        likesCount: s._count?.likes || 0,
+        commentairesCount: s._count?.commentaires || 0,
+      };
+    });
 
     return {
       data: formattedSujets,
@@ -120,6 +133,11 @@ export class ForumService {
                 roles: { select: { nom: true } },
               },
             },
+            likes: {
+              where: { utilisateurId: BigInt(currentUserId) },
+              select: { utilisateurId: true },
+            },
+            _count: { select: { likes: true } },
           },
         },
         _count: { select: { likes: true, commentaires: true } },
@@ -162,6 +180,8 @@ export class ForumService {
         sujetId: c.sujetId.toString(),
         auteurId: c.auteurId.toString(),
         parentCommentaireId: c.parentCommentaireId ? c.parentCommentaireId.toString() : null,
+        likesCount: c._count?.likes || 0,
+        isLikedByUser: Array.isArray(c.likes) && c.likes.length > 0,
         auteur: {
           ...c.auteur,
           id: c.auteur.id.toString(),
@@ -204,14 +224,18 @@ export class ForumService {
       });
 
       if (sujet.auteurId !== BigInt(userId)) {
-        const liker = await this.prisma.utilisateur.findUnique({ where: { id: BigInt(userId) } });
-        await this.notificationsService.createNotification(
-          sujet.auteurId.toString(),
-          "Nouveau J'aime",
-          `${liker?.prenom} ${liker?.nom} a aimé votre publication "${sujet.titre}"`,
-          "FORUM_LIKE",
-          "/dashboard/community",
-        );
+        try {
+          const liker = await this.prisma.utilisateur.findUnique({ where: { id: BigInt(userId) } });
+          await this.notificationsService.createNotification(
+            sujet.auteurId.toString(),
+            "Nouveau J'aime",
+            `${liker?.prenom || 'Un utilisateur'} ${liker?.nom || ''} a aimé votre publication "${sujet.titre}"`,
+            "FORUM_LIKE",
+            "/dashboard/community",
+          );
+        } catch (e) {
+          console.warn("Erreur lors de la notification du Like sujet:", e);
+        }
       }
 
       return { liked: true };
@@ -327,18 +351,19 @@ export class ForumService {
       const parentComm = await this.prisma.commentaire.findUnique({
         where: { id: BigInt(dto.parentCommentaireId) },
       });
-      if (
-        parentComm &&
-        parentComm.auteurId !== BigInt(userId) &&
-        parentComm.auteurId !== sujet.auteurId
-      ) {
-        await this.notificationsService.createNotification(
-          parentComm.auteurId.toString(),
-          "Réponse à votre commentaire",
-          `${commAuthor?.prenom} ${commAuthor?.nom} a répondu à votre commentaire dans "${sujet.titre}"`,
-          "FORUM_REPLY",
-          "/dashboard/community",
-        );
+      if (parentComm && parentComm.auteurId !== BigInt(userId)) {
+        const snippet = dto.contenu.length > 50 ? `${dto.contenu.substring(0, 50)}...` : dto.contenu;
+        try {
+          await this.notificationsService.createNotification(
+            parentComm.auteurId.toString(),
+            "Réponse à votre commentaire",
+            `${commAuthor?.prenom || 'Un utilisateur'} ${commAuthor?.nom || ''} a répondu à votre commentaire : "${snippet}"`,
+            "FORUM_REPLY",
+            "/dashboard/community",
+          );
+        } catch (e) {
+          console.warn("Erreur lors de la notification de réponse au commentaire:", e);
+        }
       }
     }
 
@@ -450,5 +475,78 @@ export class ForumService {
       data: { traite: false },
     });
     return { message: 'Signalement remis en attente.' };
+  }
+
+  // 13. Liker ou Unliker un commentaire (+ NOTIFICATION)
+  async toggleLikeCommentaire(userId: number, commentId: number) {
+    const comment = await this.prisma.commentaire.findUnique({
+      where: { id: BigInt(commentId) },
+    });
+    if (!comment) throw new NotFoundException('Commentaire non trouvé.');
+
+    const existingLike = await this.prisma.likeCommentaire.findUnique({
+      where: {
+        commentaireId_utilisateurId: {
+          commentaireId: BigInt(commentId),
+          utilisateurId: BigInt(userId),
+        },
+      },
+    });
+
+    if (existingLike) {
+      await this.prisma.likeCommentaire.delete({
+        where: {
+          commentaireId_utilisateurId: {
+            commentaireId: BigInt(commentId),
+            utilisateurId: BigInt(userId),
+          },
+        },
+      });
+
+      if (comment.auteurId !== BigInt(userId)) {
+        try {
+          const liker = await this.prisma.utilisateur.findUnique({ where: { id: BigInt(userId) } });
+          if (liker) {
+            await this.prisma.notification.deleteMany({
+              where: {
+                destinataireId: comment.auteurId,
+                type: "FORUM_LIKE_COMMENT",
+                message: {
+                  contains: `${liker.prenom} ${liker.nom}`,
+                },
+              },
+            });
+          }
+        } catch (e) {
+          console.warn("Erreur lors du retrait de la notification du Like commentaire:", e);
+        }
+      }
+
+      return { liked: false };
+    } else {
+      await this.prisma.likeCommentaire.create({
+        data: {
+          commentaireId: BigInt(commentId),
+          utilisateurId: BigInt(userId),
+        },
+      });
+
+      if (comment.auteurId !== BigInt(userId)) {
+        try {
+          const liker = await this.prisma.utilisateur.findUnique({ where: { id: BigInt(userId) } });
+          await this.notificationsService.createNotification(
+            comment.auteurId.toString(),
+            "Nouveau J'aime sur votre commentaire",
+            `${liker?.prenom || 'Un utilisateur'} ${liker?.nom || ''} a aimé votre commentaire.`,
+            "FORUM_LIKE_COMMENT",
+            "/dashboard/community",
+          );
+        } catch (e) {
+          console.warn("Erreur lors de la notification du Like commentaire:", e);
+        }
+      }
+
+      return { liked: true };
+    }
   }
 }

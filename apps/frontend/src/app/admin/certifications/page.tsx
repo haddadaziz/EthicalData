@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
-import { Award, Plus, RefreshCw, X, Edit, Trash2, Search, Layers, Briefcase, BookmarkCheck, Upload, Clock, Sparkles, HelpCircle, ArrowLeft, ArrowRight } from 'lucide-react'; import { motion, AnimatePresence } from 'framer-motion';
+import { Award, Plus, RefreshCw, X, Edit, Trash2, Search, Layers, Briefcase, BookmarkCheck, Upload, Clock, Sparkles, HelpCircle, ArrowLeft, ArrowRight, Users } from 'lucide-react'; import { motion, AnimatePresence } from 'framer-motion';
 
 interface Fournisseur {
     id: string;
@@ -33,7 +33,10 @@ interface Certification {
     modules: Module[];
 }
 
+import { useToast } from '../../../context/ToastContext';
+
 export default function CertificationsAdmin() {
+    const { showToast } = useToast();
     const [certs, setCerts] = useState<Certification[]>([]);
     const [fournisseurs, setFournisseurs] = useState<Fournisseur[]>([]);
     const [loading, setLoading] = useState(true);
@@ -413,6 +416,7 @@ export default function CertificationsAdmin() {
             setIsModalOpen(false);
             resetForm();
             fetchData();
+            showToast('Certification créée avec succès !', 'success');
         } catch (err: any) {
             console.error(err);
             setModalError(err.message || 'Une erreur est survenue lors de la création.');
@@ -525,12 +529,8 @@ export default function CertificationsAdmin() {
     return (
         <div className="space-y-10 text-slate-800">
 
-            {/* En-tête */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-                <div className="text-left">
-                    <h1 className="text-3xl font-black text-slate-950 tracking-tight">Catalogue Certifications</h1>
-                    <p className="text-slate-600 text-xs mt-1.5 font-medium">Gérez les examens, les modules et les prérequis de formation.</p>
-                </div>
+            {/* En-tête / Actions (Sans titre redondant) */}
+            <div className="flex items-center justify-end gap-3 pb-2">
 
                 <div className="flex items-center gap-3">
                     <button
@@ -691,53 +691,95 @@ export default function CertificationsAdmin() {
                             Aucune certification ne correspond à vos critères.
                         </div>
                     ) : (
-                        <>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 p-6">
+                        <div>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
                                 {currentCerts.map((cert) => (
                                     <div
                                         key={cert.id}
-                                        className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden transition-all duration-300 hover:border-slate-300 hover:shadow-lg flex flex-col group"
+                                        className="bg-white border border-slate-200/90 hover:border-slate-350 hover:shadow-xl rounded-3xl p-6 sm:p-7 flex flex-col justify-between group transition-all duration-300 text-left space-y-5"
                                     >
-                                        {/* Image */}
-                                        <div className="w-full h-36 bg-slate-50 border-b border-slate-100 flex items-center justify-center p-6 relative overflow-hidden shrink-0">
-                                            {cert.image ? (
-                                                <img src={cert.image} alt={cert.nom} className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105" />
-                                            ) : (
-                                                <Award className="w-12 h-12 text-slate-300" />
-                                            )}
-                                            <div className="absolute top-3 left-3">
-                                                <span className="font-bold text-red-600 text-[9px] px-2 py-0.5 bg-red-50 border border-red-100 rounded-lg">{cert.codeExamen || 'Examen'}</span>
+                                        {/* PARTIE SUPÉRIEURE : EN-TÊTE STYLE UDEMY */}
+                                        <div className="flex items-start justify-between gap-4">
+                                            {/* Côté Gauche : Badges, Titre & Description */}
+                                            <div className="space-y-3 flex-1">
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    <span className="font-extrabold text-slate-900 text-[10px] uppercase tracking-wider px-2.5 py-1 bg-slate-100 border border-slate-200 rounded-lg">
+                                                        {cert.fournisseur?.nom || 'Éditeur'}
+                                                    </span>
+                                                    {cert.codeExamen && (
+                                                        <span className="font-black text-red-600 text-[10px] uppercase tracking-wider px-2.5 py-1 bg-red-50 border border-red-100 rounded-lg">
+                                                            {cert.codeExamen}
+                                                        </span>
+                                                    )}
+                                                    <span className={`text-[9px] px-2.5 py-1 rounded-lg font-extrabold uppercase tracking-wider border ${getNiveauBadgeStyle(cert.niveau)}`}>
+                                                        {cert.niveau}
+                                                    </span>
+                                                </div>
+
+                                                <div>
+                                                    <h3 className="font-extrabold text-slate-950 text-lg leading-snug group-hover:text-red-600 transition-colors">
+                                                        {cert.nom}
+                                                    </h3>
+                                                    <p className="text-xs text-slate-500 font-medium line-clamp-2 mt-1.5 leading-relaxed">
+                                                        {cert.description}
+                                                    </p>
+                                                </div>
+
+                                                <div className="flex items-center gap-4 text-xs font-bold text-slate-400 pt-1">
+                                                    <span className="flex items-center gap-1.5 text-slate-600">
+                                                        <Users className="w-3.5 h-3.5 text-slate-400" />
+                                                        <span>Candidats en préparation</span>
+                                                    </span>
+                                                    <span className="flex items-center gap-1 text-slate-500">
+                                                        <Clock className="w-3.5 h-3.5" />
+                                                        <span>{cert.dureeIndicative || '15h indicatives'}</span>
+                                                    </span>
+                                                </div>
                                             </div>
-                                            <div className="absolute top-3 right-3">
-                                                <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${getNiveauBadgeStyle(cert.niveau)}`}>{cert.niveau}</span>
+
+                                            {/* Côté Droit : Écusson/Badge Officiel Flottant */}
+                                            <div className="w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center shrink-0 p-1">
+                                                {cert.image ? (
+                                                    <img
+                                                        src={cert.image}
+                                                        alt={cert.nom}
+                                                        className="max-h-full max-w-full object-contain filter drop-shadow-md transition-transform duration-300 group-hover:scale-110"
+                                                    />
+                                                ) : (
+                                                    <Award className="w-12 h-12 text-slate-300" />
+                                                )}
                                             </div>
                                         </div>
 
-                                        {/* Corps */}
-                                        <div className="p-5 flex-1 flex flex-col text-left space-y-3">
-                                            <div className="space-y-1.5">
-                                                <span className={`text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-wider inline-block ${getSupplierBadgeStyle(cert.fournisseur.nom)}`}>{cert.fournisseur.nom}</span>
-                                                <h4 className="font-extrabold text-slate-950 text-base leading-snug group-hover:text-red-600 transition-colors line-clamp-1">{cert.nom}</h4>
-                                                <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed font-semibold">{cert.description}</p>
-                                            </div>
+                                        {/* BAS DE CARTE : ACTIONS ADMIN */}
+                                        <div className="border-t border-slate-100 pt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-xs">
+                                            <span className="text-[11px] font-bold text-slate-500">
+                                                ID: #{cert.id.toString()}
+                                            </span>
 
-                                            <div className="pt-3 border-t border-slate-100 mt-auto space-y-3">
-                                                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center justify-between">
-                                                    <span>{cert.dureeIndicative || 'Durée N/A'}</span>
-                                                    <span>{cert.modules?.length || 0} module{cert.modules?.length > 1 ? 's' : ''}</span>
-                                                </div>
-                                                <div className="flex items-center gap-1.5">
-                                                    <button onClick={() => handleOpenQuestionsModal(cert)} className="flex-1 flex items-center justify-center gap-1 px-3 py-2.5 bg-red-50 hover:bg-red-100 border border-red-100 text-red-600 hover:text-red-700 rounded-xl transition-all cursor-pointer text-[10px] font-black uppercase tracking-wider" title="Questions">
-                                                        <HelpCircle className="w-3.5 h-3.5" />
-                                                        <span>Questions</span>
-                                                    </button>
-                                                    <button onClick={() => handleOpenEditModal(cert)} className="p-2.5 bg-slate-50 border border-slate-200/80 hover:border-slate-300 text-slate-600 hover:text-slate-950 rounded-xl transition-colors cursor-pointer" title="Modifier">
-                                                        <Edit className="w-4 h-4" />
-                                                    </button>
-                                                    <button onClick={() => handleDeleteCert(cert.id, cert.nom)} className="p-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-xl transition-colors cursor-pointer" title="Supprimer">
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                </div>
+                                            <div className="flex items-center gap-1.5">
+                                                <button
+                                                    onClick={() => handleOpenQuestionsModal(cert)}
+                                                    className="px-3 py-2 bg-red-50 hover:bg-red-100 border border-red-100 text-red-600 hover:text-red-700 rounded-xl transition-all cursor-pointer text-xs font-bold flex items-center gap-1.5"
+                                                    title="Gérer les questions"
+                                                >
+                                                    <HelpCircle className="w-3.5 h-3.5" />
+                                                    <span>Questions</span>
+                                                </button>
+                                                <button
+                                                    onClick={() => handleOpenEditModal(cert)}
+                                                    className="p-2 bg-slate-50 border border-slate-200 hover:border-slate-350 text-slate-700 hover:text-slate-950 rounded-xl transition-colors cursor-pointer"
+                                                    title="Modifier"
+                                                >
+                                                    <Edit className="w-4 h-4" />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteCert(cert.id, cert.nom)}
+                                                    className="p-2 bg-rose-50 border border-rose-100 text-rose-600 hover:bg-rose-100 rounded-xl transition-colors cursor-pointer"
+                                                    title="Supprimer"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -782,7 +824,7 @@ export default function CertificationsAdmin() {
                                     </button>
                                 </div>
                             )}
-                        </>
+                        </div>
                     )}
                 </div>
             </div>
@@ -1740,7 +1782,7 @@ export default function CertificationsAdmin() {
                                 <div className="space-y-4">
                                     {loadingQuestions ? (
                                         <div className="text-center py-10 space-y-2">
-                                            <span className="w-8 h-8 border-4 border-red-100 border-t-red-600 rounded-full animate-spin inline-block" />
+                                            <span className="w-8 h-8 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin inline-block" />
                                             <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Chargement des questions...</p>
                                         </div>
                                     ) : questionsList.length === 0 ? (

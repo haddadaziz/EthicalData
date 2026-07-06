@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from 'react';
-import { ShieldCheck, ArrowRight, Sparkles, Award, Clock, ArrowUpRight, BookOpen, Check, X as XIcon, HelpCircle, Download, FileText, ChevronRight, CheckCircle2, ChevronDown, Send, Menu, X, Play, Star, Calendar, ChevronLeft } from 'lucide-react';
+import { ShieldCheck, ArrowRight, Sparkles, Award, Clock, ArrowUpRight, BookOpen, Check, X as XIcon, HelpCircle, Download, FileText, ChevronRight, CheckCircle2, ChevronDown, Send, Menu, X, Play, Star, Calendar, ChevronLeft, Users } from 'lucide-react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import Link from 'next/link';
+import { apiFetch } from '../lib/api';
 
 function AnimatedSection({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
   const ref = useRef(null);
@@ -28,10 +29,20 @@ export default function LandingPage() {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const [newsletterSubmitted, setNewsletterSubmitted] = useState(false);
+  const [realCertifications, setRealCertifications] = useState<any[]>([]);
+  const [showAllCertifications, setShowAllCertifications] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     setIsConnected(!!token);
+
+    apiFetch('/certifications')
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setRealCertifications(data);
+        }
+      })
+      .catch((err) => console.warn("Impossible de charger le catalogue public :", err));
   }, []);
 
   const toggleFaq = (idx: number) => setActiveFaq(activeFaq === idx ? null : idx);
@@ -47,11 +58,11 @@ export default function LandingPage() {
   const partnerLogos = [
     { name: "Microsoft", path: "/logos/microsoft.png" },
     { name: "PECB", path: "/logos/pecb.png" },
-    { name: "AWS", path: "/logos/aws.svg" },
+    { name: "AWS", path: "/logos/aws.png" },
     { name: "Palo Alto", path: "/logos/paloalto.png" },
     { name: "Fortinet", path: "/logos/fortinet.png" },
     { name: "CompTIA", path: "/logos/comptia.png" },
-    { name: "Cisco", path: "/logos/cisco.svg" },
+    { name: "Cisco", path: "/logos/cisco.png" },
     { name: "Pearson VUE", path: "/logos/pearsonvue.png" }
   ];
 
@@ -109,7 +120,7 @@ export default function LandingPage() {
       successRate: "97%",
       badge: "Nouveau",
       badgeClass: "bg-blue-600 text-white",
-      logo: "/logos/aws.svg"
+      logo: "/logos/aws.png"
     },
     {
       title: "Palo Alto Networks Certified Network Security",
@@ -163,50 +174,70 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════ */}
       {/* HEADER & NAV                               */}
       {/* ═══════════════════════════════════════════ */}
-      <header className="sticky top-0 z-50 w-full border-b border-slate-200/60 bg-white/80 backdrop-blur-md">
+      <header className="sticky top-0 z-50 w-full border-b border-slate-200/60 bg-white/85 backdrop-blur-xl transition-all">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-red-600/10 border border-red-600/20 flex items-center justify-center text-red-600">
-              <ShieldCheck className="w-5 h-5" />
+          
+          {/* Logo Brand avec triangle officiel */}
+          <Link href="/" className="flex items-center gap-3 group cursor-pointer">
+            <div className="flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+              <svg className="w-7 h-7 text-red-600" viewBox="0 0 100 100" fill="currentColor">
+                <polygon points="50,15 15,85 85,85" className="fill-none stroke-red-600 stroke-[6]" />
+                <polygon points="50,30 28,75 72,75" className="fill-none stroke-slate-900 stroke-[4]" />
+                <polygon points="50,45 40,65 60,65" className="fill-red-600" />
+              </svg>
             </div>
-            <span className="font-extrabold text-base tracking-tight text-slate-950 uppercase">
+            <span className="font-extrabold text-sm sm:text-base tracking-tight text-slate-950 uppercase">
               Ethical Data Security
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-8 text-xs font-black uppercase tracking-widest text-slate-650">
-            <a href="#about" className="hover:text-slate-950 transition-colors">Qui Sommes-Nous</a>
-            <a href="#formations" className="hover:text-slate-950 transition-colors">Formations</a>
-            <a href="#services" className="hover:text-slate-950 transition-colors">Nos Services</a>
-            <a href="#testimonials" className="hover:text-slate-950 transition-colors">Avis</a>
-            <a href="#faq" className="hover:text-slate-950 transition-colors">FAQ</a>
+          {/* Navigation PC : Capsule Pill Flottante Ultra Stylée */}
+          <nav className="hidden md:flex items-center gap-1 bg-slate-950/[0.04] border border-slate-200/80 rounded-full px-3 py-1.5 shadow-sm backdrop-blur-xl">
+            <a href="#about" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-650 hover:text-red-600 hover:bg-white rounded-full transition-all duration-200 hover:shadow-xs">
+              Qui Sommes-Nous
+            </a>
+            <Link href="/certifications" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-650 hover:text-red-600 hover:bg-white rounded-full transition-all duration-200 hover:shadow-xs">
+              Certifications
+            </Link>
+            <a href="#services" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-650 hover:text-red-600 hover:bg-white rounded-full transition-all duration-200 hover:shadow-xs">
+              Nos Services
+            </a>
+            <a href="#testimonials" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-650 hover:text-red-600 hover:bg-white rounded-full transition-all duration-200 hover:shadow-xs">
+              Avis
+            </a>
+            <a href="#faq" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-650 hover:text-red-600 hover:bg-white rounded-full transition-all duration-200 hover:shadow-xs">
+              FAQ
+            </a>
           </nav>
 
+          {/* Actions à droite */}
           <div className="flex items-center gap-3">
             {isConnected ? (
               <a
                 href="/dashboard"
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-md cursor-pointer"
+                className="px-5 py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-650 hover:to-red-750 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-md shadow-red-600/20 cursor-pointer hover:scale-105 active:scale-95"
               >
                 Mon Espace
               </a>
             ) : (
               <>
-                <a href="/login" className="text-xs font-black uppercase tracking-wider text-slate-600 hover:text-slate-950 transition-colors">
+                <a href="/login" className="px-4 py-2 text-xs font-black uppercase tracking-wider text-slate-700 hover:text-red-600 transition-colors cursor-pointer">
                   Connexion
                 </a>
                 <Link
                   href="/register"
-                  className="px-4 py-2 bg-slate-950 hover:bg-slate-900 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm cursor-pointer"
+                  className="px-5 py-2.5 bg-slate-950 hover:bg-slate-900 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm hover:shadow-md cursor-pointer hover:scale-105 active:scale-95"
                 >
                   S&apos;inscrire
                 </Link>
               </>
             )}
 
+            {/* Menu Hamburger réservé UNIQUEMENT aux mobiles (<768px) */}
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-slate-600 hover:text-slate-950 cursor-pointer"
+              className="md:hidden p-2 text-slate-700 hover:text-slate-950 cursor-pointer rounded-xl bg-slate-100/80 border border-slate-200/80"
+              aria-label="Menu mobile"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -223,7 +254,7 @@ export default function LandingPage() {
             >
               <nav className="flex flex-col p-4 gap-1 text-xs font-black uppercase tracking-widest">
                 <a href="#about" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Qui Sommes-Nous</a>
-                <a href="#formations" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Formations</a>
+                <Link href="/certifications" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Certifications</Link>
                 <a href="#services" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Nos Services</a>
                 <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Avis</a>
                 <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">FAQ</a>
@@ -283,7 +314,7 @@ export default function LandingPage() {
           className="flex flex-col sm:flex-row items-center gap-4 mt-8"
         >
           <a
-            href="/login"
+            href={isConnected ? "/dashboard/practice" : "/login"}
             className="w-full sm:w-auto px-8 py-3.5 bg-red-600 hover:bg-red-750 text-white font-extrabold rounded-xl transition-all duration-300 flex items-center justify-center gap-2.5 cursor-pointer shadow-lg shadow-red-600/15 text-sm uppercase tracking-wider animate-fadeIn"
           >
             <span>Lancer mon diagnostic gratuit</span>
@@ -406,80 +437,165 @@ export default function LandingPage() {
         
         <AnimatedSection className="text-center max-w-2xl mx-auto mb-16">
           <span className="text-xs font-bold text-red-600 uppercase tracking-widest">Offres phares</span>
-          <h2 className="text-3xl font-black text-slate-950 mt-3 uppercase tracking-tight">Formations</h2>
+          <h2 className="text-3xl font-black text-slate-950 mt-3 uppercase tracking-tight">Certifications</h2>
           <p className="text-sm text-slate-600 mt-4 leading-relaxed font-semibold">
             Sélectionnez votre parcours, entraînez-vous sur nos simulateurs et décrochez votre certification internationale.
           </p>
         </AnimatedSection>
 
-        {/* Grille de 4 cartes blanches */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {courses.map((course, idx) => (
-            <AnimatedSection key={idx} delay={idx * 0.12}>
-              <div className="bg-white border border-slate-100 hover:border-slate-200 hover:shadow-xl rounded-3xl p-6 flex flex-col justify-between min-h-[380px] transition-all duration-300 group text-left relative overflow-hidden shadow-md">
-                
-                {/* Badge d'état (Offre, Hot, Nouveau) */}
-                <div className="absolute top-4 left-4 z-10">
-                  <span className={`text-[8px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${course.badgeClass}`}>
-                    {course.badge}
-                  </span>
-                </div>
+        {/* Formater les certifications dynamiques ou par défaut */}
+        {(() => {
+          const getCertificateBadgeLogo = (cert: any) => {
+            if (cert.image && (cert.image.endsWith('.svg') || cert.image.endsWith('.png'))) return cert.image;
+            const code = (cert.codeExamen || cert.code || '').toLowerCase();
+            const nom = (cert.nom || cert.title || '').toLowerCase();
 
-                <div className="space-y-4 pt-6">
-                  {/* Logo de la certification */}
-                  <div className="w-10 h-10 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center p-1.5 shrink-0">
-                    <img 
-                      src={course.logo} 
-                      alt={course.provider} 
-                      className="max-w-full max-h-full object-contain"
-                      onError={(e) => {
-                        (e.target as HTMLElement).style.display = 'none';
-                        const parent = (e.target as HTMLElement).parentElement;
-                        if (parent && !parent.querySelector('.fallback-icon')) {
-                          const iconSpan = document.createElement('span');
-                          iconSpan.className = "fallback-icon text-[9px] font-bold text-slate-500 uppercase";
-                          iconSpan.innerText = course.provider.substring(0, 3);
-                          parent.appendChild(iconSpan);
-                        }
-                      }}
-                    />
-                  </div>
+            if (code.includes('az-900') || nom.includes('az-900') || nom.includes('azure fundamentals')) return '/badges/az-900.svg';
+            if (code.includes('clf') || nom.includes('cloud practitioner')) return '/badges/aws-clf.svg';
+            if (code.includes('saa') || nom.includes('solutions architect')) return '/badges/aws-saa.svg';
+            if (code.includes('iso-27001') || nom.includes('iso 27001') || nom.includes('pecb')) return '/badges/pecb-iso.svg';
+            if (code.includes('sy0') || nom.includes('security+')) return '/badges/comptia-sec.svg';
+            if (code.includes('sc-900') || nom.includes('sc-900')) return '/badges/sc-900.svg';
 
-                  <div className="space-y-1.5">
-                    <span className="text-[9px] font-bold text-red-600 uppercase tracking-widest">{course.code}</span>
-                    <h3 className="font-extrabold text-slate-900 group-hover:text-red-600 transition-colors leading-snug">
-                      {course.title}
-                    </h3>
-                  </div>
-                </div>
+            return cert.image || cert.logo || '/badges/az-900.svg';
+          };
 
-                <div className="space-y-4 mt-6">
-                  <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold border-t border-slate-100 pt-3">
-                    <span>Certificat : {course.provider}</span>
-                    <span className="text-emerald-600 font-extrabold">{course.successRate} Réussite</span>
-                  </div>
+          const catalogCourses = realCertifications.length > 0
+            ? realCertifications.map(c => ({
+                id: c.id,
+                slug: c.slug,
+                nom: c.nom,
+                codeExamen: c.codeExamen || 'CERT-EDS',
+                fournisseur: c.fournisseur || { nom: c.fournisseurNom || 'Officiel' },
+                niveau: c.niveau || 'DEBUTANT',
+                dureeIndicative: c.dureeIndicative || '15h indicatives',
+                description: c.description || 'Préparez-vous à l\'examen officiel sur nos simulateurs interactifs.',
+                logo: getCertificateBadgeLogo(c)
+              }))
+            : courses.map(c => ({
+                id: c.code,
+                slug: c.code.toLowerCase(),
+                nom: c.title,
+                codeExamen: c.code,
+                fournisseur: { nom: c.provider },
+                niveau: 'DEBUTANT',
+                dureeIndicative: '15h de préparation',
+                description: 'Préparez-vous à l\'examen officiel sur nos simulateurs interactifs.',
+                logo: getCertificateBadgeLogo(c)
+              }));
 
-                  <button 
-                    onClick={() => window.location.href = '/login'}
-                    className="w-full flex items-center justify-between p-3 bg-slate-50 border border-slate-100 hover:border-red-600/30 text-[10px] font-black uppercase tracking-wider text-slate-600 hover:text-red-600 rounded-xl transition-all cursor-pointer group/btn"
-                  >
-                    <span>S&apos;entraîner</span>
-                    <Play className="w-3.5 h-3.5 fill-red-600 text-red-600 group-hover/btn:scale-110 transition-transform" />
-                  </button>
-                </div>
+          const displayedCourses = catalogCourses.slice(0, 4);
+
+          const getNiveauBadgeStyle = (niveau: string) => {
+            switch (niveau?.toUpperCase()) {
+              case 'DEBUTANT': return 'bg-emerald-50 text-emerald-700 border-emerald-200/80';
+              case 'INTERMEDIAIRE': return 'bg-amber-50 text-amber-700 border-amber-200/80';
+              case 'AVANCE':
+              case 'EXPERT': return 'bg-rose-50 text-rose-700 border-rose-200/80';
+              default: return 'bg-slate-100 text-slate-700 border-slate-200';
+            }
+          };
+
+          return (
+            <>
+              {/* Grille de cartes de certification (Exact Design Dashboard/Certifications) */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {displayedCourses.map((cert, idx) => (
+                  <AnimatedSection key={idx} delay={idx * 0.08}>
+                    <div className="bg-white border border-slate-200/90 hover:border-slate-350 hover:shadow-xl rounded-3xl p-6 sm:p-7 flex flex-col justify-between group transition-all duration-300 text-left space-y-5">
+                      
+                      {/* PARTIE SUPÉRIEURE : EN-TÊTE STYLE UDEMY */}
+                      <div className="flex items-start justify-between gap-4">
+                        {/* Côté Gauche : Badges, Titre & Description */}
+                        <div className="space-y-3 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-extrabold text-slate-900 text-[10px] uppercase tracking-wider px-2.5 py-1 bg-slate-100 border border-slate-200 rounded-lg">
+                              {cert.fournisseur?.nom || 'Éditeur'}
+                            </span>
+                            {cert.codeExamen && (
+                              <span className="font-black text-red-600 text-[10px] uppercase tracking-wider px-2.5 py-1 bg-red-50 border border-red-100 rounded-lg">
+                                {cert.codeExamen}
+                              </span>
+                            )}
+                            <span className={`text-[9px] px-2.5 py-1 rounded-lg font-extrabold uppercase tracking-wider border ${getNiveauBadgeStyle(cert.niveau)}`}>
+                              {cert.niveau}
+                            </span>
+                          </div>
+
+                          <div>
+                            <h3 className="font-extrabold text-slate-950 text-lg leading-snug group-hover:text-red-600 transition-colors">
+                              {cert.nom}
+                            </h3>
+                            <p className="text-xs text-slate-500 font-medium line-clamp-2 mt-1.5 leading-relaxed">
+                              {cert.description}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center gap-4 text-xs font-bold text-slate-400 pt-1">
+                            <span className="flex items-center gap-1.5 text-slate-600">
+                              <Users className="w-3.5 h-3.5 text-slate-400" />
+                              <span>Candidats en préparation</span>
+                            </span>
+                            <span className="flex items-center gap-1 text-slate-500">
+                              <Clock className="w-3.5 h-3.5" />
+                              <span>{cert.dureeIndicative}</span>
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Côté Droit : Écusson/Badge Officiel du Certificat (Style Udemy sans bordure) */}
+                        <div className="w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center shrink-0 p-1">
+                          {cert.logo ? (
+                            <img
+                              src={cert.logo}
+                              alt={cert.nom}
+                              className="max-h-full max-w-full object-contain filter drop-shadow-md transition-transform duration-300 group-hover:scale-110"
+                            />
+                          ) : (
+                            <Award className="w-12 h-12 text-slate-300" />
+                          )}
+                        </div>
+                      </div>
+
+                      {/* BAS DE CARTE : ACTIONS & CTAS DISCRETS */}
+                      <div className="border-t border-slate-100 pt-4 flex items-center justify-between gap-3 text-xs">
+                        <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Examen Blanc & Quiz inclus</span>
+                        </span>
+
+                        <button 
+                          onClick={() => {
+                            if (isConnected) {
+                              window.location.href = '/dashboard/practice';
+                            } else {
+                              window.location.href = '/login';
+                            }
+                          }}
+                          className="px-4 py-2 bg-slate-950 hover:bg-slate-900 text-white font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1.5 shadow-sm hover:shadow-md"
+                        >
+                          <Play className="w-3 h-3 fill-white text-white" />
+                          <span>S&apos;entraîner</span>
+                        </button>
+                      </div>
+                    </div>
+                  </AnimatedSection>
+                ))}
               </div>
-            </AnimatedSection>
-          ))}
-        </div>
 
-        <AnimatedSection className="flex justify-center mt-12">
-          <button 
-            onClick={() => window.location.href = '/login'}
-            className="px-6 py-2.5 bg-red-600 hover:bg-red-750 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-md transition-all cursor-pointer"
-          >
-            Voir Tous
-          </button>
-        </AnimatedSection>
+              {/* Bouton Redirection vers la nouvelle page /certifications */}
+              <AnimatedSection className="flex justify-center mt-12">
+                <Link 
+                  href="/certifications"
+                  className="px-8 py-3.5 bg-slate-950 hover:bg-slate-900 text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-lg transition-all cursor-pointer flex items-center gap-3 hover:scale-105 active:scale-95 group"
+                >
+                  <span>Voir tout le catalogue des certifications</span>
+                  <ArrowRight className="w-4 h-4 text-red-500 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </AnimatedSection>
+            </>
+          );
+        })()}
       </section>
 
       {/* ═══════════════════════════════════════════ */}
@@ -711,8 +827,12 @@ export default function LandingPage() {
 
           <div className="space-y-4 text-left">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 bg-red-600/10 border border-red-600/20 rounded-lg flex items-center justify-center text-red-500">
-                <ShieldCheck className="w-4.5 h-4.5" />
+              <div className="flex items-center justify-center">
+                <svg className="w-7 h-7 text-red-600" viewBox="0 0 100 100" fill="currentColor">
+                  <polygon points="50,15 15,85 85,85" className="fill-none stroke-red-600 stroke-[6]" />
+                  <polygon points="50,30 28,75 72,75" className="fill-none stroke-white stroke-[4]" />
+                  <polygon points="50,45 40,65 60,65" className="fill-red-600" />
+                </svg>
               </div>
               <span className="font-extrabold text-base tracking-tight text-white uppercase">Ethical Data Security</span>
             </div>
@@ -722,12 +842,12 @@ export default function LandingPage() {
           </div>
 
           <div className="text-left">
-            <h4 className="text-xs font-black text-white uppercase tracking-widest mb-4">Formations</h4>
+            <h4 className="text-xs font-black text-white uppercase tracking-widest mb-4">Certifications</h4>
             <ul className="space-y-2.5 text-xs text-slate-400 font-semibold uppercase">
-              <li><a href="#formations" className="hover:text-white transition-colors">Azure AZ-900</a></li>
-              <li><a href="#formations" className="hover:text-white transition-colors">PECB ISO 27001</a></li>
-              <li><a href="#formations" className="hover:text-white transition-colors">AWS Cloud Practitioner</a></li>
-              <li><a href="#formations" className="hover:text-white transition-colors">Palo Alto PCNSA</a></li>
+              <li><Link href="/certifications" className="hover:text-white transition-colors">Azure AZ-900</Link></li>
+              <li><Link href="/certifications" className="hover:text-white transition-colors">PECB ISO 27001</Link></li>
+              <li><Link href="/certifications" className="hover:text-white transition-colors">AWS Cloud Practitioner</Link></li>
+              <li><Link href="/certifications" className="hover:text-white transition-colors">Palo Alto PCNSA</Link></li>
             </ul>
           </div>
 

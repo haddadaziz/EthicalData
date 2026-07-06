@@ -19,7 +19,8 @@ export default function DownloadsPage() {
                     apiFetch('/certifications'),
                     apiFetch('/certifications/ressources/mes-quotas')
                 ]);
-                setCerts(certsData);
+                const listCerts = Array.isArray(certsData) ? certsData : (certsData?.data || []);
+                setCerts(listCerts);
                 setQuotas(quotasData);
             } catch (err) {
                 console.error("Erreur de chargement des ressources:", err);
@@ -81,22 +82,14 @@ export default function DownloadsPage() {
     if (loading) {
         return (
             <div className="min-h-[50vh] flex flex-col items-center justify-center text-slate-600 gap-4">
-                <span className="w-10 h-10 border-4 border-red-100 border-t-red-600 rounded-full animate-spin" />
-                <p className="text-xs font-bold uppercase tracking-widest text-red-600">Chargement de la bibliothèque...</p>
+                <span className="w-10 h-10 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin" />
+                <p className="text-xs font-bold uppercase tracking-widest text-blue-600">Chargement de la bibliothèque...</p>
             </div>
         );
     }
 
     return (
-        <div className="space-y-10 text-slate-800 text-left">
-
-            {/* En-tête de la page */}
-            <div>
-                <h1 className="text-3xl font-black text-slate-950 tracking-tight">Fiches & Guides de Cours</h1>
-                <p className="text-slate-600 text-xs mt-1.5 font-semibold uppercase tracking-wider">
-                    Téléchargez vos fiches de révision condensées et vos mémas d'examens.
-                </p>
-            </div>
+        <div className="space-y-8 text-slate-800 text-left">
 
             {/* Barre de Recherche & Filtres */}
             <div className="bg-white border border-slate-200/80 rounded-3xl p-6 space-y-6">
@@ -112,7 +105,7 @@ export default function DownloadsPage() {
                             placeholder="Rechercher une fiche ou un cours..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-11 pr-4 py-3 bg-slate-50/40 border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-200 placeholder-slate-400 transition-all text-sm outline-none"
+                            className="w-full pl-11 pr-4 py-3 bg-slate-50/40 border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-900 placeholder-slate-400 transition-all text-sm outline-none"
                         />
                     </div>
                     <div className="text-xs text-slate-500 font-bold">
@@ -185,7 +178,7 @@ export default function DownloadsPage() {
                                         
                                         {/* Badge de Certification */}
                                         <div className="flex justify-between items-start gap-2">
-                                            <span className="text-[9px] font-black text-red-600 bg-red-50 border border-red-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                            <span className="text-[9px] font-black text-blue-600 bg-blue-50 border border-blue-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                                                 {res.certCode || 'Général'}
                                             </span>
                                             <span className="text-[9px] font-black text-slate-500 bg-slate-50/40 border border-slate-200/80 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
@@ -195,7 +188,7 @@ export default function DownloadsPage() {
 
                                         {/* Titre & Description */}
                                         <div className="space-y-1">
-                                            <h3 className="font-extrabold text-slate-950 text-base group-hover:text-red-600 transition-colors leading-tight">
+                                            <h3 className="font-extrabold text-slate-950 text-base group-hover:text-blue-600 transition-colors leading-tight">
                                                 {res.titre}
                                             </h3>
                                             <p className="text-[10px] text-slate-500 font-bold truncate mt-0.5">
@@ -214,7 +207,7 @@ export default function DownloadsPage() {
                                             <span className="text-slate-500 font-bold uppercase">{formatBytes(res.taille)}</span>
                                             {!res.public && (
                                                 <span className={`text-[8px] font-black tracking-widest uppercase mt-0.5 ${
-                                                    isOutOfQuota ? 'text-red-650 animate-pulse' : 'text-slate-400'
+                                                    isOutOfQuota ? 'text-rose-600 animate-pulse' : 'text-slate-400'
                                                 }`}>
                                                     {isOutOfQuota ? 'Quota épuisé' : `${remaining} restants`}
                                                 </span>

@@ -34,6 +34,7 @@ model Utilisateur {
   sujets          Sujet[]
   commentaires    Commentaire[]
   likesSujets     LikeSujet[]
+  likesCommentaires LikeCommentaire[]
   signalements    SignalementSujet[]
   notifications Notification[]
   
@@ -213,6 +214,7 @@ model Commentaire {
   sujet                 Sujet        @relation(fields: [sujetId], references: [id], onDelete: Cascade)
   auteurId              BigInt
   auteur                Utilisateur  @relation(fields: [auteurId], references: [id], onDelete: Cascade)
+  likes                 LikeCommentaire[]
 
   @@map("commentaires")
 }
@@ -229,6 +231,20 @@ model LikeSujet {
 
   @@unique([sujetId, utilisateurId])
   @@map("likes_sujets")
+}
+
+model LikeCommentaire {
+  id            BigInt      @id @default(autoincrement())
+  dateLike      DateTime    @default(now())
+  
+  // Relations
+  commentaireId BigInt      @map("commentaire_id")
+  commentaire   Commentaire @relation(fields: [commentaireId], references: [id], onDelete: Cascade)
+  utilisateurId BigInt      @map("utilisateur_id")
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+
+  @@unique([commentaireId, utilisateurId])
+  @@map("likes_commentaires")
 }
 
 model SignalementSujet {

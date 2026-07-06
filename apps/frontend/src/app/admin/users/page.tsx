@@ -55,7 +55,8 @@ export default function AdminUsersPage() {
         setLoading(true);
         try {
             const data = await apiFetch('/users');
-            setUsers(data);
+            const listUsers = Array.isArray(data) ? data : (data?.data || []);
+            setUsers(listUsers);
         } catch (err: any) {
             console.error("Erreur chargement utilisateurs:", err);
             showToast(err.message || "Erreur lors du chargement des utilisateurs.", "error");
@@ -176,8 +177,8 @@ export default function AdminUsersPage() {
     if (loading) {
         return (
             <div className="p-16 text-center text-slate-400 bg-white border border-slate-200/80 rounded-3xl max-w-5xl mx-auto">
-                <span className="w-10 h-10 border-4 border-red-100 border-t-red-600 rounded-full animate-spin inline-block mb-3" />
-                <p className="text-xs font-bold uppercase tracking-widest text-red-600">Chargement des utilisateurs...</p>
+                <span className="w-10 h-10 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin inline-block mb-3" />
+                <p className="text-xs font-bold uppercase tracking-widest text-blue-600">Chargement des utilisateurs...</p>
             </div>
         );
     }
@@ -185,38 +186,27 @@ export default function AdminUsersPage() {
     return (
         <div className="space-y-8 max-w-7xl mx-auto text-left">
 
-            {/* EN-TÊTE PAGE ADMIN */}
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm">
-                <div>
-                    <h1 className="text-2xl font-black text-slate-950 tracking-tight flex items-center gap-3">
-                        <Users className="w-7 h-7 text-red-600" />
-                        <span>Gestion des Utilisateurs & Rôles</span>
-                    </h1>
-                    <p className="text-xs text-slate-500 font-medium mt-1">
-                        Consultez la communauté, attribuez des rôles de Formateurs/Admins et modérez les accès.
-                    </p>
-                </div>
-
-                <button
-                    onClick={() => setIsCreateModalOpen(true)}
-                    className="px-5 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl text-xs flex items-center gap-2 transition-all shadow-md shadow-red-600/20 cursor-pointer shrink-0"
-                >
-                    <Plus className="w-4 h-4" />
-                    <span>Ajouter un utilisateur</span>
-                </button>
-            </div>
-
-            {/* BARRE DE RECHERCHE ET FILTRES */}
+            {/* BARRE DE RECHERCHE, FILTRES ET BOUTON CRÉATION */}
             <div className="bg-white border border-slate-200/80 rounded-3xl p-4 md:p-5 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
-                <div className="relative w-full md:w-96">
-                    <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
-                    <input
-                        type="text"
-                        placeholder="Rechercher par nom, prénom ou e-mail..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-red-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
-                    />
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                    <button
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="w-full sm:w-auto px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-red-600/20 cursor-pointer shrink-0"
+                    >
+                        <Plus className="w-4 h-4" />
+                        <span>Ajouter un utilisateur</span>
+                    </button>
+
+                    <div className="relative w-full sm:w-72">
+                        <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                        <input
+                            type="text"
+                            placeholder="Rechercher par nom ou email..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-red-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
+                        />
+                    </div>
                 </div>
 
                 <div className="flex items-center gap-3 w-full md:w-auto overflow-x-auto">

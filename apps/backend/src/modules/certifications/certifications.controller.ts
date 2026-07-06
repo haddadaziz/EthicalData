@@ -166,10 +166,10 @@ export class CertificationsController {
     @UseGuards(JwtAuthGuard)
     @Post('evaluer-ia')
     async evaluateWithAi(
-        @Body('questionId', ParseIntPipe) questionId: number,
-        @Body('reponseCandidat') reponseCandidat: string,
+        @Body() body: { questionId: number | string; reponseCandidat?: string },
     ) {
-        return this.certificationsService.evaluateQuestionWithAi(questionId, reponseCandidat);
+        const questionId = Number(body?.questionId);
+        return this.certificationsService.evaluateQuestionWithAi(questionId, body?.reponseCandidat || '');
     }
 
     // ==========================================

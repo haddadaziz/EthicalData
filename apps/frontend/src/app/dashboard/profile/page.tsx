@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { User, ShieldCheck, KeyRound, Bell, CheckCircle, Save, RefreshCw, Sparkles, MessageSquare, Heart, Camera, Phone, Mail, FileText, Lock, Eye, EyeOff } from 'lucide-react';
+import { User, ShieldCheck, KeyRound, Bell, CheckCircle, Save, RefreshCw, Sparkles, MessageSquare, Heart, Camera, Phone, Mail, FileText, Lock, Eye, EyeOff, Upload, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface UserProfileData {
@@ -23,14 +23,6 @@ interface UserProfileData {
         likesCount: number;
     };
 }
-
-const PRESET_AVATARS = [
-    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
-];
 
 export default function ProfilePage() {
     const { showToast } = useToast();
@@ -87,6 +79,22 @@ export default function ProfilePage() {
     useEffect(() => {
         fetchProfile();
     }, []);
+
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                showToast("La taille de l'image ne doit pas dépasser 5 Mo.", "error");
+                return;
+            }
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setAvatar(reader.result as string);
+                showToast("Photo importée avec succès. N'oubliez pas d'enregistrer !", "info");
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     const handleSaveInfo = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -186,8 +194,8 @@ export default function ProfilePage() {
     if (loading || !profile) {
         return (
             <div className="p-16 text-center text-slate-400 bg-white border border-slate-200/80 rounded-3xl max-w-5xl mx-auto">
-                <span className="w-10 h-10 border-4 border-red-100 border-t-red-600 rounded-full animate-spin inline-block mb-3" />
-                <p className="text-xs font-bold uppercase tracking-widest text-red-600">Chargement de votre profil...</p>
+                <span className="w-10 h-10 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin inline-block mb-3" />
+                <p className="text-xs font-bold uppercase tracking-widest text-blue-600">Chargement de votre profil...</p>
             </div>
         );
     }
@@ -198,7 +206,7 @@ export default function ProfilePage() {
         <div className="space-y-8 max-w-6xl mx-auto text-left">
             {/* CARTE D'EN-TÊTE DU PROFIL */}
             <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 rounded-3xl p-8 md:p-10 text-white relative overflow-hidden shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
 
                 <div className="flex flex-col md:flex-row items-center gap-6 relative z-10">
                     {/* AVATAR INTERACTIF */}
@@ -210,7 +218,7 @@ export default function ProfilePage() {
                                 className="w-24 h-24 rounded-3xl object-cover border-2 border-white/20 shadow-xl group-hover:opacity-90 transition-all"
                             />
                         ) : (
-                            <div className="w-24 h-24 rounded-3xl bg-gradient-to-tr from-red-600 to-rose-500 border-2 border-white/20 flex items-center justify-center text-white font-black text-3xl shadow-xl">
+                            <div className="w-24 h-24 rounded-3xl bg-gradient-to-tr from-blue-600 to-indigo-500 border-2 border-white/20 flex items-center justify-center text-white font-black text-3xl shadow-xl">
                                 {prenom[0]}{nom[0]}
                             </div>
                         )}
@@ -225,8 +233,8 @@ export default function ProfilePage() {
                             <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white">
                                 {profile.prenom} {profile.nom}
                             </h1>
-                            <span className="px-3 py-1 bg-red-500/20 border border-red-500/30 text-red-400 font-extrabold text-[10px] rounded-full uppercase tracking-wider">
-                                Candidat Apprenant
+                            <span className="px-3 py-1 bg-blue-500/20 border border-blue-500/30 text-blue-400 font-extrabold text-[10px] rounded-full uppercase tracking-wider">
+                                Apprenant
                             </span>
                         </div>
                         <p className="text-xs text-slate-400 font-medium flex items-center justify-center md:justify-start gap-2">
@@ -246,7 +254,7 @@ export default function ProfilePage() {
                 {/* BADGES STATISTIQUES */}
                 <div className="grid grid-cols-3 gap-3 w-full md:w-auto relative z-10">
                     <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center space-y-1">
-                        <div className="flex items-center justify-center text-red-400 gap-1">
+                        <div className="flex items-center justify-center text-blue-400 gap-1">
                             <Sparkles className="w-4 h-4" />
                             <span className="text-lg font-black">{profile.stats.sujetsCount}</span>
                         </div>
@@ -326,19 +334,42 @@ export default function ProfilePage() {
                             </div>
                         </div>
 
-                        {/* SÉLECTION RAPIDE D'AVATAR PRESET */}
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-slate-700 block">Choisissez un avatar recommandé</label>
-                            <div className="flex items-center gap-3 overflow-x-auto pb-2">
-                                {PRESET_AVATARS.map((url, idx) => (
-                                    <img
-                                        key={idx}
-                                        src={url}
-                                        alt="Avatar Preset"
-                                        onClick={() => setAvatar(url)}
-                                        className={`w-12 h-12 rounded-2xl object-cover cursor-pointer transition-all border-2 ${avatar === url ? 'border-red-600 scale-110 shadow-md' : 'border-transparent hover:opacity-80'}`}
+                        {/* GESTION DE LA PHOTO DE PROFIL : IMPORT LOCAL OU LIEN URL */}
+                        <div className="space-y-3 p-4 bg-slate-50 border border-slate-200/80 rounded-2xl">
+                            <label className="text-xs font-bold text-slate-900 block">Photo de Profil</label>
+                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                                <label className="flex-1 cursor-pointer flex items-center justify-center gap-2 p-3 bg-white border border-dashed border-slate-300 hover:border-blue-600 rounded-xl text-xs font-bold text-slate-700 hover:text-blue-600 transition-all shadow-sm">
+                                    <Upload className="w-4 h-4 text-blue-600 shrink-0" />
+                                    <span>Importer une photo depuis votre appareil</span>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleFileUpload}
+                                        className="hidden"
                                     />
-                                ))}
+                                </label>
+                                
+                                <span className="text-[11px] text-slate-400 font-bold text-center shrink-0">ou</span>
+
+                                <div className="flex-1 relative">
+                                    <input
+                                        type="url"
+                                        placeholder="Lien/URL direct de la photo (https://...)"
+                                        value={avatar}
+                                        onChange={(e) => setAvatar(e.target.value)}
+                                        className="w-full p-3 bg-white border border-slate-200 focus:border-blue-600 rounded-xl text-slate-950 text-xs font-semibold outline-none pr-8"
+                                    />
+                                    {avatar && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setAvatar('')}
+                                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-rose-600"
+                                            title="Effacer la photo"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -350,7 +381,7 @@ export default function ProfilePage() {
                                     required
                                     value={prenom}
                                     onChange={(e) => setPrenom(e.target.value)}
-                                    className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-red-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
+                                    className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
                                 />
                             </div>
 
@@ -361,7 +392,7 @@ export default function ProfilePage() {
                                     required
                                     value={nom}
                                     onChange={(e) => setNom(e.target.value)}
-                                    className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-red-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
+                                    className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
                                 />
                             </div>
 
@@ -387,21 +418,10 @@ export default function ProfilePage() {
                                         placeholder="+212 600 000 000"
                                         value={telephone}
                                         onChange={(e) => setTelephone(e.target.value)}
-                                        className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 focus:border-red-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
+                                        className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
                                     />
                                 </div>
                             </div>
-                        </div>
-
-                        <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-slate-700">URL d'Avatar personnalisé</label>
-                            <input
-                                type="url"
-                                placeholder="https://exemple.com/mon-avatar.jpg"
-                                value={avatar}
-                                onChange={(e) => setAvatar(e.target.value)}
-                                className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-red-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
-                            />
                         </div>
 
                         <div className="space-y-1.5">
@@ -411,7 +431,7 @@ export default function ProfilePage() {
                                 placeholder="Présentez votre parcours, vos certifications cibles (ex: AZ-104, SC-900) ou vos domaines d'expertise..."
                                 value={bio}
                                 onChange={(e) => setBio(e.target.value)}
-                                className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-red-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none resize-none"
+                                className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none resize-none"
                             />
                         </div>
 
@@ -419,7 +439,7 @@ export default function ProfilePage() {
                             <button
                                 type="submit"
                                 disabled={infoLoading}
-                                className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl text-xs flex items-center gap-2 cursor-pointer transition-all shadow-md shadow-red-600/20 disabled:opacity-50"
+                                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl text-xs flex items-center gap-2 cursor-pointer transition-all shadow-md shadow-blue-600/20 disabled:opacity-50"
                             >
                                 {infoLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                                 <span>Enregistrer les modifications</span>
@@ -456,7 +476,7 @@ export default function ProfilePage() {
                                         required
                                         value={oldPassword}
                                         onChange={(e) => setOldPassword(e.target.value)}
-                                        className="w-full pl-11 pr-11 py-3.5 bg-slate-50 border border-slate-200 focus:border-red-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
+                                        className="w-full pl-11 pr-11 py-3.5 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
                                     />
                                     <button
                                         type="button"
@@ -479,7 +499,7 @@ export default function ProfilePage() {
                                         minLength={6}
                                         value={newPassword}
                                         onChange={(e) => setNewPassword(e.target.value)}
-                                        className="w-full pl-11 pr-11 py-3.5 bg-slate-50 border border-slate-200 focus:border-red-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
+                                        className="w-full pl-11 pr-11 py-3.5 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
                                     />
                                     <button
                                         type="button"
@@ -509,7 +529,7 @@ export default function ProfilePage() {
                                         required
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
-                                        className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 focus:border-red-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
+                                        className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
                                     />
                                 </div>
                             </div>
@@ -555,7 +575,7 @@ export default function ProfilePage() {
                                     type="checkbox"
                                     checked={notifReplies}
                                     onChange={(e) => setNotifReplies(e.target.checked)}
-                                    className="accent-red-600 w-5 h-5 cursor-pointer"
+                                    className="accent-blue-600 w-5 h-5 cursor-pointer"
                                 />
                             </label>
 
@@ -568,7 +588,7 @@ export default function ProfilePage() {
                                     type="checkbox"
                                     checked={notifLikes}
                                     onChange={(e) => setNotifLikes(e.target.checked)}
-                                    className="accent-red-600 w-5 h-5 cursor-pointer"
+                                    className="accent-blue-600 w-5 h-5 cursor-pointer"
                                 />
                             </label>
 
@@ -581,7 +601,7 @@ export default function ProfilePage() {
                                     type="checkbox"
                                     checked={notifSystem}
                                     onChange={(e) => setNotifSystem(e.target.checked)}
-                                    className="accent-red-600 w-5 h-5 cursor-pointer"
+                                    className="accent-blue-600 w-5 h-5 cursor-pointer"
                                 />
                             </label>
                         </div>
@@ -590,7 +610,7 @@ export default function ProfilePage() {
                             <button
                                 type="submit"
                                 disabled={prefLoading}
-                                className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl text-xs flex items-center gap-2 cursor-pointer transition-all shadow-md shadow-red-600/20 disabled:opacity-50"
+                                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl text-xs flex items-center gap-2 cursor-pointer transition-all shadow-md shadow-blue-600/20 disabled:opacity-50"
                             >
                                 {prefLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                                 <span>Enregistrer les préférences</span>
