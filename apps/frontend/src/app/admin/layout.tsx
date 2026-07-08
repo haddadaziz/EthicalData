@@ -78,12 +78,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     } catch (error) {
       console.error("Erreur d'authentification :", error);
       localStorage.removeItem('token');
+      sessionStorage.removeItem('token');
       router.push('/login');
     }
   }, [router]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     router.push('/login');
   };
 

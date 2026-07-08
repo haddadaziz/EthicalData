@@ -283,6 +283,50 @@ export class ForumService {
     return { message: 'Signalement envoyé à la modération.' };
   }
 
+  // 5b. Signaler un commentaire à la modération (+ NOTIFICATION ADMINS)
+  async reportCommentaire(userId: number, commentId: number, motif?: string) {
+    const comment = await this.prisma.commentaire.findUnique({
+      where: { id: BigInt(commentId) },
+      include: { sujet: true }
+    });
+    if (!comment) throw new NotFoundException('Commentaire non trouvé.');
+
+    if (comment.auteurId === BigInt(userId)) {
+      throw new ForbiddenException('Vous ne pouvez pas signaler votre propre commentaire.');
+    }
+
+    const existingReport = await this.prisma.signalementCommentaire.findUnique({
+      where: {
+        commentaireId_utilisateurId: {
+          commentaireId: BigInt(commentId),
+          utilisateurId: BigInt(userId),
+        },
+      },
+    });
+
+    if (existingReport) {
+      return { message: 'Vous avez déjà signalé ce commentaire.' };
+    }
+
+    await this.prisma.signalementCommentaire.create({
+      data: {
+        commentaireId: BigInt(commentId),
+        utilisateurId: BigInt(userId),
+        motif,
+      },
+    });
+
+    const reporter = await this.prisma.utilisateur.findUnique({ where: { id: BigInt(userId) } });
+    await this.notificationsService.notifyAdmins(
+      "Nouveau Signalement",
+      `${reporter?.prenom} ${reporter?.nom} a signalé un commentaire dans la publication "${comment.sujet.titre}". Motif: ${motif || 'Non précisé'}`,
+      "FORUM_REPORT",
+      "/admin/community",
+    );
+
+    return { message: 'Signalement de commentaire envoyé à la modération.' };
+  }
+
   // 6. Supprimer un sujet (Auteur ou Admin)
   async deleteSujet(userId: number, userRoles: string[], sujetId: number) {
     const sujet = await this.prisma.sujet.findUnique({ where: { id: BigInt(sujetId) } });
@@ -401,44 +445,68 @@ export class ForumService {
 
   // 9. Stats Admin
   async getAdminStats() {
-    const [totalSujets, totalCommentaires, totalLikes, signalementsPending] = await Promise.all([
+    const [totalSujets, totalCommentaires, totalLikes, sujetSigPending, commentSigPending] = await Promise.all([
       this.prisma.sujet.count(),
       this.prisma.commentaire.count(),
       this.prisma.likeSujet.count(),
       this.prisma.signalementSujet.count({ where: { traite: false } }),
+      this.prisma.signalementCommentaire.count({ where: { traite: false } }),
     ]);
 
     return {
       totalSujets,
       totalCommentaires,
       totalLikes,
-      signalementsPending,
+      signalementsPending: sujetSigPending + commentSigPending,
     };
   }
 
   // 10. Signalements Admin
   async getReportedSujets(traite: boolean = false) {
-    const signalements = await this.prisma.signalementSujet.findMany({
-      where: { traite },
-      orderBy: { dateCreation: 'desc' },
-      include: {
-        utilisateur: {
-          select: { id: true, prenom: true, nom: true, email: true },
-        },
-        sujet: {
-          include: {
-            auteur: { select: { id: true, prenom: true, nom: true, email: true } },
-            _count: { select: { commentaires: true, likes: true } },
+    const [sujetsReports, commentReports] = await Promise.all([
+      this.prisma.signalementSujet.findMany({
+        where: { traite },
+        orderBy: { dateCreation: 'desc' },
+        include: {
+          utilisateur: {
+            select: { id: true, prenom: true, nom: true, email: true },
+          },
+          sujet: {
+            include: {
+              auteur: { select: { id: true, prenom: true, nom: true, email: true } },
+              _count: { select: { commentaires: true, likes: true } },
+            },
           },
         },
-      },
-    });
+      }),
+      this.prisma.signalementCommentaire.findMany({
+        where: { traite },
+        orderBy: { dateCreation: 'desc' },
+        include: {
+          utilisateur: {
+            select: { id: true, prenom: true, nom: true, email: true },
+          },
+          commentaire: {
+            include: {
+              auteur: { select: { id: true, prenom: true, nom: true, email: true } },
+              sujet: {
+                include: {
+                  auteur: { select: { id: true, prenom: true, nom: true, email: true } },
+                  _count: { select: { commentaires: true, likes: true } },
+                }
+              }
+            }
+          }
+        }
+      })
+    ]);
 
-    return signalements.map((sig: any) => ({
+    const formattedSujets = sujetsReports.map((sig: any) => ({
       id: sig.id.toString(),
       motif: sig.motif,
       dateCreation: sig.dateCreation,
       traite: sig.traite,
+      type: 'SUJET',
       signalePar: {
         ...sig.utilisateur,
         id: sig.utilisateur.id.toString(),
@@ -457,23 +525,67 @@ export class ForumService {
         likesCount: sig.sujet._count.likes,
       },
     }));
+
+    const formattedComments = commentReports.map((sig: any) => ({
+      id: sig.id.toString(),
+      motif: sig.motif,
+      dateCreation: sig.dateCreation,
+      traite: sig.traite,
+      type: 'COMMENTAIRE',
+      signalePar: {
+        ...sig.utilisateur,
+        id: sig.utilisateur.id.toString(),
+      },
+      commentaireId: sig.commentaire.id.toString(),
+      sujet: {
+        id: sig.commentaire.sujet.id.toString(),
+        titre: `[Commentaire] dans : ${sig.commentaire.sujet.titre}`,
+        contenu: sig.commentaire.contenu,
+        theme: sig.commentaire.sujet.theme,
+        dateCreation: sig.commentaire.dateCreation,
+        auteur: {
+          ...sig.commentaire.auteur,
+          id: sig.commentaire.auteur.id.toString(),
+        },
+        commentairesCount: sig.commentaire.sujet._count.commentaires,
+        likesCount: sig.commentaire.sujet._count.likes,
+      },
+    }));
+
+    return [...formattedSujets, ...formattedComments].sort(
+      (a, b) => new Date(b.dateCreation).getTime() - new Date(a.dateCreation).getTime()
+    );
   }
 
   // 11. Résoudre signalement
-  async resolveSignalement(id: number) {
-    await this.prisma.signalementSujet.update({
-      where: { id: BigInt(id) },
-      data: { traite: true },
-    });
+  async resolveSignalement(id: number, type?: string) {
+    if (type === 'COMMENTAIRE') {
+      await this.prisma.signalementCommentaire.update({
+        where: { id: BigInt(id) },
+        data: { traite: true },
+      });
+    } else {
+      await this.prisma.signalementSujet.update({
+        where: { id: BigInt(id) },
+        data: { traite: true },
+      });
+    }
     return { message: 'Signalement marqué comme traité.' };
   }
 
   // 12. Annuler résolution signalement
-  async unresolveSignalement(id: number) {
-    await this.prisma.signalementSujet.update({
-      where: { id: BigInt(id) },
-      data: { traite: false },
-    });
+  async unresolveSignalement(id: number, type?: string) {
+    if (type === 'COMMENTAIRE') {
+      await this.prisma.signalementCommentaire.update({
+        where: { id: BigInt(id) },
+        data: { traite: false },
+      });
+    } else {
+      await this.prisma.signalementSujet.update({
+        where: { id: BigInt(id) },
+        data: { traite: false },
+      });
+    }
     return { message: 'Signalement remis en attente.' };
   }
 

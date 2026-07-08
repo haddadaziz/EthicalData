@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useConfirm } from '../../../context/ConfirmContext';
@@ -65,6 +66,7 @@ const THEMES = [
 ];
 
 export default function CommunityPage() {
+    const router = useRouter();
     const { showToast } = useToast();
     const { confirm } = useConfirm();
     const [sujets, setSujets] = useState<Sujet[]>([]);
@@ -89,6 +91,8 @@ export default function CommunityPage() {
     // Modal de Signalement Enrichi
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const [reportSujetId, setReportSujetId] = useState<string | null>(null);
+    const [reportCommentId, setReportCommentId] = useState<string | null>(null);
+    const [reportType, setReportType] = useState<'SUJET' | 'COMMENTAIRE'>('SUJET');
     const [reportReasonOption, setReportReasonOption] = useState('Contenu haineux, diffamatoire ou inapproprié');
     const [customReportDetails, setCustomReportDetails] = useState('');
     const [reportLoading, setReportLoading] = useState(false);
@@ -381,7 +385,7 @@ export default function CommunityPage() {
     const handleOpenLearnerProfile = (learnerId?: string, e?: React.MouseEvent) => {
         if (e) e.stopPropagation();
         if (learnerId) {
-            setInspectedLearnerId(learnerId);
+            router.push(`/dashboard/profile/${learnerId}`);
         }
     };
 
@@ -394,7 +398,24 @@ export default function CommunityPage() {
             return;
         }
 
+        setReportType('SUJET');
         setReportSujetId(sujet.id);
+        setReportCommentId(null);
+        setReportReasonOption('Contenu haineux, diffamatoire ou inapproprié');
+        setCustomReportDetails('');
+        setIsReportModalOpen(true);
+    };
+
+    const handleOpenReportCommentModal = (commentId: string, authorId?: string, authorEmail?: string) => {
+        const isOwner = (currentUserId && authorId === currentUserId) || (currentUserEmail && authorEmail === currentUserEmail);
+        if (isOwner) {
+            showToast("Vous ne pouvez pas signaler votre propre commentaire.", "error");
+            return;
+        }
+
+        setReportType('COMMENTAIRE');
+        setReportCommentId(commentId);
+        setReportSujetId(null);
         setReportReasonOption('Contenu haineux, diffamatoire ou inapproprié');
         setCustomReportDetails('');
         setIsReportModalOpen(true);
@@ -402,7 +423,8 @@ export default function CommunityPage() {
 
     const handleSubmitReport = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!reportSujetId) return;
+        if (reportType === 'SUJET' && !reportSujetId) return;
+        if (reportType === 'COMMENTAIRE' && !reportCommentId) return;
 
         setReportLoading(true);
         try {
@@ -410,7 +432,11 @@ export default function CommunityPage() {
                 ? (customReportDetails.trim() ? `Autre: ${customReportDetails.trim()}` : 'Autre motif non précisé')
                 : `${reportReasonOption}${customReportDetails.trim() ? ` - Précisions: ${customReportDetails.trim()}` : ''}`;
 
-            const res = await apiFetch(`/forum/${reportSujetId}/signaler`, {
+            const url = reportType === 'SUJET'
+                ? `/forum/${reportSujetId}/signaler`
+                : `/forum/commentaires/${reportCommentId}/signaler`;
+
+            const res = await apiFetch(url, {
                 method: 'POST',
                 body: { motif: finalMotif },
             });
@@ -421,7 +447,7 @@ export default function CommunityPage() {
                 return;
             }
 
-            showToast("Signalement transmis à l'équipe de modération.", "success");
+            showToast(reportType === 'SUJET' ? "Signalement transmis à l'équipe de modération." : "Signalement de commentaire transmis à l'équipe de modération.", "success");
             setIsReportModalOpen(false);
         } catch (err: any) {
             triggerShake();
@@ -945,6 +971,17 @@ export default function CommunityPage() {
                                                                                 <span>Supprimer</span>
                                                                             </button>
                                                                         )}
+
+                                                                        {!isCommOwner && (
+                                                                            <button
+                                                                                onClick={() => handleOpenReportCommentModal(comm.id, comm.auteur?.id, comm.auteur?.email)}
+                                                                                className="text-slate-400 hover:text-amber-600 flex items-center gap-1 cursor-pointer transition-colors px-2 py-1 hover:bg-amber-50 rounded-lg"
+                                                                                title="Signaler ce commentaire"
+                                                                            >
+                                                                                <Flag className="w-3.5 h-3.5" />
+                                                                                <span>Signaler</span>
+                                                                            </button>
+                                                                        )}
                                                                     </div>
 
                                                                     {/* Bouton déplier/replier les réponses */}
@@ -1063,6 +1100,17 @@ export default function CommunityPage() {
                                                                                                     <span>Supprimer</span>
                                                                                                 </button>
                                                                                             )}
+
+                                                                                            {!isSubOwner && (
+                                                                                                <button
+                                                                                                    onClick={() => handleOpenReportCommentModal(sub.id, sub.auteur?.id, sub.auteur?.email)}
+                                                                                                    className="text-slate-400 hover:text-amber-600 flex items-center gap-1 cursor-pointer transition-colors"
+                                                                                                    title="Signaler ce commentaire"
+                                                                                                >
+                                                                                                    <Flag className="w-3 h-3" />
+                                                                                                    <span>Signaler</span>
+                                                                                                </button>
+                                                                                            )}
                                                                                         </div>
                                                                                     </div>
                                                                                 );
@@ -1163,7 +1211,9 @@ export default function CommunityPage() {
                                         <ShieldAlert className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <h3 className="text-lg font-black text-slate-950">Signaler cette publication</h3>
+                                        <h3 className="text-lg font-black text-slate-950">
+                                            {reportType === 'SUJET' ? 'Signaler cette publication' : 'Signaler ce commentaire'}
+                                        </h3>
                                         <p className="text-xs font-semibold text-slate-500">Aidez-nous à préserver un espace sécurisé.</p>
                                     </div>
                                 </div>

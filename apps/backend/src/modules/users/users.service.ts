@@ -10,10 +10,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import * as bcrypt from 'bcryptjs';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+  ) {}
 
   // Crée un nouvel utilisateur
   async create(createUserDto: CreateUserDto) {
@@ -101,6 +105,24 @@ export class UsersService {
       where: { id: BigInt(userId), deletedAt: null },
       include: {
         roles: true,
+        tentatives: {
+          select: {
+            score: true,
+            simulation: {
+              select: {
+                certification: {
+                  select: {
+                    id: true,
+                    nom: true,
+                    slug: true,
+                    codeExamen: true,
+                    image: true,
+                  }
+                }
+              }
+            }
+          }
+        },
         _count: {
           select: {
             sujets: true,
@@ -115,6 +137,24 @@ export class UsersService {
       throw new NotFoundException('Profil non trouvé.');
     }
 
+    // Récupérer les certifications obtenues (score d'un examen blanc >= 80)
+    const obtainedMap = new Map();
+    user.tentatives.forEach(t => {
+      const cert = t.simulation?.certification;
+      if (t.score >= 80 && cert) {
+        const key = cert.id.toString();
+        obtainedMap.set(key, {
+          id: key,
+          nom: cert.nom,
+          slug: cert.slug,
+          codeExamen: cert.codeExamen,
+          image: cert.image,
+          bestScore: Math.max(t.score, obtainedMap.get(key)?.bestScore || 0),
+        });
+      }
+    });
+    const obtainedCerts = Array.from(obtainedMap.values());
+
     const { motDePasse, ...result } = user;
     return {
       ...result,
@@ -128,6 +168,7 @@ export class UsersService {
         commentairesCount: result._count.commentaires,
         likesCount: result._count.likesSujets,
       },
+      obtainedCertifications: obtainedCerts,
     };
   }
 
@@ -216,11 +257,31 @@ export class UsersService {
         avatar: true,
         bio: true,
         dateInscription: true,
+        preferences: true,
         roles: { select: { nom: true } },
+        tentatives: {
+          select: {
+            score: true,
+            simulation: {
+              select: {
+                certification: {
+                  select: {
+                    id: true,
+                    nom: true,
+                    slug: true,
+                    codeExamen: true,
+                    image: true,
+                  }
+                }
+              }
+            }
+          }
+        },
         _count: {
           select: {
             sujets: true,
             commentaires: true,
+            likesSujets: true,
           },
         },
       },
@@ -230,6 +291,39 @@ export class UsersService {
       throw new NotFoundException('Profil apprenant non trouvé.');
     }
 
+    // Récupérer les détails des certifications visées
+    const targetCertIds = (user.preferences as any)?.targetCertifications || [];
+    const targetedCerts = targetCertIds.length > 0 
+      ? await this.prisma.certification.findMany({
+          where: { id: { in: targetCertIds.map((id: any) => BigInt(id)) } },
+          select: {
+            id: true,
+            nom: true,
+            slug: true,
+            codeExamen: true,
+            image: true,
+          }
+        })
+      : [];
+
+    // Récupérer les certifications obtenues (score d'un examen blanc >= 80)
+    const obtainedMap = new Map();
+    user.tentatives.forEach(t => {
+      const cert = t.simulation?.certification;
+      if (t.score >= 80 && cert) {
+        const key = cert.id.toString();
+        obtainedMap.set(key, {
+          id: key,
+          nom: cert.nom,
+          slug: cert.slug,
+          codeExamen: cert.codeExamen,
+          image: cert.image,
+          bestScore: Math.max(t.score, obtainedMap.get(key)?.bestScore || 0),
+        });
+      }
+    });
+    const obtainedCerts = Array.from(obtainedMap.values());
+
     return {
       id: user.id.toString(),
       prenom: user.prenom,
@@ -238,10 +332,20 @@ export class UsersService {
       bio: user.bio,
       dateInscription: user.dateInscription,
       role: user.roles[0]?.nom || 'APPRENANT',
+      preferences: user.preferences,
       stats: {
         sujetsCount: user._count.sujets,
         commentairesCount: user._count.commentaires,
+        likesCount: user._count.likesSujets,
       },
+      targetedCertifications: targetedCerts.map(c => ({
+        id: c.id.toString(),
+        nom: c.nom,
+        slug: c.slug,
+        codeExamen: c.codeExamen,
+        image: c.image,
+      })),
+      obtainedCertifications: obtainedCerts,
     };
   }
 
@@ -335,5 +439,49 @@ export class UsersService {
     });
 
     return { message: 'Utilisateur supprimé avec succès.' };
+  }
+
+  // Devenir Formateur — retourne un nouveau token JWT pour prise d'effet immédiate
+  async becomeTrainer(userId: number) {
+    const user = await this.prisma.utilisateur.findFirst({
+      where: { id: BigInt(userId), deletedAt: null },
+      include: { roles: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Utilisateur non trouvé.');
+    }
+
+    const hasTrainerRole = user.roles.some((r) => r.nom === 'FORMATEUR');
+    if (!hasTrainerRole) {
+      await this.prisma.utilisateur.update({
+        where: { id: BigInt(userId) },
+        data: {
+          roles: {
+            connect: { nom: 'FORMATEUR' },
+          },
+        },
+      });
+    }
+
+    // Re-fetch pour avoir les rôles mis à jour
+    const updatedUser = await this.prisma.utilisateur.findFirst({
+      where: { id: BigInt(userId) },
+      include: { roles: true },
+    });
+
+    // Émettre un nouveau JWT avec les rôles mis à jour
+    const payload = {
+      sub: updatedUser!.id.toString(),
+      email: updatedUser!.email,
+      roles: updatedUser!.roles.map((r) => r.nom),
+    };
+    const accessToken = this.jwtService.sign(payload);
+
+    return {
+      accessToken,
+      message: 'Félicitations ! Vous êtes maintenant formateur.',
+      roles: updatedUser!.roles.map((r) => r.nom),
+    };
   }
 }

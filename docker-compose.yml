@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # 1. Base de données PostgreSQL
   postgres:
     image: postgres:16-alpine
     container_name: coaching_platform_postgres
@@ -19,6 +20,7 @@ services:
       timeout: 5s
       retries: 5
 
+  # 2. pgAdmin (Interface de gestion de base de données)
   pgadmin:
     image: dpage/pgadmin4
     container_name: coaching_platform_pgadmin
@@ -31,6 +33,45 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+
+  # 3. API Backend NestJS
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    container_name: coaching_platform_backend
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://postgres:dev_password_secure_2026@postgres:5432/coaching_platform_db?schema=public
+      JWT_SECRET: dev_secret_key_ultra_secure_for_2026_change_me_in_prod
+      JWT_EXPIRATION: 1d
+      PORT: 3000
+      FRONTEND_URL: http://localhost:3001
+      ADMIN_DEFAULT_EMAIL: admin@ethicaldata.local
+      ADMIN_DEFAULT_PASSWORD: admin_password_secure_2026
+      # Clé API Google Gemini pour les fonctionnalités IA
+      GEMINI_API_KEY: AQ.Ab8RN6LG7ZgkvAnZmAxmUDHwxB_0k3cqqPf_u1h5Mxgd_pOLHQ
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # 4. Frontend Next.js
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:3000
+    container_name: coaching_platform_frontend
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3000
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:

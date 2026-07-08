@@ -8,6 +8,7 @@ import {
   Post,
   Req,
   UseGuards,
+  Delete,
 } from '@nestjs/common';
 import { AppointmentsService } from './appointments.service';
 import { CreateCreneauDto } from './dto/create-creneau.dto';
@@ -48,5 +49,11 @@ export class AppointmentsController {
   async cancelAppointment(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
     const userRoles = req.user.roles || [];
     return this.appointmentsService.cancelAppointment(req.user.id, userRoles, id);
+  }
+
+  // 6. Supprimer un créneau libre (Formateur)
+  @Delete('creneaux/:id')
+  async deleteCreneau(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
+    return this.appointmentsService.deleteCreneau(req.user.id, id);
   }
 }

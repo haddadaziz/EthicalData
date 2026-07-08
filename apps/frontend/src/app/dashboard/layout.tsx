@@ -19,6 +19,45 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
 
+    // Rôles et mode de vue (Apprenant / Formateur) initialisés de façon synchrone pour éviter le clignotement
+    const [userRoles, setUserRoles] = useState<string[]>(() => {
+        if (typeof window !== 'undefined') {
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            if (token) {
+                try {
+                    const payloadBase64 = token.split('.')[1];
+                    const decodedPayload = JSON.parse(atob(payloadBase64));
+                    return decodedPayload.roles || [];
+                } catch (e) {
+                    return [];
+                }
+            }
+        }
+        return [];
+    });
+
+    const [viewMode, setViewMode] = useState<'APPRENANT' | 'FORMATEUR'>(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('viewMode');
+            if (saved === 'FORMATEUR' || saved === 'APPRENANT') {
+                return saved as 'APPRENANT' | 'FORMATEUR';
+            }
+            // Auto-switch to FORMATEUR if the user only has the trainer role
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            if (token) {
+                try {
+                    const payloadBase64 = token.split('.')[1];
+                    const decodedPayload = JSON.parse(atob(payloadBase64));
+                    const roles = decodedPayload.roles || [];
+                    if (roles.includes('FORMATEUR')) {
+                        return 'FORMATEUR';
+                    }
+                } catch (e) {}
+            }
+        }
+        return 'APPRENANT';
+    });
+
     useEffect(() => {
         const handleResize = () => {
             const mobile = window.innerWidth < 768;
@@ -30,11 +69,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+
+
     useEffect(() => {
         document.documentElement.classList.remove('dark');
         localStorage.setItem('theme', 'light');
 
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
         if (!token) {
             router.push('/login');
             return;
@@ -55,7 +96,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             setUserAvatar(decodedPayload.avatar || null);
             setAuthorized(true);
 
-            // Charger le profil utilisateur à jour avec sa photo
+            // Charger le profil utilisateur à jour avec ses rôles
             apiFetch('/users/me/profile')
                 .then((profile) => {
                     if (profile) {
@@ -63,30 +104,62 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         if (profile.nom) setUserLastName(profile.nom);
                         if (profile.email) setUserEmail(profile.email);
                         if (profile.avatar) setUserAvatar(profile.avatar);
+                        if (profile.roles) {
+                            const roles = profile.roles.map((r: any) => r.nom);
+                            console.log('API me/profile roles loaded:', roles);
+                            setUserRoles(roles);
+                            console.log('isTrainer value:', roles.includes('FORMATEUR'));
+                            
+                            const saved = localStorage.getItem('viewMode');
+                            if (!saved && roles.includes('FORMATEUR')) {
+                                setViewMode('FORMATEUR');
+                                localStorage.setItem('viewMode', 'FORMATEUR');
+                            }
+                        }
                     }
                 })
-                .catch((err) => console.warn("Impossible de charger l'avatar du profil:", err));
+                .catch((err) => console.warn("Impossible de charger le profil de l'utilisateur connecté:", err));
         } catch (error) {
             console.error("Vérification session échouée :", error);
             localStorage.removeItem('token');
+            sessionStorage.removeItem('token');
             router.push('/login');
         }
     }, [router]);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
         router.push('/login');
     };
 
-    const navItems = [
+    const handleSwitchViewMode = () => {
+        const newMode = viewMode === 'FORMATEUR' ? 'APPRENANT' : 'FORMATEUR';
+        setViewMode(newMode);
+        localStorage.setItem('viewMode', newMode);
+        window.location.href = '/dashboard';
+    };
+
+    const learnerNavItems = [
         { name: 'Mon Tableau de Bord', href: '/dashboard', icon: BookOpen },
         { name: 'Certifications', href: '/dashboard/certifications', icon: Award },
         { name: 'Entraînement', href: '/dashboard/practice', icon: HelpCircle },
-        { name: 'Mes Fiches & Cours', href: '/dashboard/downloads', icon: DownloadCloud },
+        { name: 'Mes Cours', href: '/dashboard/cours', icon: Award },
         { name: 'Communauté', href: '/dashboard/community', icon: MessageSquare },
         { name: 'Rendez-vous & Coaching', href: '/dashboard/appointments', icon: Calendar },
         { name: 'Mon Profil', href: '/dashboard/profile', icon: User },
     ];
+
+    const trainerNavItems = [
+        { name: 'Mon Tableau de Bord', href: '/dashboard', icon: BookOpen },
+        { name: 'Gérer mes cours', href: '/dashboard/courses', icon: Award },
+        { name: 'Communauté', href: '/dashboard/community', icon: MessageSquare },
+        { name: 'Créer mes Créneaux', href: '/dashboard/appointments', icon: Calendar },
+        { name: 'Mon Profil', href: '/dashboard/profile', icon: User },
+    ];
+
+    const isTrainer = userRoles.includes('FORMATEUR');
+    const navItems = (isTrainer && viewMode === 'FORMATEUR') ? trainerNavItems : learnerNavItems;
 
     if (!authorized) {
         return (
@@ -97,13 +170,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         );
     }
 
-    // Déterminer le titre et sous-titre de la page selon l'URL
+    // Déterminer le titre et sous-titre de la page selon l'URL et le mode de vue
     const getPageTitleAndSubtitle = () => {
         if (pathname === '/dashboard') {
-            return { title: `Bonjour, ${userFirstName}`, subtitle: 'Suivez vos entraînements et votre progression' };
+            return {
+                title: viewMode === 'FORMATEUR' ? `Espace Formateur, ${userFirstName}` : `Bonjour, ${userFirstName}`,
+                subtitle: viewMode === 'FORMATEUR' ? 'Gérez vos cours, vos apprenants et vos sessions' : 'Suivez vos entraînements et votre progression'
+            };
         }
         if (pathname === '/dashboard/certifications') {
             return { title: 'Catalogue des Certifications', subtitle: 'Explorez les certifications et accédez aux fiches de révision' };
+        }
+        if (pathname === '/dashboard/courses') {
+            return { title: 'Gestion de mes Cours', subtitle: 'Créez et organisez vos modules, cours et ressources de formation' };
         }
         if (pathname === '/dashboard/practice') {
             return { title: 'Simulateur d\'Examen', subtitle: 'Entraînement interactif en conditions réelles' };
@@ -111,14 +190,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         if (pathname === '/dashboard/downloads') {
             return { title: 'Fiches & Guides de Cours', subtitle: 'Supports de révision condensés et téléchargements autorisés' };
         }
+        if (pathname === '/dashboard/cours') {
+            return { title: 'Explorer les Cours', subtitle: 'Découvrez, inscrivez-vous et suivez votre progression' };
+        }
         if (pathname === '/dashboard/community') {
             return { title: 'Communauté & Entraide', subtitle: 'Échangez avec les apprenants et posez vos questions d\'examen' };
         }
         if (pathname === '/dashboard/profile') {
-            return { title: 'Mon Profil Apprenant', subtitle: 'Gérez vos informations personnelles, votre sécurité et vos préférences' };
+            return {
+                title: viewMode === 'FORMATEUR' ? 'Mon Profil Formateur' : 'Mon Profil Apprenant',
+                subtitle: 'Gérez vos informations personnelles, votre sécurité et vos préférences'
+            };
         }
         if (pathname === '/dashboard/appointments') {
-            return { title: 'Rendez-vous & Coaching', subtitle: 'Réservez un créneau individuel avec un formateur ou coach certifié' };
+            return {
+                title: viewMode === 'FORMATEUR' ? 'Gestion de mes Créneaux' : 'Rendez-vous & Coaching',
+                subtitle: viewMode === 'FORMATEUR' ? 'Créez vos disponibilités et suivez vos rendez-vous pris' : 'Réservez un créneau individuel avec un formateur ou coach certifié'
+            };
         }
         return { title: 'Catalogue des Certifications', subtitle: 'Explorez les certifications et accédez aux fiches de révision' };
     };
@@ -128,8 +216,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="h-screen bg-slate-50 text-slate-800 flex relative overflow-hidden font-sans">
 
             {/* Halos d'arrière-plan */}
-            <div className="absolute top-[-20%] left-[-10%] w-[55%] h-[55%] bg-blue-500/2 rounded-full blur-[140px] pointer-events-none z-0" />
-            <div className="absolute bottom-[-20%] right-[-10%] w-[55%] h-[55%] bg-blue-600/[0.01] rounded-full blur-[140px] pointer-events-none z-0" />
+            {viewMode === 'FORMATEUR' ? (
+                <>
+                    <div className="absolute top-[-20%] left-[-10%] w-[55%] h-[55%] bg-indigo-500/[0.03] rounded-full blur-[140px] pointer-events-none z-0" />
+                    <div className="absolute bottom-[-20%] right-[-10%] w-[55%] h-[55%] bg-violet-600/[0.02] rounded-full blur-[140px] pointer-events-none z-0" />
+                </>
+            ) : (
+                <>
+                    <div className="absolute top-[-20%] left-[-10%] w-[55%] h-[55%] bg-blue-500/2 rounded-full blur-[140px] pointer-events-none z-0" />
+                    <div className="absolute bottom-[-20%] right-[-10%] w-[55%] h-[55%] bg-blue-600/[0.01] rounded-full blur-[140px] pointer-events-none z-0" />
+                </>
+            )}
 
             {/* Sidebar Mobile */}
             <AnimatePresence>
@@ -147,7 +244,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             animate={{ x: 0 }}
                             exit={{ x: -260 }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="fixed top-0 bottom-0 left-0 z-50 w-[260px] flex flex-col bg-white border-r border-slate-200/80 h-screen"
+                            className={`fixed top-0 bottom-0 left-0 z-50 w-[260px] flex flex-col border-r h-screen ${
+                                viewMode === 'FORMATEUR'
+                                    ? 'bg-slate-50/95 border-indigo-100/80'
+                                    : 'bg-white border-slate-200/80'
+                            }`}
                         >
                             <div className="h-20 flex items-center justify-between px-6 border-b border-slate-200/80">
                                 <div className="flex items-center gap-3">
@@ -160,7 +261,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                     </div>
                                     <span className="font-extrabold text-base text-slate-950 tracking-tight">EthicalData</span>
                                 </div>
-                                <button onClick={() => setSidebarOpen(false)} className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-650">
+                                <button onClick={() => setSidebarOpen(false)} className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-650 cursor-pointer">
                                     <X className="w-5 h-5" />
                                 </button>
                             </div>
@@ -174,9 +275,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                             key={index}
                                             href={item.href}
                                             onClick={() => setSidebarOpen(false)}
-                                            className={`flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-extrabold transition-all ${isActive ? 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs' : 'text-slate-600 hover:text-slate-955 hover:bg-slate-50'}`}
+                                            className={`flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-extrabold transition-all ${
+                                                isActive 
+                                                    ? viewMode === 'FORMATEUR'
+                                                        ? 'bg-indigo-50 text-indigo-650 border border-indigo-100/90 shadow-2xs'
+                                                        : 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs'
+                                                    : 'text-slate-600 hover:text-slate-955 hover:bg-slate-50 cursor-pointer'
+                                            }`}
                                         >
-                                            <Icon className={`w-5 h-5 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
+                                            <Icon className={`w-5 h-5 ${isActive ? (viewMode === 'FORMATEUR' ? 'text-indigo-600' : 'text-blue-600') : 'text-slate-400'}`} />
                                             <span>{item.name}</span>
                                         </a>
                                     );
@@ -184,7 +291,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             </nav>
 
                             <div className="p-4 border-t border-slate-200/80 bg-slate-50/40">
-                                <button onClick={handleLogout} className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold text-rose-500 hover:bg-rose-550/10 hover:text-rose-455">
+                                <button onClick={handleLogout} className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold text-rose-500 hover:bg-rose-50 hover:text-rose-700 transition-all cursor-pointer">
                                     <LogOut className="w-5 h-5" />
                                     <span>Déconnexion</span>
                                 </button>
@@ -196,7 +303,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             {/* Sidebar Desktop Fixe et Élégante */}
             {!isMobile && (
-                <aside className="hidden md:flex flex-col bg-white border-r border-slate-200/80 relative z-10 shrink-0 sticky top-0 h-screen shadow-sm w-[260px] overflow-y-auto overflow-x-hidden">
+                <aside className={`hidden md:flex flex-col relative z-10 shrink-0 sticky top-0 h-screen shadow-sm w-[260px] overflow-y-auto overflow-x-hidden border-r transition-all duration-300 ${
+                    viewMode === 'FORMATEUR'
+                        ? 'bg-slate-50/90 border-indigo-100/70 shadow-indigo-100/20'
+                        : 'bg-white border-slate-200/80'
+                }`}>
                     {/* Logo Brand avec Triangle */}
                     <div className="h-20 flex items-center px-6 border-b border-slate-200/80">
                         <Link href="/" className="flex items-center gap-3 group cursor-pointer">
@@ -224,11 +335,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                     key={index}
                                     href={item.href}
                                     className={`flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-extrabold transition-all duration-200 group relative ${isActive
-                                        ? 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs'
-                                        : 'text-slate-600 hover:text-slate-950 hover:bg-slate-50 cursor-pointer'
+                                        ? viewMode === 'FORMATEUR'
+                                            ? 'bg-indigo-50 text-indigo-650 border border-indigo-100/90 shadow-2xs shadow-indigo-100/10'
+                                            : 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs'
+                                        : 'text-slate-600 hover:text-slate-955 hover:bg-slate-50 cursor-pointer'
                                         }`}
                                 >
-                                    <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600 transition-colors'}`} />
+                                    <Icon className={`w-5 h-5 shrink-0 ${isActive ? (viewMode === 'FORMATEUR' ? 'text-indigo-650' : 'text-blue-600') : 'text-slate-400 group-hover:text-indigo-600 transition-colors'}`} />
                                     <span className="truncate flex-1">{item.name}</span>
                                 </a>
                             );
@@ -236,7 +349,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     </nav>
 
                     {/* Déconnexion en bas */}
-                    <div className="p-4 border-t border-slate-200/80 bg-slate-50/50">
+                    <div className={`p-4 border-t transition-colors duration-300 ${
+                        viewMode === 'FORMATEUR'
+                            ? 'border-indigo-100/60 bg-indigo-50/20'
+                            : 'border-slate-200/80 bg-slate-50/50'
+                    }`}>
                         <button
                             onClick={handleLogout}
                             className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-all cursor-pointer group"
@@ -252,7 +369,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="flex-1 flex flex-col h-screen overflow-y-auto relative z-10">
 
                 {/* Header Premium (Sans bouton Hamburger sur PC) */}
-                <header className="py-5 md:py-6 border-b border-slate-200/50 bg-white/80 backdrop-blur-xl flex items-center justify-between px-8 md:px-12 sticky top-0 z-20 transition-all duration-300">
+                <header className={`py-5 md:py-6 border-b bg-white/80 backdrop-blur-xl flex items-center justify-between px-8 md:px-12 sticky top-0 z-20 transition-all duration-300 ${
+                    viewMode === 'FORMATEUR'
+                        ? 'border-indigo-100/40 shadow-xs shadow-indigo-100/5'
+                        : 'border-slate-200/50'
+                }`}>
 
                     {/* Gauche : Titre Dynamique (Bouton Hamburger uniquement sur Mobile) */}
                     <div className="flex items-center gap-4">
@@ -272,6 +393,26 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                     {/* Droite : Profil Utilisateur Cliquable & Notifications */}
                     <div className="flex items-center gap-4">
+                        {isTrainer && (
+                            <button
+                                onClick={handleSwitchViewMode}
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-extrabold text-[10px] rounded-xl transition-all border border-indigo-200 cursor-pointer shadow-3xs"
+                                title={viewMode === 'FORMATEUR' ? "Basculer en vue Apprenant" : "Basculer en vue Formateur"}
+                            >
+                                {viewMode === 'FORMATEUR' ? (
+                                    <>
+                                        <User className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                                        <span className="hidden sm:inline">Mode Apprenant</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <ShieldCheck className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                                        <span className="hidden sm:inline">Mode Formateur</span>
+                                    </>
+                                )}
+                            </button>
+                        )}
+
                         <NotificationBell />
 
                         <a
@@ -284,7 +425,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                     {userFirstName} {userLastName}
                                 </span>
                                 <span className="text-[9px] font-black text-blue-600 uppercase tracking-wider leading-none">
-                                    Apprenant
+                                    {viewMode === 'FORMATEUR' ? 'Formateur' : 'Apprenant'}
                                 </span>
                             </div>
 

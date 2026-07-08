@@ -100,7 +100,9 @@ const fallbackCertifications = [
 ];
 
 export default function CertificationsPublicPage() {
-    const [isConnected, setIsConnected] = useState(false);
+    const [isConnected, setIsConnected] = useState(() =>
+        typeof window !== 'undefined' && !!(localStorage.getItem('token') || sessionStorage.getItem('token'))
+    );
     const [certifications, setCertifications] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -110,8 +112,6 @@ export default function CertificationsPublicPage() {
 
     useEffect(() => {
         document.title = "Catalogue des Certifications - Ethical Data Security";
-        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-        setIsConnected(!!token);
 
         apiFetch('/certifications')
             .then((data) => {

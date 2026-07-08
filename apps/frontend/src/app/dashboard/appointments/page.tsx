@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useConfirm } from '../../../context/ConfirmContext';
-import { Calendar, Clock, User, CheckCircle, Video, AlertCircle, RefreshCw, X, Sparkles, Send, Trash2, ShieldCheck, Compass, GraduationCap, Target, Briefcase, Filter, Award, Check } from 'lucide-react';
+import { Calendar, Clock, User, CheckCircle, Video, AlertCircle, RefreshCw, X, Sparkles, Send, Trash2, ShieldCheck, Compass, GraduationCap, Target, Briefcase, Filter, Award, Check, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Formateur {
@@ -76,6 +76,17 @@ export default function AppointmentsPage() {
     const [loading, setLoading] = useState(true);
     const [bookingLoading, setBookingLoading] = useState(false);
 
+    // Mode Formateur & Profil Connecté
+    const [viewMode, setViewMode] = useState<'APPRENANT' | 'FORMATEUR'>('APPRENANT');
+    const [me, setMe] = useState<any>(null);
+    const [trainerActiveTab, setTrainerActiveTab] = useState<'CREATE' | 'RDV'>('CREATE');
+
+    // Formulaire de création de créneau (Formateur)
+    const [slotDate, setSlotDate] = useState('');
+    const [slotStart, setSlotStart] = useState('');
+    const [slotEnd, setSlotEnd] = useState('');
+    const [createLoading, setCreateLoading] = useState(false);
+
     // Filtres Étape 1 (Créneaux)
     const [selectedFormateurFilter, setSelectedFormateurFilter] = useState<string>('ALL');
     const [selectedCertFilter, setSelectedCertFilter] = useState<string>('ALL');
@@ -90,17 +101,20 @@ export default function AppointmentsPage() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [availableData, myRdvData, certsData] = await Promise.all([
+            const [availableData, myRdvData, certsData, meData] = await Promise.all([
                 apiFetch('/appointments/creneaux/disponibles'),
                 apiFetch('/appointments/mes-rdv'),
                 apiFetch('/certifications').catch(() => []),
+                apiFetch('/users/me/profile').catch(() => null),
             ]);
             const listCreneaux = Array.isArray(availableData) ? availableData : (availableData?.data || []);
             const listRdv = Array.isArray(myRdvData) ? myRdvData : (myRdvData?.data || []);
             const listCerts = Array.isArray(certsData) ? certsData : (certsData?.data || []);
+            
             setCreneaux(listCreneaux);
             setMyAppointments(listRdv);
             setCerts(listCerts);
+            setMe(meData);
         } catch (err: any) {
             console.error("Erreur chargement RDV:", err);
             showToast(err.message || "Impossible de charger les créneaux et rendez-vous.", "error");
@@ -110,8 +124,69 @@ export default function AppointmentsPage() {
     };
 
     useEffect(() => {
+        const saved = localStorage.getItem('viewMode');
+        if (saved === 'FORMATEUR' || saved === 'APPRENANT') {
+            setViewMode(saved as 'APPRENANT' | 'FORMATEUR');
+        }
+    }, []);
+
+    useEffect(() => {
         fetchData();
     }, []);
+
+    const handleCreateSlot = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!slotDate || !slotStart || !slotEnd) {
+            showToast("Veuillez remplir tous les champs du créneau.", "error");
+            return;
+        }
+
+        const dateDebut = new Date(`${slotDate}T${slotStart}:00`).toISOString();
+        const dateFin = new Date(`${slotDate}T${slotEnd}:00`).toISOString();
+
+        if (new Date(dateDebut) >= new Date(dateFin)) {
+            showToast("L'heure de début doit être antérieure à l'heure de fin.", "error");
+            return;
+        }
+
+        setCreateLoading(true);
+        try {
+            await apiFetch('/appointments/creneaux', {
+                method: 'POST',
+                body: { dateDebut, dateFin },
+            });
+            showToast("Votre créneau de disponibilité a été créé avec succès !", "success");
+            setSlotDate('');
+            setSlotStart('');
+            setSlotEnd('');
+            fetchData();
+        } catch (err: any) {
+            showToast(err.message || "Erreur lors de la création du créneau.", "error");
+        } finally {
+            setCreateLoading(false);
+        }
+    };
+
+    const handleDeleteSlot = async (id: string) => {
+        const isConfirmed = await confirm({
+            title: "Supprimer le Créneau ?",
+            message: "Êtes-vous sûr de vouloir supprimer ce créneau de disponibilité ?",
+            confirmText: "Oui, supprimer",
+            cancelText: "Annuler",
+            type: "danger",
+        });
+        if (!isConfirmed) return;
+
+        try {
+            await apiFetch(`/appointments/creneaux/${id}`, {
+                method: 'DELETE',
+            });
+            showToast("Créneau supprimé avec succès.", "success");
+            fetchData();
+        } catch (err: any) {
+            showToast(err.message || "Erreur lors de la suppression du créneau.", "error");
+        }
+    };
 
     const handleBookAppointment = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -215,6 +290,206 @@ export default function AppointmentsPage() {
         );
     }
 
+    if (viewMode === 'FORMATEUR') {
+        const mySlots = creneaux.filter(c => c.formateur.id.toString() === me?.id?.toString());
+        const mySessions = myAppointments.filter(rdv => rdv.formateur.id.toString() === me?.id?.toString() && rdv.statut === 'CONFIRME');
+
+        return (
+            <div className="space-y-8 max-w-6xl mx-auto text-left">
+                {/* BARRE D'ACTION SUPÉRIEURE ÉPURÉE */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-4">
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => setTrainerActiveTab('CREATE')}
+                            className={`px-5 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${trainerActiveTab === 'CREATE'
+                                ? 'bg-slate-950 text-white shadow-md'
+                                : 'bg-white text-slate-650 hover:bg-slate-100 border border-slate-200'
+                                }`}
+                        >
+                            <Calendar className="w-4 h-4" />
+                            <span>Gérer mes Créneaux ({mySlots.length})</span>
+                        </button>
+
+                        <button
+                            onClick={() => setTrainerActiveTab('RDV')}
+                            className={`px-5 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${trainerActiveTab === 'RDV'
+                                ? 'bg-slate-950 text-white shadow-md'
+                                : 'bg-white text-slate-650 hover:bg-slate-100 border border-slate-200'
+                                }`}
+                        >
+                            <CheckCircle className="w-4 h-4" />
+                            <span>Sessions de Coaching ({mySessions.length})</span>
+                        </button>
+                    </div>
+                </div>
+
+                {trainerActiveTab === 'CREATE' ? (
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        {/* FORMULAIRE DE CRÉATION (1/3) */}
+                        <div className="lg:col-span-4 bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs h-fit space-y-6">
+                            <div className="space-y-1">
+                                <h3 className="text-sm font-black text-slate-955 flex items-center gap-2">
+                                    <Clock className="w-4 h-4 text-blue-600" />
+                                    <span>Ajouter une disponibilité</span>
+                                </h3>
+                                <p className="text-[11px] text-slate-400 font-medium">
+                                    Proposez un créneau horaire libre que les apprenants pourront réserver.
+                                </p>
+                            </div>
+
+                            <form onSubmit={handleCreateSlot} className="space-y-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-bold text-slate-700">Date du créneau</label>
+                                    <input
+                                        type="date"
+                                        value={slotDate}
+                                        onChange={(e) => setSlotDate(e.target.value)}
+                                        className="w-full p-3 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-2xl text-slate-950 text-xs font-bold outline-none"
+                                        required
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1.5">
+                                        <label className="text-xs font-bold text-slate-700">Heure de début</label>
+                                        <input
+                                            type="time"
+                                            value={slotStart}
+                                            onChange={(e) => setSlotStart(e.target.value)}
+                                            className="w-full p-3 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-2xl text-slate-950 text-xs font-bold outline-none"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-xs font-bold text-slate-700">Heure de fin</label>
+                                        <input
+                                            type="time"
+                                            value={slotEnd}
+                                            onChange={(e) => setSlotEnd(e.target.value)}
+                                            className="w-full p-3 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-2xl text-slate-950 text-xs font-bold outline-none"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={createLoading}
+                                    className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-100 text-white disabled:text-slate-400 font-extrabold text-xs rounded-2xl transition-all shadow-xs cursor-pointer flex items-center justify-center gap-2"
+                                >
+                                    {createLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                                    <span>Ajouter la disponibilité</span>
+                                </button>
+                            </form>
+                        </div>
+
+                        {/* LISTE DES CRÉNEAUX LIBRES (2/3) */}
+                        <div className="lg:col-span-8 bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs">
+                            <h3 className="text-sm font-black text-slate-955 border-b border-slate-100 pb-3 mb-4">
+                                Mes créneaux libres disponibles ({mySlots.length})
+                            </h3>
+
+                            {mySlots.length === 0 ? (
+                                <div className="text-center py-12">
+                                    <p className="text-xs text-slate-400 font-bold italic">Aucun créneau disponible créé pour le moment.</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {mySlots.map((c) => (
+                                        <div key={c.id} className="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-between gap-4">
+                                            <div className="space-y-1">
+                                                <div className="flex items-center gap-1.5 text-slate-900">
+                                                    <Calendar className="w-3.5 h-3.5 text-blue-600" />
+                                                    <span className="text-xs font-bold">{formatDate(c.dateDebut)}</span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5 text-slate-500">
+                                                    <Clock className="w-3.5 h-3.5 text-slate-400" />
+                                                    <span className="text-xs font-medium">
+                                                        {formatTime(c.dateDebut)} - {formatTime(c.dateFin)}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={() => handleDeleteSlot(c.id)}
+                                                className="p-2 text-rose-500 hover:bg-rose-50 hover:text-rose-600 rounded-xl transition-colors cursor-pointer"
+                                                title="Supprimer ce créneau"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                ) : (
+                    /* SESSIONS DE COACHING RÉSERVÉES */
+                    <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs space-y-6">
+                        <h3 className="text-sm font-black text-slate-955 border-b border-slate-100 pb-3">
+                            Séances de coaching planifiées avec vos apprenants ({mySessions.length})
+                        </h3>
+
+                        {mySessions.length === 0 ? (
+                            <div className="text-center py-12">
+                                <p className="text-xs text-slate-400 font-bold italic">Aucun rendez-vous réservé avec un apprenant pour le moment.</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {mySessions.map((rdv) => (
+                                    <div key={rdv.id} className="p-5 bg-slate-50 border border-slate-100 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                        <div className="flex items-start gap-4">
+                                            {/* Info Apprenant */}
+                                            {rdv.candidat.avatar ? (
+                                                <img src={rdv.candidat.avatar} alt={rdv.candidat.prenom} className="w-10 h-10 rounded-xl object-cover shrink-0" />
+                                            ) : (
+                                                <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-700 font-black text-sm shrink-0">
+                                                    {rdv.candidat.prenom[0]}{rdv.candidat.nom[0]}
+                                                </div>
+                                            )}
+                                            <div className="space-y-1">
+                                                <span className="text-xs font-black text-slate-900">
+                                                    {rdv.candidat.prenom} {rdv.candidat.nom}
+                                                </span>
+                                                <span className="text-[10px] text-indigo-600 font-extrabold uppercase bg-indigo-50 px-2 py-0.5 rounded-md block w-fit">
+                                                    {rdv.type.replace(/_/g, ' ')}
+                                                </span>
+                                                <p className="text-xs text-slate-500 font-medium leading-relaxed">
+                                                    {rdv.motif || "Aucune précision fournie."}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center justify-between md:justify-end gap-6 pt-3 md:pt-0 border-t md:border-t-0 border-slate-100">
+                                            <div className="space-y-1 text-left md:text-right">
+                                                <div className="flex items-center gap-1.5 text-slate-900 justify-start md:justify-end">
+                                                    <Calendar className="w-3.5 h-3.5 text-blue-600" />
+                                                    <span className="text-xs font-bold">{formatDate(rdv.creneau.dateDebut)}</span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5 text-slate-500 justify-start md:justify-end">
+                                                    <Clock className="w-3.5 h-3.5 text-slate-400" />
+                                                    <span className="text-xs font-semibold">
+                                                        {formatTime(rdv.creneau.dateDebut)} - {formatTime(rdv.creneau.dateFin)}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <button
+                                                onClick={() => handleCancelAppointment(rdv.id)}
+                                                className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-[10px] rounded-xl transition-all cursor-pointer border border-rose-250/20"
+                                            >
+                                                Annuler la session
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-8 max-w-6xl mx-auto text-left">
             {/* BARRE D'ACTION SUPÉRIEURE ÉPURÉE */}
@@ -239,7 +514,7 @@ export default function AppointmentsPage() {
                             }`}
                     >
                         <Clock className="w-4 h-4" />
-                        <span>Mes Rendez-vous ({myAppointments.length})</span>
+                        <span>Mes Rendez-vous ({myAppointments.filter(r => r.statut === 'CONFIRME').length})</span>
                     </button>
                 </div>
 
@@ -373,7 +648,7 @@ export default function AppointmentsPage() {
             {/* CONTENU ONGLET 2 : MES RENDEZ-VOUS */}
             {activeTab === 'MY_RDV' && (
                 <div className="space-y-4">
-                    {myAppointments.length === 0 ? (
+                    {myAppointments.filter(r => r.statut === 'CONFIRME').length === 0 ? (
                         <div className="p-12 text-center bg-white border border-slate-200 rounded-3xl space-y-3">
                             <Clock className="w-10 h-10 text-slate-300 mx-auto" />
                             <h3 className="text-sm font-bold text-slate-700">Aucun rendez-vous réservé</h3>
@@ -383,7 +658,7 @@ export default function AppointmentsPage() {
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            {myAppointments.map((rdv) => (
+                            {myAppointments.filter(r => r.statut === 'CONFIRME').map((rdv) => (
                                 <div
                                     key={rdv.id}
                                     className={`p-6 bg-white border rounded-3xl space-y-4 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6 ${rdv.statut === 'ANNULE' ? 'opacity-60 border-slate-200' : 'border-slate-200/90'
@@ -541,18 +816,38 @@ export default function AppointmentsPage() {
                                 {/* CHOIX DE LA CERTIFICATION CONCERNÉE (OPTIONNEL) */}
                                 <div className="space-y-1.5">
                                     <label className="text-xs font-bold text-slate-700">Certification concernée (Optionnel)</label>
-                                    <select
-                                        value={selectedCertForBooking}
-                                        onChange={(e) => setSelectedCertForBooking(e.target.value)}
-                                        className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-2xl text-slate-950 text-xs font-bold outline-none cursor-pointer"
-                                    >
-                                        <option value="">Sélectionnez la certification de votre choix</option>
-                                        {certs.map((c) => (
-                                            <option key={c.id} value={c.codeExamen || c.nom}>
-                                                {c.codeExamen ? `[${c.codeExamen}] ${c.nom}` : c.nom}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    {(() => {
+                                        const targetCertifications = certs.filter(c => 
+                                            (me?.preferences?.targetCertifications || []).map((id: any) => id.toString()).includes(c.id.toString())
+                                        );
+                                        const hasTargetCerts = targetCertifications.length > 0;
+
+                                        return (
+                                            <select
+                                                value={selectedCertForBooking}
+                                                onChange={(e) => setSelectedCertForBooking(e.target.value)}
+                                                disabled={!hasTargetCerts}
+                                                className={`w-full p-3.5 border rounded-2xl text-xs font-bold outline-none transition-all ${
+                                                    hasTargetCerts 
+                                                        ? 'bg-slate-50 border-slate-200 focus:border-blue-600 text-slate-950 cursor-pointer' 
+                                                        : 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'
+                                                }`}
+                                            >
+                                                {hasTargetCerts ? (
+                                                    <>
+                                                        <option value="">Sélectionnez la certification de votre choix</option>
+                                                        {targetCertifications.map((c) => (
+                                                            <option key={c.id} value={c.codeExamen || c.nom}>
+                                                                {c.codeExamen ? `[${c.codeExamen}] ${c.nom}` : c.nom}
+                                                            </option>
+                                                        ))}
+                                                    </>
+                                                ) : (
+                                                    <option value="">Vous n&apos;avez aucune certification dans vos objectifs visés, veuillez en ajouter</option>
+                                                )}
+                                            </select>
+                                        );
+                                    })()}
                                 </div>
 
                                 {/* MOTIF / QUESTIONS PARTICULIÈRES */}

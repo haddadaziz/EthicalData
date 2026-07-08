@@ -60,16 +60,22 @@ export class ForumController {
   @UseGuards(RolesGuard)
   @Roles('SUPER_ADMIN', 'ADMIN')
   @Patch('admin/signalements/:id/traiter')
-  async resolveSignalement(@Param('id', ParseIntPipe) id: number) {
-    return this.forumService.resolveSignalement(id);
+  async resolveSignalement(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('type') type?: string,
+  ) {
+    return this.forumService.resolveSignalement(id, type);
   }
 
   // Annuler / remettre un signalement en attente
   @UseGuards(RolesGuard)
   @Roles('SUPER_ADMIN', 'ADMIN')
   @Patch('admin/signalements/:id/annuler')
-  async unresolveSignalement(@Param('id', ParseIntPipe) id: number) {
-    return this.forumService.unresolveSignalement(id);
+  async unresolveSignalement(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('type') type?: string,
+  ) {
+    return this.forumService.unresolveSignalement(id, type);
   }
 
   // ==========================================
@@ -138,5 +144,15 @@ export class ForumController {
     @Req() req: any,
   ) {
     return this.forumService.toggleLikeCommentaire(req.user.id, commentId);
+  }
+
+  // 10. Signaler un commentaire à la modération
+  @Post('commentaires/:commentId/signaler')
+  async reportCommentaire(
+    @Param('commentId', ParseIntPipe) commentId: number,
+    @Req() req: any,
+    @Body('motif') motif?: string,
+  ) {
+    return this.forumService.reportCommentaire(req.user.id, commentId, motif);
   }
 }

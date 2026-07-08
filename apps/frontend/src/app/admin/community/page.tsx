@@ -20,6 +20,8 @@ interface Signalement {
   motif?: string | null;
   dateCreation: string;
   traite: boolean;
+  type?: 'SUJET' | 'COMMENTAIRE';
+  commentaireId?: string;
   signalePar: {
     id: string;
     prenom: string;
@@ -88,9 +90,9 @@ export default function AdminCommunityPage() {
     fetchData();
   }, []);
 
-  const handleResolveSignalement = async (signalementId: string) => {
+  const handleResolveSignalement = async (signalementId: string, type?: 'SUJET' | 'COMMENTAIRE') => {
     try {
-      await apiFetch(`/forum/admin/signalements/${signalementId}/traiter`, { method: 'PATCH' });
+      await apiFetch(`/forum/admin/signalements/${signalementId}/traiter?type=${type || 'SUJET'}`, { method: 'PATCH' });
       showToast('Signalement marqué comme traité avec succès !', 'success');
       fetchData();
     } catch (err: any) {
@@ -99,14 +101,35 @@ export default function AdminCommunityPage() {
     }
   };
 
-  const handleUnresolveSignalement = async (signalementId: string) => {
+  const handleUnresolveSignalement = async (signalementId: string, type?: 'SUJET' | 'COMMENTAIRE') => {
     try {
-      await apiFetch(`/forum/admin/signalements/${signalementId}/annuler`, { method: 'PATCH' });
+      await apiFetch(`/forum/admin/signalements/${signalementId}/annuler?type=${type || 'SUJET'}`, { method: 'PATCH' });
       showToast('Signalement remis en attente de modération.', 'info');
       fetchData();
     } catch (err: any) {
       console.error(err);
       showToast(err.message || 'Erreur lors de l\'annulation.', 'error');
+    }
+  };
+
+  const handleDeleteCommentaire = async (commentId: string) => {
+    const isConfirmed = await confirm({
+      title: 'Supprimer le commentaire',
+      message: `Voulez-vous vraiment supprimer définitivement ce commentaire ? Cette action est irréversible.`,
+      confirmText: 'Supprimer le commentaire',
+      cancelText: 'Annuler',
+      type: 'danger',
+    });
+
+    if (!isConfirmed) return;
+
+    try {
+      await apiFetch(`/forum/commentaires/${commentId}`, { method: 'DELETE' });
+      showToast('Commentaire supprimé avec succès !', 'success');
+      fetchData();
+    } catch (err: any) {
+      console.error(err);
+      showToast(err.message || 'Erreur lors de la suppression du commentaire.', 'error');
     }
   };
 
@@ -387,7 +410,7 @@ export default function AdminCommunityPage() {
                       <div className="flex items-center gap-3">
                         {!sig.traite ? (
                           <button
-                            onClick={() => handleResolveSignalement(sig.id)}
+                            onClick={() => handleResolveSignalement(sig.id, sig.type)}
                             className="px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition-colors"
                           >
                             <CheckCircle className="w-4 h-4" />
@@ -395,7 +418,7 @@ export default function AdminCommunityPage() {
                           </button>
                         ) : (
                           <button
-                            onClick={() => handleUnresolveSignalement(sig.id)}
+                            onClick={() => handleUnresolveSignalement(sig.id, sig.type)}
                             className="px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-bold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition-colors"
                           >
                             <RotateCcw className="w-4 h-4" />
@@ -404,11 +427,19 @@ export default function AdminCommunityPage() {
                         )}
 
                         <button
-                          onClick={() => handleDeleteSujet(sig.sujet.id, sig.sujet.titre)}
+                          onClick={() => {
+                            if (sig.type === 'COMMENTAIRE' && sig.commentaireId) {
+                              handleDeleteCommentaire(sig.commentaireId);
+                            } else {
+                              handleDeleteSujet(sig.sujet.id, sig.sujet.titre);
+                            }
+                          }}
                           className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition-colors shadow-sm"
                         >
                           <Trash2 className="w-4 h-4" />
-                          <span>Supprimer la publication</span>
+                          <span>
+                            {sig.type === 'COMMENTAIRE' ? 'Supprimer le commentaire' : 'Supprimer la publication'}
+                          </span>
                         </button>
                       </div>
                     </div>

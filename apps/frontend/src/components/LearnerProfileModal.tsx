@@ -86,57 +86,71 @@ export default function LearnerProfileModal({ learnerId, onClose }: LearnerProfi
                     ) : (
                         <div className="space-y-6">
                             {/* EN-TÊTE AVATAR ET NOM */}
-                            <div className="flex flex-col items-center text-center space-y-3 pt-2">
-                                {profile.avatar ? (
-                                    <img
-                                        src={profile.avatar}
-                                        alt={`${profile.prenom} ${profile.nom}`}
-                                        className="w-20 h-20 rounded-3xl object-cover border-2 border-slate-100 shadow-lg"
-                                    />
-                                ) : (
-                                    <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-red-600 to-rose-500 border-2 border-slate-100 flex items-center justify-center text-white font-black text-2xl shadow-lg">
-                                        {profile.prenom[0]}{profile.nom[0]}
-                                    </div>
-                                )}
+                            <div className="flex flex-col items-center text-center space-y-4 pt-4">
+                                <div className="relative">
+                                    {profile.avatar ? (
+                                        <img
+                                            src={profile.avatar}
+                                            alt={`${profile.prenom} ${profile.nom}`}
+                                            className="w-24 h-24 rounded-3xl object-cover border-2 border-white ring-4 ring-slate-100 shadow-xl transition-transform hover:scale-105 duration-300"
+                                        />
+                                    ) : (
+                                        <div className="w-24 h-24 rounded-3xl bg-gradient-to-tr from-blue-600 via-indigo-500 to-indigo-600 border-2 border-white ring-4 ring-slate-100 flex items-center justify-center text-white font-black text-3xl shadow-xl">
+                                            {profile.prenom[0]}{profile.nom[0]}
+                                        </div>
+                                    )}
+                                    {/* No award badge next to avatar */}
+                                </div>
 
                                 <div className="space-y-1">
-                                    <h3 className="text-xl font-black text-slate-950">
+                                    <h3 className="text-xl font-black text-slate-900 tracking-tight">
                                         {profile.prenom} {profile.nom}
                                     </h3>
-                                    <p className="text-xs font-bold text-red-600">
+                                    <p className="text-xs font-bold text-indigo-600/80">
                                         @{profile.prenom.toLowerCase()}_{profile.nom.toLowerCase()}
                                     </p>
-                                    <div className="pt-1">
-                                        <span className="px-3 py-1 bg-red-50 text-red-700 font-extrabold text-[10px] rounded-full border border-red-200">
-                                            {profile.role === 'SUPER_ADMIN' || profile.role === 'ADMIN' ? 'Administrateur' : 'Candidat Apprenant'}
-                                        </span>
+                                    <div className="pt-2">
+                                        {profile.role === 'SUPER_ADMIN' || profile.role === 'ADMIN' ? (
+                                            <span className="px-3.5 py-1 bg-rose-50 text-rose-700 font-extrabold text-[10px] rounded-full border border-rose-200/60 uppercase tracking-wider">
+                                                Administrateur
+                                            </span>
+                                        ) : profile.role === 'FORMATEUR' ? (
+                                            <span className="px-3.5 py-1 bg-purple-50 text-purple-700 font-extrabold text-[10px] rounded-full border border-purple-200/60 uppercase tracking-wider">
+                                                Formateur
+                                            </span>
+                                        ) : (
+                                            <span className="px-3.5 py-1 bg-blue-50 text-blue-700 font-extrabold text-[10px] rounded-full border border-blue-200/60 uppercase tracking-wider">
+                                                Apprenant
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                             </div>
 
                             {/* BIO */}
                             {profile.bio && (
-                                <div className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs text-slate-700 font-medium leading-relaxed italic">
-                                    "{profile.bio}"
+                                <div className="p-4 bg-slate-50 border border-slate-200/60 rounded-2xl text-xs text-slate-700 font-semibold leading-relaxed relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 w-16 h-16 bg-indigo-500/5 rounded-full blur-xl pointer-events-none" />
+                                    <p className="italic relative z-10">"{profile.bio}"</p>
                                 </div>
                             )}
 
                             {/* STATISTIQUES SOCIALES */}
-                            <div className="grid grid-cols-2 gap-3">
-                                <div className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-center space-y-1">
-                                    <div className="flex items-center justify-center gap-1.5 text-red-600">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-4 bg-white border border-slate-200/80 hover:border-slate-300 rounded-2xl text-center space-y-1 shadow-2xs hover:shadow-xs transition-all duration-300">
+                                    <div className="flex items-center justify-center gap-2 text-indigo-600">
                                         <Sparkles className="w-4 h-4" />
-                                        <span className="text-lg font-black">{profile.stats.sujetsCount}</span>
+                                        <span className="text-xl font-black">{profile.stats.sujetsCount}</span>
                                     </div>
-                                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Discussions</span>
+                                    <span className="text-[10px] text-slate-500 font-extrabold uppercase tracking-wider block">Discussions</span>
                                 </div>
 
-                                <div className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-center space-y-1">
-                                    <div className="flex items-center justify-center gap-1.5 text-blue-600">
+                                <div className="p-4 bg-white border border-slate-200/80 hover:border-slate-300 rounded-2xl text-center space-y-1 shadow-2xs hover:shadow-xs transition-all duration-300">
+                                    <div className="flex items-center justify-center gap-2 text-blue-600">
                                         <MessageSquare className="w-4 h-4" />
-                                        <span className="text-lg font-black">{profile.stats.commentairesCount}</span>
+                                        <span className="text-xl font-black">{profile.stats.commentairesCount}</span>
                                     </div>
-                                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Réponses</span>
+                                    <span className="text-[10px] text-slate-500 font-extrabold uppercase tracking-wider block">Réponses</span>
                                 </div>
                             </div>
 

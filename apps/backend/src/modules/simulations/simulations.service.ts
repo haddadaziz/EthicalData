@@ -158,11 +158,20 @@ export class SimulationsService {
             throw new NotFoundException("La certification demandée n'existe pas.");
         }
 
+        // Tentative passe maintenant par une Simulation liée à la certification
+        const simulation = await this.prisma.simulation.findFirst({
+            where: { certificationId: BigInt(certId) },
+        });
+
+        if (!simulation) {
+            throw new NotFoundException('Aucune simulation disponible pour cette certification.');
+        }
+
         const tentative = await this.prisma.tentative.create({
             data: {
                 score,
                 utilisateurId: BigInt(userId),
-                certificationId: BigInt(certId),
+                simulationId: simulation.id,
             },
         });
 
@@ -170,7 +179,7 @@ export class SimulationsService {
             ...tentative,
             id: tentative.id.toString(),
             utilisateurId: tentative.utilisateurId.toString(),
-            certificationId: tentative.certificationId.toString(),
+            simulationId: tentative.simulationId.toString(),
         };
     }
 
@@ -178,7 +187,7 @@ export class SimulationsService {
     async getUserStats(userId: number) {
         const tentatives = await this.prisma.tentative.findMany({
             where: { utilisateurId: BigInt(userId) },
-            include: { certification: true },
+            include: { simulation: { include: { certification: true } } },
             orderBy: { datePassage: 'desc' },
         });
 
@@ -204,9 +213,9 @@ export class SimulationsService {
                 id: t.id.toString(),
                 score: t.score,
                 datePassage: t.datePassage,
-                certificationId: t.certificationId.toString(),
-                certificationName: t.certification.nom,
-                certificationSlug: t.certification.slug,
+                certificationId: t.simulation?.certificationId?.toString() || '',
+                certificationName: t.simulation?.certification?.nom || '',
+                certificationSlug: t.simulation?.certification?.slug || '',
             })),
         };
     }
@@ -215,7 +224,12 @@ export class SimulationsService {
     async getReadinessScoreForCertification(userId: number, certId: number) {
         const cert = await this.prisma.certification.findFirst({
             where: { id: BigInt(certId), deletedAt: null },
-            include: { modules: { orderBy: { ordre: 'asc' } } },
+            include: {
+                cours: {
+                    where: { statut: 'PUBLIE', deletedAt: null },
+                    include: { modules: { orderBy: { ordre: 'asc' } } },
+                },
+            },
         });
 
         if (!cert) {
@@ -225,7 +239,7 @@ export class SimulationsService {
         const tentatives = await this.prisma.tentative.findMany({
             where: {
                 utilisateurId: BigInt(userId),
-                certificationId: BigInt(certId),
+                simulation: { certificationId: BigInt(certId) },
             },
             orderBy: { datePassage: 'desc' },
             take: 5,
@@ -273,7 +287,7 @@ export class SimulationsService {
             conseil = `Des lacunes subsistent sur les concepts clés de ${cert.nom}. Consolidez vos révisions sur les fiches de cours et refaites des quiz d'entraînement.`;
         }
 
-        const moduleTitles = cert.modules.map((m) => m.titre);
+        const moduleTitles = (cert.cours || []).flatMap((c) => c.modules.map((m) => m.titre));
         let pointsForts: string[] = [];
         let lacunes: string[] = [];
 

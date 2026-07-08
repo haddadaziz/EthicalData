@@ -24,7 +24,9 @@ function AnimatedSection({ children, className = "", delay = 0 }: { children: Re
 }
 
 export default function LandingPage() {
-  const [isConnected, setIsConnected] = useState(false);
+  const [isConnected, setIsConnected] = useState(() =>
+    typeof window !== 'undefined' && !!(localStorage.getItem('token') || sessionStorage.getItem('token'))
+  );
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [newsletterEmail, setNewsletterEmail] = useState("");
@@ -33,9 +35,6 @@ export default function LandingPage() {
   const [showAllCertifications, setShowAllCertifications] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-    setIsConnected(!!token);
-
     apiFetch('/certifications')
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {

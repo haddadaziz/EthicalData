@@ -12,6 +12,7 @@ import { UpdateFournisseurDto } from './dto/update-fournisseur.dto';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { CreateRessourceDto } from './dto/create-ressource.dto';
 import { AiService } from './ai.service';
+import { TypeRessource } from '@prisma/client';
 
 @Injectable()
 export class CertificationsService {
@@ -157,7 +158,6 @@ export class CertificationsService {
       where: { deletedAt: null },
       include: {
         fournisseur: true,
-        modules: { orderBy: { ordre: 'asc' } },
         ressources: { where: { deletedAt: null } },
       },
       orderBy: { dateCreation: 'desc' },
@@ -171,11 +171,6 @@ export class CertificationsService {
         ...c.fournisseur,
         id: c.fournisseur.id.toString(),
       },
-      modules: c.modules.map((m) => ({
-        ...m,
-        id: m.id.toString(),
-        certificationId: m.certificationId.toString(),
-      })),
       ressources: c.ressources.map((r) => ({
         ...r,
         id: r.id.toString(),
@@ -190,8 +185,11 @@ export class CertificationsService {
       where: { id: BigInt(id), deletedAt: null },
       include: {
         fournisseur: true,
-        modules: { orderBy: { ordre: 'asc' } },
         ressources: { where: { deletedAt: null } },
+        cours: {
+          where: { statut: 'PUBLIE', deletedAt: null },
+          include: { modules: { orderBy: { ordre: 'asc' } } },
+        },
       },
     });
 
@@ -207,10 +205,16 @@ export class CertificationsService {
         ...cert.fournisseur,
         id: cert.fournisseur.id.toString(),
       },
-      modules: cert.modules.map((m) => ({
-        ...m,
-        id: m.id.toString(),
-        certificationId: m.certificationId.toString(),
+      cours: cert.cours.map((c) => ({
+        ...c,
+        id: c.id.toString(),
+        certificationId: c.certificationId ? c.certificationId.toString() : null,
+        formateurId: c.formateurId.toString(),
+        modules: c.modules.map((m) => ({
+          ...m,
+          id: m.id.toString(),
+          coursId: m.coursId.toString(),
+        })),
       })),
       ressources: cert.ressources.map((r) => ({
         ...r,
@@ -399,11 +403,20 @@ export class CertificationsService {
       throw new NotFoundException("La certification demandée n'existe pas.");
     }
 
+    // Tentative passe maintenant par une Simulation liée à la certification
+    const simulation = await this.prisma.simulation.findFirst({
+      where: { certificationId: BigInt(certId) },
+    });
+
+    if (!simulation) {
+      throw new NotFoundException('Aucune simulation disponible pour cette certification.');
+    }
+
     const tentative = await this.prisma.tentative.create({
       data: {
         score,
         utilisateurId: BigInt(userId),
-        certificationId: BigInt(certId),
+        simulationId: simulation.id,
       },
     });
 
@@ -411,14 +424,14 @@ export class CertificationsService {
       ...tentative,
       id: tentative.id.toString(),
       utilisateurId: tentative.utilisateurId.toString(),
-      certificationId: tentative.certificationId.toString(),
+      simulationId: tentative.simulationId.toString(),
     };
   }
 
   async getUserStats(userId: number) {
     const tentatives = await this.prisma.tentative.findMany({
       where: { utilisateurId: BigInt(userId) },
-      include: { certification: true },
+      include: { simulation: { include: { certification: true } } },
       orderBy: { datePassage: 'desc' },
     });
 
@@ -437,8 +450,8 @@ export class CertificationsService {
         id: t.id.toString(),
         score: t.score,
         datePassage: t.datePassage,
-        certificationName: t.certification.nom,
-        certificationSlug: t.certification.slug,
+        certificationName: t.simulation?.certification?.nom || '',
+        certificationSlug: t.simulation?.certification?.slug || '',
       })),
     };
   }
@@ -535,7 +548,7 @@ export class CertificationsService {
       data: {
         titre: dto.titre,
         description: dto.description,
-        type: dto.type,
+        type: dto.type as TypeRessource,
         url: dto.url,
         taille: dto.taille || null,
         version: dto.version || '1.0.0',
@@ -563,7 +576,7 @@ export class CertificationsService {
       data: {
         titre: dto.titre,
         description: dto.description,
-        type: dto.type,
+        type: dto.type as TypeRessource,
         url: dto.url,
         taille: dto.taille,
         version: dto.version,

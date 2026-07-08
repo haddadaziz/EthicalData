@@ -167,7 +167,7 @@ export class AppointmentsService {
         "Nouveau RDV Réservé",
         `L'apprenant ${candidat?.prenom} ${candidat?.nom} a réservé le créneau du ${dateFormatted} (${dto.type}).`,
         "SYSTEM",
-        "/admin/coaching",
+        "/dashboard/appointments",
       );
     }
 
@@ -248,26 +248,62 @@ export class AppointmentsService {
       minute: '2-digit',
     });
 
-    // 1. Notification de confirmation pour l'apprenant
-    await this.notificationsService.createNotification(
-      rdv.candidatId.toString(),
-      "Rendez-vous Annulé",
-      `Votre rendez-vous du ${dateFormatted} avec ${rdv.formateur.prenom} ${rdv.formateur.nom} a bien été annulé et le créneau a été libéré.`,
-      "SYSTEM",
-      "/dashboard/appointments",
-    );
+    const isActorFormateur = BigInt(userId) === rdv.formateurId;
 
-    // 2. Notification d'information pour le formateur (si différent)
-    if (rdv.candidatId !== rdv.formateurId) {
+    if (isActorFormateur) {
+      // Le formateur a annulé -> notifier l'apprenant
+      await this.notificationsService.createNotification(
+        rdv.candidatId.toString(),
+        "Rendez-vous Annulé par le Formateur",
+        `Votre formateur ${rdv.formateur.prenom} ${rdv.formateur.nom} a annulé la séance de coaching du ${dateFormatted}.`,
+        "SYSTEM",
+        "/dashboard/appointments",
+      );
+    } else {
+      // L'apprenant a annulé -> notifier le formateur
       await this.notificationsService.createNotification(
         rdv.formateurId.toString(),
-        "Créneau Libéré (RDV Annulé)",
-        `L'apprenant ${rdv.candidat.prenom} ${rdv.candidat.nom} a annulé la séance du ${dateFormatted}. Le créneau est de nouveau disponible.`,
+        "Rendez-vous Annulé par l'Apprenant",
+        `L'apprenant ${rdv.candidat.prenom} ${rdv.candidat.nom} a annulé la séance de coaching du ${dateFormatted}.`,
         "SYSTEM",
-        "/admin/coaching",
+        "/dashboard/appointments",
+      );
+
+      // Notifier l'apprenant pour confirmer son action
+      await this.notificationsService.createNotification(
+        rdv.candidatId.toString(),
+        "Rendez-vous Annulé",
+        `Votre rendez-vous du ${dateFormatted} avec ${rdv.formateur.prenom} ${rdv.formateur.nom} a bien été annulé.`,
+        "SYSTEM",
+        "/dashboard/appointments",
       );
     }
 
     return { message: 'Rendez-vous annulé et créneau libéré.' };
+  }
+
+  // 6. Supprimer un créneau libre (Formateur)
+  async deleteCreneau(formateurId: number, creneauId: number) {
+    const creneau = await this.prisma.creneauDisponibilite.findUnique({
+      where: { id: BigInt(creneauId) },
+    });
+
+    if (!creneau) {
+      throw new NotFoundException("Le créneau demandé n'existe pas.");
+    }
+
+    if (creneau.formateurId !== BigInt(formateurId)) {
+      throw new ForbiddenException("Vous ne pouvez pas supprimer un créneau qui ne vous appartient pas.");
+    }
+
+    if (creneau.estReserve) {
+      throw new BadRequestException("Vous ne pouvez pas supprimer un créneau déjà réservé. Veuillez annuler le rendez-vous associé.");
+    }
+
+    await this.prisma.creneauDisponibilite.delete({
+      where: { id: BigInt(creneauId) },
+    });
+
+    return { message: "Créneau supprimé avec succès." };
   }
 }

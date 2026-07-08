@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateRessourceDto } from './create-ressource.dto';
+import { TypeRessource } from '@prisma/client';
 
 @Injectable()
 export class ResourcesService {
@@ -38,7 +39,7 @@ export class ResourcesService {
             data: {
                 titre: dto.titre,
                 description: dto.description,
-                type: dto.type,
+                type: dto.type as TypeRessource,
                 url: dto.url,
                 taille: dto.taille || null,
                 version: dto.version || '1.0.0',
@@ -68,7 +69,7 @@ export class ResourcesService {
             data: {
                 titre: dto.titre,
                 description: dto.description,
-                type: dto.type,
+                type: dto.type as TypeRessource,
                 url: dto.url,
                 taille: dto.taille,
                 version: dto.version,

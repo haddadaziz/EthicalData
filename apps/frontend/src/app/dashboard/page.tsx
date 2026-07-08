@@ -47,6 +47,30 @@ export default function StudentDashboard() {
     const [firstName, setFirstName] = useState('Étudiant');
     const [activeStep, setActiveStep] = useState<number | null>(null);
 
+    const [viewMode, setViewMode] = useState<'APPRENANT' | 'FORMATEUR'>(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('viewMode');
+            if (saved === 'FORMATEUR' || saved === 'APPRENANT') {
+                return saved as 'APPRENANT' | 'FORMATEUR';
+            }
+            // Auto-switch to FORMATEUR if the user only has the trainer role
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            if (token) {
+                try {
+                    const payloadBase64 = token.split('.')[1];
+                    const decodedPayload = JSON.parse(atob(payloadBase64));
+                    const roles = decodedPayload.roles || [];
+                    if (roles.includes('FORMATEUR')) {
+                        return 'FORMATEUR';
+                    }
+                } catch (e) {}
+            }
+        }
+        return 'APPRENANT';
+    });
+    const [myAppointments, setMyAppointments] = useState<any[]>([]);
+    const [me, setMe] = useState<any>(null);
+
     useEffect(() => {
         const handleOutsideClick = (e: MouseEvent) => {
             if (activeStep !== null) {
@@ -74,14 +98,17 @@ export default function StudentDashboard() {
 
         const loadDashboardData = async () => {
             try {
-                const [certsData, statsData, profileData] = await Promise.all([
-                    apiFetch('/certifications'),
+                const [certsData, statsData, profileData, appointmentsData] = await Promise.all([
+                    apiFetch('/certifications').catch(() => []),
                     apiFetch('/simulations/me/stats').catch(() => null),
                     apiFetch('/users/me/profile').catch(() => null),
+                    apiFetch('/appointments/mes-rdv').catch(() => []),
                 ]);
                 const listCerts = Array.isArray(certsData) ? certsData : (certsData?.data || []);
                 setCerts(listCerts);
                 if (statsData) setStats(statsData);
+                if (profileData) setMe(profileData);
+                if (appointmentsData) setMyAppointments(Array.isArray(appointmentsData) ? appointmentsData : (appointmentsData?.data || []));
 
                 const tIds = (profileData?.preferences?.targetCertifications || []).map((id: any) => id.toString());
                 setTargetCertIds(tIds);
@@ -192,6 +219,182 @@ export default function StudentDashboard() {
         );
     }
 
+    if (viewMode === 'FORMATEUR') {
+        const trainerModulesCount = certs.reduce((acc, c) => acc + (c.modules?.length || 0), 0);
+        const mySessions = myAppointments.filter(rdv => rdv.formateur.id.toString() === me?.id?.toString() && rdv.statut === 'CONFIRME');
+
+        return (
+            <div className="space-y-8 text-slate-950 text-left font-sans pb-10">
+                {/* GRILLE STATISTIQUES FORMATEUR (DESIGN PREMIUM) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* STAT CARD 1: COURS CRÉÉS */}
+                    <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs flex items-center justify-between gap-4">
+                        <div className="space-y-1">
+                            <span className="text-2xl font-black text-slate-900 block leading-tight">{trainerModulesCount}</span>
+                            <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Cours / Modules créés</span>
+                        </div>
+                        <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
+                            <BookOpen className="w-6 h-6" />
+                        </div>
+                    </div>
+
+                    {/* STAT CARD 2: SÉANCES DE COACHING */}
+                    <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs flex items-center justify-between gap-4">
+                        <div className="space-y-1">
+                            <span className="text-2xl font-black text-slate-900 block leading-tight">{mySessions.length}</span>
+                            <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Séances de coaching confirmées</span>
+                        </div>
+                        <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
+                            <Calendar className="w-6 h-6" />
+                        </div>
+                    </div>
+                </div>
+
+                {/* CORPS PRINCIPAL DE L'ESPACE FORMATEUR */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                    
+                    {/* COLONNE DE GAUCHE (8 COLS) */}
+                    <div className="lg:col-span-8 flex flex-col justify-between">
+                        {trainerModulesCount === 0 ? (
+                            /* CTA CRÉER PREMIER COURS */
+                            <div className="bg-white border border-slate-200/80 rounded-3xl p-8 shadow-xs flex-1 flex flex-col items-center justify-center text-center space-y-6">
+                                <div className="w-16 h-16 rounded-3xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
+                                    <BookOpen className="w-8 h-8" />
+                                </div>
+                                <div className="space-y-2 max-w-md">
+                                    <h3 className="text-lg font-black text-slate-955">Créez votre premier module de cours</h3>
+                                    <p className="text-xs text-slate-500 font-medium leading-relaxed">
+                                        Proposez des chapitres de révision, des fiches méthodologiques et des quiz pour accompagner vos élèves vers la réussite de leurs examens.
+                                    </p>
+                                </div>
+                                <Link
+                                    href="/dashboard/courses"
+                                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-2xl transition-all shadow-md shadow-blue-600/20 cursor-pointer"
+                                >
+                                    Créer un cours maintenant
+                                </Link>
+                            </div>
+                        ) : (
+                            /* LISTE DES MODULES CRÉÉS */
+                            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 md:p-8 shadow-xs flex-1 space-y-6">
+                                <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                                    <div className="space-y-0.5">
+                                        <h3 className="text-base font-black text-slate-955 tracking-tight">Vos Modules de Formation</h3>
+                                        <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Synthèse des contenus pédagogiques publiés</p>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {certs
+                                        .filter(c => c.modules && c.modules.length > 0)
+                                        .map(c => (
+                                            <div key={c.id} className="p-4 bg-slate-50 border border-slate-100 rounded-2xl space-y-3">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="px-2 py-0.5 bg-blue-50 text-blue-700 font-extrabold text-[8px] rounded-full uppercase tracking-wider border border-blue-100">
+                                                        {c.codeExamen || 'CERT'}
+                                                    </span>
+                                                    <span className="text-[10px] font-extrabold text-slate-800 truncate">{c.nom}</span>
+                                                </div>
+                                                <div className="space-y-1.5 pl-1 border-l-2 border-slate-200">
+                                                    {(c.modules || []).slice(0, 3).map((m: any) => (
+                                                        <div key={m.id} className="text-xs font-bold text-slate-650 flex items-center justify-between gap-2">
+                                                            <span className="truncate">• {m.titre}</span>
+                                                            <span className="text-[9px] text-slate-400 shrink-0">{m.dureeEstimee}m</span>
+                                                        </div>
+                                                    ))}
+                                                    {(c.modules || []).length > 3 && (
+                                                        <span className="text-[10px] text-blue-600 font-extrabold block pt-1">
+                                                            + {(c.modules || []).length - 3} autres modules...
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* COLONNE DE DROITE : PROCHAINES SESSIONS & ACTIONS RAPIDES (4 COLS) */}
+                    <div className="lg:col-span-4 space-y-8">
+                        {/* COMPAGNON ACTIONS RAPIDES */}
+                        <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs space-y-4">
+                            <h3 className="text-sm font-black text-slate-955 border-b border-slate-100 pb-3 flex items-center gap-2">
+                                <Sparkles className="w-4 h-4 text-blue-600" />
+                                <span>Actions rapides</span>
+                            </h3>
+                            <div className="space-y-2">
+                                <Link
+                                    href="/dashboard/appointments"
+                                    className="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-blue-50/60 border border-slate-100 hover:border-blue-100 rounded-2xl text-left group transition-all"
+                                >
+                                    <div>
+                                        <span className="text-xs font-black text-slate-900 group-hover:text-blue-600 transition-colors block">Créer un créneau libre</span>
+                                        <span className="text-[10px] text-slate-400 font-bold uppercase">Ajouter mes dispo de coaching</span>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all" />
+                                </Link>
+
+                                <Link
+                                    href="/dashboard/courses"
+                                    className="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-indigo-50/60 border border-slate-100 hover:border-indigo-100 rounded-2xl text-left group transition-all"
+                                >
+                                    <div>
+                                        <span className="text-xs font-black text-slate-900 group-hover:text-indigo-600 transition-colors block">Ajouter un module de cours</span>
+                                        <span className="text-[10px] text-slate-400 font-bold uppercase">Publier de nouvelles fiches</span>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-0.5 transition-all" />
+                                </Link>
+
+                                <Link
+                                    href="/dashboard/community"
+                                    className="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-emerald-50/60 border border-slate-100 hover:border-emerald-100 rounded-2xl text-left group transition-all"
+                                >
+                                    <div>
+                                        <span className="text-xs font-black text-slate-900 group-hover:text-emerald-600 transition-colors block">Échanger avec les élèves</span>
+                                        <span className="text-[10px] text-slate-400 font-bold uppercase">Participer au forum d'entraide</span>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
+                                </Link>
+                            </div>
+                        </div>
+
+                        {/* PROCHAINES SESSIONS DU FORMATEUR */}
+                        <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs space-y-4">
+                            <h3 className="text-sm font-black text-slate-955 border-b border-slate-100 pb-3 flex items-center gap-2">
+                                <Clock className="w-4 h-4 text-indigo-600" />
+                                <span>Prochaines Sessions</span>
+                            </h3>
+
+                            {myAppointments.filter(rdv => rdv.formateur.id.toString() === me?.id?.toString() && rdv.statut === 'CONFIRME').length === 0 ? (
+                                <p className="text-xs text-slate-400 font-bold italic py-4">Aucune session réservée pour aujourd'hui.</p>
+                            ) : (
+                                <div className="space-y-3">
+                                    {myAppointments
+                                        .filter(rdv => rdv.formateur.id.toString() === me?.id?.toString() && rdv.statut === 'CONFIRME')
+                                        .slice(0, 3)
+                                        .map((rdv) => (
+                                            <div key={rdv.id} className="p-3 bg-slate-50 border border-slate-100 rounded-2xl text-left space-y-1">
+                                                <span className="text-[9px] font-black text-indigo-600 uppercase bg-indigo-50 px-2 py-0.5 rounded w-fit block">
+                                                    {rdv.type.replace(/_/g, ' ')}
+                                                </span>
+                                                <span className="text-xs font-bold text-slate-800 block">
+                                                    {rdv.candidat.prenom} {rdv.candidat.nom}
+                                                </span>
+                                                <span className="text-[10px] text-slate-400 font-semibold block">
+                                                    {new Date(rdv.creneau.dateDebut).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })} à {new Date(rdv.creneau.dateDebut).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                                                </span>
+                                            </div>
+                                        ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-8 text-slate-900 text-left font-sans selection:bg-blue-600 selection:text-white pb-10">
 
@@ -263,6 +466,27 @@ export default function StudentDashboard() {
                             >
                                 <Target className="w-3.5 h-3.5 text-white" />
                                 <span>Choisir une certif</span>
+                            </Link>
+                        </div>
+                    ) : (readinessData?.totalTentatives || 0) === 0 ? (
+                        <div className="my-auto space-y-4 flex flex-col items-center justify-center">
+                            <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0">
+                                <AlertTriangle className="w-6 h-6" />
+                            </div>
+                            <div className="space-y-1.5">
+                                <h3 className="font-black text-slate-950 text-sm leading-snug">
+                                    Veuillez passer une simulation pour obtenir votre readiness score
+                                </h3>
+                                <p className="text-xs text-slate-500 font-medium">
+                                    Effectuez votre premier examen blanc sur {selectedCert.nom} pour lancer l&apos;analyse de l&apos;IA.
+                                </p>
+                            </div>
+                            <Link
+                                href={`/dashboard/practice?cert=${selectedCert.slug}`}
+                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer inline-flex items-center gap-1.5"
+                            >
+                                <Target className="w-3.5 h-3.5 text-white" />
+                                <span>S&apos;entraîner</span>
                             </Link>
                         </div>
                     ) : (

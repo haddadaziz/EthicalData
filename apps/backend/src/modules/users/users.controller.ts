@@ -91,4 +91,11 @@ export class UsersController {
   async remove(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.remove(id);
   }
+
+  // POST /users/become-trainer -> Devenir Formateur
+  @UseGuards(JwtAuthGuard)
+  @Post('become-trainer')
+  async becomeTrainer(@Req() req: any) {
+    return this.usersService.becomeTrainer(req.user.id);
+  }
 }

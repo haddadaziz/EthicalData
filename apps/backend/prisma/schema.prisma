@@ -1,52 +1,57 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL")
 }
 
 model Utilisateur {
-  id              BigInt          @id @default(autoincrement())
+  id              BigInt    @id @default(autoincrement())
   prenom          String
-  nom             String    
-  email           String          @unique
+  nom             String
+  email           String    @unique
   telephone       String?
-  motDePasse      String    
-  statut          Statut          @default(ACTIF)
-  preferences     Json            @default("{}")
-  avatar          String?   
-  bio             String?         @db.Text
-  dateInscription DateTime        @default(now())
-  deletedAt       DateTime?       @map("deleted_at")
-  
-  roles           Role[]          @relation("UtilisateurRoles")
+  motDePasse      String
+  statut          Statut    @default(ACTIF)
+  preferences     Json      @default("{}")
+  avatar          String?
+  bio             String?   @db.Text
+  dateInscription DateTime  @default(now())
+  deletedAt       DateTime? @map("deleted_at")
+
+  roles           Role[]           @relation("UtilisateurRoles")
   telechargements Telechargement[]
   tentatives      Tentative[]
 
   // Relations Coaching & RDV
   creneauxProposes CreneauDisponibilite[] @relation("FormateurCreneaux")
-  rdvCandidat      RendezVous[]          @relation("CandidatRendezVous")
-  rdvFormateur     RendezVous[]          @relation("FormateurRendezVous")
+  rdvCandidat      RendezVous[]           @relation("CandidatRendezVous")
+  rdvFormateur     RendezVous[]           @relation("FormateurRendezVous")
+  coursCrees       Cours[]                @relation("FormateurCours")
 
   // Relations forum
-  sujets          Sujet[]
-  commentaires    Commentaire[]
-  likesSujets     LikeSujet[]
-  likesCommentaires LikeCommentaire[]
-  signalements    SignalementSujet[]
-  notifications Notification[]
-  
+  sujets                   Sujet[]
+  commentaires             Commentaire[]
+  likesSujets              LikeSujet[]
+  likesCommentaires        LikeCommentaire[]
+  signalements             SignalementSujet[]
+  signalementsCommentaires SignalementCommentaire[]
+  notifications            Notification[]
+  inscriptionsCours        InscriptionCours[]       @relation("ApprenantInscriptions")
+
   @@map("utilisateurs")
 }
 
 model Role {
-  id              BigInt        @id @default(autoincrement())
-  nom             String        @unique
-  
+  id  BigInt @id @default(autoincrement())
+  nom String @unique
+
   // Relation inverse
-  utilisateurs    Utilisateur[] @relation("UtilisateurRoles")
+  utilisateurs Utilisateur[] @relation("UtilisateurRoles")
 
   @@map("roles")
 }
@@ -62,129 +67,245 @@ model Fournisseur {
 }
 
 model Certification {
-  id              BigInt      @id @default(autoincrement())
+  id              BigInt    @id @default(autoincrement())
   nom             String
-  slug            String      @unique
-  codeExamen      String?     @unique
-  description     String      @db.Text
+  slug            String    @unique
+  codeExamen      String?   @unique
+  description     String    @db.Text
   niveau          Niveau
   dureeIndicative String?
   image           String?
-  dateCreation    DateTime    @default(now())
-  deletedAt       DateTime?   @map("deleted_at")
-  @@index([fournisseurId, deletedAt])
+  dateCreation    DateTime  @default(now())
+  deletedAt       DateTime? @map("deleted_at")
 
-  fournisseurId   BigInt
-  fournisseur     Fournisseur @relation(fields: [fournisseurId], references: [id], onDelete: Cascade)
-  modules         Module[]
-  ressources      Ressource[]
-  questions       Question[]
-  tentatives      Tentative[]
-  
+  fournisseurId BigInt
+  fournisseur   Fournisseur  @relation(fields: [fournisseurId], references: [id], onDelete: Cascade)
+  ressources    Ressource[]
+  questions     Question[]
+  cours         Cours[]
+  simulations   Simulation[]
+
   // Relations forum
-  sujets          Sujet[]
+  sujets Sujet[]
 
+  @@index([fournisseurId, deletedAt])
   @@map("certifications")
 }
 
-model Module {
-  id              BigInt        @id @default(autoincrement())
+model Cours {
+  id              BigInt      @id @default(autoincrement())
   titre           String
-  description     String?       @db.Text
-  ordre           Int           @default(0)
-  dateCreation    DateTime      @default(now())
+  slug            String      @unique
+  description     String?     @db.Text
+  statut          StatutCours @default(BROUILLON)
+  imageUrl        String?
+  videoUrl        String?
+  objectifs       String[]    @default([])
+  prerequis       String[]    @default([])
+  publicCible     String[]    @default([])
+  dureeEstimee    Int? // total en minutes
+  dateCreation    DateTime    @default(now())
+  datePublication DateTime?
+  deletedAt       DateTime?   @map("deleted_at")
 
-  // Relations
-  certificationId BigInt
-  certification   Certification @relation(fields: [certificationId], references: [id], onDelete: Cascade)
+  // Formateur auteur du cours
+  formateurId BigInt      @map("formateur_id")
+  formateur   Utilisateur @relation("FormateurCours", fields: [formateurId], references: [id], onDelete: Cascade)
 
+  // Certification préparée par ce cours (optionnelle pour les brouillons)
+  certificationId BigInt?        @map("certification_id")
+  certification   Certification? @relation(fields: [certificationId], references: [id], onDelete: SetNull)
+
+  // Contenu du cours
+  modules      Module[]
+  simulations  Simulation[]
+  inscriptions InscriptionCours[]
+
+  @@index([certificationId, statut])
+  @@index([formateurId, statut])
+  @@map("cours")
+}
+
+model InscriptionCours {
+  id              BigInt    @id @default(autoincrement())
+  progression     Int       @default(0) // 0 à 100
+  dateInscription DateTime  @default(now()) @map("date_inscription")
+  dateFin         DateTime? @map("date_fin")
+
+  coursId BigInt @map("cours_id")
+  cours   Cours  @relation(fields: [coursId], references: [id], onDelete: Cascade)
+
+  apprenantId BigInt      @map("apprenant_id")
+  apprenant   Utilisateur @relation("ApprenantInscriptions", fields: [apprenantId], references: [id], onDelete: Cascade)
+
+  progressions ProgressionModule[]
+
+  @@unique([coursId, apprenantId])
+  @@map("inscriptions_cours")
+}
+
+model ProgressionModule {
+  id              BigInt   @id @default(autoincrement())
+  completed       Boolean  @default(false)
+  dateCompletion  DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  inscriptionCoursId BigInt @map("inscription_cours_id")
+  inscription        InscriptionCours @relation(fields: [inscriptionCoursId], references: [id], onDelete: Cascade)
+
+  moduleId BigInt @map("module_id")
+  module   Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@unique([inscriptionCoursId, moduleId])
+  @@map("progressions_modules")
+}
+
+model Module {
+  id           BigInt   @id @default(autoincrement())
+  titre        String
+  description  String?  @db.Text
+  contenu      String?  @db.Text // leçon rédigée (markdown/HTML)
+  ordre        Int      @default(0)
+  dureeEstimee Int?     @default(30) // en minutes
+  imageUrl     String?
+  videoUrl     String?
+  dateCreation DateTime @default(now())
+
+  // Cours parent
+  coursId BigInt @map("cours_id")
+  cours   Cours  @relation(fields: [coursId], references: [id], onDelete: Cascade)
+
+  // Ressources propres à ce module
+  ressources Ressource[]
+  progressions ProgressionModule[]
+
+  @@index([coursId, ordre])
   @@map("modules")
 }
 
 model Ressource {
-  id                 BigInt          @id @default(autoincrement())
-  titre              String
-  description        String?         @db.Text
-  type               String
-  url                String
-  taille             Int?
-  version            String          @default("1.0.0")
-  quotaTelechargement Int?           @default(10)
-  public             Boolean         @default(false)
-  dateCreation       DateTime        @default(now())
-  deletedAt          DateTime?       @map("deleted_at")
+  id                  BigInt        @id @default(autoincrement())
+  titre               String
+  description         String?       @db.Text
+  type                TypeRessource
+  url                 String
+  taille              Int? // en octets
+  version             String        @default("1.0.0")
+  quotaTelechargement Int?          @default(10)
+  public              Boolean       @default(false)
+  ordre               Int           @default(0)
+  dateCreation        DateTime      @default(now())
+  deletedAt           DateTime?     @map("deleted_at")
 
-  // Relations
-  certificationId    BigInt?
-  certification      Certification?  @relation(fields: [certificationId], references: [id], onDelete: SetNull)
-  telechargements    Telechargement[]
+  // Ressource attachée à un Module (optionnel)
+  moduleId BigInt? @map("module_id")
+  module   Module? @relation(fields: [moduleId], references: [id], onDelete: SetNull)
 
+  // Ressource attachée directement à une Certification (bibliothèque globale)
+  certificationId BigInt?        @map("certification_id")
+  certification   Certification? @relation(fields: [certificationId], references: [id], onDelete: SetNull)
+
+  telechargements Telechargement[]
+
+  @@index([moduleId])
+  @@index([certificationId])
   @@map("ressources")
 }
 
 model Telechargement {
-  id           BigInt      @id @default(autoincrement())
-  date         DateTime    @default(now())
-  ip           String?
+  id   BigInt   @id @default(autoincrement())
+  date DateTime @default(now())
+  ip   String?
 
   // Relations
-  ressourceId  BigInt
-  ressource    Ressource   @relation(fields: [ressourceId], references: [id], onDelete: Cascade)
+  ressourceId   BigInt
+  ressource     Ressource   @relation(fields: [ressourceId], references: [id], onDelete: Cascade)
   utilisateurId BigInt
-  utilisateur  Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
 
   @@map("telechargements")
 }
 
 model Question {
-  id              BigInt        @id @default(autoincrement())
-  enonce          String        @db.Text
-  explication     String?       @db.Text
-  reponseCorrecte String        @db.Text
-  grilleNotation  String?       @db.Text
+  id              BigInt   @id @default(autoincrement())
+  enonce          String   @db.Text
+  explication     String?  @db.Text
+  reponseCorrecte String   @db.Text
+  grilleNotation  String?  @db.Text
   categorie       String?
-  type            String        @default("QCM")
-  dateCreation    DateTime      @default(now())
+  type            String   @default("QCM")
+  difficulte      Int      @default(1) // 1 à 5
+  dateCreation    DateTime @default(now())
 
-  certificationId BigInt
+  // Une question appartient à une Simulation ET reste traçable vers une Certification
+  certificationId BigInt        @map("certification_id")
   certification   Certification @relation(fields: [certificationId], references: [id], onDelete: Cascade)
-  options         Option[]
+
+  simulationId BigInt?     @map("simulation_id")
+  simulation   Simulation? @relation(fields: [simulationId], references: [id], onDelete: SetNull)
+
+  options Option[]
 
   @@map("questions")
 }
 
 model Option {
-  id              BigInt        @id @default(autoincrement())
-  lettre          String
-  texte           String        @db.Text
+  id     BigInt @id @default(autoincrement())
+  lettre String
+  texte  String @db.Text
 
-  questionId      BigInt
-  question        Question      @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId BigInt
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@map("options")
 }
 
-model Tentative {
-  id              BigInt        @id @default(autoincrement())
-  score           Int
-  datePassage     DateTime      @default(now())
-  @@index([utilisateurId, certificationId])
+model Simulation {
+  id           BigInt   @id @default(autoincrement())
+  titre        String
+  description  String?  @db.Text
+  duree        Int      @default(60) // en minutes
+  scoreMinimal Int      @default(700) // score pour réussir
+  dateCreation DateTime @default(now())
 
-  utilisateurId   BigInt
-  utilisateur     Utilisateur   @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
-  certificationId BigInt
+  // Cours associé
+  coursId BigInt? @map("cours_id")
+  cours   Cours?  @relation(fields: [coursId], references: [id], onDelete: SetNull)
+
+  // Certification associée (pour les simulations globales sans cours)
+  certificationId BigInt        @map("certification_id")
   certification   Certification @relation(fields: [certificationId], references: [id], onDelete: Cascade)
 
+  tentatives Tentative[]
+  questions  Question[]
+
+  @@map("simulations")
+}
+
+model Tentative {
+  id           BigInt   @id @default(autoincrement())
+  score        Int
+  dureePassage Int? // temps réel passé en secondes
+  datePassage  DateTime @default(now())
+
+  utilisateurId BigInt      @map("utilisateur_id")
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+
+  simulationId BigInt     @map("simulation_id")
+  simulation   Simulation @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+
+  @@index([utilisateurId, simulationId])
   @@map("tentatives")
 }
 
 model Sujet {
-  id              BigInt             @id @default(autoincrement())
-  titre           String
-  contenu         String             @db.Text
-  theme           String             // Azure, Data, IA, Cybersécurité, Carrière, Examen...
-  dateCreation    DateTime           @default(now())
-  deletedAt       DateTime?          @map("deleted_at")
+  id           BigInt    @id @default(autoincrement())
+  titre        String
+  contenu      String    @db.Text
+  theme        String // Azure, Data, IA, Cybersécurité, Carrière, Examen...
+  dateCreation DateTime  @default(now())
+  deletedAt    DateTime? @map("deleted_at")
 
   // Relations
   auteurId        BigInt
@@ -199,30 +320,31 @@ model Sujet {
 }
 
 model Commentaire {
-  id                    BigInt       @id @default(autoincrement())
-  contenu               String       @db.Text
-  dateCreation          DateTime     @default(now())
-  deletedAt             DateTime?    @map("deleted_at")
-  @@index([sujetId, dateCreation])
+  id                  BigInt        @id @default(autoincrement())
+  contenu             String        @db.Text
+  dateCreation        DateTime      @default(now())
+  deletedAt           DateTime?     @map("deleted_at")
   // Parent / Réponses aux commentaires
-  parentCommentaireId   BigInt?      @map("parent_commentaire_id")
-  parentCommentaire     Commentaire? @relation("ReponsesCommentaire", fields: [parentCommentaireId], references: [id], onDelete: Cascade)
-  reponses              Commentaire[] @relation("ReponsesCommentaire")
+  parentCommentaireId BigInt?       @map("parent_commentaire_id")
+  parentCommentaire   Commentaire?  @relation("ReponsesCommentaire", fields: [parentCommentaireId], references: [id], onDelete: Cascade)
+  reponses            Commentaire[] @relation("ReponsesCommentaire")
 
   // Relations
-  sujetId               BigInt
-  sujet                 Sujet        @relation(fields: [sujetId], references: [id], onDelete: Cascade)
-  auteurId              BigInt
-  auteur                Utilisateur  @relation(fields: [auteurId], references: [id], onDelete: Cascade)
-  likes                 LikeCommentaire[]
+  sujetId      BigInt
+  sujet        Sujet                    @relation(fields: [sujetId], references: [id], onDelete: Cascade)
+  auteurId     BigInt
+  auteur       Utilisateur              @relation(fields: [auteurId], references: [id], onDelete: Cascade)
+  likes        LikeCommentaire[]
+  signalements SignalementCommentaire[]
 
+  @@index([sujetId, dateCreation])
   @@map("commentaires")
 }
 
 model LikeSujet {
-  id            BigInt      @id @default(autoincrement())
-  dateLike      DateTime    @default(now())
-  
+  id       BigInt   @id @default(autoincrement())
+  dateLike DateTime @default(now())
+
   // Relations
   sujetId       BigInt
   sujet         Sujet       @relation(fields: [sujetId], references: [id], onDelete: Cascade)
@@ -234,9 +356,9 @@ model LikeSujet {
 }
 
 model LikeCommentaire {
-  id            BigInt      @id @default(autoincrement())
-  dateLike      DateTime    @default(now())
-  
+  id       BigInt   @id @default(autoincrement())
+  dateLike DateTime @default(now())
+
   // Relations
   commentaireId BigInt      @map("commentaire_id")
   commentaire   Commentaire @relation(fields: [commentaireId], references: [id], onDelete: Cascade)
@@ -248,10 +370,10 @@ model LikeCommentaire {
 }
 
 model SignalementSujet {
-  id            BigInt      @id @default(autoincrement())
-  motif         String?
-  dateCreation  DateTime    @default(now())
-  traite        Boolean     @default(false)
+  id           BigInt   @id @default(autoincrement())
+  motif        String?
+  dateCreation DateTime @default(now())
+  traite       Boolean  @default(false)
 
   // Relations
   sujetId       BigInt
@@ -263,19 +385,51 @@ model SignalementSujet {
   @@map("signalements_sujets")
 }
 
-model Notification {
-  id              BigInt       @id @default(autoincrement())
-  destinataireId  BigInt       @map("destinataire_id")
-  titre           String
-  message         String       @db.Text
-  type            String       // "FORUM_REPLY", "FORUM_LIKE", "FORUM_REPORT", "SYSTEM"
-  lien            String?
-  lue             Boolean      @default(false)
-  dateCreation    DateTime     @default(now()) @map("date_creation")
-  destinataire    Utilisateur  @relation(fields: [destinataireId], references: [id], onDelete: Cascade)
-  @@index([destinataireId, lue])
+model SignalementCommentaire {
+  id           BigInt   @id @default(autoincrement())
+  motif        String?
+  dateCreation DateTime @default(now()) @map("date_creation")
+  traite       Boolean  @default(false)
 
+  // Relations
+  commentaireId BigInt      @map("commentaire_id")
+  commentaire   Commentaire @relation(fields: [commentaireId], references: [id], onDelete: Cascade)
+  utilisateurId BigInt      @map("utilisateur_id")
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+
+  @@unique([commentaireId, utilisateurId])
+  @@map("signalements_commentaires")
+}
+
+model Notification {
+  id             BigInt      @id @default(autoincrement())
+  destinataireId BigInt      @map("destinataire_id")
+  titre          String
+  message        String      @db.Text
+  type           String // "FORUM_REPLY", "FORUM_LIKE", "FORUM_REPORT", "SYSTEM"
+  lien           String?
+  lue            Boolean     @default(false)
+  dateCreation   DateTime    @default(now()) @map("date_creation")
+  destinataire   Utilisateur @relation(fields: [destinataireId], references: [id], onDelete: Cascade)
+
+  @@index([destinataireId, lue])
   @@map("notifications")
+}
+
+enum StatutCours {
+  BROUILLON
+  PUBLIE
+  ARCHIVE
+}
+
+enum TypeRessource {
+  PDF
+  VIDEO
+  SLIDE
+  DATASET
+  LIEN_EXTERNE
+  EXERCICE
+  AUTRE
 }
 
 enum Statut {
@@ -304,20 +458,20 @@ enum StatutRendezVous {
 }
 
 model CreneauDisponibilite {
-  id           BigInt           @id @default(autoincrement())
-  dateDebut    DateTime         @map("date_debut")
-  dateFin      DateTime         @map("date_fin")
-  estReserve   Boolean          @default(false) @map("est_reserve")
-  dateCreation DateTime         @default(now()) @map("date_creation")
-  @@index([formateurId, estReserve])
+  id           BigInt   @id @default(autoincrement())
+  dateDebut    DateTime @map("date_debut")
+  dateFin      DateTime @map("date_fin")
+  estReserve   Boolean  @default(false) @map("est_reserve")
+  dateCreation DateTime @default(now()) @map("date_creation")
 
   // Formateur proposant le créneau
-  formateurId  BigInt           @map("formateur_id")
-  formateur    Utilisateur      @relation("FormateurCreneaux", fields: [formateurId], references: [id], onDelete: Cascade)
+  formateurId BigInt      @map("formateur_id")
+  formateur   Utilisateur @relation("FormateurCreneaux", fields: [formateurId], references: [id], onDelete: Cascade)
 
   // Relation vers le rendez-vous si réservé
-  rendezVous   RendezVous?
+  rendezVous RendezVous?
 
+  @@index([formateurId, estReserve])
   @@map("creneaux_disponibilite")
 }
 
@@ -330,16 +484,16 @@ model RendezVous {
   dateCreation DateTime         @default(now()) @map("date_creation")
 
   // Candidat ayant réservé
-  candidatId   BigInt           @map("candidat_id")
-  candidat     Utilisateur      @relation("CandidatRendezVous", fields: [candidatId], references: [id], onDelete: Cascade)
+  candidatId BigInt      @map("candidat_id")
+  candidat   Utilisateur @relation("CandidatRendezVous", fields: [candidatId], references: [id], onDelete: Cascade)
 
   // Formateur encadrant
-  formateurId  BigInt           @map("formateur_id")
-  formateur    Utilisateur      @relation("FormateurRendezVous", fields: [formateurId], references: [id], onDelete: Cascade)
+  formateurId BigInt      @map("formateur_id")
+  formateur   Utilisateur @relation("FormateurRendezVous", fields: [formateurId], references: [id], onDelete: Cascade)
 
   // Créneau associé
-  creneauId    BigInt           @unique @map("creneau_id")
-  creneau      CreneauDisponibilite @relation(fields: [creneauId], references: [id], onDelete: Cascade)
+  creneauId BigInt               @unique @map("creneau_id")
+  creneau   CreneauDisponibilite @relation(fields: [creneauId], references: [id], onDelete: Cascade)
 
   @@map("rendez_vous")
 }
