@@ -4,14 +4,14 @@ import {
   faBookBookmark, faChalkboardTeacher, faCircle, faCirclePlus, faCompress,
   faCrop, faExpand, faFileCirclePlus, faListOl, faTrophy,
   faAward, faBars, faBell, faBolt, faBookOpen, faBookmark,
-  faBriefcase, faBullseye, faCalendar, faChartLine,
+  faBriefcase, faBullseye, faCalendar, faCalendarCheck, faChartLine,
   faCheck, faCheckCircle, faCheckDouble, faChevronDown,
   faChevronLeft, faChevronRight, faChevronUp,
   faCircleCheck, faCircleExclamation, faCircleQuestion,
   faClock, faCloudArrowDown, faComment, faComments,
   faCompass, faDatabase, faDoorOpen,
   faDownload, faEnvelope, faEye, faEyeSlash,
-  faFileExcel, faFileLines, faFilter, faFlag,
+  faFileExcel, faFileLines, faFilePen, faFilter, faFlag,
   faFloppyDisk, faFolderOpen, faGaugeHigh, faGear,
   faGlobe, faGraduationCap, faHeart, faInfoCircle,
   faKey, faLayerGroup, faLink, faListCheck,
@@ -52,6 +52,7 @@ export const BookmarkCheck = makeIcon(faBookmark);
 export const BookMarked = makeIcon(faBookBookmark);
 export const Briefcase = makeIcon(faBriefcase);
 export const Calendar = makeIcon(faCalendar);
+export const CalendarCheck = makeIcon(faCalendarCheck);
 export const Camera = makeIcon(faCamera);
 export const ChalkboardTeacher = makeIcon(faChalkboardTeacher);
 export const Check = makeIcon(faCheck);
@@ -79,6 +80,7 @@ export const EyeOff = makeIcon(faEyeSlash);
 export const FileSpreadsheet = makeIcon(faFileExcel);
 export const FileText = makeIcon(faFileLines);
 export const FilePlus = makeIcon(faFileCirclePlus);
+export const FilePen = makeIcon(faFilePen);
 export const Filter = makeIcon(faFilter);
 export const Flag = makeIcon(faFlag);
 export const FolderOpen = makeIcon(faFolderOpen);

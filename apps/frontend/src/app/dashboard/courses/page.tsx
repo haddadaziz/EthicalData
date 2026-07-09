@@ -5,9 +5,9 @@ import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useConfirm } from '../../../context/ConfirmContext';
 import {
-    Award, BookOpen, Clock, FileText, Plus, Trash2,
-    Eye, EyeOff, ChevronDown, ChevronUp, Upload, Link,
-    FilePlus, BookMarked, Send, Save, X, Layers, PlusCircle,
+    Award, BookOpen, BookMarked, Clock, FileText, FilePen, Globe, Plus, Trash2,
+    ChevronDown, ChevronUp, Upload, Link,
+    FilePlus, Send, Save, X, Layers, PlusCircle,
     AlertTriangle, Crop,
     Play, HelpCircle, CheckCircle, AlertCircle
 } from '@/components/icons';
@@ -276,7 +276,7 @@ export default function CoursesPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs flex items-center gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0">
-                        <BookOpen className="w-6 h-6" />
+                        <BookMarked className="w-6 h-6" />
                     </div>
                     <div>
                         <span className="text-2xl font-black text-slate-900 block leading-tight">{totalCours}</span>
@@ -285,7 +285,7 @@ export default function CoursesPage() {
                 </div>
                 <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs flex items-center gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
-                        <Eye className="w-6 h-6" />
+                        <Globe className="w-6 h-6" />
                     </div>
                     <div>
                         <span className="text-2xl font-black text-slate-900 block leading-tight">{totalPublies}</span>
@@ -294,7 +294,7 @@ export default function CoursesPage() {
                 </div>
                 <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs flex items-center gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0">
-                        <EyeOff className="w-6 h-6" />
+                        <FilePen className="w-6 h-6" />
                     </div>
                     <div>
                         <span className="text-2xl font-black text-slate-900 block leading-tight">{totalBrouillons}</span>

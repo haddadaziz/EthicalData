@@ -137,6 +137,13 @@ export class ForumService {
               where: { utilisateurId: BigInt(currentUserId) },
               select: { utilisateurId: true },
             },
+            mentionUser: {
+              select: {
+                id: true,
+                prenom: true,
+                nom: true,
+              },
+            },
             _count: { select: { likes: true } },
           },
         },
@@ -180,6 +187,11 @@ export class ForumService {
         sujetId: c.sujetId.toString(),
         auteurId: c.auteurId.toString(),
         parentCommentaireId: c.parentCommentaireId ? c.parentCommentaireId.toString() : null,
+        mentionUser: c.mentionUser ? {
+          id: c.mentionUser.id.toString(),
+          prenom: c.mentionUser.prenom,
+          nom: c.mentionUser.nom,
+        } : undefined,
         likesCount: c._count?.likes || 0,
         isLikedByUser: Array.isArray(c.likes) && c.likes.length > 0,
         auteur: {
@@ -367,6 +379,7 @@ export class ForumService {
         sujetId: BigInt(sujetId),
         auteurId: BigInt(userId),
         parentCommentaireId: dto.parentCommentaireId ? BigInt(dto.parentCommentaireId) : null,
+        mentionUserId: dto.mentionUserId ? BigInt(dto.mentionUserId) : null,
       },
       include: {
         auteur: {
@@ -376,6 +389,13 @@ export class ForumService {
             nom: true,
             avatar: true,
             roles: { select: { nom: true } },
+          },
+        },
+        mentionUser: {
+          select: {
+            id: true,
+            prenom: true,
+            nom: true,
           },
         },
       },
@@ -439,6 +459,11 @@ export class ForumService {
       sujetId: c.sujetId.toString(),
       auteurId: c.auteurId.toString(),
       parentCommentaireId: c.parentCommentaireId ? c.parentCommentaireId.toString() : null,
+      mentionUser: c.mentionUser ? {
+        id: c.mentionUser.id.toString(),
+        prenom: c.mentionUser.prenom,
+        nom: c.mentionUser.nom,
+      } : undefined,
       auteur: {
         ...c.auteur,
         id: c.auteur.id.toString(),

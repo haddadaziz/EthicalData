@@ -48,6 +48,11 @@ interface CommentaireItem {
         avatar?: string | null;
         role: string;
     };
+    mentionUser?: {
+        id: string;
+        prenom: string;
+        nom: string;
+    };
 }
 
 interface DetailSujet extends Sujet {
@@ -1094,6 +1099,16 @@ export default function CommunityPage() {
                                                                                                     <AtSign className="w-2.5 h-2.5" />
                                                                                                     {comm.auteur?.prenom || 'Utilisateur'}
                                                                                                 </span>
+
+                                                                                                {sub.mentionUser && sub.mentionUser.id !== comm.auteur?.id && (
+                                                                                                    <span
+                                                                                                        onClick={(e) => handleOpenLearnerProfile(sub.mentionUser?.id, e)}
+                                                                                                        className="inline-flex items-center gap-0.5 px-2 py-0.5 bg-indigo-100/70 text-indigo-700 font-extrabold text-[9px] rounded-md hover:underline cursor-pointer"
+                                                                                                    >
+                                                                                                        <AtSign className="w-2.5 h-2.5" />
+                                                                                                        {sub.mentionUser.prenom}
+                                                                                                    </span>
+                                                                                                )}
 
                                                                                                 {isSubOwner && (
                                                                                                     <span className="px-1.5 py-0.5 bg-slate-200 text-slate-700 font-extrabold text-[8px] rounded-full">Vous</span>

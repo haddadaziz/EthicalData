@@ -36,6 +36,7 @@ model Utilisateur {
   // Relations forum
   sujets                   Sujet[]
   commentaires             Commentaire[]
+  commentairesMentionnes   Commentaire[]            @relation("MentionCommentaire")
   likesSujets              LikeSujet[]
   likesCommentaires        LikeCommentaire[]
   signalements             SignalementSujet[]
@@ -336,6 +337,8 @@ model Commentaire {
   sujet        Sujet                    @relation(fields: [sujetId], references: [id], onDelete: Cascade)
   auteurId     BigInt
   auteur       Utilisateur              @relation(fields: [auteurId], references: [id], onDelete: Cascade)
+  mentionUserId BigInt?                 @map("mention_user_id")
+  mentionUser  Utilisateur?             @relation("MentionCommentaire", fields: [mentionUserId], references: [id], onDelete: SetNull)
   likes        LikeCommentaire[]
   signalements SignalementCommentaire[]
 

@@ -6,7 +6,9 @@ import {
     Bolt, 
     Play, 
     Video, 
-    Calendar, 
+    Calendar,
+    CalendarCheck, 
+    BookMarked,
     Users, 
     CheckCircle2, 
     AlertTriangle, 
@@ -244,7 +246,7 @@ export default function StudentDashboard() {
                             <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Cours / Modules créés</span>
                         </div>
                         <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
-                            <BookOpen className="w-6 h-6" />
+                            <BookMarked className="w-6 h-6" />
                         </div>
                     </div>
 
@@ -255,7 +257,7 @@ export default function StudentDashboard() {
                             <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Séances de coaching confirmées</span>
                         </div>
                         <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
-                            <Calendar className="w-6 h-6" />
+                            <CalendarCheck className="w-6 h-6" />
                         </div>
                     </div>
                 </div>

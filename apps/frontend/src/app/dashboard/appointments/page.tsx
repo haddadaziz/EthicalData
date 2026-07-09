@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useConfirm } from '../../../context/ConfirmContext';
-import { Calendar, Clock, User, CheckCircle, Video, AlertCircle, RefreshCw, X, Sparkles, Send, Trash2, ShieldCheck, Compass, GraduationCap, Target, Briefcase, Filter, Award, Check, Plus } from '@/components/icons';
+import { Calendar, CalendarCheck, Clock, User, CheckCircle, Video, AlertCircle, RefreshCw, X, Sparkles, Send, Trash2, ShieldCheck, Compass, GraduationCap, Target, Briefcase, Filter, Award, Check, Plus } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Formateur {
@@ -317,7 +317,7 @@ export default function AppointmentsPage() {
                                 : 'bg-white text-slate-650 hover:bg-slate-100 border border-slate-200'
                                 }`}
                         >
-                            <CheckCircle className="w-4 h-4" />
+                            <CalendarCheck className="w-4 h-4" />
                             <span>Sessions de Coaching ({mySessions.length})</span>
                         </button>
                     </div>
