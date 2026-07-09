@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { User, ShieldCheck, KeyRound, Bell, CheckCircle, Save, RefreshCw, Sparkles, MessageSquare, Heart, Camera, Phone, Mail, FileText, Lock, Eye, EyeOff, Upload, Award, ChevronRight } from '@/components/icons';
+import { User, ShieldCheck, KeyRound, Bell, CheckCircle, Save, RefreshCw, MessageCircle, Reply, Heart, Camera, Phone, Mail, FileText, Lock, Eye, EyeOff, Upload, Target, ChevronRight } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface UserProfileData {
@@ -339,7 +339,7 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-3 gap-3 sm:gap-4 w-full lg:w-auto relative z-10 shrink-0">
                     <div className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl p-4 text-center space-y-1 transition-all duration-350 group">
                         <div className="flex items-center justify-center text-indigo-400 gap-1.5 group-hover:scale-105 transition-transform">
-                            <Sparkles className="w-4 h-4" />
+                            <MessageCircle className="w-4 h-4" />
                             <span className="text-xl font-black">{profile.stats.sujetsCount}</span>
                         </div>
                         <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Discussions</span>
@@ -347,7 +347,7 @@ export default function ProfilePage() {
 
                     <div className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl p-4 text-center space-y-1 transition-all duration-350 group">
                         <div className="flex items-center justify-center text-blue-400 gap-1.5 group-hover:scale-105 transition-transform">
-                            <MessageSquare className="w-4 h-4" />
+                            <Reply className="w-4 h-4" />
                             <span className="text-xl font-black">{profile.stats.commentairesCount}</span>
                         </div>
                         <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Réponses</span>
@@ -714,7 +714,7 @@ export default function ProfilePage() {
                     <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs space-y-4">
                         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                             <h3 className="text-sm font-black text-slate-900 tracking-tight flex items-center gap-2">
-                                <ShieldCheck className="w-4 h-4 text-emerald-650" />
+                                <CheckCircle className="w-4 h-4 text-emerald-650" />
                                 <span>Certifications obtenues</span>
                             </h3>
                             <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 font-extrabold text-[9px] rounded-full">
@@ -758,7 +758,7 @@ export default function ProfilePage() {
                     <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs space-y-4">
                         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                             <h3 className="text-sm font-black text-slate-900 tracking-tight flex items-center gap-2">
-                                <Award className="w-4 h-4 text-indigo-600" />
+                                <Target className="w-4 h-4 text-indigo-600" />
                                 <span>Certifications visées</span>
                             </h3>
                             <span className="px-2 py-0.5 bg-indigo-50 text-indigo-700 font-extrabold text-[9px] rounded-full">

@@ -45,8 +45,8 @@ export class CoursController {
 
   // Tous les cours publiés (pour les apprenants)
   @Get()
-  async getAllPublished() {
-    return this.coursService.findAllPublished();
+  async getAllPublished(@Req() req: any) {
+    return this.coursService.findDisponibles(req.user.id);
   }
 
   // Cours publiés sans ceux du formateur connecté

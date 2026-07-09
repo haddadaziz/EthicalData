@@ -310,19 +310,7 @@ export class CoursService {
   // INSCRIPTIONS APPRENANTS
   // ─────────────────────────────────────────
 
-  async findAllPublished() {
-    const cours = await this.prisma.cours.findMany({
-      where: { statut: 'PUBLIE', deletedAt: null },
-      include: {
-        certification: { include: { fournisseur: true } },
-        formateur: { select: { id: true, prenom: true, nom: true, avatar: true } },
-        modules: { orderBy: { ordre: 'asc' } },
-        _count: { select: { modules: true, inscriptions: true } },
-      },
-      orderBy: { datePublication: 'desc' },
-    });
-    return cours.map(this.serializeCours.bind(this));
-  }
+
 
   async findDisponibles(userId: number) {
     const cours = await this.prisma.cours.findMany({

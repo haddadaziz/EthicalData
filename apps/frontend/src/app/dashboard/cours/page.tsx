@@ -68,11 +68,8 @@ export default function LearnerCoursesPage() {
         (async () => {
             setLoading(true);
             try {
-                const isFormateur = userRoles.includes('FORMATEUR');
                 const [coursData, inscData] = await Promise.all([
-                    isFormateur
-                        ? apiFetch('/cours/disponibles')
-                        : apiFetch('/cours'),
+                    apiFetch('/cours'),
                     apiFetch('/cours/mes-inscriptions').catch((err) => {
                         console.error('Erreur API mes-inscriptions:', err);
                         return [];
