@@ -153,6 +153,18 @@ async function main() {
             description: 'Validez vos connaissances fondamentales sur les services Cloud Azure, la sécurité, la confidentialité et la gouvernance.',
             niveau: 'DEBUTANT',
             dureeIndicative: '15 heures',
+            objectifs: [
+                'Comprendre les concepts fondamentaux du cloud computing',
+                'Décrire les principaux services Azure (compute, stockage, réseau, base de données)',
+                'Expliquer la sécurité, la confidentialité et la gouvernance sur Azure',
+                'Identifier les solutions de gestion des coûts et des budgets Azure',
+                'Distinguer les modèles de déploiement (IaaS, PaaS, SaaS)'
+            ],
+            prerequis: [
+                'Aucune expérience technique requise',
+                'Curiosité pour les technologies cloud',
+                'Compréhension de base des concepts IT'
+            ],
             image: '/badges/az-900.svg',
             fournisseurId: ms.id,
         },
@@ -166,6 +178,19 @@ async function main() {
             description: 'Concevez des architectures hautement disponibles, optimisées en coûts et sécurisées sur Amazon Web Services.',
             niveau: 'INTERMEDIAIRE',
             dureeIndicative: '35 heures',
+            objectifs: [
+                'Concevoir des architectures résilientes et hautement disponibles sur AWS',
+                'Optimiser les coûts et les performances des solutions AWS',
+                'Mettre en œuvre la sécurité et la conformité sur AWS',
+                'Sélectionner les services AWS appropriés selon les besoins métier',
+                'Maîtriser les patterns architecturaux (microservices, serverless, hybrides)'
+            ],
+            prerequis: [
+                'Expérience pratique d\'au moins 1 an sur AWS',
+                'Connaissances en réseau et sécurité de base',
+                'Compréhension des bases de données et du stockage',
+                'Notions de Linux/Windows et scripting'
+            ],
             image: '/badges/aws-saa.svg',
             fournisseurId: aws.id,
         },
@@ -179,6 +204,18 @@ async function main() {
             description: 'La référence mondiale pour valider vos compétences de base en cybersécurité, gestion des risques et réponse aux incidents.',
             niveau: 'INTERMEDIAIRE',
             dureeIndicative: '40 heures',
+            objectifs: [
+                'Comprendre les menaces, vulnérabilités et attaques courantes',
+                'Maîtriser les concepts d\'architecture et de conception sécurisées',
+                'Mettre en œuvre des solutions de gestion des identités et des accès',
+                'Savoir répondre aux incidents et assurer la continuité d\'activité',
+                'Appliquer les bonnes pratiques de gouvernance et de conformité'
+            ],
+            prerequis: [
+                'Certification Network+ ou connaissances réseau équivalentes',
+                'Expérience de 2 ans en administration IT recommandée',
+                'Compréhension des concepts de base en sécurité'
+            ],
             image: '/badges/comptia-sec.svg',
             fournisseurId: comptia.id,
         },
@@ -194,6 +231,16 @@ async function main() {
             description: 'Certification d\'entrée de gamme Google Cloud qui valide votre capacité à comprendre les concepts du cloud, les produits Google Cloud et leur valeur commerciale.',
             niveau: 'DEBUTANT',
             dureeIndicative: '20 heures',
+            objectifs: [
+                'Comprendre les concepts et la terminologie de Google Cloud',
+                'Identifier les cas d\'usage des principaux produits GCP',
+                'Expliquer la transformation digitale et la data sur Google Cloud',
+                'Distinguer les modèles de déploiement et de tarification GCP'
+            ],
+            prerequis: [
+                'Aucune expérience cloud requise',
+                'Intérêt pour la transformation numérique et l\'innovation'
+            ],
             image: '/badges/gcp-digital-leader.svg',
             fournisseurId: gcp.id,
         },
@@ -207,6 +254,18 @@ async function main() {
             description: 'La certification Cloud Practitioner valide une compréhension globale du cloud AWS, des services principaux, de la tarification, de la sécurité et de l\'architecture.',
             niveau: 'DEBUTANT',
             dureeIndicative: '15 heures',
+            objectifs: [
+                'Comprendre les fondamentaux du cloud AWS et sa valeur métier',
+                'Identifier les services AWS principaux et leurs cas d\'usage',
+                'Expliquer les concepts de sécurité et de conformité AWS',
+                'Décrire les modèles de tarification et de support AWS',
+                'Distinguer les piliers du Well-Architected Framework'
+            ],
+            prerequis: [
+                'Aucune expérience technique requise',
+                'Compréhension de base des concepts IT',
+                'Curiosité pour les technologies cloud'
+            ],
             image: '/badges/aws-cp.svg',
             fournisseurId: aws.id,
         },

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { apiFetch } from '../lib/api';
-import { Bell, MessageCircle, Heart, ShieldAlert, CheckCheck, Trash2 } from 'lucide-react';
+import { Bell, MessageCircle, Heart, ShieldAlert, CheckCheck, Trash2 } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 

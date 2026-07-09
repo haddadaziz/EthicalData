@@ -8,7 +8,7 @@ import {
     Download, ExternalLink, Award, CheckCheck,
     Maximize2, Minimize2, ChevronRight, Trophy,
     ArrowLeft, ArrowRight, ListOrdered
-} from 'lucide-react';
+} from '@/components/icons';
 import { useToast } from '../../../../../context/ToastContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -55,6 +55,7 @@ export default function ApprendrePage() {
     const [completing, setCompleting] = useState(false);
     const [progressionGlobale, setProgressionGlobale] = useState(0);
     const [showConfetti, setShowConfetti] = useState(false);
+    const [courseSimulation, setCourseSimulation] = useState<any>(null);
     const [focusMode, setFocusMode] = useState(false);
     const [readingProgress, setReadingProgress] = useState(0);
     const contentRef = useRef<HTMLDivElement>(null);
@@ -81,6 +82,11 @@ export default function ApprendrePage() {
                 const completedCount = progData.filter((p: ProgressionModule) => p.completed).length;
                 const total = coursData.modules?.length || 1;
                 setProgressionGlobale(Math.round((completedCount / total) * 100));
+
+                try {
+                    const sim = await apiFetch(`/simulations/cours/${coursId}`, { method: 'GET' });
+                    setCourseSimulation(sim);
+                } catch { /* pas de simulation */ }
             } catch (err: any) {
                 showToast("Impossible de charger le cours.", "error");
                 router.push('/dashboard/cours');
@@ -117,6 +123,28 @@ export default function ApprendrePage() {
             showToast(err.message || "Erreur lors de la complétion.", "error");
         } finally {
             setCompleting(false);
+        }
+    };
+
+    const [completingNext, setCompletingNext] = useState(false);
+    const handleCompleteAndNext = async () => {
+        if (!activeModuleId || activeProgression?.completed || completingNext) return;
+        setCompletingNext(true);
+        try {
+            await apiFetch(`/cours/${coursId}/modules/${activeModuleId}/complete`, { method: 'POST' });
+            setProgressions(prev =>
+                prev.map(p =>
+                    p.moduleId === activeModuleId
+                        ? { ...p, completed: true, dateCompletion: new Date().toISOString() }
+                        : p
+                )
+            );
+            showToast("Module marqué comme terminé !", "success");
+            navigateModule('next');
+        } catch (err: any) {
+            showToast(err.message || "Erreur lors de la complétion.", "error");
+        } finally {
+            setCompletingNext(false);
         }
     };
 
@@ -181,6 +209,18 @@ export default function ApprendrePage() {
                         <div>
                             <h2 className="text-sm font-black text-slate-900 leading-tight line-clamp-2">{cours.titre}</h2>
                             <p className="text-[10px] font-semibold text-slate-400 mt-1">{cours.certification?.nom || ''}</p>
+                            {cours.formateur && (
+                                <div className="flex items-center gap-1.5 mt-2 text-[10px] text-slate-500 font-semibold">
+                                    <div className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[8px] font-black shrink-0">
+                                        {cours.formateur.avatar ? (
+                                            <img src={cours.formateur.avatar} alt="" className="w-full h-full object-cover rounded-full" />
+                                        ) : (
+                                            cours.formateur.prenom?.[0] || 'F'
+                                        )}
+                                    </div>
+                                    <span>Par {cours.formateur.prenom} {cours.formateur.nom}</span>
+                                </div>
+                            )}
                         </div>
 
                         {/* Progression globale */}
@@ -412,10 +452,22 @@ export default function ApprendrePage() {
                                         <ChevronLeft className="w-4 h-4" /> Précédent
                                     </button>
                                     {activeIndex < modules.length - 1 ? (
-                                        <button onClick={() => { navigateModule('next'); if (contentRef.current) contentRef.current.scrollTop = 0; }}
-                                            className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-2 shadow-sm hover:shadow-md">
-                                            Suivant <ChevronRight className="w-4 h-4" />
-                                        </button>
+                                        <div className="flex items-center gap-2">
+                                            <button onClick={() => { navigateModule('next'); if (contentRef.current) contentRef.current.scrollTop = 0; }}
+                                                className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-2 shadow-sm hover:shadow-md">
+                                                Suivant <ChevronRight className="w-4 h-4" />
+                                            </button>
+                                            <button onClick={handleCompleteAndNext}
+                                                disabled={completingNext || activeProgression?.completed}
+                                                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-2 shadow-sm hover:shadow-md disabled:opacity-50">
+                                                {completingNext ? (
+                                                    <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                ) : (
+                                                    <><CheckCircle className="w-3.5 h-3.5" /></>
+                                                )}
+                                                Suivant & terminer
+                                            </button>
+                                        </div>
                                     ) : isAllCompleted ? (
                                         <div className="flex items-center gap-3">
                                             <button onClick={() => router.push('/dashboard/cours')}
@@ -447,10 +499,18 @@ export default function ApprendrePage() {
                                         <p className="text-base text-emerald-100 font-medium max-w-lg mx-auto">
                                             Vous avez terminé tous les modules de <strong>{cours.titre}</strong>.
                                         </p>
-                                        <button onClick={() => router.push('/dashboard/cours')}
-                                            className="px-6 py-2.5 bg-white text-emerald-700 text-sm font-black rounded-xl hover:bg-emerald-50 transition-all cursor-pointer inline-flex items-center gap-2 shadow-md">
-                                            <BookOpen className="w-4 h-4" /> Voir mes cours
-                                        </button>
+                                        <div className="flex flex-wrap items-center justify-center gap-3">
+                                            <button onClick={() => router.push('/dashboard/cours')}
+                                                className="px-6 py-2.5 bg-white/20 hover:bg-white/30 text-white text-sm font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-2 shadow-md backdrop-blur-sm">
+                                                <BookOpen className="w-4 h-4" /> Voir mes cours
+                                            </button>
+                                            {courseSimulation && (
+                                                <button onClick={() => router.push(`/dashboard/practice?course=${cours.slug}`)}
+                                                    className="px-6 py-2.5 bg-white text-emerald-700 text-sm font-black rounded-xl hover:bg-emerald-50 transition-all cursor-pointer inline-flex items-center gap-2 shadow-md">
+                                                    <Award className="w-4 h-4" /> Passer la simulation
+                                                </button>
+                                            )}
+                                        </div>
                                     </motion.div>
                                 )}
                             </div>

@@ -1,7 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../certifications/ai.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
+import { CreateSimulationDto } from './dto/create-simulation.dto';
 
 @Injectable()
 export class SimulationsService {
@@ -158,13 +159,20 @@ export class SimulationsService {
             throw new NotFoundException("La certification demandée n'existe pas.");
         }
 
-        // Tentative passe maintenant par une Simulation liée à la certification
-        const simulation = await this.prisma.simulation.findFirst({
+        let simulation = await this.prisma.simulation.findFirst({
             where: { certificationId: BigInt(certId) },
         });
 
         if (!simulation) {
-            throw new NotFoundException('Aucune simulation disponible pour cette certification.');
+            simulation = await this.prisma.simulation.create({
+                data: {
+                    titre: `Simulation ${cert.nom}`,
+                    description: `Simulation automatique pour la certification ${cert.nom}`,
+                    duree: 60,
+                    scoreMinimal: 800,
+                    certificationId: BigInt(certId),
+                },
+            });
         }
 
         const tentative = await this.prisma.tentative.create({
@@ -341,6 +349,311 @@ export class SimulationsService {
                 certificationId: cert.id.toString(),
                 certificationName: cert.nom,
                 certificationSlug: cert.slug,
+            })),
+        };
+    }
+
+    // ───── Simulations de Cours ─────────────────────────────────────
+
+    async createCourseSimulation(coursId: number, dto: CreateSimulationDto) {
+        const cours = await this.prisma.cours.findFirst({
+            where: { id: BigInt(coursId), deletedAt: null },
+        });
+        if (!cours) throw new NotFoundException('Cours introuvable.');
+
+        const existing = await this.prisma.simulation.findFirst({
+            where: { coursId: BigInt(coursId) },
+        });
+        if (existing) throw new BadRequestException('Ce cours a déjà une simulation.');
+
+        const simulation = await this.prisma.simulation.create({
+            data: {
+                titre: dto.titre,
+                description: dto.description || null,
+                duree: dto.duree ?? 60,
+                scoreMinimal: dto.scoreMinimal ?? 700,
+                certificationId: BigInt(dto.certificationId),
+                coursId: BigInt(coursId),
+            },
+        });
+
+        return {
+            ...simulation,
+            id: simulation.id.toString(),
+            certificationId: simulation.certificationId.toString(),
+            coursId: simulation.coursId?.toString() || null,
+        };
+    }
+
+    async getCourseSimulation(coursId: number) {
+        const simulation = await this.prisma.simulation.findFirst({
+            where: { coursId: BigInt(coursId) },
+            include: {
+                questions: { include: { options: true } },
+                certification: true,
+            },
+        });
+        if (!simulation) return null;
+
+        return {
+            ...simulation,
+            id: simulation.id.toString(),
+            certificationId: simulation.certificationId.toString(),
+            coursId: simulation.coursId?.toString() || null,
+            certification: simulation.certification
+                ? { ...simulation.certification, id: simulation.certification.id.toString() }
+                : null,
+            questions: simulation.questions.map((q) => ({
+                ...q,
+                id: q.id.toString(),
+                certificationId: q.certificationId.toString(),
+                options: q.options.map((o) => ({
+                    ...o,
+                    id: o.id.toString(),
+                    questionId: o.questionId.toString(),
+                })),
+            })),
+        };
+    }
+
+    async createCourseTentative(userId: number, coursId: number, score: number) {
+        const simulation = await this.prisma.simulation.findFirst({
+            where: { coursId: BigInt(coursId) },
+        });
+        if (!simulation) throw new NotFoundException('Aucune simulation pour ce cours.');
+
+        const tentative = await this.prisma.tentative.create({
+            data: {
+                score,
+                utilisateurId: BigInt(userId),
+                simulationId: simulation.id,
+            },
+        });
+
+        return {
+            ...tentative,
+            id: tentative.id.toString(),
+            utilisateurId: tentative.utilisateurId.toString(),
+            simulationId: tentative.simulationId.toString(),
+        };
+    }
+
+    async getCourseTentatives(userId: number, coursId: number) {
+        const simulation = await this.prisma.simulation.findFirst({
+            where: { coursId: BigInt(coursId) },
+        });
+        if (!simulation) return [];
+
+        const tentatives = await this.prisma.tentative.findMany({
+            where: {
+                utilisateurId: BigInt(userId),
+                simulationId: simulation.id,
+            },
+            orderBy: { datePassage: 'desc' },
+            take: 10,
+        });
+
+        return tentatives.map((t) => ({
+            id: t.id.toString(),
+            score: t.score,
+            dureePassage: t.dureePassage,
+            datePassage: t.datePassage,
+        }));
+    }
+
+    // ───── Questions pour Simulations de Cours ──────────────────────
+
+    async findQuestionsByCourse(coursId: number) {
+        const simulation = await this.prisma.simulation.findFirst({
+            where: { coursId: BigInt(coursId) },
+        });
+        if (!simulation) return [];
+
+        const questions = await this.prisma.question.findMany({
+            where: { simulationId: simulation.id },
+            include: { options: true },
+            orderBy: { dateCreation: 'asc' },
+        });
+
+        return questions.map((q) => ({
+            ...q,
+            id: q.id.toString(),
+            certificationId: q.certificationId.toString(),
+            simulationId: q.simulationId?.toString() || null,
+            options: q.options.map((o) => ({
+                ...o,
+                id: o.id.toString(),
+                questionId: o.questionId.toString(),
+            })),
+        }));
+    }
+
+    async createCourseQuestion(coursId: number, dto: CreateQuestionDto) {
+        const simulation = await this.prisma.simulation.findFirst({
+            where: { coursId: BigInt(coursId) },
+            include: { cours: true },
+        });
+        if (!simulation) throw new NotFoundException("Ce cours n'a pas de simulation. Créez d'abord la simulation.");
+        if (!simulation.cours) throw new NotFoundException('Cours introuvable.');
+
+        const optionsData =
+            dto.options && dto.options.length > 0
+                ? {
+                    create: dto.options.map((opt: any) => ({
+                        lettre: opt.lettre,
+                        texte: opt.texte,
+                    })),
+                }
+                : undefined;
+
+        const question = await this.prisma.question.create({
+            data: {
+                enonce: dto.enonce,
+                explication: dto.explication || null,
+                reponseCorrecte: dto.reponseCorrecte,
+                grilleNotation: dto.grilleNotation || null,
+                categorie: dto.categorie || null,
+                type: dto.type || 'QCM',
+                certificationId: simulation.certificationId,
+                simulationId: simulation.id,
+                options: optionsData,
+            },
+            include: { options: true },
+        });
+
+        return {
+            ...question,
+            id: question.id.toString(),
+            certificationId: question.certificationId.toString(),
+            simulationId: question.simulationId?.toString() || null,
+            options: question.options.map((o) => ({
+                ...o,
+                id: o.id.toString(),
+                questionId: o.questionId.toString(),
+            })),
+        };
+    }
+
+    async getReadinessScoreForCourse(userId: number, coursId: number) {
+        const cours = await this.prisma.cours.findFirst({
+            where: { id: BigInt(coursId), deletedAt: null },
+            include: {
+                modules: { orderBy: { ordre: 'asc' }, take: 1 },
+                certification: true,
+            },
+        });
+        if (!cours) throw new NotFoundException('Cours introuvable.');
+
+        const simulation = await this.prisma.simulation.findFirst({
+            where: { coursId: BigInt(coursId) },
+        });
+
+        if (!simulation) {
+            return {
+                coursNom: cours.titre,
+                readinessScore: 0,
+                statut: 'NON_EVALUE',
+                totalTentatives: 0,
+                simulationExists: false,
+                conseil: "Le formateur n'a pas encore créé de simulation pour ce cours.",
+                pointsForts: [],
+                lacunes: [],
+                planRevision: [],
+                history: [],
+            };
+        }
+
+        const tentatives = await this.prisma.tentative.findMany({
+            where: {
+                utilisateurId: BigInt(userId),
+                simulationId: simulation.id,
+            },
+            orderBy: { datePassage: 'desc' },
+            take: 5,
+        });
+
+        if (tentatives.length === 0) {
+            return {
+                coursNom: cours.titre,
+                readinessScore: 0,
+                statut: 'NON_EVALUE',
+                simulationExists: true,
+                totalTentatives: 0,
+                conseil: "Veuillez passer la simulation de ce cours pour obtenir une analyse de votre niveau.",
+                pointsForts: [],
+                lacunes: [],
+                planRevision: [
+                    `Terminez tous les modules du cours "${cours.titre}".`,
+                    `Passez la simulation de fin de cours.`,
+                    `Consultez les ressources complémentaires fournies par le formateur.`,
+                ],
+                history: [],
+            };
+        }
+
+        const scores = tentatives.map((t) => t.score);
+        const dernierScore = scores[0];
+        const moyenneScores = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+        const readinessScore = Math.min(100, Math.round(moyenneScores * 0.6 + dernierScore * 0.4));
+
+        let statut = 'NON_PRET';
+        let conseil = '';
+
+        if (readinessScore >= 80) {
+            statut = 'PRET';
+            conseil = `Excellent ! Vous maîtrisez les concepts du cours "${cours.titre}". Vous êtes prêt pour l'évaluation.`;
+        } else if (readinessScore >= 65) {
+            statut = 'PRESQUE_PRET';
+            conseil = `Bonne progression sur "${cours.titre}". Consolidez vos révisions sur les modules où vous avez le moins de points.`;
+        } else {
+            statut = 'NON_PRET';
+            conseil = `Revoir les modules de "${cours.titre}" avant de repasser la simulation. Concentrez-vous sur les notions fondamentales.`;
+        }
+
+        const moduleTitles = (cours.modules || []).map((m) => m.titre);
+        let pointsForts: string[] = [];
+        let lacunes: string[] = [];
+
+        if (moduleTitles.length >= 2) {
+            const mid = Math.ceil(moduleTitles.length / 2);
+            if (readinessScore >= 80) {
+                pointsForts = moduleTitles;
+                lacunes = ["Optimisation du temps de réponse aux questions"];
+            } else if (readinessScore >= 65) {
+                pointsForts = moduleTitles.slice(0, mid);
+                lacunes = moduleTitles.slice(mid);
+            } else {
+                pointsForts = moduleTitles.slice(0, 1);
+                lacunes = moduleTitles.slice(1);
+            }
+        } else {
+            pointsForts = ["Concepts fondamentaux du cours"];
+            lacunes = ["Détails avancés et cas pratiques"];
+        }
+
+        const planRevision = [
+            `Révisez les modules du cours "${cours.titre}" en priorité.`,
+            `Utilisez les fiches de révision et ressources associées.`,
+            `Réservez un créneau avec un formateur si des points restent flous.`,
+            `Repassez la simulation une fois les révisions terminées.`,
+        ];
+
+        return {
+            coursNom: cours.titre,
+            readinessScore,
+            statut,
+            dernierScore,
+            moyenneScores,
+            simulationExists: true,
+            totalTentatives: tentatives.length,
+            conseil,
+            pointsForts,
+            lacunes,
+            planRevision,
+            history: tentatives.map((t) => ({
+                id: t.id.toString(),
+                score: t.score,
+                datePassage: t.datePassage,
             })),
         };
     }

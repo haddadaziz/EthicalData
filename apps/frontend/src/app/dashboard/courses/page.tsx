@@ -8,8 +8,9 @@ import {
     Award, BookOpen, Clock, FileText, Plus, Trash2,
     Eye, EyeOff, ChevronDown, ChevronUp, Upload, Link,
     FilePlus, BookMarked, Send, Save, X, Layers, PlusCircle,
-    AlertTriangle, Crop, Image as ImageIcon
-} from 'lucide-react';
+    AlertTriangle, Crop,
+    Play, HelpCircle, CheckCircle, AlertCircle
+} from '@/components/icons';
 
 // ─────────────────────────────────────────
 // TYPES
@@ -440,7 +441,7 @@ interface CourseEditorProps {
     onPublish: (data: any) => Promise<void>;
 }
 
-type SectionId = 'ACCUEIL' | 'PARTICIPANTS' | 'MODULES';
+type SectionId = 'ACCUEIL' | 'PARTICIPANTS' | 'MODULES' | 'SIMULATION';
 
 function CourseEditor({ certs, editingCours, onClose, showToast, onSave, onSaveDraft, onPublish }: CourseEditorProps) {
     const [activeSection, setActiveSection] = useState<SectionId>('ACCUEIL');
@@ -518,10 +519,40 @@ function CourseEditor({ certs, editingCours, onClose, showToast, onSave, onSaveD
     );
 
     // Modules locaux (pour affichage dans l'éditeur)
+    // Création silencieuse du cours si nécessaire (pour modules/simulation)
+    const [localCoursId, setLocalCoursId] = useState<string | null>(null);
+    const coursId = localCoursId || editingCours?.id || null;
+
+    const ensureCours = async (): Promise<string | null> => {
+        if (coursId) return coursId;
+        const data = collectFormData();
+        if (!data || !data.titre) return null;
+        try {
+            const created = await apiFetch('/cours', {
+                method: 'POST',
+                body: { ...data, statut: 'BROUILLON' },
+            });
+            setLocalCoursId(created.id);
+            return created.id;
+        } catch {
+            return null;
+        }
+    };
+
     const [modules, setModules] = useState<Module[]>(editingCours?.modules || []);
     const [addingModule, setAddingModule] = useState(false);
     const [editingModule, setEditingModule] = useState<Module | null>(null);
     const [moduleForm, setModuleForm] = useState({ titre: '', dureeEstimee: 30, contenu: '' });
+
+    // Simulation de cours
+    const [courseSim, setCourseSim] = useState<any>(null);
+    const [simLoading, setSimLoading] = useState(false);
+    const [simForm, setSimForm] = useState({ titre: '', description: '', duree: 30, scoreMinimal: 70 });
+    const [simQuestions, setSimQuestions] = useState<any[]>([]);
+    const [creatingSim, setCreatingSim] = useState(false);
+    const [addingQuestion, setAddingQuestion] = useState(false);
+    const [editingQuestion, setEditingQuestion] = useState<any | null>(null);
+    const [qForm, setQForm] = useState({ enonce: '', type: 'QCM', reponseCorrecte: '', explication: '', options: [{ lettre: 'A', texte: '' }, { lettre: 'B', texte: '' }] });
 
     // Image upload & crop
     const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -675,6 +706,24 @@ function CourseEditor({ certs, editingCours, onClose, showToast, onSave, onSaveD
         return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
     }, [isDraggingRect, dragRectStart, imgContainerSize, cropRect.w, cropRect.h]);
 
+    // Charger la simulation existante
+    useEffect(() => {
+        const id = coursId;
+        if (!id) return;
+        (async () => {
+            setSimLoading(true);
+            try {
+                const sim = await apiFetch(`/simulations/cours/${id}`, { method: 'GET' });
+                if (sim) {
+                    setCourseSim(sim);
+                    const qs = await apiFetch(`/simulations/cours/${id}/questions`, { method: 'GET' });
+                    setSimQuestions(qs);
+                }
+            } catch { /* pas de simulation */ }
+            finally { setSimLoading(false); }
+        })();
+    }, [coursId]);
+
     const collectFormData = () => {
         if (!formRef.current) return null;
         const fd = new FormData(formRef.current);
@@ -733,6 +782,7 @@ function CourseEditor({ certs, editingCours, onClose, showToast, onSave, onSaveD
         { id: 'ACCUEIL', label: 'Accueil du cours', icon: <BookOpen className="w-3.5 h-3.5" /> },
         { id: 'PARTICIPANTS', label: 'Participants cibles', icon: <Award className="w-3.5 h-3.5" /> },
         { id: 'MODULES', label: 'Modules', icon: <Layers className="w-3.5 h-3.5" /> },
+        { id: 'SIMULATION', label: 'Simulation', icon: <Play className="w-3.5 h-3.5" /> },
     ];
 
     return (
@@ -1075,26 +1125,10 @@ function CourseEditor({ certs, editingCours, onClose, showToast, onSave, onSaveD
                             <div className="border-b border-slate-100 pb-3">
                                 <h2 className="text-sm font-black text-slate-900">Modules du cours</h2>
                                 <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
-                                    {editingCours
-                                        ? "Gérez les chapitres de votre cours. Sauvegardez d'abord le cours pour ajouter des modules via l'API."
-                                        : "Sauvegardez d'abord le cours en brouillon pour ensuite ajouter des modules."}
+                                    Gérez les chapitres de votre cours. Si le cours n'est pas encore créé, il le sera automatiquement à l'ajout du premier module.
                                 </p>
                             </div>
-
-                            {!editingCours ? (
-                                <div className="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-                                    <FilePlus className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                                    <p className="text-xs font-bold text-slate-400">
-                                        Sauvegardez d'abord le cours en brouillon,<br />puis revenez ajouter des modules.
-                                    </p>
-                                    <button type="button" onClick={handleSaveDraft} disabled={saving}
-                                        className="mt-4 px-4 py-2 bg-blue-600 text-white text-xs font-black rounded-xl cursor-pointer hover:bg-blue-700 transition-all">
-                                        <Save className="w-3.5 h-3.5 inline mr-1" />
-                                        Sauvegarder en brouillon
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="space-y-3">
+                            <div className="space-y-3">
                                     {modules.length === 0 ? (
                                         <p className="text-xs text-slate-400 italic text-center py-4">Aucun module pour l'instant.</p>
                                     ) : (
@@ -1151,6 +1185,8 @@ function CourseEditor({ certs, editingCours, onClose, showToast, onSave, onSaveD
                                                 <button type="button"
                                                     onClick={async () => {
                                                         if (!moduleForm.titre.trim()) { showToast("Titre requis.", "error"); return; }
+                                                        const cId = await ensureCours();
+                                                        if (!cId) { showToast("Remplissez d'abord le titre du cours dans l'onglet Accueil.", "error"); return; }
                                                         try {
                                                             const body = {
                                                                 titre: moduleForm.titre,
@@ -1164,7 +1200,7 @@ function CourseEditor({ certs, editingCours, onClose, showToast, onSave, onSaveD
                                                                 setModules(prev => prev.map(m => m.id === editingModule.id ? { ...m, ...body } : m));
                                                                 showToast("Module mis à jour.", "success");
                                                             } else {
-                                                                const res = await apiFetch(`/cours/${editingCours!.id}/modules`, {
+                                                                const res = await apiFetch(`/cours/${cId}/modules`, {
                                                                     method: 'POST', body,
                                                                 });
                                                                 setModules(prev => [...prev, res]);
@@ -1195,6 +1231,318 @@ function CourseEditor({ certs, editingCours, onClose, showToast, onSave, onSaveD
                                             Ajouter un module
                                         </button>
                                     )}
+                                 </div>
+                        </div>
+
+                        {/* ── SIMULATION ── */}
+                        <div className={activeSection === 'SIMULATION' ? 'block space-y-5' : 'hidden'}>
+                            <div className="border-b border-slate-100 pb-3">
+                                <h2 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                                    <Play className="w-4 h-4 text-purple-600" />
+                                    Simulation de fin de cours
+                                </h2>
+                                <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
+                                    Créez un quiz de validation que les apprenants devront réussir après avoir terminé tous les modules.
+                                </p>
+                            </div>
+
+                            {simLoading ? (
+                                <div className="flex items-center justify-center py-10">
+                                    <div className="animate-spin w-6 h-6 border-4 border-purple-600 border-t-transparent rounded-full" />
+                                </div>
+                            ) : !courseSim ? (
+                                <div className="space-y-4">
+                                    <div className="p-6 bg-purple-50 border border-purple-100 rounded-2xl text-center">
+                                        <HelpCircle className="w-8 h-8 text-purple-300 mx-auto mb-2" />
+                                        <p className="text-xs font-bold text-slate-600 mb-1">
+                                            Aucune simulation configurée pour ce cours.
+                                        </p>
+                                        <p className="text-[10px] text-slate-400 font-semibold mb-4">
+                                            Les apprenants ne pourront pas valider le cours sans simulation.
+                                        </p>
+                                    </div>
+
+                                    {!creatingSim ? (
+                                        <button type="button" onClick={() => setCreatingSim(true)}
+                                            className="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white text-xs font-black rounded-2xl transition-all cursor-pointer flex items-center justify-center gap-2">
+                                            <Play className="w-4 h-4" />
+                                            Créer la simulation
+                                        </button>
+                                    ) : (
+                                        <div className="p-4 bg-purple-50 border border-purple-100 rounded-2xl space-y-3">
+                                            <p className="text-xs font-black text-purple-700">Nouvelle simulation</p>
+                                            <input type="text" value={simForm.titre}
+                                                onChange={e => setSimForm(p => ({ ...p, titre: e.target.value }))}
+                                                placeholder="Titre de la simulation"
+                                                className="w-full px-4 py-2.5 bg-white border border-purple-200 focus:border-purple-600 rounded-xl text-xs font-semibold outline-none" />
+                                            <textarea rows={2} value={simForm.description}
+                                                onChange={e => setSimForm(p => ({ ...p, description: e.target.value }))}
+                                                placeholder="Description (optionnelle)"
+                                                className="w-full px-4 py-2.5 bg-white border border-purple-200 focus:border-purple-600 rounded-xl text-xs font-semibold outline-none resize-none" />
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] font-bold text-slate-500">Durée (min)</label>
+                                                    <input type="number" value={simForm.duree}
+                                                        onChange={e => setSimForm(p => ({ ...p, duree: Number(e.target.value) }))} min={1}
+                                                        className="w-full px-4 py-2.5 bg-white border border-purple-200 focus:border-purple-600 rounded-xl text-xs font-bold outline-none" />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] font-bold text-slate-500">Score min. (%)</label>
+                                                    <input type="number" value={simForm.scoreMinimal}
+                                                        onChange={e => setSimForm(p => ({ ...p, scoreMinimal: Number(e.target.value) }))} min={0} max={100}
+                                                        className="w-full px-4 py-2.5 bg-white border border-purple-200 focus:border-purple-600 rounded-xl text-xs font-bold outline-none" />
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <button type="button" onClick={async () => {
+                                                    if (!simForm.titre.trim()) { showToast("Titre requis.", "error"); return; }
+                                                    const cId = await ensureCours();
+                                                    if (!cId) { showToast("Remplissez d'abord le titre du cours dans l'onglet Accueil.", "error"); return; }
+                                                    try {
+                                                        const fd = new FormData(formRef.current!);
+                                                        const certId = Number(fd.get('certificationId') || certs[0]?.id);
+                                                        const sim = await apiFetch(`/simulations/cours/${cId}`, {
+                                                            method: 'POST',
+                                                            body: {
+                                                                titre: simForm.titre,
+                                                                description: simForm.description || undefined,
+                                                                duree: simForm.duree,
+                                                                scoreMinimal: simForm.scoreMinimal,
+                                                                certificationId: certId,
+                                                            },
+                                                        });
+                                                        setCourseSim(sim);
+                                                        setCreatingSim(false);
+                                                        showToast("Simulation créée.", "success");
+                                                    } catch (err: any) {
+                                                        showToast(err.message || "Erreur.", "error");
+                                                    }
+                                                }}
+                                                    className="px-4 py-2.5 bg-purple-600 text-white text-xs font-black rounded-xl cursor-pointer hover:bg-purple-700 transition-all">
+                                                    Créer
+                                                </button>
+                                                <button type="button" onClick={() => setCreatingSim(false)}
+                                                    className="px-3 py-2.5 text-slate-500 text-xs font-bold cursor-pointer hover:text-slate-700">
+                                                    Annuler
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="space-y-5">
+                                    {/* Infos simulation */}
+                                    <div className="p-4 bg-purple-50 border border-purple-100 rounded-2xl flex items-center justify-between">
+                                        <div>
+                                            <p className="text-xs font-black text-purple-800">{courseSim.titre}</p>
+                                            {courseSim.description && (
+                                                <p className="text-[10px] text-purple-600 font-semibold mt-0.5">{courseSim.description}</p>
+                                            )}
+                                            <p className="text-[10px] text-slate-400 font-bold mt-1">
+                                                {courseSim.duree} min · Score min. {courseSim.scoreMinimal}%
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Questions */}
+                                    <div>
+                                        <div className="flex items-center justify-between mb-3">
+                                            <h3 className="text-xs font-black text-slate-700">
+                                                Questions ({simQuestions.length})
+                                            </h3>
+                                            {!addingQuestion && !editingQuestion && (
+                                                <button type="button" onClick={() => {
+                                                    setAddingQuestion(true);
+                                                    setQForm({ enonce: '', type: 'QCM', reponseCorrecte: '', explication: '', options: [{ lettre: 'A', texte: '' }, { lettre: 'B', texte: '' }] });
+                                                }}
+                                                    className="px-3 py-1.5 bg-purple-600 text-white text-[10px] font-black rounded-lg cursor-pointer hover:bg-purple-700 transition-all flex items-center gap-1">
+                                                    <Plus className="w-3 h-3" />
+                                                    Ajouter
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        {simQuestions.length === 0 && !addingQuestion && (
+                                            <p className="text-xs text-slate-400 italic text-center py-4">Aucune question pour l'instant.</p>
+                                        )}
+
+                                        <div className="space-y-2">
+                                            {simQuestions.map((q, idx) => (
+                                                <div key={q.id} className="flex items-start gap-3 p-3 bg-slate-50 border border-slate-100 rounded-xl">
+                                                    <span className="w-5 h-5 rounded-lg bg-purple-50 text-purple-600 text-[9px] font-black flex items-center justify-center border border-purple-100 shrink-0 mt-0.5">
+                                                        {idx + 1}
+                                                    </span>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-xs font-bold text-slate-700">{q.enonce}</p>
+                                                        <p className="text-[10px] text-slate-400 font-semibold mt-0.5 flex items-center gap-2 flex-wrap">
+                                                            <span className={q.type === 'QCM' ? 'text-blue-500' : q.type === 'VRAI_FAUX' ? 'text-emerald-500' : 'text-amber-500'}>
+                                                                {q.type}
+                                                            </span>
+                                                            {q.options?.length > 0 && <span>{q.options.length} options</span>}
+                                                            <span className="text-xs">· Rép: <strong className="text-slate-600">{q.reponseCorrecte}</strong></span>
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex items-center gap-1 shrink-0">
+                                                        <button type="button" onClick={() => {
+                                                            setEditingQuestion(q);
+                                                            setQForm({
+                                                                enonce: q.enonce,
+                                                                type: q.type,
+                                                                reponseCorrecte: q.reponseCorrecte,
+                                                                explication: q.explication || '',
+                                                                options: q.options?.map((o: any) => ({ lettre: o.lettre, texte: o.texte })) || [],
+                                                            });
+                                                        }}
+                                                            className="p-1.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-all cursor-pointer"
+                                                            title="Modifier">
+                                                            <FileText className="w-3 h-3" />
+                                                        </button>
+                                                        <button type="button" onClick={async () => {
+                                                            try {
+                                                                await apiFetch(`/simulations/questions/${q.id}`, { method: 'DELETE' });
+                                                                setSimQuestions(prev => prev.filter(x => x.id !== q.id));
+                                                                showToast("Question supprimée.", "success");
+                                                            } catch (err: any) {
+                                                                showToast(err.message || "Erreur.", "error");
+                                                            }
+                                                        }}
+                                                            className="p-1.5 text-rose-400 hover:bg-rose-50 rounded-lg transition-all cursor-pointer"
+                                                            title="Supprimer">
+                                                            <Trash2 className="w-3 h-3" />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* Ajouter / Modifier question */}
+                                        {(addingQuestion || editingQuestion) && (
+                                            <div className="p-4 bg-purple-50 border border-purple-100 rounded-2xl space-y-3 mt-3">
+                                                <p className="text-xs font-black text-purple-700">
+                                                    {editingQuestion ? 'Modifier la question' : 'Nouvelle question'}
+                                                </p>
+                                                <input type="text" value={qForm.enonce}
+                                                    onChange={e => setQForm(p => ({ ...p, enonce: e.target.value }))}
+                                                    placeholder="Énoncé de la question"
+                                                    className="w-full px-4 py-2.5 bg-white border border-purple-200 focus:border-purple-600 rounded-xl text-xs font-semibold outline-none" />
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] font-bold text-slate-500">Type</label>
+                                                    <select value={qForm.type} onChange={e => setQForm(p => ({ ...p, type: e.target.value, options: e.target.value === 'VRAI_FAUX' ? [{ lettre: 'V', texte: 'Vrai' }, { lettre: 'F', texte: 'Faux' }] : e.target.value === 'QCM' ? [{ lettre: 'A', texte: '' }, { lettre: 'B', texte: '' }] : [] }))}
+                                                        className="w-full px-4 py-2.5 bg-white border border-purple-200 focus:border-purple-600 rounded-xl text-xs font-bold outline-none cursor-pointer">
+                                                        <option value="QCM">QCM (choix multiple)</option>
+                                                        <option value="VRAI_FAUX">Vrai / Faux</option>
+                                                        <option value="REDACTION">Rédaction</option>
+                                                    </select>
+                                                </div>
+
+                                                {qForm.type === 'QCM' && (
+                                                    <div className="space-y-2">
+                                                        {qForm.options.map((opt, oi) => (
+                                                            <div key={oi} className="flex items-center gap-2">
+                                                                <span className="text-[10px] font-black text-slate-500 w-4 shrink-0">{opt.lettre}</span>
+                                                                <input type="text" value={opt.texte}
+                                                                    onChange={e => {
+                                                                        const newOpts = [...qForm.options];
+                                                                        newOpts[oi] = { ...newOpts[oi], texte: e.target.value };
+                                                                        setQForm(p => ({ ...p, options: newOpts }));
+                                                                    }}
+                                                                    placeholder={`Option ${opt.lettre}`}
+                                                                    className="flex-1 px-3 py-2 bg-white border border-purple-200 focus:border-purple-600 rounded-lg text-xs font-semibold outline-none" />
+                                                                {oi === qForm.options.length - 1 && qForm.options.length < 6 && (
+                                                                    <button type="button" onClick={() => {
+                                                                        const nextLetter = String.fromCharCode(65 + qForm.options.length);
+                                                                        setQForm(p => ({ ...p, options: [...p.options, { lettre: nextLetter, texte: '' }] }));
+                                                                    }}
+                                                                        className="p-1.5 text-purple-400 hover:text-purple-600 cursor-pointer">
+                                                                        <Plus className="w-3.5 h-3.5" />
+                                                                    </button>
+                                                                )}
+                                                                {qForm.options.length > 2 && (
+                                                                    <button type="button" onClick={() => {
+                                                                        setQForm(p => ({ ...p, options: p.options.filter((_, i) => i !== oi) }));
+                                                                    }}
+                                                                        className="p-1.5 text-rose-400 hover:text-rose-600 cursor-pointer">
+                                                                        <Trash2 className="w-3 h-3" />
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] font-bold text-slate-500">Réponse correcte</label>
+                                                    {qForm.type === 'VRAI_FAUX' ? (
+                                                        <select value={qForm.reponseCorrecte} onChange={e => setQForm(p => ({ ...p, reponseCorrecte: e.target.value }))}
+                                                            className="w-full px-4 py-2.5 bg-white border border-purple-200 focus:border-purple-600 rounded-xl text-xs font-bold outline-none cursor-pointer">
+                                                            <option value="">Sélectionner...</option>
+                                                            <option value="V">Vrai</option>
+                                                            <option value="F">Faux</option>
+                                                        </select>
+                                                    ) : qForm.type === 'QCM' ? (
+                                                        <select value={qForm.reponseCorrecte} onChange={e => setQForm(p => ({ ...p, reponseCorrecte: e.target.value }))}
+                                                            className="w-full px-4 py-2.5 bg-white border border-purple-200 focus:border-purple-600 rounded-xl text-xs font-bold outline-none cursor-pointer">
+                                                            <option value="">Sélectionner...</option>
+                                                            {qForm.options.filter(o => o.texte.trim()).map(o => (
+                                                                <option key={o.lettre} value={o.lettre}>{o.lettre}. {o.texte}</option>
+                                                            ))}
+                                                        </select>
+                                                    ) : (
+                                                        <input type="text" value={qForm.reponseCorrecte}
+                                                            onChange={e => setQForm(p => ({ ...p, reponseCorrecte: e.target.value }))}
+                                                            placeholder="Réponse attendue (ou mots-clés)"
+                                                            className="w-full px-4 py-2.5 bg-white border border-purple-200 focus:border-purple-600 rounded-xl text-xs font-semibold outline-none" />
+                                                    )}
+                                                </div>
+
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] font-bold text-slate-500">Explication (optionnelle)</label>
+                                                    <textarea rows={2} value={qForm.explication}
+                                                        onChange={e => setQForm(p => ({ ...p, explication: e.target.value }))}
+                                                        placeholder="Expliquer pourquoi cette réponse est correcte..."
+                                                        className="w-full px-4 py-2.5 bg-white border border-purple-200 focus:border-purple-600 rounded-xl text-xs font-semibold outline-none resize-none" />
+                                                </div>
+
+                                                <div className="flex items-center gap-2">
+                                                    <button type="button"
+                                                        onClick={async () => {
+                                                            if (!qForm.enonce.trim()) { showToast("Énoncé requis.", "error"); return; }
+                                                            if (!qForm.reponseCorrecte.trim() && qForm.type !== 'REDACTION') { showToast("Réponse correcte requise.", "error"); return; }
+                                                            try {
+                                                                const body = {
+                                                                    enonce: qForm.enonce,
+                                                                    type: qForm.type,
+                                                                    reponseCorrecte: qForm.reponseCorrecte,
+                                                                    explication: qForm.explication || undefined,
+                                                                    options: qForm.type === 'QCM' || qForm.type === 'VRAI_FAUX' ? qForm.options.filter(o => o.texte.trim()).map(o => ({ lettre: o.lettre, texte: o.texte })) : [],
+                                                                };
+                                                                if (editingQuestion) {
+                                                                    const res = await apiFetch(`/simulations/questions/${editingQuestion.id}`, { method: 'PATCH', body });
+                                                                    setSimQuestions(prev => prev.map(q => q.id === editingQuestion.id ? { ...res } : q));
+                                                                    showToast("Question mise à jour.", "success");
+                                                                } else {
+                                                                    const res = await apiFetch(`/simulations/cours/${coursId}/questions`, { method: 'POST', body });
+                                                                    setSimQuestions(prev => [...prev, res]);
+                                                                    showToast("Question ajoutée.", "success");
+                                                                }
+                                                                setAddingQuestion(false);
+                                                                setEditingQuestion(null);
+                                                                setQForm({ enonce: '', type: 'QCM', reponseCorrecte: '', explication: '', options: [{ lettre: 'A', texte: '' }, { lettre: 'B', texte: '' }] });
+                                                            } catch (err: any) {
+                                                                showToast(err.message || "Erreur.", "error");
+                                                            }
+                                                        }}
+                                                        className="px-4 py-2.5 bg-purple-600 text-white text-xs font-black rounded-xl cursor-pointer hover:bg-purple-700 transition-all">
+                                                        {editingQuestion ? 'Enregistrer' : 'Ajouter'}
+                                                    </button>
+                                                    <button type="button" onClick={() => { setAddingQuestion(false); setEditingQuestion(null); setQForm({ enonce: '', type: 'QCM', reponseCorrecte: '', explication: '', options: [{ lettre: 'A', texte: '' }, { lettre: 'B', texte: '' }] }); }}
+                                                        className="px-3 py-2.5 text-slate-500 text-xs font-bold cursor-pointer hover:text-slate-700">
+                                                        Annuler
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             )}
                         </div>

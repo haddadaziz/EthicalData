@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useConfirm } from '../../../context/ConfirmContext';
-import { MessageSquare, Heart, MessageCircle, Flag, ShieldAlert, CheckCircle, Trash2, RefreshCw, Search, User, Eye, RotateCcw, X, ExternalLink } from 'lucide-react';
+import { MessageSquare, Heart, MessageCircle, Flag, ShieldAlert, CheckCircle, Trash2, RefreshCw, Search, User, Eye, RotateCcw, X, ExternalLink } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 

@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { SimulationsService } from './simulations.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
+import { CreateSimulationDto } from './dto/create-simulation.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -37,7 +38,7 @@ export class SimulationsController {
 
     @Patch('questions/:id')
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('SUPER_ADMIN', 'ADMIN')
+    @Roles('FORMATEUR', 'ADMIN', 'SUPER_ADMIN')
     async updateQuestion(
         @Param('id', ParseIntPipe) id: number,
         @Body() dto: CreateQuestionDto,
@@ -47,7 +48,7 @@ export class SimulationsController {
 
     @Delete('questions/:id')
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('SUPER_ADMIN', 'ADMIN')
+    @Roles('FORMATEUR', 'ADMIN', 'SUPER_ADMIN')
     async removeQuestion(@Param('id', ParseIntPipe) id: number) {
         return this.simulationsService.removeQuestion(id);
     }
@@ -89,5 +90,74 @@ export class SimulationsController {
             req.user.id,
             certId,
         );
+    }
+
+    // ─── Simulations de Cours ──────────────────────────────────────
+
+    @Post('cours/:coursId')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('FORMATEUR', 'ADMIN', 'SUPER_ADMIN')
+    async createCourseSimulation(
+        @Param('coursId', ParseIntPipe) coursId: number,
+        @Body() dto: CreateSimulationDto,
+    ) {
+        return this.simulationsService.createCourseSimulation(coursId, dto);
+    }
+
+    @Get('cours/:coursId')
+    @UseGuards(JwtAuthGuard)
+    async getCourseSimulation(@Param('coursId', ParseIntPipe) coursId: number) {
+        return this.simulationsService.getCourseSimulation(coursId);
+    }
+
+    @Post('cours/:coursId/tentatives')
+    @UseGuards(JwtAuthGuard)
+    async createCourseTentative(
+        @Req() req: any,
+        @Param('coursId', ParseIntPipe) coursId: number,
+        @Body() body: { score: number },
+    ) {
+        return this.simulationsService.createCourseTentative(
+            req.user.id,
+            coursId,
+            body.score,
+        );
+    }
+
+    @Get('cours/:coursId/readiness')
+    @UseGuards(JwtAuthGuard)
+    async getReadinessScoreForCourse(
+        @Req() req: any,
+        @Param('coursId', ParseIntPipe) coursId: number,
+    ) {
+        return this.simulationsService.getReadinessScoreForCourse(
+            req.user.id,
+            coursId,
+        );
+    }
+
+    @Get('cours/:coursId/tentatives')
+    @UseGuards(JwtAuthGuard)
+    async getCourseTentatives(
+        @Req() req: any,
+        @Param('coursId', ParseIntPipe) coursId: number,
+    ) {
+        return this.simulationsService.getCourseTentatives(req.user.id, coursId);
+    }
+
+    @Get('cours/:coursId/questions')
+    @UseGuards(JwtAuthGuard)
+    async findCourseQuestions(@Param('coursId', ParseIntPipe) coursId: number) {
+        return this.simulationsService.findQuestionsByCourse(coursId);
+    }
+
+    @Post('cours/:coursId/questions')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('FORMATEUR', 'ADMIN', 'SUPER_ADMIN')
+    async createCourseQuestion(
+        @Param('coursId', ParseIntPipe) coursId: number,
+        @Body() dto: CreateQuestionDto,
+    ) {
+        return this.simulationsService.createCourseQuestion(coursId, dto);
     }
 }

@@ -380,7 +380,7 @@ export class CoursService {
           include: {
             certification: { include: { fournisseur: true } },
             formateur: { select: { id: true, prenom: true, nom: true, avatar: true } },
-            modules: { orderBy: { ordre: 'asc' } },
+            modules: { orderBy: { ordre: 'asc' }, include: { ressources: { orderBy: { ordre: 'asc' } } } },
             _count: { select: { modules: true } },
           },
         },
@@ -425,6 +425,11 @@ export class CoursService {
           ...m,
           id: m.id.toString(),
           coursId: m.coursId.toString(),
+          ressources: (m.ressources || []).map((r: any) => ({
+            ...r,
+            id: r.id.toString(),
+            moduleId: r.moduleId?.toString() || null,
+          })),
         })),
       } : null,
     };
@@ -644,5 +649,30 @@ export class CoursService {
     }
     await this.prisma.ressource.delete({ where: { id: BigInt(ressourceId) } });
     return { message: 'Ressource supprimée avec succès.' };
+  }
+
+  async getInscriptionStatus(userId: number, coursId: number) {
+    const inscription = await this.prisma.inscriptionCours.findFirst({
+      where: { coursId: BigInt(coursId), apprenantId: BigInt(userId) },
+      include: { progressions: true },
+    });
+
+    if (!inscription) {
+      return { inscrit: false, progression: 0, completed: false, totalModules: 0 };
+    }
+
+    const totalModules = await this.prisma.module.count({
+      where: { coursId: BigInt(coursId) },
+    });
+    const completedCount = inscription.progressions.filter((p) => p.completed).length;
+    const allCompleted = totalModules > 0 && completedCount >= totalModules;
+
+    return {
+      inscrit: true,
+      progression: inscription.progression,
+      completed: allCompleted,
+      totalModules,
+      completedCount,
+    };
   }
 }

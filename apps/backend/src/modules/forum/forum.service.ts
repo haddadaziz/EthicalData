@@ -387,7 +387,7 @@ export class ForumService {
         "Nouveau commentaire",
         `${commAuthor?.prenom} ${commAuthor?.nom} a commenté votre publication "${sujet.titre}"`,
         "FORUM_REPLY",
-        "/dashboard/community",
+        `/dashboard/community?sujetId=${sujetId}&commentId=${commentaire.id}`,
       );
     }
 
@@ -403,10 +403,30 @@ export class ForumService {
             "Réponse à votre commentaire",
             `${commAuthor?.prenom || 'Un utilisateur'} ${commAuthor?.nom || ''} a répondu à votre commentaire : "${snippet}"`,
             "FORUM_REPLY",
-            "/dashboard/community",
+            `/dashboard/community?sujetId=${sujetId}&commentId=${commentaire.id}`,
           );
         } catch (e) {
           console.warn("Erreur lors de la notification de réponse au commentaire:", e);
+        }
+      }
+
+      // Notifier également l'auteur du sous-commentaire mentionné (si différent du parent et de l'auteur)
+      if (dto.mentionUserId) {
+        const mentionId = BigInt(dto.mentionUserId);
+        const alreadyNotified = parentComm && parentComm.auteurId === mentionId;
+        if (!alreadyNotified && mentionId !== BigInt(userId)) {
+          const snippet = dto.contenu.length > 50 ? `${dto.contenu.substring(0, 50)}...` : dto.contenu;
+          try {
+            await this.notificationsService.createNotification(
+              mentionId.toString(),
+              "Réponse à votre commentaire",
+              `${commAuthor?.prenom || 'Un utilisateur'} ${commAuthor?.nom || ''} a répondu à votre commentaire : "${snippet}"`,
+              "FORUM_REPLY",
+              `/dashboard/community?sujetId=${sujetId}&commentId=${commentaire.id}`,
+            );
+          } catch (e) {
+            console.warn("Erreur lors de la notification de mention:", e);
+          }
         }
       }
     }

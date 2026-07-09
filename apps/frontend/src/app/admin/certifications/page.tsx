@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
-import { Award, Plus, RefreshCw, X, Edit, Trash2, Search, Layers, Briefcase, BookmarkCheck, Upload, Clock, Sparkles, HelpCircle, ArrowLeft, ArrowRight, Users } from 'lucide-react'; import { motion, AnimatePresence } from 'framer-motion';
+import { Award, Plus, RefreshCw, X, Edit, Trash2, Search, Layers, Briefcase, BookmarkCheck, Upload, Clock, Sparkles, HelpCircle, ArrowLeft, ArrowRight, Users } from '@/components/icons'; import { motion, AnimatePresence } from 'framer-motion';
 
 interface Fournisseur {
     id: string;

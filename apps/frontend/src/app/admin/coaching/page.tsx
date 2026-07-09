@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useConfirm } from '../../../context/ConfirmContext';
-import { Calendar, Clock, Plus, User, CheckCircle, Video, RefreshCw, X, Trash2, ShieldCheck, Sparkles, AlertCircle } from 'lucide-react';
+import { Calendar, Clock, Plus, User, CheckCircle, Video, RefreshCw, X, Trash2, ShieldCheck, Sparkles, AlertCircle } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Formateur {

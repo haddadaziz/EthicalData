@@ -24,13 +24,21 @@ export class LoggingInterceptor implements NestInterceptor {
     const now = Date.now();
 
     return next.handle().pipe(
-      tap(() => {
-        const statusCode = response.statusCode;
-        const delay = Date.now() - now;
-
-        this.logger.log(
-          `[${method}] ${originalUrl} ${statusCode} - ${delay}ms - User:${userId} - IP:${ip}`,
-        );
+      tap({
+        next: () => {
+          const statusCode = response.statusCode;
+          const delay = Date.now() - now;
+          this.logger.log(
+            `[${method}] ${originalUrl} ${statusCode} - ${delay}ms - User:${userId} - IP:${ip}`,
+          );
+        },
+        error: (err: any) => {
+          const delay = Date.now() - now;
+          this.logger.error(
+            `[${method}] ${originalUrl} 500 - ${delay}ms - User:${userId} - IP:${ip} - ${err.message}`,
+            err.stack,
+          );
+        },
       }),
     );
   }

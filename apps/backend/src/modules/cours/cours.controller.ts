@@ -217,4 +217,14 @@ export class CoursController {
   ) {
     return this.coursService.completeModule(req.user.id, id, moduleId);
   }
+
+  // Statut d'inscription et complétion pour un apprenant
+  @Get(':id/inscription-status')
+  @UseGuards(JwtAuthGuard)
+  async getInscriptionStatus(
+    @Req() req: any,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.coursService.getInscriptionStatus(req.user.id, id);
+  }
 }

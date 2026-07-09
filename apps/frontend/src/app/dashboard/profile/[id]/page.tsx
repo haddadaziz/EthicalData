@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { apiFetch } from '../../../../lib/api';
 import { useToast } from '../../../../context/ToastContext';
-import { User, Award, Calendar, Mail, MessageSquare, Sparkles, Heart, ChevronRight, ArrowLeft, ShieldCheck } from 'lucide-react';
+import { User, Award, Calendar, Mail, MessageSquare, Sparkles, Heart, ChevronRight, ArrowLeft, ShieldCheck } from '@/components/icons';
 import { motion } from 'framer-motion';
 
 interface PublicUserProfile {

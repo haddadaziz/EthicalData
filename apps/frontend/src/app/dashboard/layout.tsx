@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { BookOpen, Award, Settings, LogOut, ShieldCheck, Menu, X, User, DownloadCloud, HelpCircle, MessageSquare, Calendar } from 'lucide-react';
+import { BookOpen, Award, Settings, LogOut, ShieldCheck, Menu, X, User, DownloadCloud, HelpCircle, MessageSquare, Calendar, GraduationCap, ChalkboardTeacher } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import NotificationBell from '../../components/NotificationBell';
 import { apiFetch } from '../../lib/api';
@@ -38,20 +38,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     const [viewMode, setViewMode] = useState<'APPRENANT' | 'FORMATEUR'>(() => {
         if (typeof window !== 'undefined') {
-            const saved = localStorage.getItem('viewMode');
-            if (saved === 'FORMATEUR' || saved === 'APPRENANT') {
-                return saved as 'APPRENANT' | 'FORMATEUR';
-            }
-            // Auto-switch to FORMATEUR if the user only has the trainer role
+            // Priorité au choix explicite de l'utilisateur sauvegardé dans localStorage
+            const savedMode = localStorage.getItem('viewMode');
             const token = localStorage.getItem('token') || sessionStorage.getItem('token');
             if (token) {
                 try {
                     const payloadBase64 = token.split('.')[1];
                     const decodedPayload = JSON.parse(atob(payloadBase64));
                     const roles = decodedPayload.roles || [];
-                    if (roles.includes('FORMATEUR')) {
-                        return 'FORMATEUR';
-                    }
+                    const isFormateur = roles.includes('FORMATEUR');
+                    // Si l'utilisateur a un choix sauvegardé, le respecter (sauf s'il n'a pas le rôle)
+                    if (savedMode === 'APPRENANT') return 'APPRENANT';
+                    if (savedMode === 'FORMATEUR' && isFormateur) return 'FORMATEUR';
+                    // Pas de choix sauvegardé : défaut selon le rôle
+                    if (isFormateur) return 'FORMATEUR';
                 } catch (e) {}
             }
         }
@@ -69,7 +69,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    // Écouter les changements de rôle émis par d'autres composants (ex: "Devenir Formateur")
+    useEffect(() => {
+        const handleRolesUpdated = () => {
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            if (token) {
+                try {
+                    const payloadBase64 = token.split('.')[1];
+                    const decodedPayload = JSON.parse(atob(payloadBase64));
+                    const roles = decodedPayload.roles || [];
+                    setUserRoles(roles);
+                    if (roles.includes('FORMATEUR')) {
+                        setViewMode('FORMATEUR');
+                        localStorage.setItem('viewMode', 'FORMATEUR');
+                    }
+                    // Mettre à jour les infos utilisateur si disponibles dans le token
+                    if (decodedPayload.prenom) setUserFirstName(decodedPayload.prenom);
+                    if (decodedPayload.nom) setUserLastName(decodedPayload.nom);
+                    if (decodedPayload.avatar) setUserAvatar(decodedPayload.avatar);
+                } catch (e) {
+                    console.warn('Erreur lors du décodage du token après mise à jour des rôles:', e);
+                }
+            }
+        };
 
+        window.addEventListener('rolesUpdated', handleRolesUpdated);
+        return () => window.removeEventListener('rolesUpdated', handleRolesUpdated);
+    }, []);
 
     useEffect(() => {
         document.documentElement.classList.remove('dark');
@@ -110,10 +136,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             setUserRoles(roles);
                             console.log('isTrainer value:', roles.includes('FORMATEUR'));
                             
-                            const saved = localStorage.getItem('viewMode');
-                            if (!saved && roles.includes('FORMATEUR')) {
-                                setViewMode('FORMATEUR');
-                                localStorage.setItem('viewMode', 'FORMATEUR');
+                            const savedMode = localStorage.getItem('viewMode');
+                            const isFormateur = roles.includes('FORMATEUR');
+                            // Corriger uniquement si l'utilisateur n'a PAS le rôle mais tente le mode formateur
+                            if (!isFormateur && savedMode === 'FORMATEUR') {
+                                setViewMode('APPRENANT');
+                                localStorage.setItem('viewMode', 'APPRENANT');
                             }
                         }
                     }
@@ -137,7 +165,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         const newMode = viewMode === 'FORMATEUR' ? 'APPRENANT' : 'FORMATEUR';
         setViewMode(newMode);
         localStorage.setItem('viewMode', newMode);
-        window.location.href = '/dashboard';
+        // Notifier les pages enfants du changement de mode (sans rechargement complet)
+        window.dispatchEvent(new Event('viewModeChanged'));
+        // Si l'utilisateur n'est pas sur le dashboard, y naviguer
+        if (pathname !== '/dashboard') {
+            router.push('/dashboard');
+        }
     };
 
     const learnerNavItems = [
@@ -145,6 +178,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         { name: 'Certifications', href: '/dashboard/certifications', icon: Award },
         { name: 'Entraînement', href: '/dashboard/practice', icon: HelpCircle },
         { name: 'Mes Cours', href: '/dashboard/cours', icon: Award },
+        { name: 'Ressources', href: '/dashboard/downloads', icon: DownloadCloud },
         { name: 'Communauté', href: '/dashboard/community', icon: MessageSquare },
         { name: 'Rendez-vous & Coaching', href: '/dashboard/appointments', icon: Calendar },
         { name: 'Mon Profil', href: '/dashboard/profile', icon: User },
@@ -188,7 +222,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             return { title: 'Simulateur d\'Examen', subtitle: 'Entraînement interactif en conditions réelles' };
         }
         if (pathname === '/dashboard/downloads') {
-            return { title: 'Fiches & Guides de Cours', subtitle: 'Supports de révision condensés et téléchargements autorisés' };
+            return { title: 'Bibliothèque de Ressources', subtitle: 'Toutes les ressources téléchargeables de vos cours' };
         }
         if (pathname === '/dashboard/cours') {
             return { title: 'Explorer les Cours', subtitle: 'Découvrez, inscrivez-vous et suivez votre progression' };
@@ -253,13 +287,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             <div className="h-20 flex items-center justify-between px-6 border-b border-slate-200/80">
                                 <div className="flex items-center gap-3">
                                     <div className="flex items-center justify-center">
-                                        <svg className="w-7 h-7 text-red-600" viewBox="0 0 100 100" fill="currentColor">
-                                            <polygon points="50,15 15,85 85,85" className="fill-none stroke-red-600 stroke-[6]" />
-                                            <polygon points="50,30 28,75 72,75" className="fill-none stroke-slate-900 stroke-[4]" />
-                                            <polygon points="50,45 40,65 60,65" className="fill-red-600" />
-                                        </svg>
+                                        <img src="/ethicaldata_main_logo.png" alt="Ethical Data Security" className="h-8 w-auto object-contain" />
                                     </div>
-                                    <span className="font-extrabold text-base text-slate-950 tracking-tight">EthicalData</span>
                                 </div>
                                 <button onClick={() => setSidebarOpen(false)} className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-650 cursor-pointer">
                                     <X className="w-5 h-5" />
@@ -308,19 +337,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         ? 'bg-slate-50/90 border-indigo-100/70 shadow-indigo-100/20'
                         : 'bg-white border-slate-200/80'
                 }`}>
-                    {/* Logo Brand avec Triangle */}
+                    {/* Logo Brand */}
                     <div className="h-20 flex items-center px-6 border-b border-slate-200/80">
-                        <Link href="/" className="flex items-center gap-3 group cursor-pointer">
+                        <Link href="/" className="flex items-center group cursor-pointer">
                             <div className="flex items-center justify-center group-hover:scale-105 transition-transform">
-                                <svg className="w-8 h-8 text-red-600" viewBox="0 0 100 100" fill="currentColor">
-                                    <polygon points="50,15 15,85 85,85" className="fill-none stroke-red-600 stroke-[6]" />
-                                    <polygon points="50,30 28,75 72,75" className="fill-none stroke-slate-900 stroke-[4]" />
-                                    <polygon points="50,45 40,65 60,65" className="fill-red-600" />
-                                </svg>
+                                <img src="/ethicaldata_main_logo.png" alt="Ethical Data Security" className="h-9 w-auto object-contain" />
                             </div>
-                            <span className="font-extrabold text-base text-slate-950 tracking-tight uppercase">
-                                EthicalData
-                            </span>
                         </Link>
                     </div>
 
@@ -401,12 +423,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             >
                                 {viewMode === 'FORMATEUR' ? (
                                     <>
-                                        <User className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                                        <GraduationCap className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
                                         <span className="hidden sm:inline">Mode Apprenant</span>
                                     </>
                                 ) : (
                                     <>
-                                        <ShieldCheck className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                                        <ChalkboardTeacher className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
                                         <span className="hidden sm:inline">Mode Formateur</span>
                                     </>
                                 )}

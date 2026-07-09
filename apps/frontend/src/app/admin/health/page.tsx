@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
-import { Activity, Database, Cpu, Clock, RefreshCw, CheckCircle, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Activity, Database, Cpu, Clock, RefreshCw, CheckCircle, AlertTriangle, ShieldCheck } from '@/components/icons';
 import { motion } from 'framer-motion';
 
 interface HealthData {

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from '@/components/icons';
 import { apiFetch } from '../../lib/api';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -211,14 +211,6 @@ export default function LoginPage() {
         <main className="min-h-screen w-screen bg-slate-50 flex flex-col justify-between p-4 sm:p-6 selection:bg-blue-600 selection:text-white relative overflow-hidden">
             
             <header className="w-full max-w-7xl mx-auto flex items-center justify-between z-20 px-2 sm:px-4 py-2">
-                <Link href="/" className="flex items-center gap-2.5 group cursor-pointer">
-                    <div className="flex items-center justify-center group-hover:scale-105 transition-all">
-                        <TriangleLogo className="w-7 h-7" />
-                    </div>
-                    <span className="font-extrabold text-sm tracking-tight text-slate-950 uppercase">
-                        Ethical Data Security
-                    </span>
-                </Link>
             </header>
 
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000003_1px,transparent_1px),linear-gradient(to_bottom,#00000003_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none z-0" />
@@ -238,7 +230,7 @@ export default function LoginPage() {
                 >
                     <div className="flex flex-col items-center mb-6">
                         <div className="flex items-center justify-center mb-2 group-hover/card:scale-105 transition-transform duration-300">
-                            <TriangleLogo className="w-10 h-10" />
+                            <img src="/favicon_ethical_data.png" alt="Ethical Data Security" className="w-10 h-10 object-contain" />
                         </div>
                         <h1 className="text-lg font-bold text-slate-900 tracking-tight">Connexion</h1>
                         <p className="text-[10px] text-slate-500 mt-1 font-bold uppercase tracking-wider">

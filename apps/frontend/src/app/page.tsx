@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from 'react';
-import { ShieldCheck, ArrowRight, Sparkles, Award, Clock, ArrowUpRight, BookOpen, Check, X as XIcon, HelpCircle, Download, FileText, ChevronRight, CheckCircle2, ChevronDown, Send, Menu, X, Play, Star, Calendar, ChevronLeft, Users } from 'lucide-react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { ShieldCheck, ArrowRight, Sparkles, Award, Clock, ArrowUpRight, BookOpen, Check, HelpCircle, Download, FileText, ChevronRight, CheckCircle2, ChevronDown, Send, Menu, X, Play, Star, Calendar, ChevronLeft, Users } from '@/components/icons';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import Link from 'next/link';
 import { apiFetch } from '../lib/api';
@@ -24,15 +24,37 @@ function AnimatedSection({ children, className = "", delay = 0 }: { children: Re
 }
 
 export default function LandingPage() {
-  const [isConnected, setIsConnected] = useState(() =>
-    typeof window !== 'undefined' && !!(localStorage.getItem('token') || sessionStorage.getItem('token'))
-  );
+  const [isConnected, setIsConnected] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setIsConnected(!!(localStorage.getItem('token') || sessionStorage.getItem('token')));
+  }, []);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [navVisible, setNavVisible] = useState(true);
+  const lastScrollY = useRef(0);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const [newsletterSubmitted, setNewsletterSubmitted] = useState(false);
   const [realCertifications, setRealCertifications] = useState<any[]>([]);
   const [showAllCertifications, setShowAllCertifications] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      setScrolled(currentY > 60);
+      if (currentY > 60) {
+        setNavVisible(currentY < lastScrollY.current);
+      } else {
+        setNavVisible(true);
+      }
+      lastScrollY.current = currentY;
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     apiFetch('/certifications')
@@ -171,155 +193,141 @@ export default function LandingPage() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,#dc262605_0%,transparent_70%)] pointer-events-none z-0" />
 
       {/* ═══════════════════════════════════════════ */}
-      {/* HEADER & NAV                               */}
+      {/* HERO SECTION (header + hero content)       */}
       {/* ═══════════════════════════════════════════ */}
-      <header className="sticky top-0 z-50 w-full border-b border-slate-200/60 bg-white/85 backdrop-blur-xl transition-all">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          
-          {/* Logo Brand avec triangle officiel */}
-          <Link href="/" className="flex items-center gap-3 group cursor-pointer">
-            <div className="flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-              <svg className="w-7 h-7 text-red-600" viewBox="0 0 100 100" fill="currentColor">
-                <polygon points="50,15 15,85 85,85" className="fill-none stroke-red-600 stroke-[6]" />
-                <polygon points="50,30 28,75 72,75" className="fill-none stroke-slate-900 stroke-[4]" />
-                <polygon points="50,45 40,65 60,65" className="fill-red-600" />
-              </svg>
-            </div>
-            <span className="font-extrabold text-sm sm:text-base tracking-tight text-slate-950 uppercase">
-              Ethical Data Security
-            </span>
-          </Link>
-
-          {/* Navigation PC : Capsule Pill Flottante Ultra Stylée */}
-          <nav className="hidden md:flex items-center gap-1 bg-slate-950/[0.04] border border-slate-200/80 rounded-full px-3 py-1.5 shadow-sm backdrop-blur-xl">
-            <a href="#about" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-650 hover:text-red-600 hover:bg-white rounded-full transition-all duration-200 hover:shadow-xs">
-              Qui Sommes-Nous
-            </a>
-            <Link href="/certifications" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-650 hover:text-red-600 hover:bg-white rounded-full transition-all duration-200 hover:shadow-xs">
-              Certifications
-            </Link>
-            <a href="#services" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-650 hover:text-red-600 hover:bg-white rounded-full transition-all duration-200 hover:shadow-xs">
-              Nos Services
-            </a>
-            <a href="#testimonials" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-650 hover:text-red-600 hover:bg-white rounded-full transition-all duration-200 hover:shadow-xs">
-              Avis
-            </a>
-            <a href="#faq" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-650 hover:text-red-600 hover:bg-white rounded-full transition-all duration-200 hover:shadow-xs">
-              FAQ
-            </a>
-          </nav>
-
-          {/* Actions à droite */}
-          <div className="flex items-center gap-3">
-            {isConnected ? (
-              <a
-                href="/dashboard"
-                className="px-5 py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-650 hover:to-red-750 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-md shadow-red-600/20 cursor-pointer hover:scale-105 active:scale-95"
-              >
-                Mon Espace
-              </a>
-            ) : (
-              <>
-                <a href="/login" className="px-4 py-2 text-xs font-black uppercase tracking-wider text-slate-700 hover:text-red-600 transition-colors cursor-pointer">
-                  Connexion
-                </a>
-                <Link
-                  href="/register"
-                  className="px-5 py-2.5 bg-slate-950 hover:bg-slate-900 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm hover:shadow-md cursor-pointer hover:scale-105 active:scale-95"
-                >
-                  S&apos;inscrire
-                </Link>
-              </>
-            )}
-
-            {/* Menu Hamburger réservé UNIQUEMENT aux mobiles (<768px) */}
-            <button 
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-slate-700 hover:text-slate-950 cursor-pointer rounded-xl bg-slate-100/80 border border-slate-200/80"
-              aria-label="Menu mobile"
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
+      <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
+        
+        {/* Background image - hero section only */}
+        <div className="absolute inset-0">
+          <img src="/landing_page_logo_ethicaldata.jpeg" alt=""
+            className="w-full h-full object-cover opacity-80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-900/50 via-slate-900/30 to-slate-900/70" />
         </div>
 
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="md:hidden border-t border-slate-200 bg-white/95 backdrop-blur-xl overflow-hidden"
-            >
-              <nav className="flex flex-col p-4 gap-1 text-xs font-black uppercase tracking-widest">
-                <a href="#about" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Qui Sommes-Nous</a>
-                <Link href="/certifications" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Certifications</Link>
-                <a href="#services" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Nos Services</a>
-                <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Avis</a>
-                <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">FAQ</a>
-              </nav>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </header>
+        {/* HEADER & NAV - inside hero, fixed */}
+        <header className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${scrolled ? 'bg-white/90 backdrop-blur-xl border-b border-slate-200/60 shadow-sm' : 'bg-transparent border-b border-transparent'} ${navVisible ? 'translate-y-0' : '-translate-y-full'}`}>
+          <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            
+            {/* Logo Brand avec triangle officiel */}
+            <Link href="/" className="flex items-center gap-3 group cursor-pointer">
+            <div className="flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+              <img src="/ethicaldata_main_logo.png" alt="Ethical Data Security" className="h-9 w-auto object-contain" />
+            </div>
+          </Link>
 
-      {/* ═══════════════════════════════════════════ */}
-      {/* HERO SECTION                               */}
-      {/* ═══════════════════════════════════════════ */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pt-16 pb-12 flex flex-col items-center text-center">
-        
-        {/* Logo géant avec halo rouge en fond */}
-        <motion.div 
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          className="relative w-32 h-32 md:w-36 md:h-36 flex items-center justify-center mb-8"
-        >
-          {/* Halo rouge circulaire */}
-          <div className="absolute inset-0 bg-red-600/10 rounded-full blur-[45px] animate-pulse pointer-events-none" />
-          
-          {/* Symbole géométrique triangulaire (EDS) */}
-          <svg className="w-24 h-24 text-red-600 relative z-10 filter drop-shadow-[0_4px_15px_rgba(220,38,38,0.2)]" viewBox="0 0 100 100" fill="currentColor">
-            <polygon points="50,15 15,85 85,85" className="fill-none stroke-red-600 stroke-[6]" />
-            <polygon points="50,30 28,75 72,75" className="fill-none stroke-slate-900 stroke-[4]" />
-            <polygon points="50,45 40,65 60,65" className="fill-red-600" />
-          </svg>
-        </motion.div>
+            {/* Navigation PC : Capsule Pill Flottante Ultra Stylée */}
+            <nav className={`hidden md:flex items-center gap-1 rounded-full px-3 py-1.5 shadow-sm transition-all duration-300 ${scrolled ? 'bg-slate-950/[0.04] border border-slate-200/80 backdrop-blur-xl' : 'bg-transparent border-0'}`}>
+              <a href="#about" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 hover:shadow-xs ${scrolled ? 'text-slate-600 hover:text-red-600 hover:bg-white' : 'text-white/90 hover:text-white'}`}>
+                Qui Sommes-Nous
+              </a>
+              <Link href="/certifications" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 hover:shadow-xs ${scrolled ? 'text-slate-600 hover:text-red-600 hover:bg-white' : 'text-white/90 hover:text-white'}`}>
+                Certifications
+              </Link>
+              <a href="#services" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 hover:shadow-xs ${scrolled ? 'text-slate-600 hover:text-red-600 hover:bg-white' : 'text-white/90 hover:text-white'}`}>
+                Nos Services
+              </a>
+              <a href="#testimonials" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 hover:shadow-xs ${scrolled ? 'text-slate-600 hover:text-red-600 hover:bg-white' : 'text-white/90 hover:text-white'}`}>
+                Avis
+              </a>
+              <a href="#faq" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 hover:shadow-xs ${scrolled ? 'text-slate-600 hover:text-red-600 hover:bg-white' : 'text-white/90 hover:text-white'}`}>
+                FAQ
+              </a>
+            </nav>
 
-        {/* Titres de la maquette */}
-        <motion.h1
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-950 max-w-4xl uppercase leading-none"
-        >
-          Ethical Data Security – L&apos;essentiel en un clic !
-        </motion.h1>
+            {/* Actions à droite */}
+            <div className="flex items-center gap-3">
+              {!mounted ? (
+                <div className="flex items-center gap-3">
+                  <div className="w-[80px] h-[36px]" />
+                  <div className="w-[110px] h-[40px] rounded-xl bg-slate-200 animate-pulse" />
+                </div>
+              ) : isConnected ? (
+                <a
+                  href="/dashboard"
+                  className="px-5 py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-650 hover:to-red-750 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-md shadow-red-600/20 cursor-pointer hover:scale-105 active:scale-95"
+                >
+                  Mon Espace
+                </a>
+              ) : (
+                <>
+                  <a href="/login" className={`px-4 py-2 text-xs font-black uppercase tracking-wider transition-colors cursor-pointer ${scrolled ? 'text-slate-700 hover:text-red-600' : 'text-white/80 hover:text-white'}`}>
+                    Connexion
+                  </a>
+                  <Link
+                    href="/register"
+                     className={`px-5 py-2.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all hover:scale-105 active:scale-95 cursor-pointer ${scrolled ? 'bg-slate-950 hover:bg-slate-900 text-white shadow-sm hover:shadow-md' : 'bg-red-600 hover:bg-red-700 text-white shadow-sm hover:shadow-md'}`}
+                  >
+                    S&apos;inscrire
+                  </Link>
+                </>
+              )}
 
-        <motion.p
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-xs sm:text-sm md:text-base text-slate-600 max-w-3xl mt-6 uppercase tracking-widest font-black leading-relaxed"
-        >
-          SUPPORT DE COURS ET ENTRAÎNEMENT PRATIQUE POUR VOS CERTIFICATIONS EN CYBERSÉCURITÉ ET EN CLOUD
-        </motion.p>
+              {/* Menu Hamburger réservé UNIQUEMENT aux mobiles (<768px) */}
+              <button 
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className={`md:hidden p-2 cursor-pointer rounded-xl transition-all ${scrolled ? 'text-slate-700 hover:text-slate-950 bg-slate-100/80 border border-slate-200/80' : 'text-white/80 hover:text-white bg-transparent border-0'}`}
+                aria-label="Menu mobile"
+              >
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
+            </div>
+          </div>
 
-        {/* Boutons CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center gap-4 mt-8"
-        >
-          <a
-            href={isConnected ? "/dashboard/practice" : "/login"}
-            className="w-full sm:w-auto px-8 py-3.5 bg-red-600 hover:bg-red-750 text-white font-extrabold rounded-xl transition-all duration-300 flex items-center justify-center gap-2.5 cursor-pointer shadow-lg shadow-red-600/15 text-sm uppercase tracking-wider animate-fadeIn"
+          <AnimatePresence>
+            {mobileMenuOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="md:hidden border-t border-slate-200 bg-white/95 backdrop-blur-xl overflow-hidden"
+              >
+                <nav className="flex flex-col p-4 gap-1 text-xs font-black uppercase tracking-widest">
+                  <a href="#about" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Qui Sommes-Nous</a>
+                  <Link href="/certifications" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Certifications</Link>
+                  <a href="#services" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Nos Services</a>
+                  <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Avis</a>
+                  <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">FAQ</a>
+                </nav>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </header>
+
+        {/* Hero content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 flex flex-col items-center text-center">
+          <motion.h1
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white max-w-4xl uppercase leading-none drop-shadow-lg"
           >
-            <span>Lancer mon diagnostic gratuit</span>
-            <ArrowRight className="w-4 h-4" />
-          </a>
-        </motion.div>
+            Ethical Data Security – L&apos;essentiel en un clic !
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-xs sm:text-sm md:text-base text-white/80 max-w-3xl mt-6 uppercase tracking-widest font-black leading-relaxed drop-shadow-md"
+          >
+            SUPPORT DE COURS ET ENTRAÎNEMENT PRATIQUE POUR VOS CERTIFICATIONS EN CYBERSÉCURITÉ ET EN SÉCURITÉ
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="flex flex-col sm:flex-row items-center gap-4 mt-8"
+          >
+            <a
+              href={isConnected ? "/dashboard/practice" : "/login"}
+              className="w-full sm:w-auto px-8 py-3.5 bg-red-600 hover:bg-red-700 text-white font-extrabold rounded-xl transition-all duration-300 flex items-center justify-center gap-2.5 cursor-pointer shadow-lg shadow-red-600/30 text-sm uppercase tracking-wider"
+            >
+              <span>Réserver un diagnostic</span>
+              <ArrowRight className="w-4 h-4" />
+            </a>
+          </motion.div>
+        </div>
       </section>
 
       {/* ═══════════════════════════════════════════ */}
@@ -397,7 +405,7 @@ export default function LandingPage() {
             <div className="w-full h-80 rounded-3xl overflow-hidden border border-slate-200/80 relative group shadow-xl shadow-slate-200/40">
               {/* Image générée du Casablanca Technopark */}
               <img 
-                src="/technopark.png" 
+                src="/technopark.jpeg" 
                 alt="Casablanca Technopark" 
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
               />
@@ -826,14 +834,9 @@ export default function LandingPage() {
 
           <div className="space-y-4 text-left">
             <div className="flex items-center gap-2.5">
-              <div className="flex items-center justify-center">
-                <svg className="w-7 h-7 text-red-600" viewBox="0 0 100 100" fill="currentColor">
-                  <polygon points="50,15 15,85 85,85" className="fill-none stroke-red-600 stroke-[6]" />
-                  <polygon points="50,30 28,75 72,75" className="fill-none stroke-white stroke-[4]" />
-                  <polygon points="50,45 40,65 60,65" className="fill-red-600" />
-                </svg>
+              <div className="bg-white rounded-xl p-2 flex items-center justify-center">
+                <img src="/ethicaldata_main_logo.png" alt="Ethical Data Security" className="h-9 w-auto object-contain" />
               </div>
-              <span className="font-extrabold text-base tracking-tight text-white uppercase">Ethical Data Security</span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed max-w-xs font-semibold">
               La plateforme de préparation intelligente pour valider vos compétences Cloud et Cybersécurité en toute confiance au cœur de Casablanca.

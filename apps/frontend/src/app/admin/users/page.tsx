@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useConfirm } from '../../../context/ConfirmContext';
-import { Users, Search, ShieldCheck, Plus, Edit, Trash2, X, RefreshCw, Mail, Phone, Calendar, Lock, Eye, EyeOff } from 'lucide-react';
+import { Users, Search, ShieldCheck, Plus, Edit, Trash2, X, RefreshCw, Mail, Phone, Calendar, Lock, Eye, EyeOff } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Role {

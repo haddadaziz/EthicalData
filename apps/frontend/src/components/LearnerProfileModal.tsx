@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../lib/api';
-import { X, User, Sparkles, MessageSquare, Mail, Calendar, Award, CheckCircle } from 'lucide-react';
+import { X, User, Sparkles, MessageSquare, Mail, Calendar, Award, CheckCircle } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface PublicLearnerProfile {

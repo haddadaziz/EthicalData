@@ -9,4 +9,8 @@ export class CreateCommentaireDto {
   @IsOptional()
   @IsNumber()
   parentCommentaireId?: number;
+
+  @IsOptional()
+  @IsNumber()
+  mentionUserId?: number;
 }

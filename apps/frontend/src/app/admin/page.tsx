@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../lib/api';
-import { Users, Award, DownloadCloud, MessageSquare, Calendar, ShieldCheck, ArrowUpRight, Plus, Activity, RefreshCw, Sparkles } from 'lucide-react';
+import { Users, Award, DownloadCloud, MessageSquare, Calendar, ShieldCheck, ArrowUpRight, Plus, Activity, RefreshCw, Sparkles } from '@/components/icons';
 import { motion } from 'framer-motion';
 
 export default function AdminDashboardPage() {

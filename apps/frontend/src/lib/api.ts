@@ -38,5 +38,7 @@ export async function apiFetch(endpoint: string, options: FetchOptions = {}) {
     return null;
   }
 
-  return response.json();
+  const text = await response.text();
+  if (!text) return null;
+  return JSON.parse(text);
 }

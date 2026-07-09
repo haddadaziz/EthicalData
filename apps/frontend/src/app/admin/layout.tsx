@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { LayoutDashboard, Users, BookOpen, MessageSquare, ShieldCheck, LogOut, DownloadCloud, Award, Bell, Calendar, FileText, Settings, User, X, Menu, Activity } from 'lucide-react';
+import { LayoutDashboard, Users, BookOpen, MessageSquare, ShieldCheck, LogOut, DownloadCloud, Award, Bell, Calendar, FileText, Settings, User, X, Menu, Activity } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import NotificationBell from '../../components/NotificationBell';
 
@@ -170,12 +170,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             >
               <div className="h-20 flex items-center justify-between px-6 border-b border-slate-200/80">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 bg-blue-50 border border-blue-100 rounded-xl flex items-center justify-center text-blue-600">
-                    <ShieldCheck className="w-5.5 h-5.5" />
+                  <div className="flex items-center justify-center">
+                    <img src="/ethicaldata_main_logo.png" alt="Ethical Data Security" className="h-8 w-auto object-contain" />
                   </div>
-                  <span className="font-extrabold text-base text-slate-950 tracking-tight uppercase">
-                    EthicalData
-                  </span>
                 </div>
                 <button
                   onClick={() => setSidebarOpen(false)}
@@ -231,19 +228,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Sidebar Desktop Fixe & Élégante */}
       {!isMobile && (
         <aside className="hidden md:flex flex-col bg-white border-r border-slate-200/80 relative z-10 shrink-0 sticky top-0 h-screen shadow-sm w-[260px] overflow-y-auto overflow-x-hidden">
-          {/* Logo avec Triangle */}
+          {/* Logo */}
           <div className="h-20 flex items-center px-6 border-b border-slate-200/80">
-            <Link href="/" className="flex items-center gap-3 group cursor-pointer">
+            <Link href="/" className="flex items-center group cursor-pointer">
               <div className="flex items-center justify-center group-hover:scale-105 transition-transform">
-                <svg className="w-8 h-8 text-red-600" viewBox="0 0 100 100" fill="currentColor">
-                  <polygon points="50,15 15,85 85,85" className="fill-none stroke-red-600 stroke-[6]" />
-                  <polygon points="50,30 28,75 72,75" className="fill-none stroke-slate-900 stroke-[4]" />
-                  <polygon points="50,45 40,65 60,65" className="fill-red-600" />
-                </svg>
+                <img src="/ethicaldata_main_logo.png" alt="Ethical Data Security" className="h-9 w-auto object-contain" />
               </div>
-              <span className="font-extrabold text-base text-slate-950 tracking-tight uppercase">
-                EthicalData
-              </span>
             </Link>
           </div>
 

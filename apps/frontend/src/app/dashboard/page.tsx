@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../lib/api';
 import { 
-    Sparkles, 
+    Bolt, 
     Play, 
     Video, 
     Calendar, 
@@ -17,7 +17,7 @@ import {
     BookOpen,
     X,
     FileText
-} from 'lucide-react';
+} from '@/components/icons';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 
@@ -49,20 +49,18 @@ export default function StudentDashboard() {
 
     const [viewMode, setViewMode] = useState<'APPRENANT' | 'FORMATEUR'>(() => {
         if (typeof window !== 'undefined') {
-            const saved = localStorage.getItem('viewMode');
-            if (saved === 'FORMATEUR' || saved === 'APPRENANT') {
-                return saved as 'APPRENANT' | 'FORMATEUR';
-            }
-            // Auto-switch to FORMATEUR if the user only has the trainer role
+            // Priorité au choix explicite de l'utilisateur sauvegardé dans localStorage
+            const savedMode = localStorage.getItem('viewMode');
             const token = localStorage.getItem('token') || sessionStorage.getItem('token');
             if (token) {
                 try {
                     const payloadBase64 = token.split('.')[1];
                     const decodedPayload = JSON.parse(atob(payloadBase64));
                     const roles = decodedPayload.roles || [];
-                    if (roles.includes('FORMATEUR')) {
-                        return 'FORMATEUR';
-                    }
+                    const isFormateur = roles.includes('FORMATEUR');
+                    if (savedMode === 'APPRENANT') return 'APPRENANT';
+                    if (savedMode === 'FORMATEUR' && isFormateur) return 'FORMATEUR';
+                    if (isFormateur) return 'FORMATEUR';
                 } catch (e) {}
             }
         }
@@ -83,6 +81,18 @@ export default function StudentDashboard() {
         document.addEventListener('click', handleOutsideClick);
         return () => document.removeEventListener('click', handleOutsideClick);
     }, [activeStep]);
+
+    // Écouter le changement de mode déclenché par le layout (switch instantané sans rechargement)
+    useEffect(() => {
+        const handleViewModeChanged = () => {
+            const saved = localStorage.getItem('viewMode');
+            if (saved === 'FORMATEUR' || saved === 'APPRENANT') {
+                setViewMode(saved as 'APPRENANT' | 'FORMATEUR');
+            }
+        };
+        window.addEventListener('viewModeChanged', handleViewModeChanged);
+        return () => window.removeEventListener('viewModeChanged', handleViewModeChanged);
+    }, []);
 
     useEffect(() => {
         const token = localStorage.getItem('token') || sessionStorage.getItem('token');
@@ -320,7 +330,7 @@ export default function StudentDashboard() {
                         {/* COMPAGNON ACTIONS RAPIDES */}
                         <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs space-y-4">
                             <h3 className="text-sm font-black text-slate-955 border-b border-slate-100 pb-3 flex items-center gap-2">
-                                <Sparkles className="w-4 h-4 text-blue-600" />
+                                <Bolt className="w-4 h-4 text-blue-600" />
                                 <span>Actions rapides</span>
                             </h3>
                             <div className="space-y-2">

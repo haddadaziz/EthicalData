@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
-import { FileText, Download, Search, Plus, RefreshCw, X, Edit, Trash2, BookOpen, Lock, Globe, Award, ArrowLeft, ArrowRight } from 'lucide-react';
+import { FileText, Search, Plus, RefreshCw, X, Edit, Trash2, Award, ArrowLeft, ArrowRight } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Resource {
@@ -58,7 +58,6 @@ export default function ResourcesAdminPage() {
   const [taille, setTaille] = useState('');
   const [version, setVersion] = useState('1.0.0');
   const [quota, setQuota] = useState('10');
-  const [isPublic, setIsPublic] = useState(false);
   const [certificationId, setCertificationId] = useState('');
 
   const fetchData = async () => {
@@ -105,8 +104,6 @@ export default function ResourcesAdminPage() {
 
   // Stats
   const totalCount = resources.length;
-  const publicCount = resources.filter(r => r.public).length;
-  const privateCount = resources.filter(r => !r.public).length;
 
   const handleCreateResource = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,7 +125,7 @@ export default function ResourcesAdminPage() {
           taille: taille ? parseInt(taille) : undefined,
           version,
           quotaTelechargement: parseInt(quota),
-          public: isPublic,
+          public: false,
         },
       });
 
@@ -152,7 +149,6 @@ export default function ResourcesAdminPage() {
     setTaille(res.taille ? res.taille.toString() : '');
     setVersion(res.version);
     setQuota(res.quotaTelechargement.toString());
-    setIsPublic(res.public);
     setCertificationId(res.certificationId || '');
     setModalError(null);
     setIsEditModalOpen(true);
@@ -175,7 +171,7 @@ export default function ResourcesAdminPage() {
           taille: taille ? parseInt(taille) : null,
           version,
           quotaTelechargement: parseInt(quota),
-          public: isPublic,
+          public: false,
           certificationId: certificationId || null,
         },
       });
@@ -212,7 +208,6 @@ export default function ResourcesAdminPage() {
     setTaille('');
     setVersion('1.0.0');
     setQuota('10');
-    setIsPublic(false);
     setCertificationId('');
     setModalError(null);
   };
@@ -253,10 +248,10 @@ export default function ResourcesAdminPage() {
         </div>
       </div>
 
-      {/* Cartes Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      {/* Carte Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {loading ? (
-          Array.from({ length: 3 }).map((_, i) => (
+          Array.from({ length: 2 }).map((_, i) => (
             <div key={i} className="h-28 bg-white border border-slate-200 rounded-2xl p-6 animate-pulse" />
           ))
         ) : (
@@ -273,21 +268,11 @@ export default function ResourcesAdminPage() {
 
             <div className="bg-white border border-slate-200/80 rounded-2xl p-6 flex items-center justify-between shadow-sm">
               <div className="text-left">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Supports Publics</p>
-                <p className="text-3xl font-black text-slate-900 mt-2">{publicCount}</p>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Avec quota de téléchargement</p>
+                <p className="text-3xl font-black text-slate-900 mt-2">{totalCount}</p>
               </div>
-              <div className="w-12 h-12 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center justify-center text-emerald-600">
-                <Globe className="w-6 h-6" />
-              </div>
-            </div>
-
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-6 flex items-center justify-between shadow-sm">
-              <div className="text-left">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Supports Privés (Sous Quota)</p>
-                <p className="text-3xl font-black text-slate-900 mt-2">{privateCount}</p>
-              </div>
-              <div className="w-12 h-12 bg-red-50 border border-red-100 rounded-xl flex items-center justify-center text-red-600">
-                <Lock className="w-6 h-6" />
+              <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center text-slate-650">
+                <FileText className="w-6 h-6" />
               </div>
             </div>
           </>
@@ -357,19 +342,12 @@ export default function ResourcesAdminPage() {
                     className="bg-white border border-slate-200/80 rounded-2xl p-5 flex flex-col justify-between group transition-all duration-300 hover:border-slate-350 hover:shadow-md"
                   >
                     <div className="space-y-4">
-                      {/* En-tête de carte */}
-                      <div className="flex items-start justify-between">
-                        <span className="font-bold text-red-600 text-[9px] px-2.5 py-0.5 bg-red-50 border border-red-100 rounded-lg">
-                          {res.type}
-                        </span>
-                        
-                        <span className={`inline-flex items-center gap-1 text-[9px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider border ${
-                          res.public ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-red-50 text-red-700 border-red-100'
-                        }`}>
-                          {res.public ? <Globe className="w-2.5 h-2.5" /> : <Lock className="w-2.5 h-2.5" />}
-                          {res.public ? 'Public' : 'Privé'}
-                        </span>
-                      </div>
+                        {/* En-tête de carte */}
+                        <div className="flex items-start justify-between">
+                          <span className="font-bold text-red-600 text-[9px] px-2.5 py-0.5 bg-red-50 border border-red-100 rounded-lg">
+                            {res.type}
+                          </span>
+                        </div>
 
                       {/* Infos */}
                       <div className="space-y-1.5">
@@ -390,11 +368,9 @@ export default function ResourcesAdminPage() {
                       </div>
                       
                       {/* Quota */}
-                      {!res.public && (
-                        <div className="text-[10px] text-red-600 font-black uppercase tracking-wider bg-red-50/50 border border-red-100/50 rounded-xl p-2.5 text-center">
-                          Quota max par apprenant : {res.quotaTelechargement} téléchargements
-                        </div>
-                      )}
+                      <div className="text-[10px] text-slate-500 font-bold bg-slate-50 border border-slate-100 rounded-xl p-2.5 text-center">
+                        Quota max par apprenant : {res.quotaTelechargement} téléchargements
+                      </div>
                     </div>
 
                     {/* Footer de carte */}
@@ -478,14 +454,15 @@ export default function ResourcesAdminPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => { if (!modalLoading) { setIsModalOpen(false); resetForm(); } }}
-              className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-slate-950/40"
             />
 
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white border border-slate-200 w-full max-w-xl rounded-3xl shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.15 }}
+              className="bg-white border border-slate-200 w-full max-w-xl rounded-2xl shadow-xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]"
             >
               <div className="p-6 border-b border-slate-200 flex items-center justify-between">
                 <h2 className="text-xl font-black text-slate-900">Ajouter un document</h2>
@@ -608,32 +585,6 @@ export default function ResourcesAdminPage() {
                   </div>
                 </div>
 
-                <div className="space-y-2.5">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Visibilité du document</label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setIsPublic(true)}
-                      className={`p-3.5 border rounded-2xl text-center font-bold text-xs uppercase transition-all cursor-pointer ${isPublic
-                        ? 'border-emerald-500 bg-emerald-50 text-emerald-700 shadow-sm'
-                        : 'border-slate-200 hover:border-slate-350 bg-white text-slate-500 shadow-sm'
-                      }`}
-                    >
-                      Public (Sans quota)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setIsPublic(false)}
-                      className={`p-3.5 border rounded-2xl text-center font-bold text-xs uppercase transition-all cursor-pointer ${!isPublic
-                        ? 'border-red-600 bg-red-50 text-red-600 shadow-sm'
-                        : 'border-slate-200 hover:border-slate-350 bg-white text-slate-500 shadow-sm'
-                      }`}
-                    >
-                      Privé (Sous quota)
-                    </button>
-                  </div>
-                </div>
-
                 <div className="pt-6 border-t border-slate-100 flex justify-end gap-3 bg-white mt-6">
                   <button
                     type="button"
@@ -670,14 +621,15 @@ export default function ResourcesAdminPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => { if (!modalLoading) { setIsEditModalOpen(false); setEditingResource(null); } }}
-              className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-slate-950/40"
             />
 
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white border border-slate-200 w-full max-w-xl rounded-3xl shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.15 }}
+              className="bg-white border border-slate-200 w-full max-w-xl rounded-2xl shadow-xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]"
             >
               <div className="p-6 border-b border-slate-200 flex items-center justify-between">
                 <h2 className="text-xl font-black text-slate-900">Modifier le document</h2>
@@ -797,32 +749,6 @@ export default function ResourcesAdminPage() {
                       placeholder="10"
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:border-red-600 focus:bg-white rounded-xl text-slate-900 text-sm outline-none transition-all font-semibold"
                     />
-                  </div>
-                </div>
-
-                <div className="space-y-2.5">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Visibilité du document</label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setIsPublic(true)}
-                      className={`p-3.5 border rounded-2xl text-center font-bold text-xs uppercase transition-all cursor-pointer ${isPublic
-                        ? 'border-emerald-500 bg-emerald-50 text-emerald-700 shadow-sm'
-                        : 'border-slate-200 hover:border-slate-350 bg-white text-slate-500 shadow-sm'
-                      }`}
-                    >
-                      Public (Sans quota)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setIsPublic(false)}
-                      className={`p-3.5 border rounded-2xl text-center font-bold text-xs uppercase transition-all cursor-pointer ${!isPublic
-                        ? 'border-red-600 bg-red-50 text-red-600 shadow-sm'
-                        : 'border-slate-200 hover:border-slate-350 bg-white text-slate-500 shadow-sm'
-                      }`}
-                    >
-                      Privé (Sous quota)
-                    </button>
                   </div>
                 </div>
 

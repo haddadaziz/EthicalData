@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { apiFetch } from '../../../../lib/api';
-import { BookOpen, Clock, Users, Award, ChevronLeft, Play, CheckCircle, FileText, Sparkles, ListChecks, Target, DoorOpen, LogOut } from 'lucide-react';
+import { BookOpen, Clock, Users, Award, ChevronLeft, Play, CheckCircle, FileText, Sparkles, ListChecks, Target, DoorOpen, LogOut } from '@/components/icons';
 import { motion } from 'framer-motion';
 import { useToast } from '../../../../context/ToastContext';
 import { useConfirm } from '../../../../context/ConfirmContext';

@@ -6,7 +6,7 @@ import { apiFetch } from '../../../../lib/api';
 import {
     ChevronLeft, ChevronRight, BookOpen, Clock,
     FileText, Video, Download, CheckCircle, Play
-} from 'lucide-react';
+} from '@/components/icons';
 
 interface Ressource {
     id: string;

@@ -3,8 +3,19 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch } from '../../../lib/api';
-import { Award, BookOpen, Clock, FileText, Search, Play, ArrowRight, ArrowLeft, Users, CheckCircle2, Target, Check } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Award, BookOpen, Clock, FileText, Search, Play, ArrowRight, ArrowLeft, Users, CheckCircle2, Target, Check, X } from '@/components/icons';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useToast } from '../../../context/ToastContext';
+import { useMutationGuard } from '../../../hooks/useMutationGuard';
+
+function getLevelBadgeStyle(niv: string) {
+  switch (niv) {
+    case 'AVANCE': return 'bg-rose-50 text-rose-700 border border-rose-150';
+    case 'INTERMEDIAIRE': return 'bg-amber-50 text-amber-700 border border-amber-150';
+    case 'DEBUTANT':
+    default: return 'bg-emerald-50 text-emerald-700 border border-emerald-150';
+  }
+}
 
 interface Fournisseur {
   id: string;
@@ -25,10 +36,14 @@ interface Certification {
   fournisseur: Fournisseur;
   modules: any[];
   ressources: any[];
+  objectifs?: string[];
+  prerequis?: string[];
 }
 
 export default function LearnerCertificationsPage() {
   const router = useRouter();
+  const { showToast } = useToast();
+  const { guard } = useMutationGuard(1000);
   const [certs, setCerts] = useState<Certification[]>([]);
   const [fournisseurs, setFournisseurs] = useState<Fournisseur[]>([]);
   const [userProfile, setUserProfile] = useState<any>(null);
@@ -44,6 +59,7 @@ export default function LearnerCertificationsPage() {
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+  const [selectedCertModal, setSelectedCertModal] = useState<Certification | null>(null);
 
   useEffect(() => {
     const loadCatalogData = async () => {
@@ -72,31 +88,38 @@ export default function LearnerCertificationsPage() {
   }, []);
 
   const toggleTargetCertification = async (certId: string) => {
-    const isTargeted = targetCertIds.includes(certId);
-    const newTargetIds = isTargeted
-      ? targetCertIds.filter((id) => id !== certId)
-      : [...targetCertIds, certId];
+    await guard(async () => {
+      const isTargeted = targetCertIds.includes(certId);
+      const newTargetIds = isTargeted
+        ? targetCertIds.filter((id) => id !== certId)
+        : [...targetCertIds, certId];
 
-    setTargetCertIds(newTargetIds);
+      setTargetCertIds(newTargetIds);
 
-    try {
-      const currentPrefs = userProfile?.preferences || {};
-      const updatedPrefs = {
-        ...currentPrefs,
-        targetCertifications: newTargetIds,
-      };
-      await apiFetch('/users/me/profile', {
-        method: 'PATCH',
-        body: { preferences: updatedPrefs },
-      });
-      setUserProfile((prev: any) => ({
-        ...prev,
-        preferences: updatedPrefs,
-      }));
-    } catch (e) {
-      console.error("Erreur mise à jour des objectifs visés:", e);
-      setTargetCertIds(targetCertIds);
-    }
+      try {
+        const currentPrefs = userProfile?.preferences || {};
+        const updatedPrefs = {
+          ...currentPrefs,
+          targetCertifications: newTargetIds,
+        };
+        await apiFetch('/users/me/profile', {
+          method: 'PATCH',
+          body: { preferences: updatedPrefs },
+        });
+        setUserProfile((prev: any) => ({
+          ...prev,
+          preferences: updatedPrefs,
+        }));
+        showToast(isTargeted ? "Certificat retiré de vos objectifs avec succès" : "Certificat ajouté à vos objectifs avec succès");
+      } catch (e: any) {
+        if (e.message?.includes('429') || e.message?.includes('Too Many Requests')) {
+          showToast("Trop de requêtes, veuillez patienter un instant", "info");
+        } else {
+          showToast("Une erreur est survenue", "error");
+        }
+        setTargetCertIds(targetCertIds);
+      }
+    });
   };
 
   // Remettre à la page 1 si les filtres changent
@@ -121,18 +144,6 @@ export default function LearnerCertificationsPage() {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentCerts = filteredCerts.slice(indexOfFirstItem, indexOfLastItem);
-
-  const getLevelBadgeStyle = (niv: string) => {
-    switch (niv) {
-      case 'AVANCE':
-        return 'bg-rose-50 text-rose-700 border border-rose-150';
-      case 'INTERMEDIAIRE':
-        return 'bg-amber-50 text-amber-700 border border-amber-150';
-      case 'DEBUTANT':
-      default:
-        return 'bg-emerald-50 text-emerald-700 border border-emerald-150';
-    }
-  };
 
   if (loading) {
     return (
@@ -243,110 +254,58 @@ export default function LearnerCertificationsPage() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {currentCerts.map((cert) => (
-              <div
-                key={cert.id}
-                className="bg-white border border-slate-200/90 hover:border-slate-350 hover:shadow-xl rounded-3xl p-6 sm:p-7 flex flex-col justify-between group transition-all duration-300 text-left space-y-5"
-              >
-                {/* PARTIE SUPÉRIEURE : EN-TÊTE STYLE UDEMY */}
-                <div className="flex items-start justify-between gap-4">
-                  {/* Côté Gauche : Badges, Titre & Description */}
-                  <div className="space-y-3 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-extrabold text-slate-900 text-[10px] uppercase tracking-wider px-2.5 py-1 bg-slate-100 border border-slate-200 rounded-lg">
-                        {cert.fournisseur?.nom || 'Éditeur'}
-                      </span>
-                      {cert.codeExamen && (
-                        <span className="font-black text-blue-600 text-[10px] uppercase tracking-wider px-2.5 py-1 bg-blue-50 border border-blue-100 rounded-lg">
-                          {cert.codeExamen}
-                        </span>
-                      )}
-                      <span className={`text-[9px] px-2.5 py-1 rounded-lg font-extrabold uppercase tracking-wider border ${getLevelBadgeStyle(cert.niveau)}`}>
-                        {cert.niveau}
-                      </span>
-                    </div>
-
-                    <div>
-                      <h3 className="font-extrabold text-slate-950 text-lg leading-snug group-hover:text-blue-600 transition-colors">
-                        {cert.nom}
-                      </h3>
-                      <p className="text-xs text-slate-500 font-medium line-clamp-2 mt-1.5 leading-relaxed">
-                        {cert.description}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-4 text-xs font-bold text-slate-400 pt-1">
-                      <span className="flex items-center gap-1.5 text-slate-600">
-                        <Users className="w-3.5 h-3.5 text-slate-400" />
-                        <span>Candidats en préparation</span>
-                      </span>
-                      <span className="flex items-center gap-1 text-slate-500">
-                        <Clock className="w-3.5 h-3.5" />
-                        <span>{cert.dureeIndicative || '15h indicatives'}</span>
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Côté Droit : Écusson/Badge Officiel Flottant (Style Udemy sans bordure) */}
-                  <div className="w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center shrink-0 p-1">
-                    {cert.image ? (
-                      <img
-                        src={cert.image}
-                        alt={cert.nom}
-                        className="max-h-full max-w-full object-contain filter drop-shadow-md transition-transform duration-300 group-hover:scale-110"
-                      />
-                    ) : (
-                      <Award className="w-12 h-12 text-slate-300" />
-                    )}
-                  </div>
+              <motion.div key={cert.id} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.25 }}
+                className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-col items-center text-center group cursor-pointer hover:shadow-lg hover:border-slate-300 transition-all duration-200"
+                onClick={() => setSelectedCertModal(cert)}>
+                <div className="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center mb-3 p-1">
+                  {cert.image ? (
+                    <img src={cert.image} alt={cert.nom}
+                      className="max-h-full max-w-full object-contain drop-shadow-sm transition-transform duration-300 group-hover:scale-110" />
+                  ) : (
+                    <Award className="w-10 h-10 text-slate-300" />
+                  )}
                 </div>
-
-                {/* BAS DE CARTE : ACTIONS & CTAS DISCRETS */}
-                <div className="border-t border-slate-100 pt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-xs">
-                  <button
-                    onClick={() => toggleTargetCertification(cert.id.toString())}
-                    className={`px-3.5 py-2 font-extrabold text-xs rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 border shadow-2xs ${
-                      targetCertIds.includes(cert.id.toString())
-                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200/90 hover:bg-emerald-100'
-                        : 'bg-blue-50 text-blue-700 border-blue-200/90 hover:bg-blue-100'
-                    }`}
-                    title={targetCertIds.includes(cert.id.toString()) ? "Objectif actuellement visé (cliquez pour retirer)" : "Ajouter cette certification à vos objectifs visés"}
-                  >
-                    {targetCertIds.includes(cert.id.toString()) ? (
-                      <>
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                        <span>Objectif visé</span>
-                      </>
-                    ) : (
-                      <>
-                        <Target className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                        <span>Viser cet examen</span>
-                      </>
-                    )}
+                <span className={`text-[9px] px-2 py-0.5 rounded-lg font-black uppercase tracking-wider border mb-2 ${getLevelBadgeStyle(cert.niveau)}`}>
+                  {cert.niveau}
+                </span>
+                <h3 className="text-xs font-extrabold text-slate-950 leading-snug line-clamp-2 min-h-[2.5em]">
+                  {cert.nom}
+                </h3>
+                <p className="text-[9px] text-slate-400 font-bold mt-1">{cert.fournisseur?.nom}</p>
+                <div className="mt-3 flex items-center gap-1.5">
+                  <button onClick={(e) => { e.stopPropagation(); setSelectedCertModal(cert); }}
+                    className="px-4 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-950 transition-all cursor-pointer">
+                    Voir
                   </button>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => router.push(`/dashboard/downloads?cert=${cert.slug}`)}
-                      className="px-3.5 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold rounded-xl text-xs border border-slate-200 transition-all cursor-pointer flex items-center gap-1.5"
-                    >
-                      <FileText className="w-3.5 h-3.5 text-slate-500" />
-                      <span>Cours</span>
-                    </button>
-
-                    <button
-                      onClick={() => router.push(`/dashboard/practice?cert=${cert.slug}`)}
-                      className="px-4 py-2 bg-slate-950 hover:bg-slate-900 text-white font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1.5 shadow-sm hover:shadow-md"
-                    >
-                      <Play className="w-3 h-3 fill-white text-white" />
-                      <span>S'entraîner</span>
-                    </button>
-                  </div>
+                  <button onClick={(e) => { e.stopPropagation(); toggleTargetCertification(cert.id.toString()); }}
+                    className={`p-1.5 rounded-xl text-[10px] font-black transition-all cursor-pointer border ${
+                      targetCertIds.includes(cert.id.toString())
+                        ? 'bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100'
+                        : 'bg-slate-50 text-slate-400 border-slate-200 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50'
+                    }`}
+                    title={targetCertIds.includes(cert.id.toString()) ? "Retirer des objectifs" : "Ajouter aux objectifs"}>
+                    {targetCertIds.includes(cert.id.toString()) ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Target className="w-3.5 h-3.5" />}
+                  </button>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
+
+          {/* Modal détail */}
+          <AnimatePresence>
+            {selectedCertModal && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}
+                className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/40 overflow-y-auto"
+                onClick={(e) => { if (e.target === e.currentTarget) setSelectedCertModal(null); }}>
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} transition={{ duration: 0.2 }}
+                  className="bg-white rounded-2xl max-w-md w-full shadow-xl overflow-hidden">
+                  <CertDetailModal cert={selectedCertModal} onClose={() => setSelectedCertModal(null)} onPractice={(c: Certification) => { setSelectedCertModal(null); router.push(`/dashboard/practice?cert=${c.slug}`); }} isTargeted={targetCertIds.includes(selectedCertModal.id.toString())} onToggleTarget={() => toggleTargetCertification(selectedCertModal.id.toString())} />
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Pagination */}
           {totalPages > 1 && (
@@ -392,6 +351,109 @@ export default function LearnerCertificationsPage() {
           )}
         </>
       )}
+    </div>
+  );
+}
+
+/* ───── MODAL DÉTAIL CERTIFICATION ───── */
+function CertDetailModal({ cert, onClose, onPractice, isTargeted, onToggleTarget }: { cert: Certification; onClose: () => void; onPractice: (cert: Certification) => void; isTargeted?: boolean; onToggleTarget?: () => void }) {
+  const [imgError, setImgError] = useState(false);
+  return (
+    <div className="flex flex-col">
+      <div className="relative flex items-start p-5 pb-0">
+        {cert.image && !imgError ? (
+          <div className="w-16 h-16 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center p-2 shrink-0">
+            <img src={cert.image} alt={cert.nom} className="max-w-full max-h-full object-contain"
+              onError={() => setImgError(true)} />
+          </div>
+        ) : (
+          <div className="w-16 h-16 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
+            <Award className="w-8 h-8 text-blue-500" />
+          </div>
+        )}
+        <div className="ml-4 flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 flex-wrap mb-1">
+            {cert.codeExamen && (
+              <span className="text-[10px] font-black text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md">{cert.codeExamen}</span>
+            )}
+            <span className={`text-[10px] px-2 py-0.5 rounded-md font-black border ${getLevelBadgeStyle(cert.niveau)}`}>{cert.niveau}</span>
+          </div>
+          <h2 className="text-sm font-black text-slate-950 leading-snug">{cert.nom}</h2>
+          <p className="text-[11px] text-slate-400 font-bold mt-0.5">{cert.fournisseur?.nom}</p>
+        </div>
+        <button onClick={onClose}
+          className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-all cursor-pointer shrink-0">
+          <X className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      <div className="p-5 space-y-4">
+        <p className="text-xs text-slate-600 font-medium leading-relaxed">
+          {cert.description || "Préparez-vous efficacement à l'examen officiel grâce à nos questionnaires actualisés."}
+        </p>
+
+        <div className="grid grid-cols-2 gap-2.5">
+          <div className="p-3 bg-slate-50 rounded-xl">
+            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Niveau</span>
+            <p className="text-xs font-extrabold text-slate-900 mt-0.5">{cert.niveau}</p>
+          </div>
+          <div className="p-3 bg-slate-50 rounded-xl">
+            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Durée</span>
+            <p className="text-xs font-extrabold text-slate-900 mt-0.5">{cert.dureeIndicative || '15h'}</p>
+          </div>
+        </div>
+
+        {cert.objectifs && cert.objectifs.length > 0 && (
+          <div className="p-3.5 bg-blue-50 rounded-xl space-y-2">
+            <span className="text-[9px] font-black text-blue-600 uppercase tracking-wider flex items-center gap-1.5">
+              <CheckCircle2 className="w-3 h-3" /> Objectifs
+            </span>
+            <ul className="space-y-1">
+              {cert.objectifs.map((obj, i) => (
+                <li key={i} className="text-[11px] text-slate-700 font-semibold flex items-start gap-1.5">
+                  <span className="w-1 h-1 rounded-full bg-blue-500 mt-1.5 shrink-0" />
+                  {obj}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {cert.prerequis && cert.prerequis.length > 0 && (
+          <div className="p-3.5 bg-amber-50 rounded-xl space-y-2">
+            <span className="text-[9px] font-black text-amber-600 uppercase tracking-wider flex items-center gap-1.5">
+              <FileText className="w-3 h-3" /> Prérequis
+            </span>
+            <ul className="space-y-1">
+              {cert.prerequis.map((pr, i) => (
+                <li key={i} className="text-[11px] text-slate-700 font-semibold flex items-start gap-1.5">
+                  <span className="w-1 h-1 rounded-full bg-amber-500 mt-1.5 shrink-0" />
+                  {pr}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      <div className="px-5 pb-5 space-y-2">
+        <button onClick={() => onPractice(cert)}
+          className="w-full py-3 bg-slate-950 hover:bg-slate-900 text-white font-black rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98]">
+          <Play className="w-3.5 h-3.5 fill-white text-white" />
+          Commencer la formation
+        </button>
+        {onToggleTarget && (
+          <button onClick={() => onToggleTarget()}
+            className={`w-full py-2 border font-bold rounded-xl text-[10px] uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-[0.98] ${
+              isTargeted
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:border-emerald-300'
+                : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-700 hover:border-slate-300'
+            }`}>
+            {isTargeted ? <CheckCircle2 className="w-3 h-3" /> : <Target className="w-3 h-3" />}
+            {isTargeted ? 'Dans mes objectifs' : 'Viser cet examen'}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

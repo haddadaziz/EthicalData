@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { apiFetch } from '../../../lib/api';
-import { Award, Clock, ArrowLeft, ArrowRight, Flag, HelpCircle, Check, X, RefreshCw, BookmarkCheck, Play, Users, CheckCircle2, FileText } from 'lucide-react';
+import { Award, Clock, ArrowLeft, ArrowRight, Flag, HelpCircle, Check, X, RefreshCw, BookmarkCheck, Play, Users, CheckCircle2, FileText, BookOpen } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const getNiveauBadgeStyle = (niveau: string) => {
@@ -26,6 +26,7 @@ const getFournisseurBadgeStyle = (fournisseur: string) => {
     return 'bg-slate-50 text-slate-700 border-slate-100';
 };
 const getCertificateBadgeLogo = (cert: any) => {
+    if (!cert) return null;
     if (cert.image && (cert.image.endsWith('.svg') || cert.image.endsWith('.png'))) return cert.image;
     const code = (cert.codeExamen || cert.code || '').toLowerCase();
     const nom = (cert.nom || cert.title || '').toLowerCase();
@@ -44,6 +45,7 @@ export default function PracticePage() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const certSlug = searchParams.get('cert');
+    const courseSlug = searchParams.get('course');
 
     const [certs, setCerts] = useState<any[]>([]);
     const [questions, setQuestions] = useState<any[]>([]);
@@ -61,19 +63,29 @@ export default function PracticePage() {
     const [aiFeedbacks, setAiFeedbacks] = useState<{ [key: string]: { score: number; critique: string; suggestions: string } }>({});
     const [readinessData, setReadinessData] = useState<any | null>(null);
 
+    const [mode, setMode] = useState<'certification' | 'cours'>('certification');
+    const [inscriptions, setInscriptions] = useState<any[]>([]);
+    const [selectedCourse, setSelectedCourse] = useState<any | null>(null);
+    const [courseStatus, setCourseStatus] = useState<any | null>(null);
+    const [courseSimulation, setCourseSimulation] = useState<any | null>(null);
+    const [courseFilter, setCourseFilter] = useState<'all' | 'in-progress' | 'completed'>('all');
+
     useEffect(() => {
-        const fetchCerts = async () => {
+        const fetchInitial = async () => {
             try {
-                const data = await apiFetch('/certifications');
-                const listCerts = Array.isArray(data) ? data : (data?.data || []);
-                setCerts(listCerts);
+                const [certsData, inscData] = await Promise.all([
+                    apiFetch('/certifications'),
+                    apiFetch('/cours/mes-inscriptions').catch(() => []),
+                ]);
+                setCerts(Array.isArray(certsData) ? certsData : []);
+                setInscriptions(Array.isArray(inscData) ? inscData : []);
             } catch (err) {
-                console.error("Erreur chargement certifications:", err);
+                console.error("Erreur chargement initial:", err);
             } finally {
                 setLoading(false);
             }
         };
-        fetchCerts();
+        fetchInitial();
     }, []);
 
     const loadQuestions = async (certId: string) => {
@@ -83,6 +95,28 @@ export default function PracticePage() {
             setQuestions(data);
         } catch (err) {
             console.error("Erreur de chargement des questions :", err);
+        } finally {
+            setLoadingQuestions(false);
+        }
+    };
+
+    const loadCourseSimulation = async (courseId: string) => {
+        setLoadingQuestions(true);
+        try {
+            const [sim, status] = await Promise.all([
+                apiFetch(`/simulations/cours/${courseId}`),
+                apiFetch(`/cours/${courseId}/inscription-status`),
+            ]);
+            setCourseSimulation(sim);
+            setCourseStatus(status);
+            if (sim?.questions?.length > 0) {
+                setQuestions(sim.questions);
+            } else {
+                setQuestions([]);
+            }
+        } catch (err) {
+            console.error("Erreur chargement simulation cours:", err);
+            setQuestions([]);
         } finally {
             setLoadingQuestions(false);
         }
@@ -141,18 +175,26 @@ export default function PracticePage() {
         setLoadingQuestions(false);
 
         try {
-            const currentCert = certs.find(c => c.slug === certSlug || String(c.id) === String(certSlug));
-            const targetCertId = currentCert ? currentCert.id : (questions[0]?.certificationId || null);
-
-            if (targetCertId) {
-                await apiFetch(`/simulations/certifications/${targetCertId}/tentatives`, {
+            if (mode === 'cours' && selectedCourse) {
+                await apiFetch(`/simulations/cours/${selectedCourse.id}/tentatives`, {
                     method: 'POST',
                     body: { score: finalScore }
-                }).catch(e => console.warn("Erreur enregistrement tentative:", e));
-                
-                const readiness = await apiFetch(`/simulations/certifications/${targetCertId}/readiness`).catch(() => null);
-                if (readiness) {
-                    setReadinessData(readiness);
+                }).catch(e => console.warn("Erreur enregistrement tentative cours:", e));
+
+                const readiness = await apiFetch(`/simulations/cours/${selectedCourse.id}/readiness`).catch(() => null);
+                if (readiness) setReadinessData(readiness);
+            } else {
+                const currentCert = certs.find(c => c.slug === certSlug || String(c.id) === String(certSlug));
+                const targetCertId = currentCert ? currentCert.id : (questions[0]?.certificationId || null);
+
+                if (targetCertId) {
+                    await apiFetch(`/simulations/certifications/${targetCertId}/tentatives`, {
+                        method: 'POST',
+                        body: { score: finalScore }
+                    }).catch(e => console.warn("Erreur enregistrement tentative:", e));
+
+                    const readiness = await apiFetch(`/simulations/certifications/${targetCertId}/readiness`).catch(() => null);
+                    if (readiness) setReadinessData(readiness);
                 }
             }
         } catch (err) {
@@ -168,6 +210,7 @@ export default function PracticePage() {
         setSelectedAnswers({});
         setFlaggedQuestions([]);
         setAiFeedbacks({});
+        setReadinessData(null);
         setTimeLeft(questions.length * 120);
         setIsPaused(false);
     };
@@ -189,13 +232,21 @@ export default function PracticePage() {
     };
 
     useEffect(() => {
-        if (!loading && certSlug && certs.length > 0) {
+        if (loading) return;
+        if (certSlug && certs.length > 0) {
+            setMode('certification');
             const currentCert = certs.find(c => c.slug === certSlug);
-            if (currentCert) {
-                loadQuestions(currentCert.id);
+            if (currentCert) loadQuestions(currentCert.id);
+        }
+        if (courseSlug && inscriptions.length > 0) {
+            setMode('cours');
+            const insc = inscriptions.find((i: any) => i.cours?.slug === courseSlug);
+            if (insc?.cours) {
+                setSelectedCourse(insc.cours);
+                loadCourseSimulation(insc.cours.id);
             }
         }
-    }, [certSlug, certs, loading]);
+    }, [certSlug, courseSlug, certs, inscriptions, loading]);
 
     useEffect(() => {
         if (!examStarted || examFinished || isPaused) return;
@@ -226,88 +277,182 @@ export default function PracticePage() {
         );
     }
 
-    if (!certSlug) {
+    if (!certSlug && !courseSlug) {
         return (
             <div className="space-y-6 text-left animate-fadeIn">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {certs.map((cert) => (
-                        <div
-                            key={cert.id}
-                            className="bg-white border border-slate-200/90 hover:border-slate-350 hover:shadow-xl rounded-3xl p-6 sm:p-7 flex flex-col justify-between group transition-all duration-300 text-left space-y-5"
-                        >
-                            {/* PARTIE SUPÉRIEURE : EN-TÊTE STYLE UDEMY */}
-                            <div className="flex items-start justify-between gap-4">
-                                {/* Côté Gauche : Badges, Titre & Description */}
-                                <div className="space-y-3 flex-1">
-                                    <div className="flex flex-wrap items-center gap-2">
-                                        <span className="font-extrabold text-slate-900 text-[10px] uppercase tracking-wider px-2.5 py-1 bg-slate-100 border border-slate-200 rounded-lg">
-                                            {cert.fournisseur?.nom || 'Éditeur'}
-                                        </span>
-                                        {cert.codeExamen && (
-                                            <span className="font-black text-blue-600 text-[10px] uppercase tracking-wider px-2.5 py-1 bg-blue-50 border border-blue-100 rounded-lg">
-                                                {cert.codeExamen}
+                <div className="flex items-center gap-2 mb-6 bg-white border border-slate-200/80 rounded-2xl p-1.5 w-fit shadow-xs">
+                    <button
+                        onClick={() => setMode('certification')}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${mode === 'certification' ? 'bg-slate-950 text-white shadow-sm' : 'text-slate-500 hover:text-slate-950'}`}
+                    >
+                        Certifications
+                    </button>
+                    <button
+                        onClick={() => setMode('cours')}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${mode === 'cours' ? 'bg-slate-950 text-white shadow-sm' : 'text-slate-500 hover:text-slate-950'}`}
+                    >
+                        Mes cours
+                    </button>
+                </div>
+
+                {mode === 'certification' ? (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {certs.map((cert) => (
+                            <div
+                                key={cert.id}
+                                className="bg-white border border-slate-200/90 hover:border-slate-350 hover:shadow-xl rounded-3xl p-6 sm:p-7 flex flex-col justify-between group transition-all duration-300 text-left space-y-5"
+                            >
+                                <div className="flex items-start justify-between gap-4">
+                                    <div className="space-y-3 flex-1">
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <span className="font-extrabold text-slate-900 text-[10px] uppercase tracking-wider px-2.5 py-1 bg-slate-100 border border-slate-200 rounded-lg">
+                                                {cert.fournisseur?.nom || 'Éditeur'}
                                             </span>
+                                            {cert.codeExamen && (
+                                                <span className="font-black text-blue-600 text-[10px] uppercase tracking-wider px-2.5 py-1 bg-blue-50 border border-blue-100 rounded-lg">
+                                                    {cert.codeExamen}
+                                                </span>
+                                            )}
+                                            <span className={`text-[9px] px-2.5 py-1 rounded-lg font-extrabold uppercase tracking-wider border ${getNiveauBadgeStyle(cert.niveau)}`}>
+                                                {cert.niveau}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <h3 className="font-extrabold text-slate-950 text-lg leading-snug group-hover:text-blue-600 transition-colors">{cert.nom}</h3>
+                                            <p className="text-xs text-slate-500 font-medium line-clamp-2 mt-1.5 leading-relaxed">{cert.description}</p>
+                                        </div>
+                                        <div className="flex items-center gap-4 text-xs font-bold text-slate-400 pt-1">
+                                            <span className="flex items-center gap-1.5 text-slate-600">
+                                                <Users className="w-3.5 h-3.5 text-slate-400" />
+                                                <span>Candidats en préparation</span>
+                                            </span>
+                                            <span className="flex items-center gap-1 text-slate-500">
+                                                <Clock className="w-3.5 h-3.5" />
+                                                <span>{cert.dureeIndicative || '15h indicatives'}</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center shrink-0 p-1">
+                                        {getCertificateBadgeLogo(cert) ? (
+                                            <img src={getCertificateBadgeLogo(cert)} alt={cert.nom} className="max-h-full max-w-full object-contain filter drop-shadow-md transition-transform duration-300 group-hover:scale-110" />
+                                        ) : (
+                                            <Award className="w-12 h-12 text-slate-300" />
                                         )}
-                                        <span className={`text-[9px] px-2.5 py-1 rounded-lg font-extrabold uppercase tracking-wider border ${getNiveauBadgeStyle(cert.niveau)}`}>
-                                            {cert.niveau}
-                                        </span>
-                                    </div>
-
-                                    <div>
-                                        <h3 className="font-extrabold text-slate-950 text-lg leading-snug group-hover:text-blue-600 transition-colors">
-                                            {cert.nom}
-                                        </h3>
-                                        <p className="text-xs text-slate-500 font-medium line-clamp-2 mt-1.5 leading-relaxed">
-                                            {cert.description}
-                                        </p>
-                                    </div>
-
-                                    <div className="flex items-center gap-4 text-xs font-bold text-slate-400 pt-1">
-                                        <span className="flex items-center gap-1.5 text-slate-600">
-                                            <Users className="w-3.5 h-3.5 text-slate-400" />
-                                            <span>Candidats en préparation</span>
-                                        </span>
-                                        <span className="flex items-center gap-1 text-slate-500">
-                                            <Clock className="w-3.5 h-3.5" />
-                                            <span>{cert.dureeIndicative || '15h indicatives'}</span>
-                                        </span>
                                     </div>
                                 </div>
-
-                                {/* Côté Droit : Écusson/Badge Officiel Flottant */}
-                                <div className="w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center shrink-0 p-1">
-                                    {getCertificateBadgeLogo(cert) ? (
-                                        <img
-                                            src={getCertificateBadgeLogo(cert)}
-                                            alt={cert.nom}
-                                            className="max-h-full max-w-full object-contain filter drop-shadow-md transition-transform duration-300 group-hover:scale-110"
-                                        />
-                                    ) : (
-                                        <Award className="w-12 h-12 text-slate-300" />
-                                    )}
+                                <div className="border-t border-slate-100 pt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-xs">
+                                    <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1.5">
+                                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                                        <span>Chronométré & IA Activée</span>
+                                    </span>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={() => router.push(`/dashboard/practice?cert=${cert.slug}`)}
+                                            className="px-5 py-2.5 bg-slate-950 hover:bg-slate-900 text-white font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center gap-2 shadow-sm hover:shadow-md"
+                                        >
+                                            <Play className="w-3.5 h-3.5 fill-white text-white" />
+                                            <span>Lancer le simulateur</span>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        {/* Filtre En cours / Terminés */}
+                        <div className="flex items-center gap-2 bg-white border border-slate-200/80 rounded-2xl p-1.5 w-fit shadow-xs">
+                            <button onClick={() => setCourseFilter('all')}
+                                className={`px-4 py-2 rounded-xl text-xs font-bold tracking-wider transition-all cursor-pointer ${courseFilter === 'all' ? 'bg-slate-950 text-white shadow-sm' : 'text-slate-500 hover:text-slate-950'}`}>
+                                Tous
+                            </button>
+                            <button onClick={() => setCourseFilter('in-progress')}
+                                className={`px-4 py-2 rounded-xl text-xs font-bold tracking-wider transition-all cursor-pointer ${courseFilter === 'in-progress' ? 'bg-slate-950 text-white shadow-sm' : 'text-slate-500 hover:text-slate-950'}`}>
+                                En cours
+                            </button>
+                            <button onClick={() => setCourseFilter('completed')}
+                                className={`px-4 py-2 rounded-xl text-xs font-bold tracking-wider transition-all cursor-pointer ${courseFilter === 'completed' ? 'bg-slate-950 text-white shadow-sm' : 'text-slate-500 hover:text-slate-950'}`}>
+                                Terminés
+                            </button>
+                        </div>
 
-                            {/* BAS DE CARTE : ACTIONS & CTAS DISCRETS */}
-                            <div className="border-t border-slate-100 pt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-xs">
-                                <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1.5">
-                                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                                    <span>Chronométré & IA Activée</span>
-                                </span>
-
-                                <div className="flex items-center gap-2">
-                                    <button
-                                        onClick={() => router.push(`/dashboard/practice?cert=${cert.slug}`)}
-                                        className="px-5 py-2.5 bg-slate-950 hover:bg-slate-900 text-white font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center gap-2 shadow-sm hover:shadow-md"
-                                    >
-                                        <Play className="w-3.5 h-3.5 fill-white text-white" />
-                                        <span>Lancer le simulateur</span>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {inscriptions.length === 0 ? (
+                                <div className="col-span-full p-12 text-center bg-white border border-slate-200/80 rounded-3xl">
+                                    <p className="text-sm font-semibold text-slate-500">Vous n'êtes inscrit à aucun cours.</p>
+                                    <button onClick={() => router.push('/dashboard/cours')} className="mt-4 px-5 py-2.5 bg-slate-950 text-white font-bold rounded-xl text-xs">
+                                        Explorer les cours
                                     </button>
                                 </div>
-                            </div>
+                            ) : (
+                                inscriptions
+                                    .filter((insc: any) => {
+                                        if (courseFilter === 'all') return true;
+                                        const p = insc.progressions || [];
+                                        const completed = p.filter((x: any) => x.completed).length;
+                                        const total = insc.cours?.modules?.length || 1;
+                                        const allDone = completed >= total && total > 0;
+                                        return courseFilter === 'completed' ? allDone : !allDone;
+                                    })
+                                    .map((insc: any) => {
+                                        const course = insc.cours;
+                                        if (!course) return null;
+                                        const p = insc.progressions || [];
+                                        const completedCount = p.filter((x: any) => x.completed).length;
+                                        const totalModules = course.modules?.length || 0;
+                                        const isCompleted = completedCount >= totalModules && totalModules > 0;
+                                        return (
+                                            <div key={course.id} className="bg-white border border-slate-200/90 hover:border-slate-350 hover:shadow-xl rounded-3xl p-6 sm:p-7 flex flex-col justify-between group transition-all duration-300 text-left space-y-5">
+                                                <div className="flex items-start gap-4">
+                                                    {course.imageUrl && (
+                                                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shrink-0 bg-slate-100 border border-slate-200">
+                                                            <img src={course.imageUrl} alt={course.titre} className="w-full h-full object-cover" />
+                                                        </div>
+                                                    )}
+                                                    <div className="space-y-2 flex-1 min-w-0">
+                                                        <div className="flex items-center gap-2">
+                                                            <h3 className="font-extrabold text-slate-950 text-base sm:text-lg leading-snug group-hover:text-blue-600 transition-colors truncate">{course.titre}</h3>
+                                                            {isCompleted && (
+                                                                <span className="shrink-0 px-2 py-0.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[9px] font-black rounded-lg">Terminé</span>
+                                                            )}
+                                                        </div>
+                                                        <p className="text-xs text-slate-500 font-medium line-clamp-2 leading-relaxed">{course.description}</p>
+                                                        <div className="flex items-center gap-3 text-[10px] font-bold text-slate-400">
+                                                            {!isCompleted && totalModules > 0 && (
+                                                                <span className="flex items-center gap-1 text-blue-600">
+                                                                    <Clock className="w-3 h-3" />
+                                                                    {completedCount}/{totalModules} modules
+                                                                </span>
+                                                            )}
+                                                            <span className="flex items-center gap-1">
+                                                                <FileText className="w-3 h-3" />
+                                                                {totalModules} module{totalModules > 1 ? 's' : ''}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="border-t border-slate-100 pt-4">
+                                                    {isCompleted ? (
+                                                        <button onClick={() => router.push(`/dashboard/practice?course=${course.slug}`)}
+                                                            className="w-full px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm hover:shadow-md">
+                                                            <Play className="w-3.5 h-3.5 fill-white text-white" />
+                                                            <span>Simulation du cours</span>
+                                                        </button>
+                                                    ) : (
+                                                        <button onClick={() => router.push(`/dashboard/cours/${course.id}/apprendre?from=mes-cours`)}
+                                                            className="w-full px-5 py-2.5 bg-slate-950 hover:bg-slate-900 text-white font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm hover:shadow-md">
+                                                            <BookOpen className="w-3.5 h-3.5" />
+                                                            <span>Continuer le cours</span>
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                            )}
                         </div>
-                    ))}
-                </div>
+                    </div>
+                )}
             </div>
         );
     }
@@ -727,66 +872,124 @@ export default function PracticePage() {
         );
     }
 
-    const currentCert = certs.find(c => c.slug === certSlug) || certs[0] || { nom: "Microsoft Azure Fundamentals" };
+    const currentCert = mode === 'cours' && !selectedCourse ? null : (certs.find(c => c.slug === certSlug) || certs[0] || null);
 
     return (
         <div className="max-w-2xl mx-auto space-y-8 text-left relative overflow-hidden">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-blue-600/5 blur-3xl pointer-events-none" />
 
             <div className="bg-white shadow-sm border border-slate-200/80 rounded-[32px] p-8 sm:p-12 space-y-6 relative z-10 text-center">
-                <div className="flex justify-center">
-                    <div className="w-28 h-28 flex items-center justify-center p-1">
-                        {getCertificateBadgeLogo(currentCert) ? (
-                            <img
-                                src={getCertificateBadgeLogo(currentCert)}
-                                alt={currentCert.nom}
-                                className="max-h-full max-w-full object-contain filter drop-shadow-md"
-                            />
-                        ) : (
-                            <HelpCircle className="w-12 h-12 text-blue-600" />
+
+                {mode === 'cours' && selectedCourse ? (
+                    <>
+                        <div className="flex justify-center">
+                            <div className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center">
+                                <FileText className="w-8 h-8 text-blue-600" />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block">Simulation de Cours</span>
+                            <h2 className="text-2xl font-black text-slate-950 leading-snug">{selectedCourse.titre}</h2>
+
+                            {courseStatus && !courseStatus.inscrit && (
+                                <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-2xl">
+                                    <p className="text-xs font-bold text-amber-700">Vous n'êtes pas inscrit à ce cours.</p>
+                                    <button onClick={() => router.push(`/dashboard/cours/${selectedCourse.id}`)} className="mt-2 px-4 py-2 bg-amber-600 text-white font-bold rounded-xl text-xs">
+                                        Rejoindre le cours
+                                    </button>
+                                </div>
+                            )}
+                            {courseStatus && courseStatus.inscrit && !courseStatus.completed && (
+                                <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-2xl">
+                                    <p className="text-xs font-bold text-blue-700">Vous devez d'abord terminer tous les modules du cours pour accéder à sa simulation.</p>
+                                    <p className="text-xs text-blue-500 font-semibold mt-1">Progression : {courseStatus.progression}% ({courseStatus.completedCount}/{courseStatus.totalModules} modules)</p>
+                                    <button onClick={() => router.push(`/dashboard/cours/${selectedCourse.id}/apprendre`)} className="mt-2 px-4 py-2 bg-blue-600 text-white font-bold rounded-xl text-xs">
+                                        Continuer le cours
+                                    </button>
+                                </div>
+                            )}
+                            {!courseSimulation && courseStatus?.inscrit && (
+                                <div className="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                                    <p className="text-xs font-bold text-slate-600">Le formateur n'a pas encore créé de simulation pour ce cours.</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {courseStatus?.inscrit && courseStatus?.completed && courseSimulation && questions.length > 0 && (
+                            <>
+                                <div className="grid grid-cols-3 gap-4 py-4 border-y border-slate-200/80 my-4 text-xs">
+                                    <div className="space-y-1">
+                                        <p className="text-slate-500 font-bold uppercase text-[9px] tracking-wider">Questions</p>
+                                        <p className="font-extrabold text-slate-950">{questions.length} questions</p>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-slate-500 font-bold uppercase text-[9px] tracking-wider">Durée</p>
+                                        <p className="font-extrabold text-slate-950">{questions.length * 2} minutes</p>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-slate-500 font-bold uppercase text-[9px] tracking-wider">Seuil</p>
+                                        <p className="font-extrabold text-slate-950">80% de réussite</p>
+                                    </div>
+                                </div>
+                                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                    <button onClick={handleStartExam} disabled={questions.length === 0}
+                                        className="flex-1 py-3.5 bg-white hover:bg-slate-100 text-slate-950 font-black rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                                        Démarrer l'Examen
+                                    </button>
+                                    <button onClick={() => router.push('/dashboard')}
+                                        className="px-6 py-3.5 border border-slate-200/80 hover:border-slate-200 text-slate-600 hover:text-slate-950 rounded-xl text-xs font-bold transition-all cursor-pointer uppercase tracking-wider">
+                                        Annuler
+                                    </button>
+                                </div>
+                            </>
                         )}
-                    </div>
-                </div>
-
-                <div className="space-y-2">
-                    <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block">Simulateur Officiel</span>
-                    <h2 className="text-2xl font-black text-slate-950 leading-snug">{currentCert.nom}</h2>
-                    <p className="text-xs text-slate-450 font-semibold max-w-sm mx-auto leading-relaxed mt-2">
-                        Cet examen blanc reproduit fidèlement la structure de l'examen de certification réel.
-                    </p>
-                </div>
-
-                <div className="grid grid-cols-3 gap-4 py-4 border-y border-slate-200/80 my-4 text-xs">
-                    <div className="space-y-1">
-                        <p className="text-slate-500 font-bold uppercase text-[9px] tracking-wider">Questions</p>
-                        <p className="font-extrabold text-slate-950">{questions.length} questions</p>
-                    </div>
-                    <div className="space-y-1">
-                        <p className="text-slate-500 font-bold uppercase text-[9px] tracking-wider">Durée</p>
-                        <p className="font-extrabold text-slate-950">{questions.length * 2} minutes</p>
-                    </div>
-                    <div className="space-y-1">
-                        <p className="text-slate-500 font-bold uppercase text-[9px] tracking-wider">Seuil</p>
-                        <p className="font-extrabold text-slate-950">80% de réussite</p>
-                    </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <button
-                        onClick={handleStartExam}
-                        disabled={questions.length === 0}
-                        className="flex-1 py-3.5 bg-white hover:bg-slate-100 text-slate-950 font-black rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        Démarrer l'Examen
-                    </button>
-
-                    <button
-                        onClick={() => router.push('/dashboard')}
-                        className="px-6 py-3.5 border border-slate-200/80 hover:border-slate-200 text-slate-600 hover:text-slate-950 rounded-xl text-xs font-bold transition-all cursor-pointer uppercase tracking-wider"
-                    >
-                        Annuler
-                    </button>
-                </div>
+                    </>
+                ) : (
+                    <>
+                        {currentCert && (
+                            <div className="flex justify-center">
+                                <div className="w-28 h-28 flex items-center justify-center p-1">
+                                    {getCertificateBadgeLogo(currentCert) ? (
+                                        <img src={getCertificateBadgeLogo(currentCert)} alt={currentCert.nom} className="max-h-full max-w-full object-contain filter drop-shadow-md" />
+                                    ) : (
+                                        <HelpCircle className="w-12 h-12 text-blue-600" />
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                        <div className="space-y-2">
+                            <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block">Simulateur Officiel</span>
+                            <h2 className="text-2xl font-black text-slate-950 leading-snug">{currentCert?.nom || 'Chargement...'}</h2>
+                            <p className="text-xs text-slate-450 font-semibold max-w-sm mx-auto leading-relaxed mt-2">
+                                Cet examen blanc reproduit fidèlement la structure de l'examen de certification réel.
+                            </p>
+                        </div>
+                        <div className="grid grid-cols-3 gap-4 py-4 border-y border-slate-200/80 my-4 text-xs">
+                            <div className="space-y-1">
+                                <p className="text-slate-500 font-bold uppercase text-[9px] tracking-wider">Questions</p>
+                                <p className="font-extrabold text-slate-950">{questions.length} questions</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-slate-500 font-bold uppercase text-[9px] tracking-wider">Durée</p>
+                                <p className="font-extrabold text-slate-950">{questions.length * 2} minutes</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-slate-500 font-bold uppercase text-[9px] tracking-wider">Seuil</p>
+                                <p className="font-extrabold text-slate-950">80% de réussite</p>
+                            </div>
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                            <button onClick={handleStartExam} disabled={questions.length === 0}
+                                className="flex-1 py-3.5 bg-white hover:bg-slate-100 text-slate-950 font-black rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                                Démarrer l'Examen
+                            </button>
+                            <button onClick={() => router.push('/dashboard')}
+                                className="px-6 py-3.5 border border-slate-200/80 hover:border-slate-200 text-slate-600 hover:text-slate-950 rounded-xl text-xs font-bold transition-all cursor-pointer uppercase tracking-wider">
+                                Annuler
+                            </button>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );

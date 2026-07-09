@@ -5,6 +5,11 @@ import helmet from 'helmet';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
+// Polyfill global BigInt → string pour JSON.stringify
+(BigInt.prototype as any).toJSON = function () {
+    return this.toString();
+};
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 

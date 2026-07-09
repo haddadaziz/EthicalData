@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useConfirm } from '../../../context/ConfirmContext';
 import LearnerProfileModal from '../../../components/LearnerProfileModal';
-import { MessageSquare, Heart, Plus, Search, RefreshCw, X, Send, Flag, Trash2, Award, User, Sparkles, MessageCircle, ShieldAlert, Reply, ChevronDown, ChevronUp, CornerDownRight, AtSign } from 'lucide-react';
+import { MessageSquare, Heart, Plus, Search, RefreshCw, X, Send, Flag, Trash2, Award, User, Sparkles, MessageCircle, ShieldAlert, Reply, ChevronDown, ChevronUp, CornerDownRight, AtSign } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Sujet {
@@ -67,6 +67,7 @@ const THEMES = [
 
 export default function CommunityPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { showToast } = useToast();
     const { confirm } = useConfirm();
     const [sujets, setSujets] = useState<Sujet[]>([]);
@@ -121,7 +122,7 @@ export default function CommunityPage() {
     // Réponses imbriquées & Pagination
     const [expandedReplies, setExpandedReplies] = useState<Record<string, boolean>>({});
     const [visibleTopCommentsCount, setVisibleTopCommentsCount] = useState(5);
-    const [replyTarget, setReplyTarget] = useState<{ id: string; authorName: string } | null>(null);
+    const [replyTarget, setReplyTarget] = useState<{ id: string; authorName: string; mentionUserId?: string } | null>(null);
     const commentInputRef = useRef<HTMLTextAreaElement>(null);
 
     useEffect(() => {
@@ -165,6 +166,48 @@ export default function CommunityPage() {
     useEffect(() => {
         loadData();
     }, [selectedTheme, selectedCert]);
+
+    // Handle deep linking from notifications - Step 1: Open the Sujet
+    useEffect(() => {
+        const sujetIdParam = searchParams.get('sujetId');
+        // Uniquement si on a un sujetIdParam qu'on n'a pas encore ouvert
+        if (sujetIdParam && (!detailSujet || detailSujet.id !== sujetIdParam)) {
+            handleOpenSujet(sujetIdParam);
+        }
+    }, [searchParams]);
+
+    // Handle deep linking - Step 2: Expand and scroll to specific comment once data is loaded
+    useEffect(() => {
+        const commentIdParam = searchParams.get('commentId');
+        
+        if (detailSujet && commentIdParam) {
+            // Find the target comment in the data to know its parent
+            const targetComment = detailSujet.commentaires?.find(c => c.id === commentIdParam);
+            
+            if (targetComment) {
+                // If it's a sub-comment, ensure its parent is expanded
+                if (targetComment.parentCommentaireId) {
+                    setExpandedReplies(prev => ({
+                        ...prev,
+                        [targetComment.parentCommentaireId as string]: true
+                    }));
+                }
+
+                // Give React a moment to render the expanded section, then scroll
+                setTimeout(() => {
+                    const commentElement = document.getElementById(`comment-${commentIdParam}`);
+                    if (commentElement) {
+                        commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // Add highlight
+                        commentElement.classList.add('ring-2', 'ring-blue-500', 'ring-offset-2', 'transition-all', 'duration-500');
+                        setTimeout(() => {
+                            commentElement.classList.remove('ring-2', 'ring-blue-500', 'ring-offset-2');
+                        }, 3000);
+                    }
+                }, 300);
+            }
+        }
+    }, [detailSujet, searchParams]);
 
     const loadSujetDetail = async (id: string) => {
         setDetailLoading(true);
@@ -313,6 +356,7 @@ export default function CommunityPage() {
                 body: {
                     contenu: newCommentText,
                     parentCommentaireId: replyTarget ? parseInt(replyTarget.id) : undefined,
+                    mentionUserId: replyTarget?.mentionUserId ? parseInt(replyTarget.mentionUserId) : undefined,
                 },
             });
 
@@ -366,8 +410,8 @@ export default function CommunityPage() {
         }
     };
 
-    const handleInitiateReply = (commId: string, authorName: string) => {
-        setReplyTarget({ id: commId, authorName });
+    const handleInitiateReply = (commId: string, authorName: string, mentionUserId?: string) => {
+        setReplyTarget({ id: commId, authorName, mentionUserId });
         if (commentInputRef.current) {
             commentInputRef.current.focus();
         }
@@ -884,7 +928,7 @@ export default function CommunityPage() {
                                                         const isExpanded = !!expandedReplies[comm.id];
 
                                                         return (
-                                                            <div key={comm.id} className="bg-white border border-slate-200/90 rounded-3xl p-4 md:p-5 space-y-3 shadow-sm text-left">
+                                                            <div key={comm.id} id={`comment-${comm.id}`} className="bg-white border border-slate-200/90 rounded-3xl p-4 md:p-5 space-y-3 shadow-sm text-left">
                                                                 {/* En-tête commentaire top-level */}
                                                                 <div className="flex items-center justify-between text-xs">
                                                                     <div className="flex items-center gap-2.5">
@@ -1018,7 +1062,7 @@ export default function CommunityPage() {
                                                                             {subReplies.map((sub) => {
                                                                                 const isSubOwner = (currentUserId && sub.auteur?.id === currentUserId) || (currentUserEmail && sub.auteur?.email === currentUserEmail);
                                                                                 return (
-                                                                                    <div key={sub.id} className="p-3.5 bg-slate-50 border border-slate-200/70 rounded-2xl space-y-2 text-left relative">
+                                                                                    <div key={sub.id} id={`comment-${sub.id}`} className="p-3.5 bg-slate-50 border border-slate-200/70 rounded-2xl space-y-2 text-left relative">
                                                                                         <div className="flex items-center justify-between text-xs">
                                                                                             <div className="flex items-center gap-2">
                                                                                                 {sub.auteur?.avatar ? (
@@ -1084,7 +1128,7 @@ export default function CommunityPage() {
                                                                                             </button>
 
                                                                                             <button
-                                                                                                onClick={() => handleInitiateReply(comm.id, getAuthorFullName(sub.auteur))}
+                                                                                                onClick={() => handleInitiateReply(comm.id, getAuthorFullName(sub.auteur), sub.auteur?.id)}
                                                                                                 className="text-slate-500 hover:text-blue-600 flex items-center gap-1 cursor-pointer transition-colors"
                                                                                             >
                                                                                                 <Reply className="w-3 h-3" />
@@ -1219,7 +1263,7 @@ export default function CommunityPage() {
                                 </div>
                                 <button
                                     onClick={() => setIsReportModalOpen(false)}
-                                    className="p-2 text-slate-400 hover:text-slate-950 rounded-xl hover:bg-slate-100 transition-colors"
+                                    className="p-2 text-slate-400 hover:text-slate-950 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
                                 >
                                     <X className="w-5 h-5" />
                                 </button>

@@ -22,6 +22,15 @@ export const metadata: Metadata = {
   },
   description: 'Préparez vos certifications Microsoft Azure, AWS, Data, IA et Cybersécurité avec des tests blancs, une correction assistée par IA et du coaching individuel.',
   keywords: ['Certification Microsoft', 'Azure AZ-104', 'Examen blanc IA', 'Coaching IT', 'Ethical Data', 'Cybersécurité', 'Data AI'],
+  icons: {
+    icon: [
+      { url: '/favicon_ethical_data.png', type: 'image/png', sizes: '96x96' },
+      { url: '/favicon_ethical_data.png', type: 'image/png', sizes: '64x64' },
+      { url: '/favicon_ethical_data.png', type: 'image/png', sizes: '32x32' },
+      { url: '/favicon_ethical_data.png', type: 'image/png', sizes: '16x16' },
+    ],
+    shortcut: '/favicon_ethical_data.png',
+  },
   authors: [{ name: 'Ethical Data Security' }],
   openGraph: {
     title: 'Ethical Data - Formation & Certification Cloud, IA et Sécurité',

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { User, ShieldCheck, KeyRound, Bell, CheckCircle, Save, RefreshCw, Sparkles, MessageSquare, Heart, Camera, Phone, Mail, FileText, Lock, Eye, EyeOff, Upload, Award, ChevronRight } from 'lucide-react';
+import { User, ShieldCheck, KeyRound, Bell, CheckCircle, Save, RefreshCw, Sparkles, MessageSquare, Heart, Camera, Phone, Mail, FileText, Lock, Eye, EyeOff, Upload, Award, ChevronRight } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface UserProfileData {
@@ -225,6 +225,9 @@ export default function ProfilePage() {
 
             // Passer en mode formateur immédiatement
             localStorage.setItem('viewMode', 'FORMATEUR');
+
+            // Notifier le layout que les rôles ont changé (pour afficher le bouton mode sans rafraîchir)
+            window.dispatchEvent(new Event('rolesUpdated'));
 
             showToast("Félicitations ! Vous êtes maintenant formateur. Votre accès est activé.", "success");
 

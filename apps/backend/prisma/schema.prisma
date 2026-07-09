@@ -74,6 +74,8 @@ model Certification {
   description     String    @db.Text
   niveau          Niveau
   dureeIndicative String?
+  objectifs       String[]
+  prerequis       String[]
   image           String?
   dateCreation    DateTime  @default(now())
   deletedAt       DateTime? @map("deleted_at")
