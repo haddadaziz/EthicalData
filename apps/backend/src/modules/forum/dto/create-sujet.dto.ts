@@ -1,12 +1,14 @@
-import { IsNotEmpty, IsOptional, IsString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsNumber, MaxLength } from 'class-validator';
 
 export class CreateSujetDto {
   @IsString()
   @IsNotEmpty({ message: 'Le titre du sujet est obligatoire.' })
+  @MaxLength(200, { message: 'Le titre ne peut pas dépasser 200 caractères.' })
   titre: string;
 
   @IsString()
   @IsNotEmpty({ message: 'Le contenu du sujet ne peut pas être vide.' })
+  @MaxLength(10000, { message: 'Le contenu ne peut pas dépasser 10 000 caractères.' })
   contenu: string;
 
   @IsString()

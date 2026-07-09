@@ -164,7 +164,7 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 relative overflow-hidden font-sans selection:bg-red-600 selection:text-white">
+    <main className="min-h-screen bg-slate-50 text-slate-900 relative overflow-hidden font-sans selection:bg-red-600 selection:text-white">
       
       {/* Grille fine d'arrière-plan claire */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000003_1px,transparent_1px),linear-gradient(to_bottom,#00000003_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none z-0" />
@@ -418,10 +418,10 @@ export default function LandingPage() {
               </div>
 
               {/* Flèches de navigation (esthétique) */}
-              <button className="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-red-600/90 border border-red-500/25 flex items-center justify-center text-white cursor-pointer hover:bg-red-750 transition-colors z-20">
+              <button aria-label="Image précédente" className="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-red-600/90 border border-red-500/25 flex items-center justify-center text-white cursor-pointer hover:bg-red-750 transition-colors z-20">
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <button className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-red-600/90 border border-red-500/25 flex items-center justify-center text-white cursor-pointer hover:bg-red-750 transition-colors z-20">
+              <button aria-label="Image suivante" className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-red-600/90 border border-red-500/25 flex items-center justify-center text-white cursor-pointer hover:bg-red-750 transition-colors z-20">
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
@@ -627,7 +627,7 @@ export default function LandingPage() {
                     <Check className="w-3 h-3" />
                   </div>
                   <div className="space-y-0.5">
-                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">{srv.title}</h4>
+                    <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">{srv.title}</h3>
                     <p className="text-xs text-slate-500 font-semibold leading-relaxed">{srv.desc}</p>
                   </div>
                 </div>
@@ -853,10 +853,10 @@ export default function LandingPage() {
           <div className="text-left">
             <h4 className="text-xs font-black text-white uppercase tracking-widest mb-4">Légal & Contact</h4>
             <ul className="space-y-2.5 text-xs text-slate-400 font-semibold uppercase">
-              <li><a href="/login" className="hover:text-white transition-colors">Mentions Légales</a></li>
-              <li><a href="/login" className="hover:text-white transition-colors">Confidentialité</a></li>
-              <li><a href="/login" className="hover:text-white transition-colors">Conditions Générales</a></li>
-              <li><a href="/login" className="hover:text-white transition-colors">Support Technique</a></li>
+              <li><a href="/mentions-legales" className="hover:text-white transition-colors">Mentions Légales</a></li>
+              <li><a href="/confidentialite" className="hover:text-white transition-colors">Confidentialité</a></li>
+              <li><a href="/conditions-generales" className="hover:text-white transition-colors">Conditions Générales</a></li>
+              <li><a href="/contact" className="hover:text-white transition-colors">Support Technique</a></li>
             </ul>
           </div>
 
@@ -875,12 +875,13 @@ export default function LandingPage() {
                 placeholder="Votre e-mail"
                 className="flex-1 bg-slate-900/60 border border-slate-850 rounded-xl px-3 py-2.5 text-xs text-white placeholder-slate-500 outline-none focus:border-red-600/50 transition-colors"
               />
-              <button
-                type="submit"
-                className="w-10 h-10 bg-white hover:bg-slate-100 text-slate-950 rounded-xl flex items-center justify-center shrink-0 transition-colors cursor-pointer"
-              >
-                <Send className="w-4 h-4" />
-              </button>
+                <button
+                  type="submit"
+                  aria-label="S'inscrire à la newsletter"
+                  className="w-10 h-10 bg-white hover:bg-slate-100 text-slate-950 rounded-xl flex items-center justify-center shrink-0 transition-colors cursor-pointer"
+                >
+                  <Send className="w-4 h-4" />
+                </button>
             </form>
 
             <AnimatePresence>
@@ -901,12 +902,12 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 border-t border-slate-900/60 mt-16 pt-8 flex flex-col md:flex-row items-center justify-between text-[10px] text-slate-500 font-semibold uppercase gap-4">
           <p>© {new Date().getFullYear()} Ethical Data Security. Tous droits réservés.</p>
           <div className="flex items-center gap-6">
-            <a href="/login" className="hover:text-slate-400 transition-colors">Politique RGPD</a>
-            <a href="/login" className="hover:text-slate-400 transition-colors">Gestion des Cookies</a>
+            <a href="/confidentialite" className="hover:text-slate-400 transition-colors">Politique RGPD</a>
+            <a href="/confidentialite" className="hover:text-slate-400 transition-colors">Gestion des Cookies</a>
           </div>
         </div>
       </footer>
 
-    </div>
+    </main>
   );
 }

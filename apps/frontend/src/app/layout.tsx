@@ -30,6 +30,12 @@ export const metadata: Metadata = {
     siteName: 'Ethical Data',
     locale: 'fr_FR',
     type: 'website',
+    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Ethical Data - Formation & Certification Cloud, IA et Sécurité',
+    description: 'Préparez et réussissez vos examens de certification officielle grâce à nos simulations et notre correction intelligente par IA.',
   },
   robots: {
     index: true,

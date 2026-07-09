@@ -100,7 +100,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const navItems: NavItem[] = [
     { name: 'Tableau de Bord', href: '/admin', icon: LayoutDashboard },
     { name: 'Gestion Formations', href: '/admin/certifications', icon: Award },
-    { name: 'Ressources & Fiches', href: '/admin/downloads', icon: DownloadCloud },
+    { name: 'Ressources & Fiches', href: '/admin/resources', icon: DownloadCloud },
     { name: 'Modération Forum', href: '/admin/community', icon: MessageSquare },
     { name: 'Planning & Coaching', href: '/admin/coaching', icon: Calendar },
     { name: 'Utilisateurs & Rôles', href: '/admin/users', icon: Users },

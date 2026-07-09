@@ -208,7 +208,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen w-screen bg-slate-50 flex flex-col justify-between p-4 sm:p-6 selection:bg-blue-600 selection:text-white relative overflow-hidden">
+        <main className="min-h-screen w-screen bg-slate-50 flex flex-col justify-between p-4 sm:p-6 selection:bg-blue-600 selection:text-white relative overflow-hidden">
             
             <header className="w-full max-w-7xl mx-auto flex items-center justify-between z-20 px-2 sm:px-4 py-2">
                 <Link href="/" className="flex items-center gap-2.5 group cursor-pointer">
@@ -335,6 +335,6 @@ export default function LoginPage() {
             <footer className="w-full text-center py-2 text-[11px] text-slate-400 font-medium z-20">
                 © {new Date().getFullYear()} Ethical Data Security. Tous droits réservés.
             </footer>
-        </div>
+        </main>
     );
 }
