@@ -636,6 +636,15 @@ export default function LandingPage() {
               default: return 'bg-slate-100 text-slate-700 border-slate-200';
             }
           };
+          const cleanTitle = (nom: string, code: string) => {
+            if (!code || !nom) return nom;
+            const safeCode = code.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const regex = new RegExp(`[\\s\\-:\\(]*${safeCode}[\\)]*`, 'gi');
+            let cleaned = nom.replace(regex, '').trim();
+            cleaned = cleaned.replace(/^[\-:\s]+/, '');
+            cleaned = cleaned.replace(/[\-:\s]+$/, '');
+            return cleaned;
+          };
 
           return (
             <>
@@ -651,18 +660,19 @@ export default function LandingPage() {
                       <div className="relative w-full h-[340px] rounded-xl overflow-hidden shadow-lg transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-blue-900/30 group-hover:shadow-2xl">
                         
                         {/* Image de fond (Template Cadre) */}
-                        <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
-
-                        {/* Ribbon */}
-                        <div className="absolute top-4 left-0 z-30">
-                          <div className="bg-gradient-to-r from-yellow-500 to-yellow-400 text-red-700 font-black uppercase text-[10px] tracking-widest px-4 py-1.5 shadow-md relative rounded-r-sm">
-                            {cert.niveau === 'DEBUTANT' ? 'Fondamentaux' : (cert.niveau === 'AVANCE' ? 'Expertise' : 'Certification')}
-                            <div className="absolute top-0 -right-3 w-0 h-0 border-y-[12px] border-y-transparent border-l-[12px] border-l-yellow-400"></div>
+                        <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />                        {/* Bandeau Code Certification */}
+                        {cert.codeExamen && (
+                          <div className="absolute top-4 left-4 z-30">
+                            <div className="bg-slate-900/80 backdrop-blur-md text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-700/50 shadow-sm flex items-center gap-1.5 group-hover:bg-red-600 group-hover:border-red-500 transition-colors">
+                              <span className="w-1 h-1 rounded-full bg-red-500 group-hover:bg-white animate-pulse"></span>
+                              {cert.codeExamen}
+                            </div>
                           </div>
-                        </div>
+                        )}
+
 
                         {/* Badge */}
-                        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-20 group-hover:-translate-y-4 transition-transform duration-500 w-28 flex justify-center">
+                        <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-20 group-hover:-translate-y-2 transition-transform duration-500 w-32 flex justify-center">
                           {cert.logo ? (
                             <img src={cert.logo} alt="Badge" className="w-full h-auto object-contain filter drop-shadow-xl" />
                           ) : (
@@ -674,12 +684,12 @@ export default function LandingPage() {
 
                       {/* BOTTOM PART: Details */}
                       <div className="mt-4 flex flex-col gap-2 px-1">
-                        <div className="flex items-start justify-between gap-3">
-                          <h3 className="text-[13px] font-bold text-slate-900 leading-snug line-clamp-2">
-                            {cert.nom}
+                        <div className="flex items-center justify-between gap-3">
+                          <h3 className="text-[13px] font-bold text-slate-900 leading-snug line-clamp-2 flex-1">
+                            {cleanTitle(cert.nom, cert.codeExamen)}
                           </h3>
-                          <div className="w-8 h-8 shrink-0 bg-red-600 rounded-full flex items-center justify-center text-white transition-colors shadow-md group-hover:bg-red-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                          <div className="px-3 py-1.5 shrink-0 bg-slate-100 border border-slate-200 rounded-lg flex items-center justify-center text-slate-700 transition-colors shadow-sm group-hover:bg-red-600 group-hover:text-white group-hover:border-red-600 text-[10px] font-bold uppercase tracking-wider">
+                            Voir plus
                           </div>
                         </div>
                       </div>
@@ -1047,21 +1057,29 @@ export default function LandingPage() {
               {/* Partie Gauche Modale: La Carte elle-même (Aperçu) */}
               <div className="w-full md:w-5/12 p-8 flex flex-col items-center justify-center relative overflow-hidden shrink-0 min-h-[400px]">
                  <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
-                 {selectedCourse.logo && <img src={selectedCourse.logo} alt={selectedCourse.nom} className="w-48 object-contain relative z-20 drop-shadow-lg hover:scale-105 transition-transform duration-300" style={{ transform: 'translateY(5%)' }} />}
+                 
+                 {/* Bandeau Code Certification (Modale) */}
+                 {selectedCourse.codeExamen && (
+                   <div className="absolute top-6 left-6 z-30">
+                     <div className="bg-slate-900/80 backdrop-blur-md text-white font-bold uppercase text-[11px] tracking-widest px-3.5 py-1.5 rounded-lg border border-slate-700/50 shadow-lg flex items-center gap-2">
+                       <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                       {selectedCourse.codeExamen}
+                     </div>
+                   </div>
+                 )}
+
+                 {selectedCourse.logo && <img src={selectedCourse.logo} alt={selectedCourse.nom} className="w-56 object-contain relative z-20 drop-shadow-lg hover:scale-105 transition-transform duration-300" style={{ transform: 'translateY(-15%)' }} />}
               </div>
 
               {/* Partie Droite Modale: Détails */}
               <div className="w-full md:w-7/12 p-8 md:p-10 flex flex-col justify-between overflow-y-auto">
                 <div>
                   <div className="flex flex-wrap items-center gap-2 mb-4">
-                    <span className="text-[10px] uppercase tracking-wider px-2.5 py-1 bg-red-100 text-red-700 font-black rounded-lg">
-                      {selectedCourse.codeExamen || 'CERT'}
-                    </span>
                     <span className="text-[10px] uppercase tracking-wider px-2.5 py-1 bg-slate-100 text-slate-700 font-bold rounded-lg">
                       {selectedCourse.fournisseur?.nom || 'Éditeur'}
                     </span>
                   </div>
-                  <h2 className="text-2xl sm:text-3xl font-black text-slate-950 leading-tight mb-4">{selectedCourse.nom}</h2>
+                  <h2 className="text-2xl sm:text-3xl font-black text-slate-950 leading-tight mb-4">{cleanTitle(selectedCourse.nom, selectedCourse.codeExamen)}</h2>
                   <p className="text-slate-600 text-sm leading-relaxed mb-8">{selectedCourse.description}</p>
                   
                   <div className="space-y-4 mb-8">
