@@ -57,6 +57,7 @@ function AnimatedNumber({ end, suffix = "+" }: { end: number, suffix?: string })
 
 function AboutSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   
   const slides = [
     {
@@ -92,11 +93,23 @@ function AboutSlider() {
     }
   ];
 
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
-  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  const nextSlide = useCallback(() => setCurrentSlide((prev) => (prev + 1) % slides.length), [slides.length]);
+  const prevSlide = useCallback(() => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length), [slides.length]);
+
+  useEffect(() => {
+    if (isPaused) return;
+    const timer = setInterval(() => {
+      nextSlide();
+    }, 6000); // 6 secondes par slide
+    return () => clearInterval(timer);
+  }, [isPaused, nextSlide]);
 
   return (
-    <div className="relative w-full max-w-5xl mx-auto mt-4 md:mt-12 group">
+    <div 
+      className="relative w-full max-w-5xl mx-auto mt-4 md:mt-12 group"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       {/* Le conteneur du slider */}
       <div className="w-full relative flex flex-col items-center">
         {/* L'image de fond (Technopark) */}
