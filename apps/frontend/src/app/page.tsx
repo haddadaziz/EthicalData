@@ -55,6 +55,104 @@ function AnimatedNumber({ end, suffix = "+" }: { end: number, suffix?: string })
   return <span ref={ref}>{count}{suffix}</span>;
 }
 
+function AboutSlider() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  
+  const slides = [
+    {
+      title: "Qui sommes-nous ?",
+      text: "Ethical Data Security est un centre de formation de référence en cybersécurité et cloud computing, situé au cœur du Technopark de Casablanca.",
+      image: "/cyber_hand.png",
+      isRed: true
+    },
+    {
+      title: "Solution IT",
+      text: "Nous vous offrons des opportunités en développant des solutions spécialisées et nous vous proposons plusieurs produits qui accélèrent la transformation numérique sur n'importe quelle application, n'importe quel cloud et n'importe quel appareil pour réduire les dépenses informatiques......",
+      image: "/logos/expertises-integrations-scaled-434x358.webp",
+      isRed: true
+    },
+    {
+      title: "Notre priorité",
+      text: "Notre missions est de vous accompagner tout au long du cycle de vie de votre infrastructure réseau et sécurité. Nos domaines d'intervention couvrent la conception, la mise en oeuvre, la gestion et le support de solutions réseau, cloud et sécurité",
+      image: "/logos/avantages-1-434x358.webp",
+      isRed: true
+    },
+    {
+      title: "Une expérience d'une décennie",
+      text: "Une équipe enthousiaste, composée de consultants en cybersécurité et infrasctructure, reconnus sur le marché local et international à travers leur participation réussie à des projets de grande envergure (ISP,gouvernemental,finance...). Chacun d'entre nous apporte le meilleur de son expertise pour assurer le succès et la fiabilité de vos projets.",
+      image: "/logos/experiences-scaled-434x358.webp",
+      isRed: true
+    },
+    {
+      title: "Certification",
+      text: "Ethical Data Security met à votre disposition plus de 500 certifications pour renforcer votre expertise et valider vos compétences aux standards les plus élevés. Reconnues et prisées par les recruteurs, nos certifications vous ouvrent les portes des opportunités professionnelles les plus exigeantes",
+      image: "/logos/certifications-scaled-434x358.webp",
+      isRed: true,
+      isTransparent: true
+    }
+  ];
+
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+
+  return (
+    <div className="relative w-full max-w-5xl mx-auto mt-4 md:mt-12 group">
+      {/* Le conteneur du slider */}
+      <div className="w-full relative flex flex-col items-center">
+        {/* L'image de fond (Technopark) */}
+        <div className="w-full h-[300px] md:h-[450px] overflow-hidden rounded-2xl md:rounded-[40px] shadow-lg relative">
+          <img 
+            src="/technopark.jpeg" 
+            alt="Technopark" 
+            className="w-full h-full object-cover" 
+          />
+        </div>
+
+        {/* La Carte Blanche qui chevauche le bas de l'image */}
+        <div className="relative -mt-24 md:-mt-32 w-[90%] md:w-10/12 bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.12)] p-5 md:p-10 z-20 flex flex-col md:flex-row gap-6 md:gap-10 items-center min-h-[200px] transition-all duration-500">
+          
+          {/* Flèches de navigation (Parfaitement centrées par rapport à la carte) */}
+          <button 
+            onClick={prevSlide}
+            className="cursor-pointer absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white border border-red-500 text-red-500 hover:bg-red-50 hover:scale-110 rounded-full flex items-center justify-center transition-all z-30 shadow-md"
+          >
+            <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 ml-[-2px]" />
+          </button>
+          <button 
+            onClick={nextSlide}
+            className="cursor-pointer absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white border border-red-500 text-red-500 hover:bg-red-50 hover:scale-110 rounded-full flex items-center justify-center transition-all z-30 shadow-md"
+          >
+            <ChevronRight className="w-5 h-5 md:w-6 md:h-6 mr-[-2px]" />
+          </button>
+
+          <div className="w-full md:w-5/12 shrink-0 flex items-center justify-center">
+            <img 
+              key={currentSlide}
+              src={slides[currentSlide].image} 
+              alt={slides[currentSlide].title}
+              className={`w-full animate-in fade-in zoom-in duration-500 ${
+                slides[currentSlide].isTransparent 
+                  ? "h-40 md:h-56 object-contain" 
+                  : "h-40 md:h-56 object-cover rounded-xl shadow-md"
+              }`} 
+            />
+          </div>
+
+          <div className="w-full md:w-7/12 text-left space-y-3 md:space-y-4">
+            <h3 key={`title-${currentSlide}`} className="text-lg md:text-2xl font-bold text-slate-900 animate-in slide-in-from-right-4 duration-500">
+              {slides[currentSlide].isRed ? <span className="text-red-600">{slides[currentSlide].title}</span> : slides[currentSlide].title}
+            </h3>
+            <p key={`desc-${currentSlide}`} className="text-slate-600 text-xs md:text-sm leading-relaxed font-medium animate-in slide-in-from-right-8 duration-500 delay-100">
+              {slides[currentSlide].text}
+            </p>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function LandingPage() {
   const [isConnected, setIsConnected] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -400,74 +498,37 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════ */}
       {/* INTRO DU CENTRE & STATS (EDS)              */}
       {/* ═══════════════════════════════════════════ */}
-      <section id="about" className="relative z-10 max-w-7xl mx-auto px-6 py-20 md:py-24">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      <section id="about" className="relative z-10 w-full pt-20 md:pt-24 pb-24 bg-[#F8FAFC]">
+        <div className="max-w-5xl mx-auto px-6 text-center space-y-6">
+          <h2 className="text-3xl sm:text-4xl font-black text-slate-950 uppercase leading-tight tracking-tight">
+            ETHICAL DATA SECURITY
+          </h2>
+          <p className="text-slate-600 text-sm md:text-[15px] leading-relaxed font-medium max-w-4xl mx-auto">
+            Dynamisme, réactivité, et innovation font partie de nos principaux engagements vis à vis de nos clients. De même, toutes nos prestations et solutions sont conçues et réalisées par des experts reconnus dans leurs domaines. Chez ETHICAL DATA SECURITY, nous ferons toujours les efforts nécessaires pour dépasser vos attentes.
+          </p>
           
-          <AnimatedSection className="lg:col-span-6 space-y-6 text-left">
-            <div className="flex items-center gap-3">
-              <span className="w-8 h-px bg-red-600" />
-              <span className="text-[10px] font-black text-red-600 uppercase tracking-widest">Présentation</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-950 uppercase leading-tight">
-              ETHICAL DATA SECURITY
-            </h2>
-            <p className="text-slate-600 text-sm leading-relaxed font-medium">
-              Dynamisme, réactivité, et innovation font partie de nos principaux engagements vis à vis de nos clients. De même, toutes nos prestations et solutions sont conçues et réalisées par des experts reconnus dans leurs domaines. Chez ETHICAL DATA SECURITY, nous ferons toujours les efforts nécessaires pour dépasser vos attentes.
-            </p>
-            
-            {/* Stats en ligne horizontal */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-6 border-t border-slate-200">
-              {[
-                { end: 254, label: "Projets Réalisés" },
-                { end: 569, label: "Formations" },
-                { end: 2000, label: "Certificats" },
-                { end: 100, label: "Mission Pentest" }
-              ].map((stat, i) => (
-                <div key={i} className="text-center sm:text-left">
-                  <p className="text-2xl sm:text-3xl font-black text-red-600">
-                    <AnimatedNumber end={stat.end} />
-                  </p>
-                  <p className="text-[10px] text-slate-700 font-black uppercase tracking-widest mt-1.5">{stat.label}</p>
-                </div>
-              ))}
-            </div>
-          </AnimatedSection>
-
-          {/* Slider Technopark Casablanca */}
-          <AnimatedSection className="lg:col-span-6 relative" delay={0.2}>
-            <div className="w-full h-80 rounded-3xl overflow-hidden border border-slate-200/80 relative group shadow-xl shadow-slate-200/40">
-              {/* Image générée du Casablanca Technopark */}
-              <img 
-                src="/technopark.jpeg" 
-                alt="Casablanca Technopark" 
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-              />
-              
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent z-10" />
-
-              {/* Carte superposée floutée */}
-              <div className="absolute bottom-4 left-4 right-4 z-20 bg-white/90 backdrop-blur-md border border-slate-100 rounded-2xl p-4 flex gap-4 items-center text-left shadow-lg">
-                <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center shrink-0">
-                  <img src="/cyber_hand.png" alt="Cybersécurité" className="w-10 h-10 object-contain rounded-lg" />
-                </div>
-                <div className="space-y-0.5">
-                  <p className="text-[9px] font-black text-red-600 uppercase tracking-widest">Qui sommes-nous ?</p>
-                  <p className="text-xs font-semibold text-slate-700 leading-relaxed">
-                    Ethical Data Security est un centre de formation de référence en cybersécurité et cloud computing, situé au cœur du Technopark de Casablanca.
-                  </p>
-                </div>
+          {/* Stats */}
+          <div className="flex flex-wrap justify-center gap-12 sm:gap-20 md:gap-32 pt-8 pb-4">
+            {[
+              { end: 254, label: "Projets Réalisés" },
+              { end: 569, label: "Formations" },
+              { end: 2000, label: "Certificats" },
+              { end: 100, label: "Mission Pentest" }
+            ].map((stat, i) => (
+              <div key={i} className="text-center">
+                <p className="text-4xl sm:text-5xl font-black text-red-600 mb-1">
+                  <AnimatedNumber end={stat.end} />
+                </p>
+                <p className="text-[11px] sm:text-xs text-slate-900 font-extrabold uppercase tracking-widest">{stat.label}</p>
               </div>
-
-              {/* Flèches de navigation (esthétique) */}
-              <button aria-label="Image précédente" className="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-red-600/90 border border-red-500/25 flex items-center justify-center text-white cursor-pointer hover:bg-red-750 transition-colors z-20">
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button aria-label="Image suivante" className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-red-600/90 border border-red-500/25 flex items-center justify-center text-white cursor-pointer hover:bg-red-750 transition-colors z-20">
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          </AnimatedSection>
+            ))}
+          </div>
         </div>
+
+        {/* Le composant Slider avec l'image Technopark en fond et la carte blanche */}
+        <AnimatedSection className="w-full max-w-6xl mx-auto px-4 md:px-12 mt-6 md:mt-12">
+           <AboutSlider />
+        </AnimatedSection>
       </section>
 
       {/* ═══════════════════════════════════════════ */}
