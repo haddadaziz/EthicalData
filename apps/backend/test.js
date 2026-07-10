@@ -1,18 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-async function main() {
-  const sujet = await prisma.sujet.findFirst();
-  const commAuthor = await prisma.utilisateur.findFirst({ where: { prenom: 'TestUser' } }) || await prisma.utilisateur.findFirst();
-  
-  if (sujet) {
-    const parentComm = await prisma.commentaire.create({
-      data: {
-        contenu: "Parent test comment",
-        sujetId: sujet.id,
-        auteurId: commAuthor.id
-      }
-    });
-    console.log("Parent created", parentComm.id);
-  }
+async function test() {
+    const user = await prisma.utilisateur.findUnique({ where: { email: 'thomas.dupont.5@ethicaldata.local' }, include: { roles: true }});
+    console.log(JSON.stringify(user, (k,v) => typeof v === 'bigint' ? v.toString() : v, 2));
 }
-main().finally(() => prisma.$disconnect());
+test().finally(() => prisma.$disconnect());

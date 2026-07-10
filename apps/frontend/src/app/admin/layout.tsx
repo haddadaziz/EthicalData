@@ -42,7 +42,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     localStorage.setItem('theme', 'light');
 
     // Vérification token
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     if (!token) {
       router.push('/login');
       return;

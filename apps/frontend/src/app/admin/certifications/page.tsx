@@ -35,6 +35,34 @@ interface Certification {
 
 import { useToast } from '../../../context/ToastContext';
 
+const getNiveauBadgeStyle = (niv: string) => {
+    switch (niv) {
+        case 'AVANCE':
+            return 'bg-rose-500/10 text-rose-400 border border-rose-500/20';
+        case 'INTERMEDIAIRE':
+            return 'bg-amber-500/10 text-amber-400 border border-amber-500/20';
+        case 'DEBUTANT':
+        default:
+            return 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+    }
+};
+
+const getSupplierBadgeStyle = (name: string) => {
+    switch (name?.toLowerCase()) {
+        case 'microsoft':
+            return 'bg-sky-500/10 text-sky-400 border border-sky-500/20';
+        case 'aws':
+            return 'bg-amber-500/10 text-amber-400 border border-amber-500/20';
+        case 'google cloud':
+        case 'google':
+            return 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+        case 'cisco':
+            return 'bg-blue-500/10 text-blue-400 border border-blue-500/20';
+        default:
+            return 'bg-slate-500/10 text-slate-600 border border-slate-500/20';
+    }
+};
+
 export default function CertificationsAdmin() {
     const { showToast } = useToast();
     const [certs, setCerts] = useState<Certification[]>([]);
@@ -288,20 +316,23 @@ export default function CertificationsAdmin() {
     }, []);
 
     // Filtrage des certifications
-    const filteredCerts = certs.filter(c => {
-        const search = searchTerm.toLowerCase().trim();
-        const matchesSearch = !search || (
-            (c.nom || '').toLowerCase().includes(search) ||
-            (c.codeExamen || '').toLowerCase().includes(search) ||
-            (c.description || '').toLowerCase().includes(search) ||
-            (c.fournisseur?.nom || '').toLowerCase().includes(search)
-        );
+    // Filtrage des certifications
+    const filteredCerts = React.useMemo(() => {
+        return certs.filter(c => {
+            const search = searchTerm.toLowerCase().trim();
+            const matchesSearch = !search || (
+                (c.nom || '').toLowerCase().includes(search) ||
+                (c.codeExamen || '').toLowerCase().includes(search) ||
+                (c.description || '').toLowerCase().includes(search) ||
+                (c.fournisseur?.nom || '').toLowerCase().includes(search)
+            );
 
-        const matchesLevel = selectedLevel === 'TOUS' || c.niveau === selectedLevel;
-        const matchesProvider = selectedProvider === 'TOUS' || c.fournisseur?.slug === selectedProvider;
+            const matchesLevel = selectedLevel === 'TOUS' || c.niveau === selectedLevel;
+            const matchesProvider = selectedProvider === 'TOUS' || c.fournisseur?.slug === selectedProvider;
 
-        return matchesSearch && matchesLevel && matchesProvider;
-    });
+            return matchesSearch && matchesLevel && matchesProvider;
+        });
+    }, [certs, searchTerm, selectedLevel, selectedProvider]);
 
     // Calcul des statistiques
     const totalCerts = certs.length;
@@ -313,7 +344,176 @@ export default function CertificationsAdmin() {
     const totalPages = Math.ceil(filteredCerts.length / itemsPerPage);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentCerts = filteredCerts.slice(indexOfFirstItem, indexOfLastItem);
+    const currentCerts = React.useMemo(() => {
+        return filteredCerts.slice(indexOfFirstItem, indexOfLastItem);
+    }, [filteredCerts, indexOfFirstItem, indexOfLastItem]);
+
+    const CertGrid = React.useMemo(() => {
+        if (loading) {
+            return (
+                <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <div key={i} className="h-72 bg-slate-50 rounded-2xl animate-pulse border border-slate-100" />
+                    ))}
+                </div>
+            );
+        }
+
+        if (error) {
+            return (
+                <div className="p-12 text-center">
+                    <p className="text-rose-500 font-bold mb-2">Une erreur est survenue</p>
+                    <p className="text-xs text-slate-500 mb-6">{error}</p>
+                    <button onClick={fetchData} className="px-5 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-950 font-bold rounded-xl cursor-pointer transition-colors">Réessayer</button>
+                </div>
+            );
+        }
+
+        if (filteredCerts.length === 0) {
+            return (
+                <div className="p-12 text-center text-slate-500 font-medium">
+                    Aucune certification ne correspond à vos critères.
+                </div>
+            );
+        }
+
+        return (
+            <div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
+                    {currentCerts.map((cert) => (
+                        <div
+                            key={cert.id}
+                            className="bg-white border border-slate-200/90 hover:border-slate-350 hover:shadow-xl rounded-3xl p-6 sm:p-7 flex flex-col justify-between group transition-all duration-300 text-left space-y-5"
+                        >
+                            {/* PARTIE SUPÉRIEURE : EN-TÊTE STYLE UDEMY */}
+                            <div className="flex items-start justify-between gap-4">
+                                {/* Côté Gauche : Badges, Titre & Description */}
+                                <div className="space-y-3 flex-1">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        <span className="font-extrabold text-slate-900 text-[10px] uppercase tracking-wider px-2.5 py-1 bg-slate-100 border border-slate-200 rounded-lg">
+                                            {cert.fournisseur?.nom || 'Éditeur'}
+                                        </span>
+                                        {cert.codeExamen && (
+                                            <span className="font-black text-red-600 text-[10px] uppercase tracking-wider px-2.5 py-1 bg-red-50 border border-red-100 rounded-lg">
+                                                {cert.codeExamen}
+                                            </span>
+                                        )}
+                                        <span className={`text-[9px] px-2.5 py-1 rounded-lg font-extrabold uppercase tracking-wider border ${getNiveauBadgeStyle(cert.niveau)}`}>
+                                            {cert.niveau}
+                                        </span>
+                                    </div>
+
+                                    <div>
+                                        <h3 className="font-extrabold text-slate-950 text-lg leading-snug group-hover:text-red-600 transition-colors">
+                                            {cert.nom}
+                                        </h3>
+                                        <p className="text-xs text-slate-500 font-medium line-clamp-2 mt-1.5 leading-relaxed">
+                                            {cert.description}
+                                        </p>
+                                    </div>
+
+                                    <div className="flex items-center gap-4 text-xs font-bold text-slate-400 pt-1">
+                                        <span className="flex items-center gap-1.5 text-slate-600">
+                                            <Users className="w-3.5 h-3.5 text-slate-400" />
+                                            <span>Candidats en préparation</span>
+                                        </span>
+                                        <span className="flex items-center gap-1 text-slate-500">
+                                            <Clock className="w-3.5 h-3.5" />
+                                            <span>{cert.dureeIndicative || '15h indicatives'}</span>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Côté Droit : Écusson/Badge Officiel Flottant */}
+                                <div className="w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center shrink-0 p-1">
+                                    {cert.image ? (
+                                        <img
+                                            src={cert.image}
+                                            alt={cert.nom}
+                                            className="max-h-full max-w-full object-contain filter drop-shadow-md transition-transform duration-300 group-hover:scale-110"
+                                        />
+                                    ) : (
+                                        <Award className="w-12 h-12 text-slate-300" />
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* PARTIE INFÉRIEURE : ACTIONS (Modifiées pour être plus discrètes comme Udemy) */}
+                            <div className="pt-5 border-t border-slate-100 flex items-center gap-3">
+                                {/* Bouton Principal - Modifier */}
+                                <button
+                                    onClick={() => handleOpenEditModal(cert)}
+                                    className="flex-1 py-2.5 px-4 bg-slate-950 hover:bg-slate-800 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
+                                >
+                                    <Edit className="w-3.5 h-3.5" />
+                                    <span>Gérer la certification</span>
+                                </button>
+
+                                {/* Boutons Secondaires (Icônes) */}
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => handleOpenQuestionsModal(cert)}
+                                        className="p-2.5 text-slate-500 bg-slate-100 hover:bg-slate-200 hover:text-slate-900 font-bold rounded-xl text-xs transition-all cursor-pointer flex items-center gap-2 group/btn"
+                                        title="Gérer la banque de questions (IA & QCM)"
+                                    >
+                                        <Layers className="w-4 h-4 group-hover/btn:text-blue-600" />
+                                    </button>
+
+                                    <button
+                                        onClick={() => handleDeleteCert(cert.id, cert.nom)}
+                                        className="p-2.5 text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-xl transition-all cursor-pointer group/btn"
+                                        title="Supprimer la certification"
+                                    >
+                                        <Trash2 className="w-4 h-4 group-hover/btn:text-rose-700" />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {totalPages > 1 && (
+                    <div className="p-6 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                            disabled={currentPage === 1}
+                            className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
+                        >
+                            <ArrowLeft className="w-3.5 h-3.5" />
+                            <span>Précédent</span>
+                        </button>
+
+                        <div className="flex items-center gap-1.5">
+                            {Array.from({ length: totalPages }).map((_, i) => {
+                                const pageNum = i + 1;
+                                return (
+                                    <button
+                                        key={pageNum}
+                                        onClick={() => setCurrentPage(pageNum)}
+                                        className={`w-8 h-8 rounded-xl text-xs font-bold flex items-center justify-center transition-all cursor-pointer ${currentPage === pageNum
+                                            ? 'bg-slate-950 text-white shadow-md'
+                                            : 'bg-white text-slate-500 hover:bg-slate-100 hover:text-slate-950 border border-slate-200/50'
+                                            }`}
+                                    >
+                                        {pageNum}
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                            disabled={currentPage === totalPages}
+                            className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
+                        >
+                            <span>Suivant</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                    </div>
+                )}
+            </div>
+        );
+    }, [filteredCerts, currentCerts, loading, error, currentPage, totalPages]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Gestion de la sélection locale de fichiers (conversion en Base64)
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, isEdit: boolean) => {
@@ -498,34 +698,6 @@ export default function CertificationsAdmin() {
         setModalError(null);
     };
 
-    const getNiveauBadgeStyle = (niv: string) => {
-        switch (niv) {
-            case 'AVANCE':
-                return 'bg-rose-500/10 text-rose-400 border border-rose-500/20';
-            case 'INTERMEDIAIRE':
-                return 'bg-amber-500/10 text-amber-400 border border-amber-500/20';
-            case 'DEBUTANT':
-            default:
-                return 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
-        }
-    };
-
-    const getSupplierBadgeStyle = (name: string) => {
-        switch (name?.toLowerCase()) {
-            case 'microsoft':
-                return 'bg-sky-500/10 text-sky-400 border border-sky-500/20';
-            case 'aws':
-                return 'bg-amber-500/10 text-amber-400 border border-amber-500/20';
-            case 'google cloud':
-            case 'google':
-                return 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
-            case 'cisco':
-                return 'bg-blue-500/10 text-blue-400 border border-blue-500/20';
-            default:
-                return 'bg-slate-500/10 text-slate-600 border border-slate-500/20';
-        }
-    };
-
     return (
         <div className="space-y-10 text-slate-800">
 
@@ -691,140 +863,7 @@ export default function CertificationsAdmin() {
                             Aucune certification ne correspond à vos critères.
                         </div>
                     ) : (
-                        <div>
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
-                                {currentCerts.map((cert) => (
-                                    <div
-                                        key={cert.id}
-                                        className="bg-white border border-slate-200/90 hover:border-slate-350 hover:shadow-xl rounded-3xl p-6 sm:p-7 flex flex-col justify-between group transition-all duration-300 text-left space-y-5"
-                                    >
-                                        {/* PARTIE SUPÉRIEURE : EN-TÊTE STYLE UDEMY */}
-                                        <div className="flex items-start justify-between gap-4">
-                                            {/* Côté Gauche : Badges, Titre & Description */}
-                                            <div className="space-y-3 flex-1">
-                                                <div className="flex flex-wrap items-center gap-2">
-                                                    <span className="font-extrabold text-slate-900 text-[10px] uppercase tracking-wider px-2.5 py-1 bg-slate-100 border border-slate-200 rounded-lg">
-                                                        {cert.fournisseur?.nom || 'Éditeur'}
-                                                    </span>
-                                                    {cert.codeExamen && (
-                                                        <span className="font-black text-red-600 text-[10px] uppercase tracking-wider px-2.5 py-1 bg-red-50 border border-red-100 rounded-lg">
-                                                            {cert.codeExamen}
-                                                        </span>
-                                                    )}
-                                                    <span className={`text-[9px] px-2.5 py-1 rounded-lg font-extrabold uppercase tracking-wider border ${getNiveauBadgeStyle(cert.niveau)}`}>
-                                                        {cert.niveau}
-                                                    </span>
-                                                </div>
-
-                                                <div>
-                                                    <h3 className="font-extrabold text-slate-950 text-lg leading-snug group-hover:text-red-600 transition-colors">
-                                                        {cert.nom}
-                                                    </h3>
-                                                    <p className="text-xs text-slate-500 font-medium line-clamp-2 mt-1.5 leading-relaxed">
-                                                        {cert.description}
-                                                    </p>
-                                                </div>
-
-                                                <div className="flex items-center gap-4 text-xs font-bold text-slate-400 pt-1">
-                                                    <span className="flex items-center gap-1.5 text-slate-600">
-                                                        <Users className="w-3.5 h-3.5 text-slate-400" />
-                                                        <span>Candidats en préparation</span>
-                                                    </span>
-                                                    <span className="flex items-center gap-1 text-slate-500">
-                                                        <Clock className="w-3.5 h-3.5" />
-                                                        <span>{cert.dureeIndicative || '15h indicatives'}</span>
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            {/* Côté Droit : Écusson/Badge Officiel Flottant */}
-                                            <div className="w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center shrink-0 p-1">
-                                                {cert.image ? (
-                                                    <img
-                                                        src={cert.image}
-                                                        alt={cert.nom}
-                                                        className="max-h-full max-w-full object-contain filter drop-shadow-md transition-transform duration-300 group-hover:scale-110"
-                                                    />
-                                                ) : (
-                                                    <Award className="w-12 h-12 text-slate-300" />
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        {/* BAS DE CARTE : ACTIONS ADMIN */}
-                                        <div className="border-t border-slate-100 pt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-xs">
-                                            <span className="text-[11px] font-bold text-slate-500">
-                                                ID: #{cert.id.toString()}
-                                            </span>
-
-                                            <div className="flex items-center gap-1.5">
-                                                <button
-                                                    onClick={() => handleOpenQuestionsModal(cert)}
-                                                    className="px-3 py-2 bg-red-50 hover:bg-red-100 border border-red-100 text-red-600 hover:text-red-700 rounded-xl transition-all cursor-pointer text-xs font-bold flex items-center gap-1.5"
-                                                    title="Gérer les questions"
-                                                >
-                                                    <HelpCircle className="w-3.5 h-3.5" />
-                                                    <span>Questions</span>
-                                                </button>
-                                                <button
-                                                    onClick={() => handleOpenEditModal(cert)}
-                                                    className="p-2 bg-slate-50 border border-slate-200 hover:border-slate-350 text-slate-700 hover:text-slate-950 rounded-xl transition-colors cursor-pointer"
-                                                    title="Modifier"
-                                                >
-                                                    <Edit className="w-4 h-4" />
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDeleteCert(cert.id, cert.nom)}
-                                                    className="p-2 bg-rose-50 border border-rose-100 text-rose-600 hover:bg-rose-100 rounded-xl transition-colors cursor-pointer"
-                                                    title="Supprimer"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Pagination Premium */}
-                            {totalPages > 1 && (
-                                <div className="p-6 border-t border-slate-200/80 flex items-center justify-between">
-                                    <button
-                                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                                        disabled={currentPage === 1}
-                                        className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
-                                    >
-                                        <ArrowLeft className="w-3.5 h-3.5" />
-                                        <span>Précédent</span>
-                                    </button>
-
-                                    <div className="flex items-center gap-1">
-                                        {Array.from({ length: totalPages }).map((_, index) => {
-                                            const pageNum = index + 1;
-                                            const isActive = currentPage === pageNum;
-                                            return (
-                                                <button
-                                                    key={pageNum}
-                                                    onClick={() => setCurrentPage(pageNum)}
-                                                    className={`w-9 h-9 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center ${isActive ? 'bg-slate-950 text-white shadow-md' : 'bg-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-950'}`}
-                                                >
-                                                    {pageNum}
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-
-                                    <button
-                                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                                        disabled={currentPage === totalPages}
-                                        className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
-                                    >
-                                        <span>Suivant</span>
-                                        <ArrowRight className="w-3.5 h-3.5" />
-                                    </button>
-                                </div>
-                            )}
-                        </div>
+                        CertGrid
                     )}
                 </div>
             </div>

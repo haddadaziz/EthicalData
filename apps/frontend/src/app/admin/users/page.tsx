@@ -152,19 +152,21 @@ export default function AdminUsersPage() {
         }
     };
 
-    const filteredUsers = users.filter((user) => {
-        const matchesSearch =
-            user.prenom.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.nom.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchQuery.toLowerCase());
+    const filteredUsers = React.useMemo(() => {
+        return users.filter((user) => {
+            const matchesSearch =
+                user.prenom.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                user.nom.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                user.email.toLowerCase().includes(searchQuery.toLowerCase());
 
-        const hasRole =
-            roleFilter === 'ALL' || (user.roles && user.roles.some((r) => r.nom === roleFilter));
+            const hasRole =
+                roleFilter === 'ALL' || (user.roles && user.roles.some((r) => r.nom === roleFilter));
 
-        const matchesStatus = statusFilter === 'ALL' || user.statut === statusFilter;
+            const matchesStatus = statusFilter === 'ALL' || user.statut === statusFilter;
 
-        return matchesSearch && hasRole && matchesStatus;
-    });
+            return matchesSearch && hasRole && matchesStatus;
+        });
+    }, [users, searchQuery, roleFilter, statusFilter]);
 
     const formatDate = (dateStr: string) => {
         return new Date(dateStr).toLocaleDateString('fr-FR', {
@@ -173,6 +175,100 @@ export default function AdminUsersPage() {
             year: 'numeric',
         });
     };
+
+    const UserGrid = React.useMemo(() => {
+        if (filteredUsers.length === 0) {
+            return (
+                <div className="p-12 text-center bg-white border border-slate-200/80 rounded-3xl text-slate-400 font-medium">
+                    Aucun utilisateur ne correspond à votre recherche.
+                </div>
+            );
+        }
+
+        return (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {filteredUsers.map((user) => {
+                    const mainRole = user.roles && user.roles.length > 0 ? user.roles[0].nom : 'APPRENANT';
+
+                    return (
+                        <div
+                            key={user.id}
+                            className="bg-white border border-slate-200/90 hover:border-slate-350 hover:shadow-md rounded-3xl p-5 md:p-6 space-y-4 flex flex-col justify-between transition-all"
+                        >
+                            {/* En-tête de la Carte */}
+                            <div className="space-y-3">
+                                <div className="flex items-start justify-between gap-3">
+                                    <div className="flex items-center gap-3">
+                                        {user.avatar ? (
+                                            <img src={user.avatar} alt={user.prenom} className="w-11 h-11 rounded-2xl object-cover border border-slate-200 shadow-sm" />
+                                        ) : (
+                                            <div className="w-11 h-11 rounded-2xl bg-slate-950 text-white font-black text-sm flex items-center justify-center shadow-sm">
+                                                {user.prenom[0]}{user.nom[0]}
+                                            </div>
+                                        )}
+                                        <div className="space-y-0.5">
+                                            <h3 className="text-sm font-black text-slate-950 leading-tight">
+                                                {user.prenom} {user.nom}
+                                            </h3>
+                                            <p className="text-[11px] text-slate-500 font-medium truncate max-w-[170px]">
+                                                {user.email}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Badges Rôle et Statut */}
+                                <div className="flex items-center gap-2 pt-1">
+                                    <span className={`px-2.5 py-0.5 rounded-full font-extrabold text-[9px] uppercase tracking-wider ${mainRole === 'SUPER_ADMIN' || mainRole === 'ADMIN' ? 'bg-purple-100 text-purple-700' : mainRole === 'FORMATEUR' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-700'
+                                        }`}>
+                                        {mainRole}
+                                    </span>
+
+                                    <span className={`px-2.5 py-0.5 rounded-full font-extrabold text-[9px] uppercase tracking-wider ${user.statut === 'ACTIF' ? 'bg-emerald-100 text-emerald-700' : user.statut === 'BANNI' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'
+                                        }`}>
+                                        {user.statut}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Infos Inscription & Téléphone */}
+                            <div className="space-y-1.5 pt-3 border-t border-slate-100 text-xs font-medium text-slate-500">
+                                <p className="flex items-center gap-2">
+                                    <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                                    <span>Inscrit le {formatDate(user.dateInscription)}</span>
+                                </p>
+                                {user.telephone && (
+                                    <p className="flex items-center gap-2">
+                                        <Phone className="w-3.5 h-3.5 text-slate-400" />
+                                        <span>{user.telephone}</span>
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Actions sur le Compte */}
+                            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                                <button
+                                    onClick={() => handleOpenEditModal(user)}
+                                    className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                                >
+                                    <Edit className="w-3.5 h-3.5 text-slate-600" />
+                                    <span>Modifier</span>
+                                </button>
+
+                                <button
+                                    onClick={() => handleDeleteUser(user)}
+                                    className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"
+                                    title="Désactiver ce compte"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    }, [filteredUsers]); // eslint-disable-line react-hooks/exhaustive-deps
 
     if (loading) {
         return (
@@ -236,93 +332,7 @@ export default function AdminUsersPage() {
             </div>
 
             {/* GRILLE RESPONSIVE DE CARTES UTILISATEURS */}
-            {filteredUsers.length === 0 ? (
-                <div className="p-12 text-center bg-white border border-slate-200/80 rounded-3xl text-slate-400 font-medium">
-                    Aucun utilisateur ne correspond à votre recherche.
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {filteredUsers.map((user) => {
-                        const mainRole = user.roles && user.roles.length > 0 ? user.roles[0].nom : 'APPRENANT';
-
-                        return (
-                            <div
-                                key={user.id}
-                                className="bg-white border border-slate-200/90 hover:border-slate-350 hover:shadow-md rounded-3xl p-5 md:p-6 space-y-4 flex flex-col justify-between transition-all"
-                            >
-                                {/* En-tête de la Carte */}
-                                <div className="space-y-3">
-                                    <div className="flex items-start justify-between gap-3">
-                                        <div className="flex items-center gap-3">
-                                            {user.avatar ? (
-                                                <img src={user.avatar} alt={user.prenom} className="w-11 h-11 rounded-2xl object-cover border border-slate-200 shadow-sm" />
-                                            ) : (
-                                                <div className="w-11 h-11 rounded-2xl bg-slate-950 text-white font-black text-sm flex items-center justify-center shadow-sm">
-                                                    {user.prenom[0]}{user.nom[0]}
-                                                </div>
-                                            )}
-                                            <div className="space-y-0.5">
-                                                <h3 className="text-sm font-black text-slate-950 leading-tight">
-                                                    {user.prenom} {user.nom}
-                                                </h3>
-                                                <p className="text-[11px] text-slate-500 font-medium truncate max-w-[170px]">
-                                                    {user.email}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Badges Rôle et Statut */}
-                                    <div className="flex items-center gap-2 pt-1">
-                                        <span className={`px-2.5 py-0.5 rounded-full font-extrabold text-[9px] uppercase tracking-wider ${mainRole === 'SUPER_ADMIN' || mainRole === 'ADMIN' ? 'bg-purple-100 text-purple-700' : mainRole === 'FORMATEUR' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-700'
-                                            }`}>
-                                            {mainRole}
-                                        </span>
-
-                                        <span className={`px-2.5 py-0.5 rounded-full font-extrabold text-[9px] uppercase tracking-wider ${user.statut === 'ACTIF' ? 'bg-emerald-100 text-emerald-700' : user.statut === 'BANNI' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'
-                                            }`}>
-                                            {user.statut}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* Infos Inscription & Téléphone */}
-                                <div className="space-y-1.5 pt-3 border-t border-slate-100 text-xs font-medium text-slate-500">
-                                    <p className="flex items-center gap-2">
-                                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                                        <span>Inscrit le {formatDate(user.dateInscription)}</span>
-                                    </p>
-                                    {user.telephone && (
-                                        <p className="flex items-center gap-2">
-                                            <Phone className="w-3.5 h-3.5 text-slate-400" />
-                                            <span>{user.telephone}</span>
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* Actions sur le Compte */}
-                                <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                                    <button
-                                        onClick={() => handleOpenEditModal(user)}
-                                        className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                                    >
-                                        <Edit className="w-3.5 h-3.5 text-slate-600" />
-                                        <span>Modifier</span>
-                                    </button>
-
-                                    <button
-                                        onClick={() => handleDeleteUser(user)}
-                                        className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"
-                                        title="Désactiver ce compte"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
+            {UserGrid}
 
             {/* MODALE DE CRÉATION D'UTILISATEUR */}
             <AnimatePresence>

@@ -167,8 +167,8 @@ export default function CoursesPage() {
         if (!ok) return;
         try {
             await apiFetch(`/cours/modules/${moduleId}`, { method: 'DELETE' });
-            setModules(prev => prev.filter(m => m.id !== moduleId));
             showToast("Module supprimé.", "success");
+            fetchData();
         } catch (err: any) {
             showToast(err.message || "Erreur.", "error");
         }
@@ -543,6 +543,17 @@ function CourseEditor({ certs, editingCours, onClose, showToast, onSave, onSaveD
     const [addingModule, setAddingModule] = useState(false);
     const [editingModule, setEditingModule] = useState<Module | null>(null);
     const [moduleForm, setModuleForm] = useState({ titre: '', dureeEstimee: 30, contenu: '' });
+
+    const handleDeleteModule = async (moduleId: string) => {
+        if (!window.confirm("Voulez-vous supprimer ce module ?")) return;
+        try {
+            await apiFetch(`/cours/modules/${moduleId}`, { method: 'DELETE' });
+            setModules(prev => prev.filter(m => m.id !== moduleId));
+            showToast("Module supprimé.", "success");
+        } catch (err: any) {
+            showToast(err.message || "Erreur.", "error");
+        }
+    };
 
     // Simulation de cours
     const [courseSim, setCourseSim] = useState<any>(null);

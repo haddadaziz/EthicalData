@@ -88,19 +88,23 @@ export default function ResourcesAdminPage() {
   }, [searchTerm, selectedCertFilter]);
 
   // Filtrage
-  const filteredResources = resources.filter(res => {
-    const search = searchTerm.toLowerCase().trim();
-    const matchesSearch = !search || res.titre.toLowerCase().includes(search) || 
-                          (res.description && res.description.toLowerCase().includes(search));
-    const matchesCert = selectedCertFilter === 'TOUS' || res.certificationId === selectedCertFilter;
-    return matchesSearch && matchesCert;
-  });
+  const filteredResources = React.useMemo(() => {
+    return resources.filter(res => {
+      const search = searchTerm.toLowerCase().trim();
+      const matchesSearch = !search || res.titre.toLowerCase().includes(search) || 
+                            (res.description && res.description.toLowerCase().includes(search));
+      const matchesCert = selectedCertFilter === 'TOUS' || res.certificationId === selectedCertFilter;
+      return matchesSearch && matchesCert;
+    });
+  }, [resources, searchTerm, selectedCertFilter]);
 
   // Calculs pagination
   const totalPages = Math.ceil(filteredResources.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentResources = filteredResources.slice(indexOfFirstItem, indexOfLastItem);
+  const currentResources = React.useMemo(() => {
+    return filteredResources.slice(indexOfFirstItem, indexOfLastItem);
+  }, [filteredResources, indexOfFirstItem, indexOfLastItem]);
 
   // Stats
   const totalCount = resources.length;
@@ -219,6 +223,143 @@ export default function ResourcesAdminPage() {
     return `${(bytes / 1048576).toFixed(1)} MB`;
   };
 
+  const ResourceGrid = React.useMemo(() => {
+    if (loading) {
+      return (
+        <div className="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-60 bg-slate-50 rounded-2xl animate-pulse border border-slate-100" />
+          ))}
+        </div>
+      );
+    }
+    if (error) {
+      return (
+        <div className="p-12 text-center">
+          <p className="text-rose-500 font-bold mb-2">Une erreur est survenue</p>
+          <p className="text-xs text-slate-500 mb-6">{error}</p>
+          <button onClick={fetchData} className="px-5 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-950 font-bold rounded-xl cursor-pointer transition-colors">Réessayer</button>
+        </div>
+      );
+    }
+    if (filteredResources.length === 0) {
+      return (
+        <div className="p-12 text-center text-slate-550 font-medium">
+          Aucune ressource ne correspond à vos critères.
+        </div>
+      );
+    }
+    return (
+      <>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 p-6 text-left">
+          {currentResources.map((res) => (
+            <div
+              key={res.id}
+              className="bg-white border border-slate-200/80 rounded-2xl p-5 flex flex-col justify-between group transition-all duration-300 hover:border-slate-350 hover:shadow-md"
+            >
+              <div className="space-y-4">
+                  {/* En-tête de carte */}
+                  <div className="flex items-start justify-between">
+                    <span className="font-bold text-red-600 text-[9px] px-2.5 py-0.5 bg-red-50 border border-red-100 rounded-lg">
+                      {res.type}
+                    </span>
+                  </div>
+
+                {/* Infos */}
+                <div className="space-y-1.5">
+                  <h4 className="font-extrabold text-slate-950 text-base leading-snug group-hover:text-red-600 transition-colors truncate">
+                    {res.titre}
+                  </h4>
+                  
+                  {res.certification && (
+                    <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-bold uppercase">
+                      <Award className="w-3.5 h-3.5 text-slate-400" />
+                      <span>Lié à : {res.certification.codeExamen || res.certification.nom}</span>
+                    </div>
+                  )}
+
+                  <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed font-semibold">
+                    {res.description || 'Aucune description fournie.'}
+                  </p>
+                </div>
+                
+                {/* Quota */}
+                <div className="text-[10px] text-slate-500 font-bold bg-slate-50 border border-slate-100 rounded-xl p-2.5 text-center">
+                  Quota max par apprenant : {res.quotaTelechargement} téléchargements
+                </div>
+              </div>
+
+              {/* Footer de carte */}
+              <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-5">
+                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                  <span>{formatBytes(res.taille)}</span>
+                  <span>•</span>
+                  <span>v{res.version}</span>
+                </div>
+
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => handleOpenEditModal(res)}
+                    className="p-2 bg-slate-50 border border-slate-200/80 hover:border-slate-350 text-slate-600 hover:text-slate-950 rounded-xl transition-colors cursor-pointer"
+                    title="Modifier"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteResource(res.id, res.titre)}
+                    className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-xl transition-colors cursor-pointer"
+                    title="Supprimer"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="p-6 border-t border-slate-200/60 flex items-center justify-between">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Précédent</span>
+            </button>
+
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalPages }).map((_, index) => {
+                const pageNum = index + 1;
+                const isActive = currentPage === pageNum;
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`w-9 h-9 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center ${isActive ? 'bg-slate-950 text-white shadow-md' : 'bg-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-950'}`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+            </div>
+
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
+            >
+              <span>Suivant</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+      </>
+    );
+  }, [loading, error, filteredResources, currentResources, currentPage, totalPages]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <div className="space-y-10 text-slate-800">
       
@@ -317,131 +458,7 @@ export default function ResourcesAdminPage() {
 
         {/* Grille de Cartes */}
         <div>
-          {loading ? (
-            <div className="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-60 bg-slate-50 rounded-2xl animate-pulse border border-slate-100" />
-              ))}
-            </div>
-          ) : error ? (
-            <div className="p-12 text-center">
-              <p className="text-rose-500 font-bold mb-2">Une erreur est survenue</p>
-              <p className="text-xs text-slate-500 mb-6">{error}</p>
-              <button onClick={fetchData} className="px-5 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-950 font-bold rounded-xl cursor-pointer transition-colors">Réessayer</button>
-            </div>
-          ) : filteredResources.length === 0 ? (
-            <div className="p-12 text-center text-slate-550 font-medium">
-              Aucune ressource ne correspond à vos critères.
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 p-6 text-left">
-                {currentResources.map((res) => (
-                  <div
-                    key={res.id}
-                    className="bg-white border border-slate-200/80 rounded-2xl p-5 flex flex-col justify-between group transition-all duration-300 hover:border-slate-350 hover:shadow-md"
-                  >
-                    <div className="space-y-4">
-                        {/* En-tête de carte */}
-                        <div className="flex items-start justify-between">
-                          <span className="font-bold text-red-600 text-[9px] px-2.5 py-0.5 bg-red-50 border border-red-100 rounded-lg">
-                            {res.type}
-                          </span>
-                        </div>
-
-                      {/* Infos */}
-                      <div className="space-y-1.5">
-                        <h4 className="font-extrabold text-slate-950 text-base leading-snug group-hover:text-red-600 transition-colors truncate">
-                          {res.titre}
-                        </h4>
-                        
-                        {res.certification && (
-                          <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-bold uppercase">
-                            <Award className="w-3.5 h-3.5 text-slate-400" />
-                            <span>Lié à : {res.certification.codeExamen || res.certification.nom}</span>
-                          </div>
-                        )}
-
-                        <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed font-semibold">
-                          {res.description || 'Aucune description fournie.'}
-                        </p>
-                      </div>
-                      
-                      {/* Quota */}
-                      <div className="text-[10px] text-slate-500 font-bold bg-slate-50 border border-slate-100 rounded-xl p-2.5 text-center">
-                        Quota max par apprenant : {res.quotaTelechargement} téléchargements
-                      </div>
-                    </div>
-
-                    {/* Footer de carte */}
-                    <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-5">
-                      <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                        <span>{formatBytes(res.taille)}</span>
-                        <span>•</span>
-                        <span>v{res.version}</span>
-                      </div>
-
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => handleOpenEditModal(res)}
-                          className="p-2 bg-slate-50 border border-slate-200/80 hover:border-slate-350 text-slate-600 hover:text-slate-950 rounded-xl transition-colors cursor-pointer"
-                          title="Modifier"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteResource(res.id, res.titre)}
-                          className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-xl transition-colors cursor-pointer"
-                          title="Supprimer"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="p-6 border-t border-slate-200/60 flex items-center justify-between">
-                  <button
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                    disabled={currentPage === 1}
-                    className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
-                  >
-                    <ArrowLeft className="w-3.5 h-3.5" />
-                    <span>Précédent</span>
-                  </button>
-
-                  <div className="flex items-center gap-1">
-                    {Array.from({ length: totalPages }).map((_, index) => {
-                      const pageNum = index + 1;
-                      const isActive = currentPage === pageNum;
-                      return (
-                        <button
-                          key={pageNum}
-                          onClick={() => setCurrentPage(pageNum)}
-                          className={`w-9 h-9 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center ${isActive ? 'bg-slate-950 text-white shadow-md' : 'bg-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-950'}`}
-                        >
-                          {pageNum}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  <button
-                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                    disabled={currentPage === totalPages}
-                    className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
-                  >
-                    <span>Suivant</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              )}
-            </>
-          )}
+          {ResourceGrid}
         </div>
       </div>
 
