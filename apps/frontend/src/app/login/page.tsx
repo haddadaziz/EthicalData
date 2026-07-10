@@ -193,9 +193,12 @@ export default function LoginPage() {
 
             const payloadBase64 = data.access_token.split('.')[1];
             const decodedPayload = JSON.parse(atob(payloadBase64));
-            const roles = decodedPayload.roles || [];
+            
+            // Gestion robuste : le backend peut renvoyer `role` (string) ou `roles` (array)
+            const rolesData = decodedPayload.roles || decodedPayload.role || [];
+            const roleArray = Array.isArray(rolesData) ? rolesData : [rolesData];
 
-            if (roles.includes('SUPER_ADMIN') || roles.includes('ADMIN')) {
+            if (roleArray.includes('SUPER_ADMIN') || roleArray.includes('ADMIN')) {
                 router.push('/admin');
             } else {
                 router.push('/dashboard');

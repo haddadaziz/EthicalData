@@ -203,15 +203,22 @@ export default function LandingPage() {
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const currentY = window.scrollY;
-      setScrolled(currentY > 60);
-      if (currentY > 60) {
-        setNavVisible(currentY < lastScrollY.current);
-      } else {
-        setNavVisible(true);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentY = window.scrollY;
+          const isScrolled = currentY > 60;
+          const isNavVisible = currentY <= 60 || currentY < lastScrollY.current;
+
+          setScrolled(prev => prev !== isScrolled ? isScrolled : prev);
+          setNavVisible(prev => prev !== isNavVisible ? isNavVisible : prev);
+
+          lastScrollY.current = currentY;
+          ticking = false;
+        });
+        ticking = true;
       }
-      lastScrollY.current = currentY;
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -578,7 +585,9 @@ export default function LandingPage() {
         {/* Formater les certifications dynamiques ou par défaut */}
         {(() => {
           const getCertificateBadgeLogo = (cert: any) => {
-            if (cert.image && (cert.image.endsWith('.svg') || cert.image.endsWith('.png'))) return cert.image;
+            if (cert.image) return cert.image;
+            if (cert.logo) return cert.logo;
+            
             const code = (cert.codeExamen || cert.code || '').toLowerCase();
             const nom = (cert.nom || cert.title || '').toLowerCase();
 
@@ -589,7 +598,7 @@ export default function LandingPage() {
             if (code.includes('sy0') || nom.includes('security+')) return '/badges/comptia-sec.svg';
             if (code.includes('sc-900') || nom.includes('sc-900')) return '/badges/sc-900.svg';
 
-            return cert.image || cert.logo || '/badges/az-900.svg';
+            return '/badges/az-900.svg';
           };
 
           const catalogCourses = realCertifications.length > 0
@@ -1019,17 +1028,18 @@ export default function LandingPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedCourse(null)}
-              className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm cursor-pointer"
+              className="absolute inset-0 bg-slate-950/90 cursor-pointer"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row z-10 max-h-[90vh]"
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              transition={{ duration: 0.2 }}
+              className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row z-10 max-h-[90vh] will-change-transform"
             >
               <button 
                 onClick={() => setSelectedCourse(null)}
-                className="absolute top-4 right-4 z-50 w-10 h-10 bg-white/50 hover:bg-white backdrop-blur-md rounded-full flex items-center justify-center text-slate-800 transition-colors shadow-sm"
+                className="absolute top-4 right-4 z-50 w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-800 transition-colors shadow-sm cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1037,7 +1047,7 @@ export default function LandingPage() {
               {/* Partie Gauche Modale: La Carte elle-même (Aperçu) */}
               <div className="w-full md:w-5/12 p-8 flex flex-col items-center justify-center relative overflow-hidden shrink-0 min-h-[400px]">
                  <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
-                 {selectedCourse.logo && <img src={selectedCourse.logo} alt={selectedCourse.nom} className="w-48 object-contain relative z-20 drop-shadow-2xl hover:scale-105 transition-transform duration-500" style={{ transform: 'translateY(15%)' }} />}
+                 {selectedCourse.logo && <img src={selectedCourse.logo} alt={selectedCourse.nom} className="w-48 object-contain relative z-20 drop-shadow-lg hover:scale-105 transition-transform duration-300" style={{ transform: 'translateY(15%)' }} />}
               </div>
 
               {/* Partie Droite Modale: Détails */}
