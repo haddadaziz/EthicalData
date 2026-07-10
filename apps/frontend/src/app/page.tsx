@@ -716,7 +716,7 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════ */}
       {/* SECTION NOS SERVICES                       */}
       {/* ═══════════════════════════════════════════ */}
-      <section id="services" className="relative z-10 w-full py-24 lg:py-32 overflow-hidden border-t border-slate-900 bg-[#060B14]">
+      <section id="services" className="relative z-10 w-full pt-8 pb-2 lg:pt-10 lg:pb-4 overflow-hidden border-t border-slate-900 bg-[#060B14]">
         
         {/* Background Image avec léger filtre bleu */}
         <div className="absolute inset-0">
@@ -738,12 +738,12 @@ export default function LandingPage() {
              <img 
               src="/logos/landing_page_guy.webp" 
               alt="Nos Services" 
-              className="absolute bottom-0 -left-28 h-[105%] w-auto max-w-[150%] object-contain object-bottom z-10 drop-shadow-2xl" 
+              className="absolute -bottom-6 -left-28 h-[105%] w-auto max-w-[150%] object-contain object-bottom z-10 drop-shadow-2xl" 
             />
           </div>
 
           {/* Côté Droit : Grille de services (Sans bordures) */}
-          <div className="w-full lg:w-2/3 flex flex-col space-y-16 py-8 relative z-20">
+          <div className="w-full lg:w-2/3 flex flex-col space-y-16 pt-4 pb-0 relative z-20">
             
             {/* En-tête de section ultra moderne */}
             <div className="text-center lg:text-left space-y-4">
