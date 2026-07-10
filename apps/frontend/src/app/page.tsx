@@ -139,25 +139,42 @@ function AboutSlider() {
           </button>
 
           <div className="w-full md:w-5/12 shrink-0 flex items-center justify-center">
-            <img 
-              key={currentSlide}
-              src={slides[currentSlide].image} 
-              alt={slides[currentSlide].title}
-              className={`w-full animate-in fade-in zoom-in duration-500 ${
-                slides[currentSlide].isTransparent 
-                  ? "h-40 md:h-56 object-contain" 
-                  : "h-40 md:h-56 object-cover rounded-xl shadow-md"
-              }`} 
-            />
+            <AnimatePresence mode="wait">
+              <motion.img 
+                key={currentSlide}
+                src={slides[currentSlide].image} 
+                alt={slides[currentSlide].title}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.3 }}
+                className={`w-full ${
+                  slides[currentSlide].isTransparent 
+                    ? "h-40 md:h-56 object-contain" 
+                    : "h-40 md:h-56 object-cover rounded-xl shadow-md"
+                }`} 
+              />
+            </AnimatePresence>
           </div>
 
-          <div className="w-full md:w-7/12 text-left space-y-3 md:space-y-4">
-            <h3 key={`title-${currentSlide}`} className="text-lg md:text-2xl font-bold text-slate-900 animate-in slide-in-from-right-4 duration-500">
-              {slides[currentSlide].isRed ? <span className="text-red-600">{slides[currentSlide].title}</span> : slides[currentSlide].title}
-            </h3>
-            <p key={`desc-${currentSlide}`} className="text-slate-600 text-xs md:text-sm leading-relaxed font-medium animate-in slide-in-from-right-8 duration-500 delay-100">
-              {slides[currentSlide].text}
-            </p>
+          <div className="w-full md:w-7/12 text-left">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentSlide}
+                initial={{ opacity: 0, x: 15 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -15 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-3 md:space-y-4"
+              >
+                <h3 className="text-lg md:text-2xl font-bold text-slate-900">
+                  {slides[currentSlide].isRed ? <span className="text-red-600">{slides[currentSlide].title}</span> : slides[currentSlide].title}
+                </h3>
+                <p className="text-slate-600 text-xs md:text-sm leading-relaxed font-medium">
+                  {slides[currentSlide].text}
+                </p>
+              </motion.div>
+            </AnimatePresence>
           </div>
           
         </div>
