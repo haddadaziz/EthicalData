@@ -200,6 +200,7 @@ export default function LandingPage() {
   const [newsletterSubmitted, setNewsletterSubmitted] = useState(false);
   const [realCertifications, setRealCertifications] = useState<any[]>([]);
   const [showAllCertifications, setShowAllCertifications] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -629,85 +630,49 @@ export default function LandingPage() {
 
           return (
             <>
-              {/* Grille de cartes de certification (Exact Design Dashboard/Certifications) */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Grille de cartes de certification (Template CSS Exact) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {displayedCourses.map((cert, idx) => (
                   <AnimatedSection key={idx} delay={idx * 0.08}>
-                    <div className="bg-white border border-slate-200/90 hover:border-slate-350 hover:shadow-xl rounded-3xl p-6 sm:p-7 flex flex-col justify-between group transition-all duration-300 text-left space-y-5">
-                      
-                      {/* PARTIE SUPÉRIEURE : EN-TÊTE STYLE UDEMY */}
-                      <div className="flex items-start justify-between gap-4">
-                        {/* Côté Gauche : Badges, Titre & Description */}
-                        <div className="space-y-3 flex-1">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="font-extrabold text-slate-900 text-[10px] uppercase tracking-wider px-2.5 py-1 bg-slate-100 border border-slate-200 rounded-lg">
-                              {cert.fournisseur?.nom || 'Éditeur'}
-                            </span>
-                            {cert.codeExamen && (
-                              <span className="font-black text-red-600 text-[10px] uppercase tracking-wider px-2.5 py-1 bg-red-50 border border-red-100 rounded-lg">
-                                {cert.codeExamen}
-                              </span>
-                            )}
-                            <span className={`text-[9px] px-2.5 py-1 rounded-lg font-extrabold uppercase tracking-wider border ${getNiveauBadgeStyle(cert.niveau)}`}>
-                              {cert.niveau}
-                            </span>
-                          </div>
+                    <div 
+                      onClick={() => setSelectedCourse(cert)}
+                      className="flex flex-col group cursor-pointer"
+                    >
+                      {/* TOP PART: Template Image */}
+                      <div className="relative w-full h-[340px] rounded-xl overflow-hidden shadow-lg transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-blue-900/30 group-hover:shadow-2xl">
+                        
+                        {/* Image de fond (Template Cadre) */}
+                        <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
 
-                          <div>
-                            <h3 className="font-extrabold text-slate-950 text-lg leading-snug group-hover:text-red-600 transition-colors">
-                              {cert.nom}
-                            </h3>
-                            <p className="text-xs text-slate-500 font-medium line-clamp-2 mt-1.5 leading-relaxed">
-                              {cert.description}
-                            </p>
-                          </div>
-
-                          <div className="flex items-center gap-4 text-xs font-bold text-slate-400 pt-1">
-                            <span className="flex items-center gap-1.5 text-slate-600">
-                              <Users className="w-3.5 h-3.5 text-slate-400" />
-                              <span>Candidats en préparation</span>
-                            </span>
-                            <span className="flex items-center gap-1 text-slate-500">
-                              <Clock className="w-3.5 h-3.5" />
-                              <span>{cert.dureeIndicative}</span>
-                            </span>
+                        {/* Ribbon */}
+                        <div className="absolute top-4 left-0 z-30">
+                          <div className="bg-gradient-to-r from-yellow-500 to-yellow-400 text-red-700 font-black uppercase text-[10px] tracking-widest px-4 py-1.5 shadow-md relative rounded-r-sm">
+                            {cert.niveau === 'DEBUTANT' ? 'Fondamentaux' : (cert.niveau === 'AVANCE' ? 'Expertise' : 'Certification')}
+                            <div className="absolute top-0 -right-3 w-0 h-0 border-y-[12px] border-y-transparent border-l-[12px] border-l-yellow-400"></div>
                           </div>
                         </div>
 
-                        {/* Côté Droit : Écusson/Badge Officiel du Certificat (Style Udemy sans bordure) */}
-                        <div className="w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center shrink-0 p-1">
+                        {/* Badge */}
+                        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 group-hover:-translate-y-4 transition-transform duration-500 w-28 flex justify-center">
                           {cert.logo ? (
-                            <img
-                              src={cert.logo}
-                              alt={cert.nom}
-                              className="max-h-full max-w-full object-contain filter drop-shadow-md transition-transform duration-300 group-hover:scale-110"
-                            />
+                            <img src={cert.logo} alt="Badge" className="w-full h-auto object-contain filter drop-shadow-xl" />
                           ) : (
-                            <Award className="w-12 h-12 text-slate-300" />
+                            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center font-bold text-slate-800">Badge</div>
                           )}
                         </div>
+
                       </div>
 
-                      {/* BAS DE CARTE : ACTIONS & CTAS DISCRETS */}
-                      <div className="border-t border-slate-100 pt-4 flex items-center justify-between gap-3 text-xs">
-                        <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1.5">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                          <span>Examen Blanc & Quiz inclus</span>
-                        </span>
-
-                        <button 
-                          onClick={() => {
-                            if (isConnected) {
-                              window.location.href = '/dashboard/practice';
-                            } else {
-                              window.location.href = '/login';
-                            }
-                          }}
-                          className="px-4 py-2 bg-slate-950 hover:bg-slate-900 text-white font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1.5 shadow-sm hover:shadow-md"
-                        >
-                          <Play className="w-3 h-3 fill-white text-white" />
-                          <span>S&apos;entraîner</span>
-                        </button>
+                      {/* BOTTOM PART: Details */}
+                      <div className="mt-4 flex flex-col gap-2 px-1">
+                        <div className="flex items-start justify-between gap-3">
+                          <h3 className="text-[13px] font-bold text-slate-900 leading-snug line-clamp-2">
+                            {cert.nom}
+                          </h3>
+                          <div className="w-8 h-8 shrink-0 bg-red-600 rounded-full flex items-center justify-center text-white transition-colors shadow-md group-hover:bg-red-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </AnimatedSection>
@@ -1045,6 +1010,79 @@ export default function LandingPage() {
         </div>
       </footer>
 
+      {/* Modale de Détails de Certification */}
+      <AnimatePresence>
+        {selectedCourse && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedCourse(null)}
+              className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm cursor-pointer"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row z-10 max-h-[90vh]"
+            >
+              <button 
+                onClick={() => setSelectedCourse(null)}
+                className="absolute top-4 right-4 z-50 w-10 h-10 bg-white/50 hover:bg-white backdrop-blur-md rounded-full flex items-center justify-center text-slate-800 transition-colors shadow-sm"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Partie Gauche Modale: La Carte elle-même (Aperçu) */}
+              <div className="w-full md:w-5/12 p-8 flex flex-col items-center justify-center relative overflow-hidden shrink-0 min-h-[400px]">
+                 <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
+                 {selectedCourse.logo && <img src={selectedCourse.logo} alt={selectedCourse.nom} className="w-48 object-contain relative z-20 drop-shadow-2xl hover:scale-105 transition-transform duration-500" style={{ transform: 'translateY(15%)' }} />}
+              </div>
+
+              {/* Partie Droite Modale: Détails */}
+              <div className="w-full md:w-7/12 p-8 md:p-10 flex flex-col justify-between overflow-y-auto">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2 mb-4">
+                    <span className="text-[10px] uppercase tracking-wider px-2.5 py-1 bg-red-100 text-red-700 font-black rounded-lg">
+                      {selectedCourse.codeExamen || 'CERT'}
+                    </span>
+                    <span className="text-[10px] uppercase tracking-wider px-2.5 py-1 bg-slate-100 text-slate-700 font-bold rounded-lg">
+                      {selectedCourse.fournisseur?.nom || 'Éditeur'}
+                    </span>
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl font-black text-slate-950 leading-tight mb-4">{selectedCourse.nom}</h2>
+                  <p className="text-slate-600 text-sm leading-relaxed mb-8">{selectedCourse.description}</p>
+                  
+                  <div className="space-y-4 mb-8">
+                    <div className="flex items-center gap-3 text-sm font-semibold text-slate-700">
+                      <Clock className="w-5 h-5 text-red-500" />
+                      <span>{selectedCourse.dureeIndicative || '15h indicatives'}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm font-semibold text-slate-700">
+                      <Award className="w-5 h-5 text-red-500" />
+                      <span>Niveau: <span className="uppercase">{selectedCourse.niveau || 'DEBUTANT'}</span></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 mt-8 pt-6 border-t border-slate-100">
+                  <button 
+                    onClick={() => window.location.href = isConnected ? '/dashboard/practice' : '/login'}
+                    className="flex-1 py-3.5 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
+                  >
+                    <Play className="w-4 h-4 fill-white text-white" />
+                    S'entraîner maintenant
+                  </button>
+                  <button className="w-14 h-14 shrink-0 bg-slate-950 hover:bg-slate-900 text-white rounded-xl shadow-lg flex items-center justify-center hover:-translate-y-0.5 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }
