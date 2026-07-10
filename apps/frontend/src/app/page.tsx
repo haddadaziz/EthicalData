@@ -829,84 +829,32 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════ */}
       {/* FOOTER                                     */}
       {/* ═══════════════════════════════════════════ */}
-      <footer className="relative z-10 bg-black border-t border-slate-900 pt-16 pb-8">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8">
+      <footer className="relative z-10 bg-[#212121] text-[#A3A3A3]">
+        <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between gap-12">
+          
+          <div className="max-w-xl space-y-4 text-left">
+            <img src="/ethicaldata_main_logo.png" alt="Ethical Data Security" className="h-10 w-auto object-contain" />
+            <p className="text-sm leading-relaxed">
+              Dynamisme, réactivité et innovation sont au cœur de nos engagements. Nos solutions,<br className="hidden md:block" />
+              conçues par des experts, visent à surpasser vos attentes.
+            </p>
+          </div>
 
-          <div className="space-y-4 text-left">
-            <div className="flex items-center gap-2.5">
-              <div className="bg-white rounded-xl p-2 flex items-center justify-center">
-                <img src="/ethicaldata_main_logo.png" alt="Ethical Data Security" className="h-9 w-auto object-contain" />
-              </div>
+          <div className="text-left space-y-4 md:min-w-[400px]">
+            <h4 className="text-base font-bold text-[#E5E5E5]">Contact</h4>
+            <div className="text-sm space-y-3">
+              <p><span className="font-bold text-[#D4D4D4]">Email :</span> contact@ethicaldatasecurity.ma</p>
+              <p><span className="font-bold text-[#D4D4D4]">Tél :</span> +212 664 244 343 // +212 520 572 631</p>
+              <p><span className="font-bold text-[#D4D4D4]">Adresse :</span> Bureau 305, Technopark Casablanca</p>
             </div>
-            <p className="text-xs text-slate-400 leading-relaxed max-w-xs font-semibold">
-              La plateforme de préparation intelligente pour valider vos compétences Cloud et Cybersécurité en toute confiance au cœur de Casablanca.
-            </p>
           </div>
-
-          <div className="text-left">
-            <h4 className="text-xs font-black text-white uppercase tracking-widest mb-4">Certifications</h4>
-            <ul className="space-y-2.5 text-xs text-slate-400 font-semibold uppercase">
-              <li><Link href="/certifications" className="hover:text-white transition-colors">Azure AZ-900</Link></li>
-              <li><Link href="/certifications" className="hover:text-white transition-colors">PECB ISO 27001</Link></li>
-              <li><Link href="/certifications" className="hover:text-white transition-colors">AWS Cloud Practitioner</Link></li>
-              <li><Link href="/certifications" className="hover:text-white transition-colors">Palo Alto PCNSA</Link></li>
-            </ul>
-          </div>
-
-          <div className="text-left">
-            <h4 className="text-xs font-black text-white uppercase tracking-widest mb-4">Légal & Contact</h4>
-            <ul className="space-y-2.5 text-xs text-slate-400 font-semibold uppercase">
-              <li><a href="/mentions-legales" className="hover:text-white transition-colors">Mentions Légales</a></li>
-              <li><a href="/confidentialite" className="hover:text-white transition-colors">Confidentialité</a></li>
-              <li><a href="/conditions-generales" className="hover:text-white transition-colors">Conditions Générales</a></li>
-              <li><a href="/contact" className="hover:text-white transition-colors">Support Technique</a></li>
-            </ul>
-          </div>
-
-          <div className="text-left space-y-4">
-            <h4 className="text-xs font-black text-white uppercase tracking-widest">Lettre d&apos;information</h4>
-            <p className="text-xs text-slate-400 font-semibold leading-relaxed">
-              Recevez nos conseils de sécurité et alertes de mise à jour des examens officiels.
-            </p>
-
-            <form onSubmit={handleNewsletterSubmit} className="flex gap-2">
-              <input
-                type="email"
-                required
-                value={newsletterEmail}
-                onChange={(e) => setNewsletterEmail(e.target.value)}
-                placeholder="Votre e-mail"
-                className="flex-1 bg-slate-900/60 border border-slate-850 rounded-xl px-3 py-2.5 text-xs text-white placeholder-slate-500 outline-none focus:border-red-600/50 transition-colors"
-              />
-                <button
-                  type="submit"
-                  aria-label="S'inscrire à la newsletter"
-                  className="w-10 h-10 bg-white hover:bg-slate-100 text-slate-950 rounded-xl flex items-center justify-center shrink-0 transition-colors cursor-pointer"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
-            </form>
-
-            <AnimatePresence>
-              {newsletterSubmitted && (
-                <motion.p
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  className="text-[10px] text-red-500 font-bold"
-                >
-                  Inscription validée !
-                </motion.p>
-              )}
-            </AnimatePresence>
-          </div>
+          
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 border-t border-slate-900/60 mt-16 pt-8 flex flex-col md:flex-row items-center justify-between text-[10px] text-slate-500 font-semibold uppercase gap-4">
-          <p>© {new Date().getFullYear()} Ethical Data Security. Tous droits réservés.</p>
-          <div className="flex items-center gap-6">
-            <a href="/confidentialite" className="hover:text-slate-400 transition-colors">Politique RGPD</a>
-            <a href="/confidentialite" className="hover:text-slate-400 transition-colors">Gestion des Cookies</a>
+        {/* BOTTOM COPYRIGHT STRIP */}
+        <div className="w-full bg-[#181818] py-5">
+          <div className="max-w-7xl mx-auto px-6 flex items-center">
+            <p className="text-sm">© 2025 Ethical Data Security - Tous droits réservés.</p>
           </div>
         </div>
       </footer>
