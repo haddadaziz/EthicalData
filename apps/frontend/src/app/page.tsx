@@ -725,48 +725,80 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════ */}
       {/* SECTION ACTUALITÉS / EVENEMENTS (News)      */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 py-20 border-t border-slate-200/60">
+      <section className="relative z-10 w-full py-24 lg:py-32 overflow-hidden bg-[#060B14]">
         
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <span className="text-xs font-bold text-red-600 uppercase tracking-widest">Événements</span>
-          <h2 className="text-3xl font-black text-slate-950 mt-3 uppercase tracking-tight">News / Events</h2>
+        {/* Background Image avec filtre sombre */}
+        <div className="absolute inset-0">
+          <img 
+            src="/logos/events_bg_2.webp" 
+            alt="Events background" 
+            className="w-full h-full object-cover" 
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#060B14] via-[#060B14]/70 to-[#060B14]/90" />
         </div>
 
-        {/* Bloc Événement blanc */}
-        <AnimatedSection className="max-w-4xl mx-auto">
-          <div className="bg-white border border-slate-100 hover:border-slate-200 hover:shadow-xl rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row gap-6 sm:gap-8 items-center text-left relative overflow-hidden shadow-lg transition-all">
-            
-            {/* Badge de date rouge */}
-            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-red-600 text-white flex flex-col items-center justify-center shrink-0 shadow-lg shadow-red-600/10">
-              <span className="text-3xl sm:text-4xl font-black leading-none">12</span>
-              <span className="text-[10px] font-black uppercase tracking-widest mt-1.5">Mai</span>
-            </div>
+        <div className="relative max-w-7xl mx-auto px-6">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white uppercase tracking-tight mb-16">
+            New Events
+          </h2>
 
-            <div className="flex-1 space-y-4">
-              <div className="space-y-1">
-                <span className="text-[9px] font-bold text-red-600 uppercase tracking-widest flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5" />
-                  Atelier en présentiel
-                </span>
-                <h3 className="font-extrabold text-slate-900 text-base sm:text-lg leading-snug">
-                  Atelier pratique : Évaluation de vulnérabilité & diagnostics Cloud
-                </h3>
-              </div>
-              <p className="text-xs text-slate-500 leading-relaxed font-semibold">
-                Rejoignez nos experts au Technopark de Casablanca pour une session pratique d&apos;analyse de conformité sécurité, d&apos;audit de subnets cloud et de simulation d&apos;attaques guidée par IA. Places limitées.
-              </p>
+          <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
+            
+            {/* Colonne de Gauche : Événement Principal */}
+            <div className="w-full lg:w-5/12 flex flex-col space-y-8">
               
+              <div className="flex items-start gap-6">
+                {/* Date Badge */}
+                <div className="w-20 h-24 rounded-xl bg-red-600 text-white flex flex-col items-center justify-center shrink-0 shadow-lg shadow-red-600/20">
+                  <span className="text-3xl font-black leading-none">31</span>
+                  <span className="text-xs font-bold uppercase tracking-widest mt-1">Mai</span>
+                </div>
+
+                {/* Titre et Heure */}
+                <div className="space-y-3 mt-1">
+                  <h3 className="text-xl sm:text-2xl font-bold text-white leading-tight">
+                    PMP- Project Management Professional
+                  </h3>
+                  <div className="flex items-center gap-2 text-sm text-slate-300 font-medium">
+                    <Clock className="w-4 h-4" />
+                    <span>12:00 am - 12:00 am</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Description */}
+              <p className="text-[14px] text-slate-400 leading-relaxed font-medium">
+                La formation Project Management Professional (PMP) s'adresse aux chefs de projet actuels et futurs, et vise à les familiariser avec les dernières théories et pratiques en gestion de projet, selon la 7e édition du guide PMBOK. Cette formation met l'accent sur les compétences stratégiques, commerciales et la gestion du changement.
+              </p>
+
+              {/* Bouton */}
               <div className="pt-2">
                 <button 
                   onClick={() => window.location.href = '/register'}
-                  className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all cursor-pointer shadow-md"
+                  className="px-8 py-3.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold uppercase tracking-widest rounded-full transition-all cursor-pointer shadow-[0_0_15px_rgba(220,38,38,0.3)] hover:shadow-[0_0_25px_rgba(220,38,38,0.5)] flex items-center gap-3 w-fit"
                 >
-                  S&apos;inscrire
+                  View Event <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
+
+            {/* Colonne de Droite : Autres événements (Minimaliste) */}
+            <div className="w-full lg:w-7/12 flex flex-col justify-start">
+              
+              <div className="group cursor-pointer border-b border-white/10 pb-8 hover:border-red-500/50 transition-colors duration-300">
+                <div className="space-y-3">
+                  <span className="text-sm font-bold text-slate-400 group-hover:text-red-400 transition-colors">12 mai</span>
+                  <h3 className="text-xl font-bold text-white leading-tight group-hover:text-white transition-colors max-w-lg">
+                    AWS Certified Solutions Architect - Associate
+                  </h3>
+                </div>
+              </div>
+
+            </div>
+
           </div>
-        </AnimatedSection>
+        </div>
       </section>
 
       {/* ═══════════════════════════════════════════ */}
