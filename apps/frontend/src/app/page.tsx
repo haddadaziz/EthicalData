@@ -6,21 +6,53 @@ import { motion, AnimatePresence, useInView } from 'framer-motion';
 import Link from 'next/link';
 import { apiFetch } from '../lib/api';
 
-function AnimatedSection({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+const AnimatedSection = ({ children, className = "", delay = 0 }: any) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-60px" });
-
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 25 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, delay, ease: "easeOut" }}
+      initial={{ opacity: 0, y: 30 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+      transition={{ duration: 0.8, delay, ease: "easeOut" }}
       className={className}
     >
       {children}
     </motion.div>
   );
+};
+
+function AnimatedNumber({ end, suffix = "+" }: { end: number, suffix?: string }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const [hasAnimated, setHasAnimated] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !hasAnimated) {
+          setHasAnimated(true);
+          let startTimestamp: number | null = null;
+          const duration = 2000;
+          const step = (timestamp: number) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+            setCount(Math.floor(ease * end));
+            if (progress < 1) {
+              window.requestAnimationFrame(step);
+            }
+          };
+          window.requestAnimationFrame(step);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [end, hasAnimated]);
+
+  return <span ref={ref}>{count}{suffix}</span>;
 }
 
 export default function LandingPage() {
@@ -377,23 +409,25 @@ export default function LandingPage() {
               <span className="text-[10px] font-black text-red-600 uppercase tracking-widest">Présentation</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-slate-950 uppercase leading-tight">
-              Ethical Data Security
+              ETHICAL DATA SECURITY
             </h2>
-            <p className="text-slate-650 text-sm leading-relaxed font-semibold">
-              La plateforme de préparation intelligente pour valider vos compétences Cloud et Cybersécurité en toute confiance. Apprenez, entraînez-vous et mesurez votre préparation aux examens officiels.
+            <p className="text-slate-600 text-sm leading-relaxed font-medium">
+              Dynamisme, réactivité, et innovation font partie de nos principaux engagements vis à vis de nos clients. De même, toutes nos prestations et solutions sont conçues et réalisées par des experts reconnus dans leurs domaines. Chez ETHICAL DATA SECURITY, nous ferons toujours les efforts nécessaires pour dépasser vos attentes.
             </p>
             
             {/* Stats en ligne horizontal */}
-            <div className="grid grid-cols-4 gap-4 pt-4 border-t border-slate-200">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-6 border-t border-slate-200">
               {[
-                { value: "20+", label: "Certifications" },
-                { value: "85%+", label: "Réussite" },
-                { value: "4500+", label: "Quiz" },
-                { value: "300+", label: "Apprenants" }
+                { end: 254, label: "Projets Réalisés" },
+                { end: 569, label: "Formations" },
+                { end: 2000, label: "Certificats" },
+                { end: 100, label: "Mission Pentest" }
               ].map((stat, i) => (
                 <div key={i} className="text-center sm:text-left">
-                  <p className="text-xl sm:text-2xl font-black text-red-600">{stat.value}</p>
-                  <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">{stat.label}</p>
+                  <p className="text-2xl sm:text-3xl font-black text-red-600">
+                    <AnimatedNumber end={stat.end} />
+                  </p>
+                  <p className="text-[10px] text-slate-700 font-black uppercase tracking-widest mt-1.5">{stat.label}</p>
                 </div>
               ))}
             </div>
