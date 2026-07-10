@@ -176,13 +176,12 @@ export default function LandingPage() {
   ];
 
   const services = [
-    { title: "Formations", desc: "Formations certifiantes en Cybersécurité, Gouvernance des SI (ISO 27001) et Cloud Computing." },
-    { title: "Préparations aux examens", desc: "Simulateurs d'entraînement complets pour valider vos compétences avant l'examen réel." },
-    { title: "Diagnostics IA", desc: "Analyse automatisée de vos tentatives pour mettre en évidence vos lacunes spécifiques." },
-    { title: "Fiches Mémo", desc: "Supports de cours synthétiques et fiches de révision téléchargeables à tout moment." },
-    { title: "Simulateur interactif", desc: "Entraînement chronométré avec correction détaillée et explications pédagogiques." },
-    { title: "Coaching & Mentorat", desc: "Sessions d'échange avec des instructeurs certifiés et ingénieurs expérimentés." },
-    { title: "Mises à jour continues", desc: "Contenu mis à jour sous 48h en cas de modification des programmes officiels." }
+    { title: "Services IT", desc: "Nous vous accompagnons dans la mise en place, l'évolution et la sécurisation de votre infrastructure IT. Notre objectif est de garantir à votre entreprise performance, fiabilité et continuité, tout en assurant un haut niveau de disponibilité et de sécurité pour vos systèmes." },
+    { title: "Certification", desc: "Boostez votre carrière grâce à nos certifications professionnelles reconnues. Elles vous permettent de valider vos compétences, d'accroître votre crédibilité sur le marché de l'emploi et de répondre aux exigences actuelles des entreprises en matière de qualité et d'expertise métier." },
+    { title: "Formation", desc: "Nous proposons des formations spécialisées en IT et autres domaines clés. Adaptées aux professionnels et particuliers, elles visent à développer vos compétences, vous tenir à jour avec les nouvelles technologies, et répondre concrètement à vos objectifs de carrière ou d'entreprise." },
+    { title: "Infogérance", desc: "Confiez-nous la gestion de votre système d'information. Nous assurons la maintenance, la supervision, la sécurité et le bon fonctionnement de vos infrastructures IT, sur site ou à distance, pour vous permettre de rester concentré sur votre cœur de métier, en toute sérénité." },
+    { title: "Intégration", desc: "Nous vous aidons à intégrer des solutions technologiques sur mesure, compatibles avec votre environnement IT. Notre expertise vous permet de réussir votre transformation digitale en assurant la cohérence, la performance et l'optimisation de l'ensemble de votre système d'information." },
+    { title: "Services professionnels", desc: "Nos experts interviennent pour des missions de conseil, d'audit et de déploiement IT. Grâce à une approche sur mesure, nous vous apportons un accompagnement stratégique et opérationnel pour relever vos défis technologiques et garantir la réussite de vos projets." }
   ];
 
   return (
@@ -608,40 +607,58 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════ */}
       {/* SECTION NOS SERVICES                       */}
       {/* ═══════════════════════════════════════════ */}
-      <section id="services" className="relative z-10 w-full border-t border-slate-200/60">
-        <div className="grid grid-cols-1 lg:grid-cols-2 items-stretch">
+      <section id="services" className="relative z-10 w-full py-24 lg:py-32 overflow-hidden border-t border-slate-900 bg-[#0B1120]">
+        
+        {/* Background Image - optimized, no blur */}
+        <div className="absolute inset-0">
+          <img 
+            src="/landing_page_logo_ethicaldata.jpeg" 
+            alt="" 
+            className="w-full h-full object-cover opacity-10" 
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0B1120] via-[#0B1120]/95 to-[#0F172A]/90" />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
           
-          {/* Côté Gauche : Professionnel invitant sur dégradé bleu/cyan */}
-          <div className="bg-gradient-to-br from-cyan-600 via-blue-600 to-indigo-700 min-h-[400px] lg:min-h-full flex items-end justify-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#ffffff10_0%,transparent_70%)] pointer-events-none" />
-            <img 
-              src="/welcoming_professional.png" 
-              alt="Bienvenue chez Ethical Data" 
-              className="max-h-[85%] lg:max-h-[92%] object-contain relative z-10 select-none pointer-events-none" 
+          {/* Côté Gauche : Professionnel invitant */}
+          <div className="w-full lg:w-1/3 flex justify-center relative">
+             <img 
+              src="/logos/landing_page_guy.webp" 
+              alt="Nos Services" 
+              className="max-h-[450px] lg:max-h-[550px] w-auto object-contain relative z-10" 
             />
           </div>
 
-          {/* Côté Droit : Liste des services sur fond blanc */}
-          <div className="bg-white p-8 sm:p-12 md:p-16 text-left flex flex-col justify-center space-y-8">
-            <div className="space-y-2">
-              <span className="text-[10px] font-black text-red-600 uppercase tracking-widest">Nos prestations</span>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-950 uppercase tracking-tight">Nos Services</h2>
+          {/* Côté Droit : Grille de services */}
+          <div className="w-full lg:w-2/3 flex flex-col space-y-10">
+            <div className="text-center lg:text-left space-y-2">
+              <span className="text-xs font-bold text-red-500 uppercase tracking-widest">Nos compétences</span>
+              <h2 className="text-3xl sm:text-4xl font-black text-white uppercase tracking-tight">Nos Prestations</h2>
             </div>
 
-            <div className="space-y-4 max-w-lg">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {services.map((srv, i) => (
-                <div key={i} className="flex gap-4 items-start border-b border-slate-100 pb-3 last:border-0 last:pb-0">
-                  <div className="w-5 h-5 rounded-full bg-red-50 border border-red-100 flex items-center justify-center text-red-600 shrink-0 mt-0.5">
-                    <Check className="w-3 h-3" />
+                <AnimatedSection key={i} delay={i * 0.05}>
+                  <div className="h-full p-6 rounded-xl bg-[#131C2D] border border-slate-800 hover:border-red-500/60 transition-colors duration-200 group cursor-default">
+                    <div className="flex flex-col h-full space-y-4">
+                      
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full border border-slate-700 bg-[#1E293B] flex items-center justify-center text-white font-bold text-sm transition-colors group-hover:bg-red-500 group-hover:border-red-500">
+                          0{i + 1}
+                        </div>
+                        <h3 className="text-sm font-bold text-white tracking-wide">{srv.title}</h3>
+                      </div>
+
+                      <p className="text-[13px] text-slate-400 leading-relaxed font-medium">{srv.desc}</p>
+                    </div>
                   </div>
-                  <div className="space-y-0.5">
-                    <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">{srv.title}</h3>
-                    <p className="text-xs text-slate-500 font-semibold leading-relaxed">{srv.desc}</p>
-                  </div>
-                </div>
+                </AnimatedSection>
               ))}
             </div>
           </div>
+
         </div>
       </section>
 
