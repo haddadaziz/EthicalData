@@ -662,7 +662,7 @@ export default function LandingPage() {
                         </div>
 
                         {/* Badge */}
-                        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 group-hover:-translate-y-4 transition-transform duration-500 w-28 flex justify-center">
+                        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-20 group-hover:-translate-y-4 transition-transform duration-500 w-28 flex justify-center">
                           {cert.logo ? (
                             <img src={cert.logo} alt="Badge" className="w-full h-auto object-contain filter drop-shadow-xl" />
                           ) : (
@@ -1047,7 +1047,7 @@ export default function LandingPage() {
               {/* Partie Gauche Modale: La Carte elle-même (Aperçu) */}
               <div className="w-full md:w-5/12 p-8 flex flex-col items-center justify-center relative overflow-hidden shrink-0 min-h-[400px]">
                  <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
-                 {selectedCourse.logo && <img src={selectedCourse.logo} alt={selectedCourse.nom} className="w-48 object-contain relative z-20 drop-shadow-lg hover:scale-105 transition-transform duration-300" style={{ transform: 'translateY(15%)' }} />}
+                 {selectedCourse.logo && <img src={selectedCourse.logo} alt={selectedCourse.nom} className="w-48 object-contain relative z-20 drop-shadow-lg hover:scale-105 transition-transform duration-300" style={{ transform: 'translateY(5%)' }} />}
               </div>
 
               {/* Partie Droite Modale: Détails */}
