@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Navbar } from '@/components/layout/Navbar';
+
 import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/context/ConfirmContext';
 import { BookMarked, Globe, FilePen, Plus } from '@/components/icons';
@@ -91,8 +91,7 @@ export default function CoursesPage() {
 
     if (isCreating || editingCours) {
         return (
-            <div className="min-h-screen bg-slate-50 font-sans pb-20 pt-28">
-                <Navbar />
+            <div className="space-y-8 pb-20">
                 <CourseEditor
                     certs={certs}
                     editingCours={editingCours}
@@ -148,8 +147,7 @@ export default function CoursesPage() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 font-sans pb-20 pt-28">
-            <Navbar />
+        <div className="space-y-8 pb-20">
             <div className="space-y-8 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
                 {loading ? (
                     <div className="p-16 text-center text-slate-400 bg-white border border-slate-200/80 rounded-3xl max-w-5xl mx-auto">

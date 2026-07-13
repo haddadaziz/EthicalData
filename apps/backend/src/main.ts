@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { json, urlencoded } from 'express';
 
 // Polyfill global BigInt → string pour JSON.stringify
 (BigInt.prototype as any).toJSON = function () {
@@ -11,7 +12,11 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 };
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bodyParser: false });
+
+  // Augmenter la taille limite des requêtes pour accepter les images en Base64 (ex. 10mb)
+  app.use(json({ limit: '10mb' }));
+  app.use(urlencoded({ limit: '10mb', extended: true }));
 
   // Injection des en-têtes de sécurité HTTP Helmet (XSS, Clickjacking, CSP)
   app.use(

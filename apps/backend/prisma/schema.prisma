@@ -123,6 +123,7 @@ model Cours {
   modules      Module[]
   simulations  Simulation[]
   inscriptions InscriptionCours[]
+  ressources   Ressource[]
 
   @@index([certificationId, statut])
   @@index([formateurId, statut])
@@ -205,6 +206,10 @@ model Ressource {
   moduleId BigInt? @map("module_id")
   module   Module? @relation(fields: [moduleId], references: [id], onDelete: SetNull)
 
+  // Ressource attachée à un Cours (optionnel)
+  coursId BigInt? @map("cours_id")
+  cours   Cours?  @relation(fields: [coursId], references: [id], onDelete: SetNull)
+
   // Ressource attachée directement à une Certification (bibliothèque globale)
   certificationId BigInt?        @map("certification_id")
   certification   Certification? @relation(fields: [certificationId], references: [id], onDelete: SetNull)
@@ -212,6 +217,7 @@ model Ressource {
   telechargements Telechargement[]
 
   @@index([moduleId])
+  @@index([coursId])
   @@index([certificationId])
   @@map("ressources")
 }

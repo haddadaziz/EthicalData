@@ -63,6 +63,14 @@ export class CoursController {
     return this.coursService.findMyInscriptions(req.user.id);
   }
 
+  // Tous les cours (Admin)
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN')
+  @Get('admin/all')
+  async getAllCoursesForAdmin() {
+    return this.coursService.findAllForAdmin();
+  }
+
   // Détail d'un cours
   @Get(':id')
   async getOne(@Param('id', ParseIntPipe) id: number) {
@@ -86,7 +94,7 @@ export class CoursController {
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: Partial<CreateCoursDto>,
   ) {
-    return this.coursService.update(req.user.id, id, dto);
+    return this.coursService.update(req.user.id, id, dto, req.user.roles);
   }
 
   // Publier un cours
@@ -97,7 +105,7 @@ export class CoursController {
     @Req() req: any,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    return this.coursService.publish(req.user.id, id);
+    return this.coursService.publish(req.user.id, id, req.user.roles);
   }
 
   // Supprimer un cours (soft delete)
@@ -108,7 +116,7 @@ export class CoursController {
     @Req() req: any,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    return this.coursService.remove(req.user.id, id);
+    return this.coursService.remove(req.user.id, id, req.user.roles);
   }
 
   // ─────────────────────────────────────────

@@ -15,12 +15,17 @@ export class ResourcesService {
     async findAllRessources() {
         const resources = await this.prisma.ressource.findMany({
             where: { deletedAt: null },
-            include: { certification: true },
+            include: { 
+                certification: true,
+                cours: { select: { id: true, titre: true } }
+            },
             orderBy: { dateCreation: 'desc' },
         });
         return resources.map((r) => ({
             ...r,
             id: r.id.toString(),
+            moduleId: r.moduleId?.toString(),
+            coursId: r.coursId?.toString(),
             certificationId: r.certificationId?.toString(),
             certification: r.certification
                 ? {
@@ -28,6 +33,12 @@ export class ResourcesService {
                     nom: r.certification.nom,
                     slug: r.certification.slug,
                     codeExamen: r.certification.codeExamen,
+                }
+                : null,
+            cours: r.cours
+                ? {
+                    id: r.cours.id.toString(),
+                    titre: r.cours.titre,
                 }
                 : null,
         }));
@@ -52,6 +63,8 @@ export class ResourcesService {
         return {
             ...ressource,
             id: ressource.id.toString(),
+            moduleId: ressource.moduleId?.toString(),
+            coursId: ressource.coursId?.toString(),
             certificationId: ressource.certificationId?.toString(),
         };
     }
@@ -81,6 +94,8 @@ export class ResourcesService {
         return {
             ...updated,
             id: updated.id.toString(),
+            moduleId: updated.moduleId?.toString(),
+            coursId: updated.coursId?.toString(),
             certificationId: updated.certificationId?.toString(),
         };
     }

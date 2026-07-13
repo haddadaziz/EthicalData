@@ -53,7 +53,7 @@ export function useCertifications() {
 
   const updateCert = async (id: string, payload: any) => {
     await apiFetch(`/certifications/${id}`, {
-      method: 'PUT',
+      method: 'PATCH',
       body: payload
     });
     await fetchCerts();
@@ -89,7 +89,7 @@ export function useCertifications() {
   const saveQuestion = async (certId: string, payload: any, questionId?: string) => {
     if (questionId) {
       await apiFetch(`/certifications/questions/${questionId}`, {
-        method: 'PUT',
+        method: 'PATCH',
         body: payload
       });
     } else {

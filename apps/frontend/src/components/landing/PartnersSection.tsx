@@ -6,10 +6,10 @@ const partnerLogos = [
   { name: "CompTIA", path: "/logos/comptia.png" },
   { name: "Cisco", path: "/logos/cisco.png" },
   { name: "Fortinet", path: "/logos/fortinet.png" },
-  { name: "Offensive Security", path: "/logos/offensive_security.png" },
-  { name: "EC-Council", path: "/logos/eccouncil.png" },
-  { name: "Oracle", path: "/logos/oracle.png" },
-  { name: "Google Cloud", path: "/logos/google_cloud.png" }
+  { name: "Palo Alto Networks", path: "/logos/paloalto.png" },
+  { name: "PECB", path: "/logos/pecb.png" },
+  { name: "Pearson VUE", path: "/logos/pearsonvue.png" },
+  { name: "Google Cloud", path: "/logos/google.png" }
 ];
 
 export function PartnersSection() {

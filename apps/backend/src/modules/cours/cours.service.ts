@@ -58,6 +58,7 @@ export class CoursService {
           ...r,
           id: r.id.toString(),
           moduleId: r.moduleId?.toString(),
+          coursId: r.coursId?.toString(),
           certificationId: r.certificationId?.toString(),
         })),
       })),
@@ -120,6 +121,23 @@ export class CoursService {
           include: { ressources: true },
         },
         _count: { select: { modules: true } },
+      },
+      orderBy: { dateCreation: 'desc' },
+    });
+    return cours.map(this.serializeCours.bind(this));
+  }
+
+  async findAllForAdmin() {
+    const cours = await this.prisma.cours.findMany({
+      where: { deletedAt: null },
+      include: {
+        certification: { include: { fournisseur: true } },
+        formateur: { select: { id: true, prenom: true, nom: true, avatar: true } },
+        modules: {
+          orderBy: { ordre: 'asc' },
+          include: { ressources: true },
+        },
+        _count: { select: { modules: true, inscriptions: true } },
       },
       orderBy: { dateCreation: 'desc' },
     });
@@ -206,13 +224,15 @@ export class CoursService {
     return this.serializeCours(cours);
   }
 
-  async update(formateurId: number, coursId: number, dto: Partial<CreateCoursDto>) {
+  async update(formateurId: number, coursId: number, dto: Partial<CreateCoursDto>, userRoles?: string[]) {
     const cours = await this.prisma.cours.findFirst({
       where: { id: BigInt(coursId), deletedAt: null },
       include: { modules: true },
     });
     if (!cours) throw new NotFoundException('Cours introuvable.');
-    if (cours.formateurId.toString() !== formateurId.toString()) {
+
+    const isAdmin = userRoles && (userRoles.includes('ADMIN') || userRoles.includes('SUPER_ADMIN'));
+    if (cours.formateurId.toString() !== formateurId.toString() && !isAdmin) {
       throw new ForbiddenException('Vous ne pouvez modifier que vos propres cours.');
     }
 
@@ -262,14 +282,16 @@ export class CoursService {
     return this.serializeCours(updated);
   }
 
-  async publish(formateurId: number, coursId: number) {
+  async publish(formateurId: number, coursId: number, userRoles?: string[]) {
     const cours = await this.prisma.cours.findFirst({
       where: { id: BigInt(coursId), deletedAt: null },
       include: { modules: true },
     });
 
     if (!cours) throw new NotFoundException('Cours introuvable.');
-    if (cours.formateurId.toString() !== formateurId.toString()) {
+
+    const isAdmin = userRoles && (userRoles.includes('ADMIN') || userRoles.includes('SUPER_ADMIN'));
+    if (cours.formateurId.toString() !== formateurId.toString() && !isAdmin) {
       throw new ForbiddenException('Vous ne pouvez publier que vos propres cours.');
     }
 
@@ -288,15 +310,17 @@ export class CoursService {
       throw new BadRequestException(errors);
     }
 
-    return this.update(formateurId, coursId, { statut: 'PUBLIE' } as any);
+    return this.update(formateurId, coursId, { statut: 'PUBLIE' } as any, userRoles);
   }
 
-  async remove(formateurId: number, coursId: number) {
+  async remove(formateurId: number, coursId: number, userRoles?: string[]) {
     const cours = await this.prisma.cours.findFirst({
       where: { id: BigInt(coursId), deletedAt: null },
     });
     if (!cours) throw new NotFoundException('Cours introuvable.');
-    if (cours.formateurId.toString() !== formateurId.toString()) {
+
+    const isAdmin = userRoles && (userRoles.includes('ADMIN') || userRoles.includes('SUPER_ADMIN'));
+    if (cours.formateurId.toString() !== formateurId.toString() && !isAdmin) {
       throw new ForbiddenException('Vous ne pouvez supprimer que vos propres cours.');
     }
     await this.prisma.cours.update({
@@ -621,9 +645,17 @@ export class CoursService {
         public: dto.public ?? false,
         ordre: dto.ordre ?? 0,
         moduleId: BigInt(moduleId),
+        coursId: module.coursId,
+        certificationId: module.cours.certificationId,
       },
     });
-    return { ...ressource, id: ressource.id.toString(), moduleId: ressource.moduleId?.toString() };
+    return { 
+      ...ressource, 
+      id: ressource.id.toString(), 
+      moduleId: ressource.moduleId?.toString(),
+      coursId: ressource.coursId?.toString(),
+      certificationId: ressource.certificationId?.toString() 
+    };
   }
 
   async removeRessource(formateurId: number, ressourceId: number) {

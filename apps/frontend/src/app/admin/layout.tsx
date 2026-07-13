@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { LayoutDashboard, Users, BookOpen, MessageSquare, ShieldCheck, LogOut, DownloadCloud, Award, Bell, Calendar, FileText, Settings, User, X, Menu, Activity } from '@/components/icons';
+import { useToast } from '../../context/ToastContext';
+import { LayoutDashboard, Users, BookOpen, MessageSquare, ShieldCheck, LogOut, DownloadCloud, Award, Bell, Calendar, FileText, Settings, User, X, Menu, Activity, ChevronDown } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import NotificationBell from '../../components/NotificationBell';
 
@@ -11,6 +12,7 @@ import { apiFetch } from '../../lib/api';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const { showToast } = useToast();
   const pathname = usePathname();
   const [authorized, setAuthorized] = useState(false);
   const [userRole, setUserRole] = useState<string>('');
@@ -19,6 +21,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [userAvatar, setUserAvatar] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
+
+  const toggleMenu = (name: string) => {
+    setExpandedMenu((prev) => (prev === name ? null : name));
+  };
 
   // Détection de la taille d'écran
   useEffect(() => {
@@ -86,25 +93,46 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const handleLogout = () => {
     localStorage.removeItem('token');
     sessionStorage.removeItem('token');
+    showToast("Déconnecté avec succès, à bientôt", "success");
     router.push('/login');
   };
 
   interface NavItem {
     name: string;
-    href: string;
+    href?: string;
     icon: React.ComponentType<any>;
     disabled?: boolean;
     badge?: string;
+    subItems?: NavItem[];
   }
 
   const navItems: NavItem[] = [
     { name: 'Tableau de Bord', href: '/admin', icon: LayoutDashboard },
-    { name: 'Gestion Formations', href: '/admin/certifications', icon: Award },
-    { name: 'Ressources & Fiches', href: '/admin/resources', icon: DownloadCloud },
-    { name: 'Modération Forum', href: '/admin/community', icon: MessageSquare },
-    { name: 'Planning & Coaching', href: '/admin/coaching', icon: Calendar },
-    { name: 'Utilisateurs & Rôles', href: '/admin/users', icon: Users },
-    { name: 'Santé Système', href: '/admin/health', icon: Activity },
+    {
+      name: 'Gestion des Contenus',
+      icon: FileText,
+      subItems: [
+        { name: 'Certifications', href: '/admin/certifications', icon: Award },
+        { name: 'Gestion des Cours', href: '/admin/courses', icon: BookOpen },
+        { name: 'Ressources & Fiches', href: '/admin/resources', icon: DownloadCloud },
+      ]
+    },
+    {
+      name: 'Communauté & Coaching',
+      icon: Users,
+      subItems: [
+        { name: 'Modération Forum', href: '/admin/community', icon: MessageSquare },
+        { name: 'Planning & Coaching', href: '/admin/coaching', icon: Calendar },
+      ]
+    },
+    {
+      name: 'Administration Système',
+      icon: Settings,
+      subItems: [
+        { name: 'Utilisateurs & Rôles', href: '/admin/users', icon: ShieldCheck },
+        { name: 'Santé Système', href: '/admin/health', icon: Activity },
+      ]
+    }
   ];
 
   if (!authorized) {
@@ -123,6 +151,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
     if (pathname === '/admin/certifications') {
       return { title: 'Gestion des Certifications', subtitle: 'Catalogue et banques de questions' };
+    }
+    if (pathname === '/admin/courses') {
+      return { title: 'Gestion des Cours', subtitle: 'Catalogue global de cours de la plateforme' };
     }
     if (pathname === '/admin/downloads') {
       return { title: 'Ressources Téléchargeables', subtitle: 'Gestion des fiches et quotas' };
@@ -159,14 +190,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSidebarOpen(false)}
-              className="fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-sm"
+              className="fixed inset-0 z-40 bg-slate-950/80"
             />
             <motion.aside
-              initial={{ x: -260 }}
+              initial={{ x: -280 }}
               animate={{ x: 0 }}
-              exit={{ x: -260 }}
+              exit={{ x: -280 }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 bottom-0 left-0 z-50 w-[260px] flex flex-col bg-white border-r border-slate-200/80 h-screen shadow-2xl overflow-hidden"
+              className="fixed top-0 bottom-0 left-0 z-50 w-[280px] flex flex-col bg-white border-r border-slate-200/80 h-screen shadow-2xl overflow-hidden transform-gpu will-change-transform"
             >
               <div className="h-20 flex items-center justify-between px-6 border-b border-slate-200/80">
                 <div className="flex items-center gap-3">
@@ -182,31 +213,85 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </button>
               </div>
 
-              <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
+              <nav className="flex-1 py-6 px-4 space-y-2">
                 {navItems.map((item, index) => {
-                  const isActive = pathname === item.href;
+                  const hasSubItems = !!item.subItems && item.subItems.length > 0;
+                  const isExpanded = expandedMenu === item.name;
+                  const isActive = !hasSubItems && item.href && pathname === item.href;
                   const Icon = item.icon;
 
                   return (
-                    <a
-                      key={index}
-                      href={item.href}
-                      onClick={() => setSidebarOpen(false)}
-                      className={`flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-250 group relative ${isActive
-                        ? 'bg-slate-950 text-white shadow-md'
-                        : item.disabled
-                          ? 'text-slate-400 cursor-not-allowed opacity-40'
-                          : 'text-slate-600 hover:text-slate-950 hover:bg-slate-50 cursor-pointer'
-                        }`}
-                    >
-                      <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-blue-600 transition-colors'}`} />
-                      <span className="truncate flex-1">{item.name}</span>
-                      {item.badge && (
-                        <span className="text-[9px] bg-blue-50 text-blue-600 border border-blue-100 px-2 py-0.5 rounded-full shrink-0 font-extrabold uppercase tracking-wider">
-                          {item.badge}
-                        </span>
+                    <div key={index} className="space-y-1">
+                      {hasSubItems ? (
+                        <button
+                          onClick={() => toggleMenu(item.name)}
+                          className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-250 group relative cursor-pointer ${
+                            isExpanded ? 'bg-slate-100 text-blue-600' : 'text-slate-600 hover:text-slate-955 hover:bg-slate-50'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            <Icon className={`w-5 h-5 shrink-0 ${isExpanded ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600 transition-colors'}`} />
+                            <span className="truncate">{item.name}</span>
+                          </div>
+                          <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${isExpanded ? 'rotate-180 text-blue-600' : ''}`} />
+                        </button>
+                      ) : (
+                        <Link
+                          href={item.href || '#'}
+                          onClick={() => setSidebarOpen(false)}
+                          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-250 group relative ${isActive
+                            ? 'bg-slate-950 text-white shadow-md'
+                            : item.disabled
+                              ? 'text-slate-400 cursor-not-allowed opacity-40'
+                              : 'text-slate-600 hover:text-slate-955 hover:bg-slate-50 cursor-pointer'
+                            }`}
+                        >
+                          <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-blue-600 transition-colors'}`} />
+                          <span className="truncate flex-1">{item.name}</span>
+                          {item.badge && (
+                            <span className="text-[9px] bg-blue-50 text-blue-600 border border-blue-100 px-2 py-0.5 rounded-full shrink-0 font-extrabold uppercase tracking-wider">
+                              {item.badge}
+                            </span>
+                          )}
+                        </Link>
                       )}
-                    </a>
+
+                      {/* SubItems */}
+                      {hasSubItems && (
+                        <AnimatePresence>
+                          {isExpanded && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              transition={{ duration: 0.2 }}
+                              className="overflow-hidden"
+                            >
+                              <div className="pl-4 pr-2 py-1 space-y-1">
+                                {item.subItems!.map((sub, subIdx) => {
+                                  const isSubActive = pathname === sub.href;
+                                  const SubIcon = sub.icon;
+                                  return (
+                                    <Link
+                                      key={subIdx}
+                                      href={sub.href}
+                                      onClick={() => setSidebarOpen(false)}
+                                      className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all group ${isSubActive
+                                          ? 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs font-extrabold'
+                                          : 'text-slate-500 hover:text-slate-950 hover:bg-slate-50/80 cursor-pointer'
+                                        }`}
+                                    >
+                                      <SubIcon className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600 transition-colors'}`} />
+                                      <span className="truncate flex-1">{sub.name}</span>
+                                    </Link>
+                                  );
+                                })}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      )}
+                    </div>
                   );
                 })}
               </nav>
@@ -227,7 +312,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Sidebar Desktop Fixe & Élégante */}
       {!isMobile && (
-        <aside className="hidden md:flex flex-col bg-white border-r border-slate-200/80 relative z-10 shrink-0 sticky top-0 h-screen shadow-sm w-[260px] overflow-y-auto overflow-x-hidden">
+        <aside className="hidden md:flex flex-col bg-white border-r border-slate-200/80 relative z-10 shrink-0 sticky top-0 h-screen shadow-sm w-[280px] overflow-y-auto overflow-x-hidden">
           {/* Logo */}
           <div className="h-20 flex items-center px-6 border-b border-slate-200/80">
             <Link href="/" className="flex items-center group cursor-pointer">
@@ -238,30 +323,83 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           {/* Liens de navigation */}
-          <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
+          <nav className="flex-1 py-6 px-4 space-y-2">
             {navItems.map((item, index) => {
-              const isActive = pathname === item.href;
+              const hasSubItems = !!item.subItems && item.subItems.length > 0;
+              const isExpanded = expandedMenu === item.name;
+              const isActive = !hasSubItems && item.href && pathname === item.href;
               const Icon = item.icon;
 
               return (
-                <a
-                  key={index}
-                  href={item.href}
-                  className={`flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 group relative ${isActive
-                    ? 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs font-extrabold'
-                    : item.disabled
-                      ? 'text-slate-400 cursor-not-allowed opacity-40'
-                      : 'text-slate-600 hover:text-slate-955 hover:bg-slate-50 cursor-pointer'
-                    }`}
-                >
-                  <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600 transition-colors'}`} />
-                  <span className="truncate flex-1">{item.name}</span>
-                  {item.badge && (
-                    <span className="text-[9px] bg-blue-50 text-blue-600 border border-blue-100 px-2 py-0.5 rounded-full shrink-0 font-bold uppercase tracking-wider">
-                      {item.badge}
-                    </span>
+                <div key={index} className="space-y-1">
+                  {hasSubItems ? (
+                    <button
+                      onClick={() => toggleMenu(item.name)}
+                      className={`w-full flex items-center justify-between gap-3 px-4 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 group relative cursor-pointer ${
+                        isExpanded ? 'bg-slate-100 text-blue-600 shadow-sm' : 'text-slate-600 hover:text-slate-950 hover:bg-slate-50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Icon className={`w-5 h-5 shrink-0 ${isExpanded ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600 transition-colors'}`} />
+                        <span className="truncate">{item.name}</span>
+                      </div>
+                      <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${isExpanded ? 'rotate-180 text-blue-600' : ''}`} />
+                    </button>
+                  ) : (
+                    <Link
+                      href={item.href || '#'}
+                      className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 group relative ${isActive
+                        ? 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs font-extrabold'
+                        : item.disabled
+                          ? 'text-slate-400 cursor-not-allowed opacity-40'
+                          : 'text-slate-600 hover:text-slate-955 hover:bg-slate-50 cursor-pointer'
+                        }`}
+                    >
+                      <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600 transition-colors'}`} />
+                      <span className="truncate flex-1">{item.name}</span>
+                      {item.badge && (
+                        <span className="text-[9px] bg-blue-50 text-blue-600 border border-blue-100 px-2 py-0.5 rounded-full shrink-0 font-bold uppercase tracking-wider">
+                          {item.badge}
+                        </span>
+                      )}
+                    </Link>
                   )}
-                </a>
+
+                  {/* SubItems Desktop */}
+                  {hasSubItems && (
+                    <AnimatePresence>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="pl-4 pr-2 py-1 space-y-1">
+                            {item.subItems!.map((sub, subIdx) => {
+                              const isSubActive = pathname === sub.href;
+                              const SubIcon = sub.icon;
+                              return (
+                                <Link
+                                  key={subIdx}
+                                  href={sub.href}
+                                  className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all group ${isSubActive
+                                      ? 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs font-extrabold'
+                                      : 'text-slate-500 hover:text-slate-950 hover:bg-slate-50/80 cursor-pointer'
+                                    }`}
+                                >
+                                  <SubIcon className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600 transition-colors'}`} />
+                                  <span className="truncate flex-1">{sub.name}</span>
+                                </Link>
+                              );
+                            })}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  )}
+                </div>
               );
             })}
           </nav>
@@ -283,7 +421,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="flex-1 flex flex-col h-screen overflow-y-auto relative z-10">
 
         {/* Header Premium */}
-        <header className="py-5 md:py-6 border-b border-slate-200/50 bg-white/80 backdrop-blur-xl flex items-center justify-between px-8 md:px-12 sticky top-0 z-20 transition-all duration-300">
+        <header className="py-5 md:py-6 border-b border-slate-200/50 bg-white/80 backdrop-blur-xl flex items-center justify-between px-8 md:px-12 sticky top-0 z-40 transition-all duration-300">
 
           {/* Gauche : Titre Dynamique (Bouton Hamburger uniquement sur Mobile) */}
           <div className="flex items-center gap-4">
@@ -305,7 +443,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="flex items-center gap-4">
             <NotificationBell />
 
-            <a
+            <Link
               href="/dashboard/profile"
               className="flex items-center gap-3 p-1.5 hover:bg-slate-100/80 rounded-2xl transition-all cursor-pointer group"
               title="Voir et modifier mon profil"
@@ -330,7 +468,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   </div>
                 )}
               </div>
-            </a>
+            </Link>
           </div>
         </header>
 

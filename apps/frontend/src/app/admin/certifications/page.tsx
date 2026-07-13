@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Navbar } from '@/components/layout/Navbar';
+
 import { Search, Plus } from '@/components/icons';
 import { useCertifications } from '@/hooks/useCertifications';
+import { useToast } from '@/context/ToastContext';
+import { useConfirm } from '@/context/ConfirmContext';
 import { CertificationsGrid } from '@/components/admin/certifications/CertificationsGrid';
 import { CertificationFormModal } from '@/components/admin/certifications/CertificationFormModal';
 import { QuestionsManagerModal } from '@/components/admin/certifications/QuestionsManagerModal';
@@ -16,6 +18,9 @@ export default function AdminCertificationsPage() {
     createFournisseur, deleteFournisseur,
     fetchQuestions, saveQuestion, deleteQuestion
   } = useCertifications();
+
+  const { showToast } = useToast();
+  const { confirm } = useConfirm();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLevel, setSelectedLevel] = useState('TOUS');
@@ -62,6 +67,7 @@ export default function AdminCertificationsPage() {
     setModalError(null);
     try {
       await createCert(payload);
+      showToast(`La certification "${payload.nom}" a été créée avec succès.`, "success");
       setIsModalOpen(false);
     } catch (err: any) {
       setModalError(err.message || 'Erreur lors de la création');
@@ -76,6 +82,7 @@ export default function AdminCertificationsPage() {
     setModalError(null);
     try {
       await updateCert(editingCert.id, payload);
+      showToast(`La certification "${payload.nom}" a été modifiée avec succès.`, "success");
       setIsEditModalOpen(false);
       setEditingCert(null);
     } catch (err: any) {
@@ -86,11 +93,19 @@ export default function AdminCertificationsPage() {
   };
 
   const handleDeleteCert = async (id: string, name: string) => {
-    if (!window.confirm(`Êtes-vous sûr de vouloir supprimer la certification "${name}" ?`)) return;
+    const ok = await confirm({
+      title: "Supprimer la certification ?",
+      message: `Êtes-vous sûr de vouloir supprimer la certification "${name}" ? Cette action est irréversible et supprimera toutes ses ressources et questions associées.`,
+      confirmText: "Supprimer",
+      cancelText: "Annuler",
+      type: "danger"
+    });
+    if (!ok) return;
     try {
       await deleteCert(id);
+      showToast("La certification a été supprimée avec succès.", "success");
     } catch (err: any) {
-      alert(err.message || 'Erreur lors de la suppression');
+      showToast(err.message || 'Erreur lors de la suppression', "error");
     }
   };
 
@@ -127,11 +142,10 @@ export default function AdminCertificationsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950 font-sans pb-20">
-      <Navbar />
+    <div className="space-y-8 pb-20">
       
       {/* Container Principal */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 space-y-8">
+      <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Header Section */}
         <div className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200/80 shadow-sm relative overflow-hidden group">
@@ -141,10 +155,7 @@ export default function AdminCertificationsPage() {
 
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-600 text-[10px] font-black uppercase tracking-widest mb-2">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                Administration
-              </div>
+
               <h1 className="text-3xl sm:text-4xl font-black text-slate-950 tracking-tight">Catalogue de Certifications</h1>
               <p className="text-slate-500 font-medium max-w-xl text-sm leading-relaxed">
                 Gérez le catalogue officiel des certifications proposées sur la plateforme. Ajoutez de nouvelles offres, configurez les examens blancs et suivez les statistiques globales.

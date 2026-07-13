@@ -778,14 +778,14 @@ export default function CommunityPage() {
                 {selectedSujetId && (
                     <div
                         onClick={() => { setSelectedSujetId(null); setDetailSujet(null); setReplyTarget(null); }}
-                        className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 bg-slate-950/75 backdrop-blur-md overflow-y-auto"
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 bg-slate-950/70 overflow-y-auto"
                     >
                         <motion.div
                             onClick={(e) => e.stopPropagation()}
-                            initial={{ opacity: 0, scale: 0.95, y: 15 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 15 }}
-                            transition={{ duration: 0.25, ease: 'easeOut' }}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            transition={{ duration: 0.15 }}
                             className="w-full max-w-3xl bg-slate-50 border border-slate-200/90 rounded-3xl shadow-2xl max-h-[90vh] flex flex-col justify-between text-left overflow-hidden relative"
                         >
                             {/* EN-TÊTE DE LA POPUP */}

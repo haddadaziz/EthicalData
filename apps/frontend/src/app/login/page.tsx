@@ -6,6 +6,7 @@ import { Eye, EyeOff } from '@/components/icons';
 import { apiFetch } from '../../lib/api';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useToast } from '../../context/ToastContext';
 
 const TriangleLogo = ({ className = "w-5 h-5" }: { className?: string }) => (
     <svg className={`${className} text-red-600`} viewBox="0 0 100 100" fill="currentColor">
@@ -17,6 +18,7 @@ const TriangleLogo = ({ className = "w-5 h-5" }: { className?: string }) => (
 
 export default function LoginPage() {
     const router = useRouter();
+    const { showToast } = useToast();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -197,6 +199,8 @@ export default function LoginPage() {
             // Gestion robuste : le backend peut renvoyer `role` (string) ou `roles` (array)
             const rolesData = decodedPayload.roles || decodedPayload.role || [];
             const roleArray = Array.isArray(rolesData) ? rolesData : [rolesData];
+
+            showToast("Connecté avec succès", "success");
 
             if (roleArray.includes('SUPER_ADMIN') || roleArray.includes('ADMIN')) {
                 router.push('/admin');

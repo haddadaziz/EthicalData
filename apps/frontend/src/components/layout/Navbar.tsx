@@ -50,6 +50,9 @@ export function Navbar({
           <a href="#faq" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 hover:shadow-xs ${scrolled ? 'text-slate-600 hover:text-red-600 hover:bg-white' : 'text-white/90 hover:text-white'}`}>
             FAQ
           </a>
+          <a href="#contact" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 hover:shadow-xs ${scrolled ? 'text-slate-600 hover:text-red-600 hover:bg-white' : 'text-white/90 hover:text-white'}`}>
+            Contact
+          </a>
         </nav>
 
         {/* Actions à droite */}
@@ -105,6 +108,7 @@ export function Navbar({
               <a href="#services" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Nos Services</a>
               <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Avis</a>
               <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">FAQ</a>
+              <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Contact</a>
             </nav>
           </motion.div>
         )}

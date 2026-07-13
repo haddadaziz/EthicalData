@@ -27,7 +27,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
     setTimeout(() => {
       removeToast(id);
-    }, 4000);
+    }, 3000);
   };
 
   const removeToast = (idToRemove: string) => {
@@ -39,7 +39,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {children}
 
       {/* Zone d'affichage des notifications Toast */}
-      <div role="status" aria-live="polite" className="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none">
+      <div role="status" aria-live="polite" className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-3 max-w-sm w-[90%] sm:w-full pointer-events-none items-center">
         <AnimatePresence>
           {toasts.map((toast) => {
             const isSuccess = toast.type === 'success';
@@ -49,10 +49,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             return (
               <motion.div
                 key={toast.id}
-                initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                initial={{ opacity: 0, y: -50, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, x: 50, scale: 0.9 }}
-                transition={{ duration: 0.25, ease: 'easeOut' }}
+                exit={{ opacity: 0, y: -50, scale: 0.95 }}
+                transition={{ duration: 0.3, ease: [0.21, 1.02, 0.43, 1.01] }}
                 className={`pointer-events-auto flex items-center justify-between p-4 rounded-2xl shadow-2xl border backdrop-blur-md text-sm font-bold ${
                   isSuccess
                     ? 'bg-emerald-950/90 text-emerald-100 border-emerald-600/60 shadow-emerald-950/30'

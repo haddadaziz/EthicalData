@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
-import { FileText, Search, Plus, RefreshCw, X, Edit, Trash2, Award, ArrowLeft, ArrowRight } from '@/components/icons';
+import { useToast } from '../../../context/ToastContext';
+import { useConfirm } from '../../../context/ConfirmContext';
+import { FileText, Search, Plus, RefreshCw, X, Edit, Trash2, Award, ArrowLeft, ArrowRight, ChevronDown, ChevronUp, FolderOpen, BookOpen, Clock } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Resource {
@@ -22,6 +24,11 @@ interface Resource {
     slug: string;
     codeExamen?: string | null;
   } | null;
+  coursId?: string | null;
+  cours?: {
+    id: string;
+    titre: string;
+  } | null;
 }
 
 interface Certification {
@@ -31,15 +38,39 @@ interface Certification {
   codeExamen?: string | null;
 }
 
+interface Course {
+  id: string;
+  titre: string;
+  statut: string;
+  imageUrl?: string | null;
+  formateur?: {
+    prenom: string;
+    nom: string;
+    avatar?: string | null;
+  } | null;
+  certification?: {
+    codeExamen: string;
+  } | null;
+}
+
 export default function ResourcesAdminPage() {
+  const { showToast } = useToast();
+  const { confirm } = useConfirm();
+
   const [resources, setResources] = useState<Resource[]>([]);
   const [certs, setCerts] = useState<Certification[]>([]);
+  const [coursesList, setCoursesList] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCertFilter, setSelectedCertFilter] = useState<string>('TOUS');
+  const [selectedCourseFilter, setSelectedCourseFilter] = useState<string>('TOUS');
 
-  // Pagination
+  // Tri & Navigation
+  const [activeView, setActiveView] = useState<'COURS' | 'CHRONO'>('COURS');
+  const [expandedCourseId, setExpandedCourseId] = useState<string | null>(null);
+
+  // Pagination (pour la vue chronologique)
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
@@ -59,17 +90,20 @@ export default function ResourcesAdminPage() {
   const [version, setVersion] = useState('1.0.0');
   const [quota, setQuota] = useState('10');
   const [certificationId, setCertificationId] = useState('');
+  const [coursId, setCoursId] = useState('');
 
   const fetchData = async () => {
     setLoading(true);
     setError(null);
     try {
-      const [resData, certData] = await Promise.all([
+      const [resData, certData, coursesData] = await Promise.all([
         apiFetch('/certifications/ressources/toutes'),
         apiFetch('/certifications'),
+        apiFetch('/cours/admin/all'),
       ]);
-      setResources(resData);
-      setCerts(certData);
+      setResources(Array.isArray(resData) ? resData : []);
+      setCerts(Array.isArray(certData) ? certData : (certData?.data || []));
+      setCoursesList(Array.isArray(coursesData) ? coursesData : []);
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'Impossible de récupérer les ressources.');
@@ -85,20 +119,30 @@ export default function ResourcesAdminPage() {
   // Remettre à la page 1 si les filtres changent
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedCertFilter]);
+  }, [searchTerm, selectedCertFilter, selectedCourseFilter, activeView]);
 
-  // Filtrage
+  // Filtrage des ressources (Flux chrono)
   const filteredResources = React.useMemo(() => {
     return resources.filter(res => {
       const search = searchTerm.toLowerCase().trim();
       const matchesSearch = !search || res.titre.toLowerCase().includes(search) || 
                             (res.description && res.description.toLowerCase().includes(search));
       const matchesCert = selectedCertFilter === 'TOUS' || res.certificationId === selectedCertFilter;
-      return matchesSearch && matchesCert;
+      const matchesCourse = selectedCourseFilter === 'TOUS' || res.coursId === selectedCourseFilter;
+      return matchesSearch && matchesCert && matchesCourse;
     });
-  }, [resources, searchTerm, selectedCertFilter]);
+  }, [resources, searchTerm, selectedCertFilter, selectedCourseFilter]);
 
-  // Calculs pagination
+  // Filtrage des cours (Vue par cours)
+  const filteredCourses = React.useMemo(() => {
+    return coursesList.filter(course => {
+      const search = searchTerm.toLowerCase().trim();
+      return !search || course.titre.toLowerCase().includes(search) ||
+             (course.formateur && `${course.formateur.prenom} ${course.formateur.nom}`.toLowerCase().includes(search));
+    });
+  }, [coursesList, searchTerm]);
+
+  // Calculs pagination pour la vue chrono
   const totalPages = Math.ceil(filteredResources.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -106,20 +150,21 @@ export default function ResourcesAdminPage() {
     return filteredResources.slice(indexOfFirstItem, indexOfLastItem);
   }, [filteredResources, indexOfFirstItem, indexOfLastItem]);
 
-  // Stats
-  const totalCount = resources.length;
-
   const handleCreateResource = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!certificationId) {
-      setModalError('Veuillez associer cette ressource à une certification.');
+    if (!certificationId && !coursId) {
+      setModalError('Veuillez associer cette ressource à une certification ou à un cours.');
       return;
     }
     setModalLoading(true);
     setModalError(null);
 
     try {
-      await apiFetch(`/certifications/${certificationId}/ressources`, {
+      // Si certificationId est spécifié, on utilise le endpoint de certification
+      // sinon on peut poster à un endpoint global de ressource ou avec certificationId optionnelle
+      const targetCertId = certificationId || certs[0]?.id; // Fallback pour la route backend
+      
+      await apiFetch(`/certifications/${targetCertId}/ressources`, {
         method: 'POST',
         body: {
           titre,
@@ -130,9 +175,12 @@ export default function ResourcesAdminPage() {
           version,
           quotaTelechargement: parseInt(quota),
           public: false,
+          certificationId: certificationId ? Number(certificationId) : undefined,
+          coursId: coursId ? Number(coursId) : undefined,
         },
       });
 
+      showToast(`La ressource "${titre}" a été ajoutée.`, "success");
       setIsModalOpen(false);
       resetForm();
       fetchData();
@@ -154,6 +202,7 @@ export default function ResourcesAdminPage() {
     setVersion(res.version);
     setQuota(res.quotaTelechargement.toString());
     setCertificationId(res.certificationId || '');
+    setCoursId(res.coursId || '');
     setModalError(null);
     setIsEditModalOpen(true);
   };
@@ -176,10 +225,12 @@ export default function ResourcesAdminPage() {
           version,
           quotaTelechargement: parseInt(quota),
           public: false,
-          certificationId: certificationId || null,
+          certificationId: certificationId ? Number(certificationId) : null,
+          coursId: coursId ? Number(coursId) : null,
         },
       });
 
+      showToast(`La ressource a été mise à jour.`, "success");
       setIsEditModalOpen(false);
       setEditingResource(null);
       resetForm();
@@ -193,14 +244,23 @@ export default function ResourcesAdminPage() {
   };
 
   const handleDeleteResource = async (id: string, name: string) => {
-    if (!confirm(`Voulez-vous vraiment supprimer la ressource "${name}" ?`)) return;
+    const ok = await confirm({
+      title: "Supprimer cette ressource ?",
+      message: `Voulez-vous vraiment supprimer la ressource "${name}" ? Cette action est irréversible.`,
+      confirmText: "Supprimer",
+      cancelText: "Annuler",
+      type: "danger"
+    });
+
+    if (!ok) return;
 
     try {
       await apiFetch(`/certifications/ressources/${id}`, { method: 'DELETE' });
+      showToast("Ressource supprimée.", "success");
       fetchData();
     } catch (err: any) {
       console.error(err);
-      alert(err.message || 'Erreur lors de la suppression.');
+      showToast(err.message || 'Erreur lors de la suppression.', "error");
     }
   };
 
@@ -213,6 +273,7 @@ export default function ResourcesAdminPage() {
     setVersion('1.0.0');
     setQuota('10');
     setCertificationId('');
+    setCoursId('');
     setModalError(null);
   };
 
@@ -223,208 +284,89 @@ export default function ResourcesAdminPage() {
     return `${(bytes / 1048576).toFixed(1)} MB`;
   };
 
-  const ResourceGrid = React.useMemo(() => {
-    if (loading) {
-      return (
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-60 bg-slate-50 rounded-2xl animate-pulse border border-slate-100" />
-          ))}
-        </div>
-      );
-    }
-    if (error) {
-      return (
-        <div className="p-12 text-center">
-          <p className="text-rose-500 font-bold mb-2">Une erreur est survenue</p>
-          <p className="text-xs text-slate-500 mb-6">{error}</p>
-          <button onClick={fetchData} className="px-5 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-950 font-bold rounded-xl cursor-pointer transition-colors">Réessayer</button>
-        </div>
-      );
-    }
-    if (filteredResources.length === 0) {
-      return (
-        <div className="p-12 text-center text-slate-550 font-medium">
-          Aucune ressource ne correspond à vos critères.
-        </div>
-      );
-    }
-    return (
-      <>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 p-6 text-left">
-          {currentResources.map((res) => (
-            <div
-              key={res.id}
-              className="bg-white border border-slate-200/80 rounded-2xl p-5 flex flex-col justify-between group transition-all duration-300 hover:border-slate-350 hover:shadow-md"
-            >
-              <div className="space-y-4">
-                  {/* En-tête de carte */}
-                  <div className="flex items-start justify-between">
-                    <span className="font-bold text-red-600 text-[9px] px-2.5 py-0.5 bg-red-50 border border-red-100 rounded-lg">
-                      {res.type}
-                    </span>
-                  </div>
-
-                {/* Infos */}
-                <div className="space-y-1.5">
-                  <h4 className="font-extrabold text-slate-950 text-base leading-snug group-hover:text-red-600 transition-colors truncate">
-                    {res.titre}
-                  </h4>
-                  
-                  {res.certification && (
-                    <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-bold uppercase">
-                      <Award className="w-3.5 h-3.5 text-slate-400" />
-                      <span>Lié à : {res.certification.codeExamen || res.certification.nom}</span>
-                    </div>
-                  )}
-
-                  <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed font-semibold">
-                    {res.description || 'Aucune description fournie.'}
-                  </p>
-                </div>
-                
-                {/* Quota */}
-                <div className="text-[10px] text-slate-500 font-bold bg-slate-50 border border-slate-100 rounded-xl p-2.5 text-center">
-                  Quota max par apprenant : {res.quotaTelechargement} téléchargements
-                </div>
-              </div>
-
-              {/* Footer de carte */}
-              <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-5">
-                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                  <span>{formatBytes(res.taille)}</span>
-                  <span>•</span>
-                  <span>v{res.version}</span>
-                </div>
-
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => handleOpenEditModal(res)}
-                    className="p-2 bg-slate-50 border border-slate-200/80 hover:border-slate-350 text-slate-600 hover:text-slate-950 rounded-xl transition-colors cursor-pointer"
-                    title="Modifier"
-                  >
-                    <Edit className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteResource(res.id, res.titre)}
-                    className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-xl transition-colors cursor-pointer"
-                    title="Supprimer"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="p-6 border-t border-slate-200/60 flex items-center justify-between">
-            <button
-              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-              disabled={currentPage === 1}
-              className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Précédent</span>
-            </button>
-
-            <div className="flex items-center gap-1">
-              {Array.from({ length: totalPages }).map((_, index) => {
-                const pageNum = index + 1;
-                const isActive = currentPage === pageNum;
-                return (
-                  <button
-                    key={pageNum}
-                    onClick={() => setCurrentPage(pageNum)}
-                    className={`w-9 h-9 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center ${isActive ? 'bg-slate-950 text-white shadow-md' : 'bg-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-950'}`}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              })}
-            </div>
-
-            <button
-              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
-            >
-              <span>Suivant</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        )}
-      </>
-    );
-  }, [loading, error, filteredResources, currentResources, currentPage, totalPages]); // eslint-disable-line react-hooks/exhaustive-deps
-
   return (
-    <div className="space-y-10 text-slate-800">
+    <div className="space-y-6 md:space-y-8 pb-12 text-slate-800">
       
-      {/* En-tête */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 text-left">
+      {/* En-tête de page */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-left">
         <div>
-          <h1 className="text-3xl font-black text-slate-950 tracking-tight">Ressources & Guides</h1>
-          <p className="text-slate-500 text-xs mt-1.5 font-semibold">Gérez les documents et supports de cours téléchargeables par vos apprenants.</p>
+          <h1 className="text-3xl font-black text-slate-950 tracking-tight">Gestion des Ressources</h1>
+          <p className="text-slate-500 text-xs mt-1 font-semibold">Support de cours, documentations et ressources de préparation d'examens.</p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={fetchData}
             disabled={loading}
-            className="p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-800 rounded-xl cursor-pointer disabled:opacity-50 transition-colors"
+            className="p-3 bg-white border border-slate-200/80 text-slate-400 hover:text-slate-800 rounded-2xl cursor-pointer disabled:opacity-50 transition-colors shadow-sm"
           >
-            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
 
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-5 py-3 bg-slate-950 hover:bg-slate-900 text-white font-black rounded-xl text-xs uppercase tracking-widest cursor-pointer shadow-md hover:shadow-lg transition-all"
+            className="flex items-center gap-2 px-5 py-3 bg-slate-950 hover:bg-slate-900 text-white font-extrabold rounded-2xl text-xs cursor-pointer shadow-md hover:shadow-lg transition-all"
           >
-            <Plus className="w-4.5 h-4.5" />
+            <Plus className="w-4 h-4" />
             <span>Nouveau Document</span>
           </button>
         </div>
       </div>
 
-      {/* Carte Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        {loading ? (
-          Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="h-28 bg-white border border-slate-200 rounded-2xl p-6 animate-pulse" />
-          ))
-        ) : (
-          <>
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-6 flex items-center justify-between shadow-sm">
-              <div className="text-left">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Fichiers</p>
-                <p className="text-3xl font-black text-slate-900 mt-2">{totalCount}</p>
-              </div>
-              <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center text-slate-650">
-                <FileText className="w-6 h-6" />
-              </div>
-            </div>
+      {/* Cartes de Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-5 md:p-6 flex items-center justify-between shadow-sm">
+          <div className="text-left space-y-1">
+            <p className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Total des Fichiers</p>
+            <h2 className="text-3xl font-black text-slate-950">{resources.length}</h2>
+          </div>
+          <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center text-slate-600">
+            <FileText className="w-6 h-6" />
+          </div>
+        </div>
 
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-6 flex items-center justify-between shadow-sm">
-              <div className="text-left">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Avec quota de téléchargement</p>
-                <p className="text-3xl font-black text-slate-900 mt-2">{totalCount}</p>
-              </div>
-              <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center text-slate-650">
-                <FileText className="w-6 h-6" />
-              </div>
-            </div>
-          </>
-        )}
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-5 md:p-6 flex items-center justify-between shadow-sm">
+          <div className="text-left space-y-1">
+            <p className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Cours avec supports</p>
+            <h2 className="text-3xl font-black text-slate-950">
+              {new Set(resources.filter(r => r.coursId).map(r => r.coursId)).size}
+            </h2>
+          </div>
+          <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center text-slate-600">
+            <BookOpen className="w-6 h-6" />
+          </div>
+        </div>
       </div>
 
-      {/* Conteneur principal */}
+      {/* TABS DE SELECTION DE VUE */}
+      <div className="flex items-center gap-2 border-b border-slate-200/60 pb-1.5">
+        <button
+          onClick={() => setActiveView('COURS')}
+          className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            activeView === 'COURS'
+              ? 'bg-slate-950 text-white shadow-sm'
+              : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200/80'
+          }`}
+        >
+          Par Cours
+        </button>
+        <button
+          onClick={() => setActiveView('CHRONO')}
+          className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            activeView === 'CHRONO'
+              ? 'bg-slate-950 text-white shadow-sm'
+              : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200/80'
+          }`}
+        >
+          Toutes les ressources
+        </button>
+      </div>
+
+      {/* Conteneur principal de gestion */}
       <div className="bg-white border border-slate-200/80 rounded-3xl overflow-hidden shadow-sm">
         
-        {/* Barre de Filtres */}
-        <div className="p-6 border-b border-slate-200/80 flex flex-col md:flex-row md:items-center gap-4 justify-between">
+        {/* Barre de recherche et de filtres */}
+        <div className="p-5 md:p-6 border-b border-slate-200/80 flex flex-col md:flex-row md:items-center gap-4 justify-between">
           <div className="flex flex-1 items-center gap-3 w-full max-w-lg">
             <div className="relative flex-1">
               <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
@@ -432,54 +374,326 @@ export default function ResourcesAdminPage() {
               </span>
               <input
                 type="text"
-                placeholder="Rechercher par titre..."
+                placeholder={activeView === 'COURS' ? "Rechercher un cours..." : "Rechercher par titre de ressource..."}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 placeholder-slate-400 transition-all text-sm outline-none font-semibold"
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-red-600 rounded-2xl text-slate-950 placeholder-slate-400 transition-all text-xs outline-none font-bold"
               />
             </div>
 
-            <select
-              value={selectedCertFilter}
-              onChange={(e) => setSelectedCertFilter(e.target.value)}
-              className="px-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-xs font-bold outline-none transition-all cursor-pointer"
-            >
-              <option value="TOUS">Tous les examens</option>
-              {certs.map(c => (
-                <option key={c.id} value={c.id}>{c.codeExamen || c.nom}</option>
-              ))}
-            </select>
+            {activeView === 'CHRONO' && (
+              <>
+                <select
+                  value={selectedCertFilter}
+                  onChange={(e) => setSelectedCertFilter(e.target.value)}
+                  className="px-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-red-600 rounded-2xl text-slate-950 text-xs font-bold outline-none cursor-pointer"
+                >
+                  <option value="TOUS">Toutes les certifications</option>
+                  {certs.map(c => (
+                    <option key={c.id} value={c.id}>{c.codeExamen || c.nom}</option>
+                  ))}
+                </select>
+
+                <select
+                  value={selectedCourseFilter}
+                  onChange={(e) => setSelectedCourseFilter(e.target.value)}
+                  className="px-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-red-600 rounded-2xl text-slate-950 text-xs font-bold outline-none cursor-pointer max-w-[200px]"
+                >
+                  <option value="TOUS">Tous les cours</option>
+                  {coursesList.map(c => (
+                    <option key={c.id} value={c.id}>{c.titre}</option>
+                  ))}
+                </select>
+              </>
+            )}
           </div>
 
-          <div className="text-xs text-slate-500 font-bold shrink-0">
-            {filteredResources.length} document{filteredResources.length > 1 ? 's' : ''} trouvé{filteredResources.length > 1 ? 's' : ''}
+          <div className="text-xs text-slate-400 font-extrabold uppercase tracking-wider shrink-0">
+            {activeView === 'COURS' ? (
+              <span>{filteredCourses.length} Cours trouvés</span>
+            ) : (
+              <span>{filteredResources.length} document{filteredResources.length > 1 ? 's' : ''}</span>
+            )}
           </div>
         </div>
 
-        {/* Grille de Cartes */}
-        <div>
-          {ResourceGrid}
-        </div>
+        {/* CONTENU DE LA GRILLE */}
+        {loading ? (
+          <div className="p-16 text-center text-slate-400">
+            <span className="w-10 h-10 border-4 border-slate-100 border-t-slate-950 rounded-full animate-spin inline-block mb-3" />
+            <p className="text-xs font-black uppercase tracking-widest text-slate-500">Chargement des données...</p>
+          </div>
+        ) : error ? (
+          <div className="p-12 text-center text-rose-500 font-bold">
+            {error}
+          </div>
+        ) : activeView === 'COURS' ? (
+          /* ==============================================================
+             VUE DÉTAILLÉE PAR COURS (ACCORDÉONS SANS LAG)
+             ============================================================== */
+          <div className="divide-y divide-slate-100">
+            {filteredCourses.map(course => {
+              const courseResources = resources.filter(r => r.coursId === course.id);
+              const isExpanded = expandedCourseId === course.id;
+
+              return (
+                <div key={course.id} className="transition-colors hover:bg-slate-50/30">
+                  {/* Entête d'accordéon de cours */}
+                  <button
+                    onClick={() => setExpandedCourseId(isExpanded ? null : course.id)}
+                    className="w-full px-6 py-4 flex items-center justify-between text-left cursor-pointer"
+                  >
+                    <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                      {course.imageUrl ? (
+                        <img src={course.imageUrl} alt="" className="w-12 h-9 rounded-lg object-cover border border-slate-150 shrink-0" />
+                      ) : (
+                        <div className="w-12 h-9 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 shrink-0">
+                          <BookOpen className="w-5 h-5" />
+                        </div>
+                      )}
+                      
+                      <div className="min-w-0 flex-1">
+                        <h4 className="text-sm font-black text-slate-900 truncate leading-snug">
+                          {course.titre}
+                        </h4>
+                        
+                        <div className="flex items-center gap-2.5 mt-1 flex-wrap">
+                          <span className="bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider">
+                            {course.certification?.codeExamen || 'Général'}
+                          </span>
+                          <span className="text-[10px] text-slate-450 font-bold flex items-center gap-1">
+                            {course.formateur?.avatar ? (
+                              <img src={course.formateur.avatar} alt="" className="w-4.5 h-4.5 rounded-full object-cover shrink-0" />
+                            ) : (
+                              <span className="w-4.5 h-4.5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[8px] font-black shrink-0">
+                                {course.formateur ? `${course.formateur.prenom[0]}${course.formateur.nom[0]}` : 'ED'}
+                              </span>
+                            )}
+                            Par {course.formateur ? `${course.formateur.prenom} ${course.formateur.nom}` : 'Ethical Data'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-4 shrink-0">
+                      <span className="text-[10px] font-black px-2.5 py-1 bg-blue-50 text-blue-600 rounded-full uppercase">
+                        {courseResources.length} support{courseResources.length > 1 ? 's' : ''}
+                      </span>
+                      {isExpanded ? (
+                        <ChevronUp className="w-4 h-4 text-slate-400" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4 text-slate-400" />
+                      )}
+                    </div>
+                  </button>
+
+                  {/* Liste des ressources sous le cours */}
+                  <AnimatePresence initial={false}>
+                    {isExpanded && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                        className="overflow-hidden bg-slate-50/50 border-t border-slate-100"
+                      >
+                        {courseResources.length === 0 ? (
+                          <p className="text-xs text-slate-400 font-bold p-6 text-center uppercase tracking-wide">
+                            Aucun document rattaché à ce cours.
+                          </p>
+                        ) : (
+                          <div className="p-4 overflow-x-auto">
+                            <table className="w-full text-left text-xs border-collapse">
+                              <thead>
+                                <tr className="border-b border-slate-200/80 text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">
+                                  <th className="py-2.5 px-3">Type</th>
+                                  <th className="py-2.5 px-3">Titre de la ressource</th>
+                                  <th className="py-2.5 px-3">Version</th>
+                                  <th className="py-2.5 px-3">Taille</th>
+                                  <th className="py-2.5 px-3 text-right">Actions</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-slate-100 font-semibold text-slate-800">
+                                {courseResources.map(res => (
+                                  <tr key={res.id} className="hover:bg-slate-100/50 transition-colors">
+                                    <td className="py-3 px-3 shrink-0">
+                                      <span className="px-2 py-0.5 bg-red-50 text-red-600 border border-red-100 rounded-md font-extrabold text-[9px] uppercase">
+                                        {res.type}
+                                      </span>
+                                    </td>
+                                    <td className="py-3 px-3 min-w-[200px]">
+                                      <p className="font-extrabold text-slate-900 text-xs truncate max-w-md">{res.titre}</p>
+                                      <p className="text-[10px] text-slate-400 truncate max-w-sm mt-0.5">{res.description || 'Pas de description'}</p>
+                                    </td>
+                                    <td className="py-3 px-3 text-slate-500 font-bold">v{res.version}</td>
+                                    <td className="py-3 px-3 text-slate-550 font-bold">{formatBytes(res.taille)}</td>
+                                    <td className="py-3 px-3 text-right">
+                                      <div className="flex items-center justify-end gap-1.5">
+                                        <button
+                                          onClick={() => handleOpenEditModal(res)}
+                                          className="p-1.5 hover:bg-blue-50 text-blue-600 rounded-lg cursor-pointer transition-colors"
+                                          title="Modifier"
+                                        >
+                                          <Edit className="w-3.5 h-3.5" />
+                                        </button>
+                                        <button
+                                          onClick={() => handleDeleteResource(res.id, res.titre)}
+                                          className="p-1.5 hover:bg-rose-50 text-rose-600 rounded-lg cursor-pointer transition-colors"
+                                          title="Supprimer"
+                                        >
+                                          <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          /* ==============================================================
+             VUE TRADITIONNELLE CHRONOLOGIQUE PAGINÉE
+             ============================================================== */
+          <>
+            {filteredResources.length === 0 ? (
+              <div className="p-12 text-center text-slate-500 font-bold uppercase tracking-wide text-xs">
+                Aucune ressource disponible.
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 p-6 text-left">
+                  {currentResources.map((res) => (
+                    <div
+                      key={res.id}
+                      className="bg-white border border-slate-200/80 rounded-2xl p-5 flex flex-col justify-between group transition-all duration-300 hover:border-slate-350 hover:shadow-md"
+                    >
+                      <div className="space-y-4">
+                        <div className="flex items-start justify-between">
+                          <span className="font-bold text-red-600 text-[9px] px-2.5 py-0.5 bg-red-50 border border-red-100 rounded-lg">
+                            {res.type}
+                          </span>
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <h4 className="font-extrabold text-slate-950 text-base leading-snug group-hover:text-red-600 transition-colors truncate">
+                            {res.titre}
+                          </h4>
+                          
+                          {res.cours && (
+                            <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-bold uppercase">
+                              <BookOpen className="w-3.5 h-3.5 text-slate-400" />
+                              <span className="truncate">Cours : {res.cours.titre}</span>
+                            </div>
+                          )}
+
+                          {res.certification && (
+                            <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-bold uppercase">
+                              <Award className="w-3.5 h-3.5 text-slate-400" />
+                              <span className="truncate">Exam : {res.certification.codeExamen || res.certification.nom}</span>
+                            </div>
+                          )}
+
+                          <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed font-semibold">
+                            {res.description || 'Aucune description fournie.'}
+                          </p>
+                        </div>
+                        
+                        <div className="text-[10px] text-slate-500 font-bold bg-slate-50 border border-slate-100 rounded-xl p-2.5 text-center">
+                          Quota max par apprenant : {res.quotaTelechargement} téléchargements
+                        </div>
+                      </div>
+
+                      {/* Footer de carte */}
+                      <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-5">
+                        <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                          <span>{formatBytes(res.taille)}</span>
+                          <span>•</span>
+                          <span>v{res.version}</span>
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => handleOpenEditModal(res)}
+                            className="p-2 bg-slate-50 border border-slate-200/80 hover:border-slate-350 text-slate-600 hover:text-slate-955 rounded-xl transition-colors cursor-pointer"
+                            title="Modifier"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteResource(res.id, res.titre)}
+                            className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-450 rounded-xl transition-colors cursor-pointer"
+                            title="Supprimer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="p-6 border-t border-slate-200/60 flex items-center justify-between">
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      disabled={currentPage === 1}
+                      className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
+                    >
+                      <ArrowLeft className="w-3.5 h-3.5" />
+                      <span>Précédent</span>
+                    </button>
+
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: totalPages }).map((_, index) => {
+                        const pageNum = index + 1;
+                        const isActive = currentPage === pageNum;
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={`w-9 h-9 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center ${isActive ? 'bg-slate-950 text-white shadow-md' : 'bg-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-955'}`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      disabled={currentPage === totalPages}
+                      className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
+                    >
+                      <span>Suivant</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </>
+        )}
       </div>
 
-      {/* MODAL DE CRÉATION */}
+      {/* MODAL DE CRÉATION (SANS LAG) */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => { if (!modalLoading) { setIsModalOpen(false); resetForm(); } }}
-              className="absolute inset-0 bg-slate-950/40"
-            />
-
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80">
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.15 }}
-              className="bg-white border border-slate-200 w-full max-w-xl rounded-2xl shadow-xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]"
+              transition={{ duration: 0.15, ease: "easeOut" }}
+              className="bg-white border border-slate-200 w-full max-w-xl rounded-2xl shadow-xl relative overflow-hidden flex flex-col max-h-[90vh]"
             >
               <div className="p-6 border-b border-slate-200 flex items-center justify-between">
                 <h2 className="text-xl font-black text-slate-900">Ajouter un document</h2>
@@ -492,30 +706,45 @@ export default function ResourcesAdminPage() {
                 </button>
               </div>
 
-              <form onSubmit={handleCreateResource} className="p-6 overflow-y-auto space-y-5 flex-1 text-left">
+              <form onSubmit={handleCreateResource} className="p-6 overflow-y-auto space-y-4 flex-1 text-left">
                 {modalError && (
-                  <div className="p-3.5 bg-rose-550/10 border border-rose-100 text-rose-600 rounded-xl text-xs font-bold">
+                  <div className="p-3.5 bg-rose-50 border border-rose-100 text-rose-600 rounded-xl text-xs font-bold">
                     {modalError}
                   </div>
                 )}
 
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Examen / Certification cible</label>
-                  <select
-                    required
-                    value={certificationId}
-                    onChange={(e) => setCertificationId(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:border-red-600 focus:bg-white rounded-xl text-slate-900 text-sm outline-none transition-all font-semibold cursor-pointer"
-                  >
-                    <option value="">Sélectionner une certification...</option>
-                    {certs.map(c => (
-                      <option key={c.id} value={c.id}>{c.nom} ({c.codeExamen || 'Examen'})</option>
-                    ))}
-                  </select>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Examen / Certification *</label>
+                    <select
+                      value={certificationId}
+                      onChange={(e) => setCertificationId(e.target.value)}
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:border-red-600 focus:bg-white rounded-xl text-slate-900 text-sm outline-none transition-all font-semibold cursor-pointer"
+                    >
+                      <option value="">Sélectionner une certification...</option>
+                      {certs.map(c => (
+                        <option key={c.id} value={c.id}>{c.nom} ({c.codeExamen || 'Examen'})</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Cours rattaché (Optionnel)</label>
+                    <select
+                      value={coursId}
+                      onChange={(e) => setCoursId(e.target.value)}
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:border-red-600 focus:bg-white rounded-xl text-slate-900 text-sm outline-none transition-all font-semibold cursor-pointer"
+                    >
+                      <option value="">Aucun cours (Bibliothèque générale)</option>
+                      {coursesList.map(c => (
+                        <option key={c.id} value={c.id}>{c.titre}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Titre de la ressource</label>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Titre de la ressource *</label>
                   <input
                     type="text"
                     required
@@ -526,18 +755,18 @@ export default function ResourcesAdminPage() {
                   />
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Description</label>
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Détails du fichier..."
-                    className="w-full h-24 p-4 bg-slate-50 border border-slate-200 focus:border-red-600 focus:bg-white rounded-xl text-slate-900 text-sm outline-none transition-all font-semibold resize-none"
+                    className="w-full h-20 p-4 bg-slate-50 border border-slate-200 focus:border-red-600 focus:bg-white rounded-xl text-slate-900 text-sm outline-none transition-all font-semibold resize-none"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Format / Type</label>
                     <select
                       value={type}
@@ -545,14 +774,14 @@ export default function ResourcesAdminPage() {
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:border-red-600 focus:bg-white rounded-xl text-slate-900 text-sm outline-none transition-all font-semibold cursor-pointer"
                     >
                       <option value="PDF">PDF</option>
-                      <option value="SLIDES">Slides / Cours</option>
-                      <option value="DATASET">Dataset / Données</option>
+                      <option value="SLIDES">Slides / Présentation</option>
+                      <option value="DATASET">Dataset / Fichier de travail</option>
                       <option value="IMAGE">Image / Schéma</option>
                       <option value="DOCX">Word (DOCX)</option>
                     </select>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Version du fichier</label>
                     <input
                       type="text"
@@ -565,8 +794,8 @@ export default function ResourcesAdminPage() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">URL du document</label>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Lien / URL du document *</label>
                   <input
                     type="text"
                     required
@@ -578,8 +807,8 @@ export default function ResourcesAdminPage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Taille (en octets / Bytes) <span className="lowercase font-bold text-slate-400 text-[9px]">(optionnel)</span></label>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Taille (Bytes) <span className="lowercase font-bold text-slate-400 text-[9px]">(optionnel)</span></label>
                     <input
                       type="number"
                       value={taille}
@@ -589,8 +818,8 @@ export default function ResourcesAdminPage() {
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Quota de Téléchargements max</label>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Quota Téléchargements max *</label>
                     <input
                       type="number"
                       required
@@ -602,24 +831,24 @@ export default function ResourcesAdminPage() {
                   </div>
                 </div>
 
-                <div className="pt-6 border-t border-slate-100 flex justify-end gap-3 bg-white mt-6">
+                <div className="pt-4 border-t border-slate-100 flex justify-end gap-3 bg-white">
                   <button
                     type="button"
                     onClick={() => { setIsModalOpen(false); resetForm(); }}
                     disabled={modalLoading}
-                    className="px-5 py-3 bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold rounded-xl cursor-pointer transition-colors disabled:opacity-50 text-xs uppercase tracking-wider border border-slate-200/60"
+                    className="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl cursor-pointer transition-colors disabled:opacity-50 text-xs"
                   >
                     Annuler
                   </button>
                   <button
                     type="submit"
                     disabled={modalLoading}
-                    className="px-6 py-3 bg-slate-950 hover:bg-slate-900 text-white font-black rounded-xl cursor-pointer transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-xs uppercase tracking-wider shadow-md"
+                    className="px-6 py-3 bg-slate-950 hover:bg-slate-900 text-white font-black rounded-xl cursor-pointer transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-xs shadow-md"
                   >
                     {modalLoading ? (
                       <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
-                      'Ajouter le document'
+                      'Ajouter le support'
                     )}
                   </button>
                 </div>
@@ -629,24 +858,16 @@ export default function ResourcesAdminPage() {
         )}
       </AnimatePresence>
 
-      {/* MODAL DE MODIFICATION */}
+      {/* MODAL D'ÉDITION (SANS LAG) */}
       <AnimatePresence>
-        {isEditModalOpen && editingResource && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => { if (!modalLoading) { setIsEditModalOpen(false); setEditingResource(null); } }}
-              className="absolute inset-0 bg-slate-950/40"
-            />
-
+        {isEditModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80">
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.15 }}
-              className="bg-white border border-slate-200 w-full max-w-xl rounded-2xl shadow-xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]"
+              transition={{ duration: 0.15, ease: "easeOut" }}
+              className="bg-white border border-slate-200 w-full max-w-xl rounded-2xl shadow-xl relative overflow-hidden flex flex-col max-h-[90vh]"
             >
               <div className="p-6 border-b border-slate-200 flex items-center justify-between">
                 <h2 className="text-xl font-black text-slate-900">Modifier le document</h2>
@@ -659,30 +880,45 @@ export default function ResourcesAdminPage() {
                 </button>
               </div>
 
-              <form onSubmit={handleUpdateResource} className="p-6 overflow-y-auto space-y-5 flex-1 text-left">
+              <form onSubmit={handleUpdateResource} className="p-6 overflow-y-auto space-y-4 flex-1 text-left">
                 {modalError && (
-                  <div className="p-3.5 bg-rose-550/10 border border-rose-100 text-rose-600 rounded-xl text-xs font-bold">
+                  <div className="p-3.5 bg-rose-50 border border-rose-100 text-rose-600 rounded-xl text-xs font-bold">
                     {modalError}
                   </div>
                 )}
 
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Examen / Certification cible</label>
-                  <select
-                    required
-                    value={certificationId}
-                    onChange={(e) => setCertificationId(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:border-red-600 focus:bg-white rounded-xl text-slate-900 text-sm outline-none transition-all font-semibold cursor-pointer"
-                  >
-                    <option value="">Sélectionner une certification...</option>
-                    {certs.map(c => (
-                      <option key={c.id} value={c.id}>{c.nom} ({c.codeExamen || 'Examen'})</option>
-                    ))}
-                  </select>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Examen / Certification cible *</label>
+                    <select
+                      value={certificationId}
+                      onChange={(e) => setCertificationId(e.target.value)}
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:border-red-600 focus:bg-white rounded-xl text-slate-900 text-sm outline-none transition-all font-semibold cursor-pointer"
+                    >
+                      <option value="">Sélectionner une certification...</option>
+                      {certs.map(c => (
+                        <option key={c.id} value={c.id}>{c.nom} ({c.codeExamen || 'Examen'})</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Cours rattaché (Optionnel)</label>
+                    <select
+                      value={coursId}
+                      onChange={(e) => setCoursId(e.target.value)}
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:border-red-600 focus:bg-white rounded-xl text-slate-900 text-sm outline-none transition-all font-semibold cursor-pointer"
+                    >
+                      <option value="">Aucun cours (Bibliothèque générale)</option>
+                      {coursesList.map(c => (
+                        <option key={c.id} value={c.id}>{c.titre}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Titre de la ressource</label>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Titre de la ressource *</label>
                   <input
                     type="text"
                     required
@@ -693,18 +929,18 @@ export default function ResourcesAdminPage() {
                   />
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Description</label>
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Détails du fichier..."
-                    className="w-full h-24 p-4 bg-slate-50 border border-slate-200 focus:border-red-600 focus:bg-white rounded-xl text-slate-900 text-sm outline-none transition-all font-semibold resize-none"
+                    className="w-full h-20 p-4 bg-slate-50 border border-slate-200 focus:border-red-600 focus:bg-white rounded-xl text-slate-900 text-sm outline-none transition-all font-semibold resize-none"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Format / Type</label>
                     <select
                       value={type}
@@ -712,14 +948,14 @@ export default function ResourcesAdminPage() {
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 focus:border-red-600 focus:bg-white rounded-xl text-slate-900 text-sm outline-none transition-all font-semibold cursor-pointer"
                     >
                       <option value="PDF">PDF</option>
-                      <option value="SLIDES">Slides / Cours</option>
-                      <option value="DATASET">Dataset / Données</option>
+                      <option value="SLIDES">Slides / Présentation</option>
+                      <option value="DATASET">Dataset / Fichier de travail</option>
                       <option value="IMAGE">Image / Schéma</option>
                       <option value="DOCX">Word (DOCX)</option>
                     </select>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Version du fichier</label>
                     <input
                       type="text"
@@ -732,8 +968,8 @@ export default function ResourcesAdminPage() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">URL du document</label>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Lien / URL du document *</label>
                   <input
                     type="text"
                     required
@@ -745,8 +981,8 @@ export default function ResourcesAdminPage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Taille (en octets / Bytes) <span className="lowercase font-bold text-slate-400 text-[9px]">(optionnel)</span></label>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Taille (Bytes) <span className="lowercase font-bold text-slate-400 text-[9px]">(optionnel)</span></label>
                     <input
                       type="number"
                       value={taille}
@@ -756,8 +992,8 @@ export default function ResourcesAdminPage() {
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Quota de Téléchargements max</label>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Quota Téléchargements max *</label>
                     <input
                       type="number"
                       required
@@ -769,19 +1005,19 @@ export default function ResourcesAdminPage() {
                   </div>
                 </div>
 
-                <div className="pt-6 border-t border-slate-100 flex justify-end gap-3 bg-white mt-6">
+                <div className="pt-4 border-t border-slate-100 flex justify-end gap-3 bg-white">
                   <button
                     type="button"
                     onClick={() => { setIsEditModalOpen(false); setEditingResource(null); resetForm(); }}
                     disabled={modalLoading}
-                    className="px-5 py-3 bg-slate-50 hover:bg-slate-100 text-slate-650 font-bold rounded-xl cursor-pointer transition-colors disabled:opacity-50 text-xs uppercase tracking-wider border border-slate-200/60"
+                    className="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl cursor-pointer transition-colors disabled:opacity-50 text-xs"
                   >
                     Annuler
                   </button>
                   <button
                     type="submit"
                     disabled={modalLoading}
-                    className="px-6 py-3 bg-slate-950 hover:bg-slate-900 text-white font-black rounded-xl cursor-pointer transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-xs uppercase tracking-wider shadow-md"
+                    className="px-6 py-3 bg-slate-950 hover:bg-slate-900 text-white font-black rounded-xl cursor-pointer transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-xs shadow-md"
                   >
                     {modalLoading ? (
                       <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

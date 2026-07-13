@@ -36,4 +36,8 @@ export class CreateRessourceDto {
   @IsOptional()
   @IsNumber()
   certificationId?: number;
+
+  @IsOptional()
+  @IsNumber()
+  coursId?: number;
 }

@@ -14,6 +14,7 @@ import { TestimonialsSection } from '@/components/landing/TestimonialsSection';
 import { EventsSection } from '@/components/landing/EventsSection';
 import { PartnersSection } from '@/components/landing/PartnersSection';
 import { FaqSection } from '@/components/landing/FaqSection';
+import { ContactSection } from '@/components/landing/ContactSection';
 import { CertificationModal } from '@/components/landing/CertificationModal';
 
 const cleanTitle = (nom: string, code: string) => {
@@ -162,6 +163,7 @@ export default function LandingPage() {
       <EventsSection />
       <PartnersSection />
       <FaqSection />
+      <ContactSection />
       <Footer />
 
       <CertificationModal 

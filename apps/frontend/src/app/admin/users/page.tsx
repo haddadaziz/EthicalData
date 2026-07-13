@@ -49,7 +49,13 @@ export default function AdminUsersPage() {
     const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
     const [editRole, setEditRole] = useState<string>('APPRENANT');
     const [editStatut, setEditStatut] = useState<'ACTIF' | 'INACTIF' | 'BANNI'>('ACTIF');
+    const [editPrenom, setEditPrenom] = useState('');
+    const [editNom, setEditNom] = useState('');
+    const [editEmail, setEditEmail] = useState('');
+    const [editPhone, setEditPhone] = useState('');
     const [updateLoading, setUpdateLoading] = useState(false);
+
+    const [currentUserRoles, setCurrentUserRoles] = useState<string[]>([]);
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -66,6 +72,14 @@ export default function AdminUsersPage() {
     };
 
     useEffect(() => {
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        if (token) {
+            try {
+                const payloadBase64 = token.split('.')[1];
+                const decodedPayload = JSON.parse(atob(payloadBase64));
+                setCurrentUserRoles(decodedPayload.roles || []);
+            } catch (e) {}
+        }
         fetchUsers();
     }, []);
 
@@ -106,6 +120,10 @@ export default function AdminUsersPage() {
         const mainRole = user.roles && user.roles.length > 0 ? user.roles[0].nom : 'APPRENANT';
         setEditRole(mainRole);
         setEditStatut(user.statut);
+        setEditPrenom(user.prenom);
+        setEditNom(user.nom);
+        setEditEmail(user.email);
+        setEditPhone(user.telephone || '');
     };
 
     const handleUpdateUser = async (e: React.FormEvent) => {
@@ -114,12 +132,20 @@ export default function AdminUsersPage() {
 
         setUpdateLoading(true);
         try {
+            const body: any = {
+                roles: [editRole],
+                statut: editStatut,
+            };
+            if (currentUserRoles.includes('SUPER_ADMIN')) {
+                body.prenom = editPrenom;
+                body.nom = editNom;
+                body.email = editEmail;
+                body.telephone = editPhone || undefined;
+            }
+
             await apiFetch(`/users/${selectedUser.id}`, {
                 method: 'PATCH',
-                body: {
-                    roles: [editRole],
-                    statut: editStatut,
-                },
+                body,
             });
 
             showToast(`Le compte de ${selectedUser.prenom} ${selectedUser.nom} a été mis à jour.`, "success");
@@ -339,7 +365,7 @@ export default function AdminUsersPage() {
                 {isCreateModalOpen && (
                     <div
                         onClick={() => setIsCreateModalOpen(false)}
-                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md"
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80"
                     >
                         <motion.div
                             onClick={(e) => e.stopPropagation()}
@@ -457,7 +483,7 @@ export default function AdminUsersPage() {
                 {selectedUser && (
                     <div
                         onClick={() => setSelectedUser(null)}
-                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md"
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80"
                     >
                         <motion.div
                             onClick={(e) => e.stopPropagation()}
@@ -479,6 +505,54 @@ export default function AdminUsersPage() {
                             </div>
 
                             <form onSubmit={handleUpdateUser} className="space-y-4">
+                                {currentUserRoles.includes('SUPER_ADMIN') && (
+                                    <>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-1.5">
+                                                <label className="text-xs font-bold text-slate-700">Prénom *</label>
+                                                <input
+                                                    type="text"
+                                                    required
+                                                    value={editPrenom}
+                                                    onChange={(e) => setEditPrenom(e.target.value)}
+                                                    className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-red-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
+                                                />
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <label className="text-xs font-bold text-slate-700">Nom *</label>
+                                                <input
+                                                    type="text"
+                                                    required
+                                                    value={editNom}
+                                                    onChange={(e) => setEditNom(e.target.value)}
+                                                    className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-red-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-1.5">
+                                                <label className="text-xs font-bold text-slate-700">Adresse E-mail *</label>
+                                                <input
+                                                    type="email"
+                                                    required
+                                                    value={editEmail}
+                                                    onChange={(e) => setEditEmail(e.target.value)}
+                                                    className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-red-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
+                                                />
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <label className="text-xs font-bold text-slate-700">Téléphone</label>
+                                                <input
+                                                    type="tel"
+                                                    value={editPhone}
+                                                    onChange={(e) => setEditPhone(e.target.value)}
+                                                    className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-red-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
+                                                />
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
                                 <div className="space-y-1.5">
                                     <label className="text-xs font-bold text-slate-700">Attribuer un Rôle *</label>
                                     <select

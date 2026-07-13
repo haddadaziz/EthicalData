@@ -46,7 +46,6 @@ export class CertificationsService {
     });
     return fournisseurs.map((f) => ({
       ...f,
-      id: f.id.toString(),
       certificationCount: f._count.certifications,
     }));
   }
@@ -66,7 +65,6 @@ export class CertificationsService {
     }
     return {
       ...fournisseur,
-      id: fournisseur.id.toString(),
       certificationCount: fournisseur._count.certifications,
     };
   }
@@ -87,10 +85,7 @@ export class CertificationsService {
         image: dto.image || null,
       },
     });
-    return {
-      ...f,
-      id: f.id.toString(),
-    };
+    return f;
   }
 
   // Modifier un fournisseur
@@ -124,10 +119,7 @@ export class CertificationsService {
       where: { id: BigInt(id) },
       data,
     });
-    return {
-      ...updated,
-      id: updated.id.toString(),
-    };
+    return updated;
   }
 
   // Supprimer un fournisseur
@@ -159,24 +151,12 @@ export class CertificationsService {
       include: {
         fournisseur: true,
         ressources: { where: { deletedAt: null } },
+        simulations: true,
       },
       orderBy: { dateCreation: 'desc' },
     });
 
-    return certs.map((c) => ({
-      ...c,
-      id: c.id.toString(),
-      fournisseurId: c.fournisseurId.toString(),
-      fournisseur: {
-        ...c.fournisseur,
-        id: c.fournisseur.id.toString(),
-      },
-      ressources: c.ressources.map((r) => ({
-        ...r,
-        id: r.id.toString(),
-        certificationId: r.certificationId?.toString(),
-      })),
-    }));
+    return certs;
   }
 
   // Récupérer une certification par son ID
@@ -197,31 +177,7 @@ export class CertificationsService {
       throw new NotFoundException("La certification demandée n'existe pas.");
     }
 
-    return {
-      ...cert,
-      id: cert.id.toString(),
-      fournisseurId: cert.fournisseurId.toString(),
-      fournisseur: {
-        ...cert.fournisseur,
-        id: cert.fournisseur.id.toString(),
-      },
-      cours: cert.cours.map((c) => ({
-        ...c,
-        id: c.id.toString(),
-        certificationId: c.certificationId ? c.certificationId.toString() : null,
-        formateurId: c.formateurId.toString(),
-        modules: c.modules.map((m) => ({
-          ...m,
-          id: m.id.toString(),
-          coursId: m.coursId.toString(),
-        })),
-      })),
-      ressources: cert.ressources.map((r) => ({
-        ...r,
-        id: r.id.toString(),
-        certificationId: r.certificationId?.toString(),
-      })),
-    };
+    return cert;
   }
 
   // Créer une certification
@@ -304,15 +260,7 @@ export class CertificationsService {
       },
     });
 
-    return {
-      ...updated,
-      id: updated.id.toString(),
-      fournisseurId: updated.fournisseurId.toString(),
-      fournisseur: {
-        ...updated.fournisseur,
-        id: updated.fournisseur.id.toString(),
-      },
-    };
+    return updated;
   }
 
   // Soft delete
@@ -338,16 +286,7 @@ export class CertificationsService {
       include: { options: true },
     });
 
-    return questions.map((q) => ({
-      ...q,
-      id: q.id.toString(),
-      certificationId: q.certificationId.toString(),
-      options: q.options.map((opt) => ({
-        ...opt,
-        id: opt.id.toString(),
-        questionId: opt.questionId.toString(),
-      })),
-    }));
+    return questions;
   }
 
   async createQuestion(certId: number, dto: CreateQuestionDto) {
@@ -382,16 +321,7 @@ export class CertificationsService {
       },
       include: { options: true },
     });
-    return {
-      ...question,
-      id: question.id.toString(),
-      certificationId: question.certificationId.toString(),
-      options: question.options.map((opt) => ({
-        ...opt,
-        id: opt.id.toString(),
-        questionId: opt.questionId.toString(),
-      })),
-    };
+    return question;
   }
 
   async createTentative(userId: number, certId: number, score: number) {
@@ -420,12 +350,7 @@ export class CertificationsService {
       },
     });
 
-    return {
-      ...tentative,
-      id: tentative.id.toString(),
-      utilisateurId: tentative.utilisateurId.toString(),
-      simulationId: tentative.simulationId.toString(),
-    };
+    return tentative;
   }
 
   async getUserStats(userId: number) {
@@ -447,9 +372,7 @@ export class CertificationsService {
       totalAttempts: total,
       averageScore: avgScore,
       history: tentatives.map((t) => ({
-        id: t.id.toString(),
-        score: t.score,
-        datePassage: t.datePassage,
+        ...t,
         certificationName: t.simulation?.certification?.nom || '',
         certificationSlug: t.simulation?.certification?.slug || '',
       })),
@@ -500,16 +423,7 @@ export class CertificationsService {
       include: { options: true },
     });
 
-    return {
-      ...updated,
-      id: updated.id.toString(),
-      certificationId: updated.certificationId.toString(),
-      options: updated.options.map((opt) => ({
-        ...opt,
-        id: opt.id.toString(),
-        questionId: opt.questionId.toString(),
-      })),
-    };
+    return updated;
   }
 
   async evaluateQuestionWithAi(questionId: number, reponseCandidat: string) {
@@ -555,12 +469,14 @@ export class CertificationsService {
         quotaTelechargement: dto.quotaTelechargement !== undefined ? dto.quotaTelechargement : 10,
         public: dto.public !== undefined ? dto.public : false,
         certificationId: dto.certificationId ? BigInt(dto.certificationId) : null,
+        coursId: dto.coursId ? BigInt(dto.coursId) : null,
       },
     });
     return {
       ...ressource,
       id: ressource.id.toString(),
       certificationId: ressource.certificationId?.toString(),
+      coursId: ressource.coursId?.toString(),
     };
   }
 
@@ -583,13 +499,10 @@ export class CertificationsService {
         quotaTelechargement: dto.quotaTelechargement,
         public: dto.public,
         certificationId: dto.certificationId ? BigInt(dto.certificationId) : null,
+        coursId: dto.coursId !== undefined ? (dto.coursId ? BigInt(dto.coursId) : null) : undefined,
       },
     });
-    return {
-      ...updated,
-      id: updated.id.toString(),
-      certificationId: updated.certificationId?.toString(),
-    };
+    return updated;
   }
 
   async removeRessource(id: number) {
@@ -609,20 +522,13 @@ export class CertificationsService {
   async findAllRessources() {
     const resources = await this.prisma.ressource.findMany({
       where: { deletedAt: null },
-      include: { certification: true },
+      include: { 
+        certification: true,
+        cours: { select: { id: true, titre: true } }
+      },
       orderBy: { dateCreation: 'desc' },
     });
-    return resources.map((r) => ({
-      ...r,
-      id: r.id.toString(),
-      certificationId: r.certificationId?.toString(),
-      certification: r.certification ? {
-        id: r.certification.id.toString(),
-        nom: r.certification.nom,
-        slug: r.certification.slug,
-        codeExamen: r.certification.codeExamen,
-      } : null,
-    }));
+    return resources;
   }
   // Enregistrer et autoriser le téléchargement d'un document (avec contrôle de quota)
   async downloadRessource(userId: number, resourceId: number, ipAddress: string) {
@@ -681,7 +587,7 @@ export class CertificationsService {
       const userDownloads = downloads.filter(d => d.ressourceId === r.id).length;
       const quotaMax = r.quotaTelechargement ?? 10;
       return {
-        resourceId: r.id.toString(),
+        resourceId: r.id,
         downloadsCount: userDownloads,
         quotaMax,
         remaining: Math.max(0, quotaMax - userDownloads),

@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 type Tab = 'generales' | 'mes-cours';
 
 export default function DownloadsPage() {
-    const [activeTab, setActiveTab] = useState<Tab>('generales');
+    const [activeTab, setActiveTab] = useState<Tab>('mes-cours');
     const [searchTerm, setSearchTerm] = useState('');
 
     // Ressources générales
@@ -107,7 +107,7 @@ export default function DownloadsPage() {
                         <Search className="w-4 h-4" />
                     </span>
                     <input type="text"
-                        placeholder={activeTab === 'generales' ? "Rechercher une ressource..." : "Rechercher un cours..."}
+                        placeholder={activeTab === 'mes-cours' ? "Rechercher un cours..." : "Rechercher une ressource..."}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-blue-600 rounded-xl text-sm outline-none font-medium" />
@@ -115,15 +115,6 @@ export default function DownloadsPage() {
 
                 {/* Tabs */}
                 <div className="flex items-center gap-1 border-b border-slate-100 pb-0">
-                    <button onClick={() => { setActiveTab('generales'); setSearchTerm(''); }}
-                        className={`pb-3 px-4 text-xs font-black uppercase tracking-wider transition-all cursor-pointer border-b-2 ${activeTab === 'generales'
-                            ? 'border-blue-600 text-slate-950'
-                            : 'border-transparent text-slate-400 hover:text-slate-600'
-                        }`}>
-                        <span className="flex items-center gap-2">
-                            <Globe className="w-3.5 h-3.5" /> Ressources générales
-                        </span>
-                    </button>
                     <button onClick={() => { setActiveTab('mes-cours'); setSearchTerm(''); }}
                         className={`pb-3 px-4 text-xs font-black uppercase tracking-wider transition-all cursor-pointer border-b-2 ${activeTab === 'mes-cours'
                             ? 'border-blue-600 text-slate-950'
@@ -131,6 +122,15 @@ export default function DownloadsPage() {
                         }`}>
                         <span className="flex items-center gap-2">
                             <BookOpen className="w-3.5 h-3.5" /> Mes cours
+                        </span>
+                    </button>
+                    <button onClick={() => { setActiveTab('generales'); setSearchTerm(''); }}
+                        className={`pb-3 px-4 text-xs font-black uppercase tracking-wider transition-all cursor-pointer border-b-2 ${activeTab === 'generales'
+                            ? 'border-blue-600 text-slate-950'
+                            : 'border-transparent text-slate-400 hover:text-slate-600'
+                        }`}>
+                        <span className="flex items-center gap-2">
+                            <Globe className="w-3.5 h-3.5" /> Ressources générales
                         </span>
                     </button>
                 </div>

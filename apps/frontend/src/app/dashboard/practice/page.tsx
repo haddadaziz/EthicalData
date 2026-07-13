@@ -211,7 +211,16 @@ export default function PracticePage() {
         setFlaggedQuestions([]);
         setAiFeedbacks({});
         setReadinessData(null);
-        setTimeLeft(questions.length * 120);
+        
+        let durationMinutes = 60;
+        if (mode === 'certification') {
+            const activeCert = certs.find(c => c.slug === certSlug);
+            durationMinutes = activeCert?.simulations?.[0]?.duree || 60;
+        } else if (mode === 'cours') {
+            durationMinutes = courseSimulation?.duree || 60;
+        }
+
+        setTimeLeft(durationMinutes * 60);
         setIsPaused(false);
     };
 
@@ -296,59 +305,54 @@ export default function PracticePage() {
                 </div>
 
                 {mode === 'certification' ? (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
                         {certs.map((cert) => (
                             <div
                                 key={cert.id}
-                                className="bg-white border border-slate-200/90 hover:border-slate-350 hover:shadow-xl rounded-3xl p-6 sm:p-7 flex flex-col justify-between group transition-all duration-300 text-left space-y-5"
+                                className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-col justify-between group transition-all duration-300 hover:shadow-lg hover:border-slate-300 text-left"
                             >
-                                <div className="flex items-start justify-between gap-4">
-                                    <div className="space-y-3 flex-1">
-                                        <div className="flex flex-wrap items-center gap-2">
-                                            <span className="font-extrabold text-slate-900 text-[10px] uppercase tracking-wider px-2.5 py-1 bg-slate-100 border border-slate-200 rounded-lg">
-                                                {cert.fournisseur?.nom || 'Éditeur'}
-                                            </span>
-                                            {cert.codeExamen && (
-                                                <span className="font-black text-blue-600 text-[10px] uppercase tracking-wider px-2.5 py-1 bg-blue-50 border border-blue-100 rounded-lg">
-                                                    {cert.codeExamen}
-                                                </span>
-                                            )}
-                                            <span className={`text-[9px] px-2.5 py-1 rounded-lg font-extrabold uppercase tracking-wider border ${getNiveauBadgeStyle(cert.niveau)}`}>
-                                                {cert.niveau}
-                                            </span>
+                                {/* Visual Box (Landing Page Style) */}
+                                <div className="relative w-full h-[240px] rounded-xl overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-300 bg-white border border-slate-100">
+                                    {/* Background Template */}
+                                    <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
+
+                                    {/* Examen code overlay */}
+                                    {cert.codeExamen && (
+                                        <div className="absolute top-3 left-3 z-30">
+                                            <div className="bg-slate-900/80 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-700/50 shadow-sm flex items-center gap-1.5 group-hover:bg-red-600 group-hover:border-red-500 transition-colors">
+                                                <span className="w-1 h-1 rounded-full bg-red-500 group-hover:bg-white animate-pulse transition-colors"></span>
+                                                {cert.codeExamen}
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h3 className="font-extrabold text-slate-950 text-lg leading-snug group-hover:text-blue-600 transition-colors">{cert.nom}</h3>
-                                            <p className="text-xs text-slate-500 font-medium line-clamp-2 mt-1.5 leading-relaxed">{cert.description}</p>
-                                        </div>
-                                        <div className="flex items-center gap-4 text-xs font-bold text-slate-400 pt-1">
-                                            <span className="flex items-center gap-1.5 text-slate-600">
-                                                <Users className="w-3.5 h-3.5 text-slate-400" />
-                                                <span>Candidats en préparation</span>
-                                            </span>
-                                            <span className="flex items-center gap-1 text-slate-500">
-                                                <Clock className="w-3.5 h-3.5" />
-                                                <span>{cert.dureeIndicative || '15h indicatives'}</span>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center shrink-0 p-1">
+                                    )}
+
+                                    {/* Floating Badge Logo */}
+                                    <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20 w-24 flex justify-center">
                                         {getCertificateBadgeLogo(cert) ? (
-                                            <img src={getCertificateBadgeLogo(cert)} alt={cert.nom} className="max-h-full max-w-full object-contain filter drop-shadow-md transition-transform duration-300 group-hover:scale-110" />
+                                            <img src={getCertificateBadgeLogo(cert)} alt={cert.nom} className="w-full h-auto object-contain filter drop-shadow-xl" />
                                         ) : (
-                                            <Award className="w-12 h-12 text-slate-300" />
+                                            <div className="w-16 h-16 bg-white/95 rounded-full flex items-center justify-center border border-slate-200 shadow-sm">
+                                                <Award className="w-8 h-8 text-slate-400" />
+                                            </div>
                                         )}
                                     </div>
                                 </div>
-                                <div className="border-t border-slate-100 pt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-xs">
-                                    <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1.5">
-                                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                                        <span>Chronométré & IA Activée</span>
-                                    </span>
-                                    <div className="flex items-center gap-2">
+
+                                {/* Title & Info & Actions */}
+                                <div className="mt-4 flex-1 flex flex-col justify-between">
+                                    <div className="space-y-1">
+                                        <h3 className="text-sm font-black text-slate-950 leading-snug line-clamp-2">
+                                            {cert.nom}
+                                        </h3>
+                                        <p className="text-[10px] text-slate-450 font-bold uppercase tracking-wider">
+                                            {cert.fournisseur?.nom || 'Officiel'} • {cert.niveau} • {cert.simulations?.[0]?.duree || 60} min
+                                        </p>
+                                    </div>
+
+                                    <div className="pt-4 flex flex-col items-stretch gap-3 text-xs mt-4">
                                         <button
                                             onClick={() => router.push(`/dashboard/practice?cert=${cert.slug}`)}
-                                            className="px-5 py-2.5 bg-slate-950 hover:bg-slate-900 text-white font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center gap-2 shadow-sm hover:shadow-md"
+                                            className="w-full py-2 bg-slate-950 hover:bg-slate-900 text-white font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
                                         >
                                             <Play className="w-3.5 h-3.5 fill-white text-white" />
                                             <span>Lancer le simulateur</span>

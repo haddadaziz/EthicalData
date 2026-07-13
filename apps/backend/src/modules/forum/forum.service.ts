@@ -61,18 +61,11 @@ export class ForumService {
       const { likes, ...rest } = s;
       return {
         ...rest,
-        id: s.id.toString(),
-        auteurId: s.auteurId.toString(),
-        certificationId: s.certificationId ? s.certificationId.toString() : null,
         isLikedByUser: Array.isArray(s.likes) && s.likes.length > 0,
         auteur: {
           ...s.auteur,
-          id: s.auteur.id.toString(),
           role: s.auteur.roles?.[0]?.nom || 'APPRENANT',
         },
-        certification: s.certification
-          ? { ...s.certification, id: s.certification.id.toString() }
-          : null,
         likesCount: s._count?.likes || 0,
         commentairesCount: s._count?.commentaires || 0,
       };
@@ -98,12 +91,7 @@ export class ForumService {
       },
     });
 
-    return {
-      ...sujet,
-      id: sujet.id.toString(),
-      auteurId: sujet.auteurId.toString(),
-      certificationId: sujet.certificationId ? sujet.certificationId.toString() : null,
-    };
+    return sujet;
   }
 
   // 3. Récupérer le détail d'une publication
@@ -166,37 +154,20 @@ export class ForumService {
 
     return {
       ...sujet,
-      id: sujet.id.toString(),
-      auteurId: sujet.auteurId.toString(),
-      certificationId: sujet.certificationId ? sujet.certificationId.toString() : null,
       auteur: {
         ...sujet.auteur,
-        id: sujet.auteur.id.toString(),
         role: sujet.auteur.roles?.[0]?.nom || 'APPRENANT',
       },
-      certification: sujet.certification
-        ? { ...sujet.certification, id: sujet.certification.id.toString() }
-        : null,
       isLikedByUser: !!userLike,
       likesCount: sujet._count.likes,
       commentairesCount: sujet._count.commentaires,
       commentaires: sujet.commentaires.map((c: any) => ({
-        id: c.id.toString(),
-        contenu: c.contenu,
-        dateCreation: c.dateCreation,
-        sujetId: c.sujetId.toString(),
-        auteurId: c.auteurId.toString(),
-        parentCommentaireId: c.parentCommentaireId ? c.parentCommentaireId.toString() : null,
-        mentionUser: c.mentionUser ? {
-          id: c.mentionUser.id.toString(),
-          prenom: c.mentionUser.prenom,
-          nom: c.mentionUser.nom,
-        } : undefined,
+        ...c,
+        mentionUser: c.mentionUser || undefined,
         likesCount: c._count?.likes || 0,
         isLikedByUser: Array.isArray(c.likes) && c.likes.length > 0,
         auteur: {
           ...c.auteur,
-          id: c.auteur.id.toString(),
           role: c.auteur.roles?.[0]?.nom || 'APPRENANT',
         },
       })),
@@ -453,20 +424,10 @@ export class ForumService {
 
     const c = commentaire as any;
     return {
-      id: c.id.toString(),
-      contenu: c.contenu,
-      dateCreation: c.dateCreation,
-      sujetId: c.sujetId.toString(),
-      auteurId: c.auteurId.toString(),
-      parentCommentaireId: c.parentCommentaireId ? c.parentCommentaireId.toString() : null,
-      mentionUser: c.mentionUser ? {
-        id: c.mentionUser.id.toString(),
-        prenom: c.mentionUser.prenom,
-        nom: c.mentionUser.nom,
-      } : undefined,
+      ...c,
+      mentionUser: c.mentionUser || undefined,
       auteur: {
         ...c.auteur,
-        id: c.auteur.id.toString(),
         role: c.auteur.roles?.[0]?.nom || 'APPRENANT',
       },
     };
@@ -547,50 +508,31 @@ export class ForumService {
     ]);
 
     const formattedSujets = sujetsReports.map((sig: any) => ({
-      id: sig.id.toString(),
-      motif: sig.motif,
-      dateCreation: sig.dateCreation,
-      traite: sig.traite,
+      ...sig,
       type: 'SUJET',
       signalePar: {
         ...sig.utilisateur,
-        id: sig.utilisateur.id.toString(),
       },
       sujet: {
-        id: sig.sujet.id.toString(),
-        titre: sig.sujet.titre,
-        contenu: sig.sujet.contenu,
-        theme: sig.sujet.theme,
-        dateCreation: sig.sujet.dateCreation,
-        auteur: {
-          ...sig.sujet.auteur,
-          id: sig.sujet.auteur.id.toString(),
-        },
+        ...sig.sujet,
         commentairesCount: sig.sujet._count.commentaires,
         likesCount: sig.sujet._count.likes,
       },
     }));
 
     const formattedComments = commentReports.map((sig: any) => ({
-      id: sig.id.toString(),
-      motif: sig.motif,
-      dateCreation: sig.dateCreation,
-      traite: sig.traite,
+      ...sig,
       type: 'COMMENTAIRE',
       signalePar: {
         ...sig.utilisateur,
-        id: sig.utilisateur.id.toString(),
       },
-      commentaireId: sig.commentaire.id.toString(),
       sujet: {
-        id: sig.commentaire.sujet.id.toString(),
+        ...sig.commentaire.sujet,
         titre: `[Commentaire] dans : ${sig.commentaire.sujet.titre}`,
         contenu: sig.commentaire.contenu,
-        theme: sig.commentaire.sujet.theme,
         dateCreation: sig.commentaire.dateCreation,
         auteur: {
           ...sig.commentaire.auteur,
-          id: sig.commentaire.auteur.id.toString(),
         },
         commentairesCount: sig.commentaire.sujet._count.commentaires,
         likesCount: sig.commentaire.sujet._count.likes,

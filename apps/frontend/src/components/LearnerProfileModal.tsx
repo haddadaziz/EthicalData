@@ -46,8 +46,6 @@ export default function LearnerProfileModal({ learnerId, onClose }: LearnerProfi
         fetchPublicProfile();
     }, [learnerId]);
 
-    if (!learnerId) return null;
-
     const formatDate = (dateStr?: string) => {
         if (!dateStr) return '';
         return new Date(dateStr).toLocaleDateString('fr-FR', {
@@ -56,12 +54,13 @@ export default function LearnerProfileModal({ learnerId, onClose }: LearnerProfi
         });
     };
 
-    return (
-        <AnimatePresence>
-            <div
-                onClick={onClose}
-                className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto"
-            >
+  return (
+    <AnimatePresence>
+      {learnerId && (
+        <div
+          onClick={onClose}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 overflow-y-auto"
+        >
                 <motion.div
                     onClick={(e) => e.stopPropagation()}
                     initial={{ opacity: 0, scale: 0.95, y: 15 }}
@@ -163,6 +162,7 @@ export default function LearnerProfileModal({ learnerId, onClose }: LearnerProfi
                     )}
                 </motion.div>
             </div>
+        )}
         </AnimatePresence>
     );
 }

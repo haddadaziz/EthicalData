@@ -3,13 +3,15 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { BookOpen, Award, Settings, LogOut, ShieldCheck, Menu, X, User, DownloadCloud, HelpCircle, MessageSquare, Calendar, GraduationCap, ChalkboardTeacher } from '@/components/icons';
+import { useToast } from '../../context/ToastContext';
+import { BookOpen, Award, Settings, LogOut, ShieldCheck, Menu, X, User, DownloadCloud, HelpCircle, MessageSquare, Calendar, GraduationCap, ChalkboardTeacher, ChevronDown } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import NotificationBell from '../../components/NotificationBell';
 import { apiFetch } from '../../lib/api';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
+    const { showToast } = useToast();
     const pathname = usePathname();
     const [authorized, setAuthorized] = useState(false);
     const [userEmail, setUserEmail] = useState<string>('');
@@ -18,6 +20,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const [userAvatar, setUserAvatar] = useState<string | null>(null);
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
+    const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
+
+    const toggleMenu = (name: string) => {
+        setExpandedMenu((prev) => (prev === name ? null : name));
+    };
 
     // Rôles et mode de vue (Apprenant / Formateur) initialisés de façon synchrone pour éviter le clignotement
     const [userRoles, setUserRoles] = useState<string[]>(() => {
@@ -158,6 +165,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const handleLogout = () => {
         localStorage.removeItem('token');
         sessionStorage.removeItem('token');
+        showToast("Déconnecté avec succès, à bientôt", "success");
         router.push('/login');
     };
 
@@ -173,22 +181,41 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         }
     };
 
-    const learnerNavItems = [
+    type NavItem = {
+        name: string;
+        href?: string;
+        icon: any;
+        subItems?: NavItem[];
+    };
+
+    const learnerNavItems: NavItem[] = [
         { name: 'Mon Tableau de Bord', href: '/dashboard', icon: BookOpen },
-        { name: 'Certifications', href: '/dashboard/certifications', icon: Award },
-        { name: 'Entraînement', href: '/dashboard/practice', icon: HelpCircle },
-        { name: 'Mes Cours', href: '/dashboard/cours', icon: Award },
+        { 
+            name: 'Apprentissage', 
+            icon: GraduationCap,
+            subItems: [
+                { name: 'Mes Cours', href: '/dashboard/cours', icon: BookOpen },
+                { name: 'Entraînement', href: '/dashboard/practice', icon: HelpCircle },
+                { name: 'Certifications', href: '/dashboard/certifications', icon: Award },
+            ]
+        },
         { name: 'Ressources', href: '/dashboard/downloads', icon: DownloadCloud },
         { name: 'Communauté', href: '/dashboard/community', icon: MessageSquare },
         { name: 'Rendez-vous & Coaching', href: '/dashboard/appointments', icon: Calendar },
         { name: 'Mon Profil', href: '/dashboard/profile', icon: User },
     ];
 
-    const trainerNavItems = [
+    const trainerNavItems: NavItem[] = [
         { name: 'Mon Tableau de Bord', href: '/dashboard', icon: BookOpen },
-        { name: 'Gérer mes cours', href: '/dashboard/courses', icon: Award },
+        {
+            name: 'Enseignement',
+            icon: ChalkboardTeacher,
+            subItems: [
+                { name: 'Gérer mes cours', href: '/dashboard/courses', icon: Award },
+                { name: 'Créer mes Créneaux', href: '/dashboard/appointments', icon: Calendar },
+            ]
+        },
         { name: 'Communauté', href: '/dashboard/community', icon: MessageSquare },
-        { name: 'Créer mes Créneaux', href: '/dashboard/appointments', icon: Calendar },
         { name: 'Mon Profil', href: '/dashboard/profile', icon: User },
     ];
 
@@ -271,14 +298,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setSidebarOpen(false)}
-                            className="fixed inset-0 z-45 bg-slate-50/60 backdrop-blur-sm"
+                            className="fixed inset-0 z-45 bg-slate-900/80"
                         />
                         <motion.aside
-                            initial={{ x: -260 }}
+                            initial={{ x: -280 }}
                             animate={{ x: 0 }}
-                            exit={{ x: -260 }}
+                            exit={{ x: -280 }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className={`fixed top-0 bottom-0 left-0 z-50 w-[260px] flex flex-col border-r h-screen ${
+                            className={`fixed top-0 bottom-0 left-0 z-50 w-[280px] flex flex-col border-r h-screen transform-gpu will-change-transform ${
                                 viewMode === 'FORMATEUR'
                                     ? 'bg-slate-50/95 border-indigo-100/80'
                                     : 'bg-white border-slate-200/80'
@@ -297,24 +324,85 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                             <nav className="flex-1 py-6 px-4 space-y-2">
                                 {navItems.map((item, index) => {
-                                    const isActive = pathname === item.href;
+                                    const hasSubItems = !!item.subItems && item.subItems.length > 0;
+                                    const isExpanded = expandedMenu === item.name;
+                                    const isActive = !hasSubItems && item.href && pathname === item.href;
                                     const Icon = item.icon;
+                                    
                                     return (
-                                        <a
-                                            key={index}
-                                            href={item.href}
-                                            onClick={() => setSidebarOpen(false)}
-                                            className={`flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-extrabold transition-all ${
-                                                isActive 
-                                                    ? viewMode === 'FORMATEUR'
-                                                        ? 'bg-indigo-50 text-indigo-650 border border-indigo-100/90 shadow-2xs'
-                                                        : 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs'
-                                                    : 'text-slate-600 hover:text-slate-955 hover:bg-slate-50 cursor-pointer'
-                                            }`}
-                                        >
-                                            <Icon className={`w-5 h-5 ${isActive ? (viewMode === 'FORMATEUR' ? 'text-indigo-600' : 'text-blue-600') : 'text-slate-400'}`} />
-                                            <span>{item.name}</span>
-                                        </a>
+                                        <div key={index} className="space-y-1">
+                                            {hasSubItems ? (
+                                                <button
+                                                    onClick={() => toggleMenu(item.name)}
+                                                    className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-sm font-extrabold transition-all cursor-pointer ${
+                                                        isExpanded
+                                                            ? viewMode === 'FORMATEUR'
+                                                                ? 'bg-indigo-50 text-indigo-650'
+                                                                : 'bg-blue-50 text-blue-600'
+                                                            : 'text-slate-600 hover:text-slate-955 hover:bg-slate-50'
+                                                    }`}
+                                                >
+                                                    <div className="flex items-center gap-3 min-w-0">
+                                                        <Icon className={`w-5 h-5 ${isExpanded ? (viewMode === 'FORMATEUR' ? 'text-indigo-600' : 'text-blue-600') : 'text-slate-400 group-hover:text-slate-600 transition-colors'}`} />
+                                                        <span className="truncate">{item.name}</span>
+                                                    </div>
+                                                    <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+                                                </button>
+                                            ) : (
+                                                <Link
+                                                    href={item.href || '#'}
+                                                    onClick={() => setSidebarOpen(false)}
+                                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-extrabold transition-all ${
+                                                        isActive 
+                                                            ? viewMode === 'FORMATEUR'
+                                                                ? 'bg-indigo-50 text-indigo-650 border border-indigo-100/90 shadow-2xs'
+                                                                : 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs'
+                                                            : 'text-slate-600 hover:text-slate-955 hover:bg-slate-50 cursor-pointer'
+                                                    }`}
+                                                >
+                                                    <Icon className={`w-5 h-5 ${isActive ? (viewMode === 'FORMATEUR' ? 'text-indigo-600' : 'text-blue-600') : 'text-slate-400 group-hover:text-slate-600 transition-colors'}`} />
+                                                    <span>{item.name}</span>
+                                                </Link>
+                                            )}
+
+                                            {hasSubItems && (
+                                                <AnimatePresence>
+                                                    {isExpanded && (
+                                                        <motion.div
+                                                            initial={{ opacity: 0, height: 0 }}
+                                                            animate={{ opacity: 1, height: 'auto' }}
+                                                            exit={{ opacity: 0, height: 0 }}
+                                                            transition={{ duration: 0.2 }}
+                                                            className="overflow-hidden"
+                                                        >
+                                                            <div className="pl-4 pr-2 py-1 space-y-1">
+                                                                {item.subItems!.map((sub, subIdx) => {
+                                                                    const isSubActive = pathname === sub.href;
+                                                                    const SubIcon = sub.icon;
+                                                                    return (
+                                                                        <Link
+                                                                            key={subIdx}
+                                                                            href={sub.href}
+                                                                            onClick={() => setSidebarOpen(false)}
+                                                                            className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                                                                                isSubActive
+                                                                                    ? viewMode === 'FORMATEUR'
+                                                                                        ? 'bg-indigo-50 text-indigo-650 border border-indigo-100/90 shadow-2xs font-extrabold'
+                                                                                        : 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs font-extrabold'
+                                                                                    : 'text-slate-500 hover:text-slate-955 hover:bg-slate-50/80 cursor-pointer'
+                                                                            }`}
+                                                                        >
+                                                                            <SubIcon className={`w-4 h-4 shrink-0 ${isSubActive ? (viewMode === 'FORMATEUR' ? 'text-indigo-600' : 'text-blue-600') : 'text-slate-400 group-hover:text-slate-600 transition-colors'}`} />
+                                                                            <span className="truncate flex-1">{sub.name}</span>
+                                                                        </Link>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                            )}
+                                        </div>
                                     );
                                 })}
                             </nav>
@@ -332,7 +420,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             {/* Sidebar Desktop Fixe et Élégante */}
             {!isMobile && (
-                <aside className={`hidden md:flex flex-col relative z-10 shrink-0 sticky top-0 h-screen shadow-sm w-[260px] overflow-y-auto overflow-x-hidden border-r transition-all duration-300 ${
+                <aside className={`hidden md:flex flex-col relative z-10 shrink-0 sticky top-0 h-screen shadow-sm w-[280px] overflow-y-auto overflow-x-hidden border-r transition-all duration-300 ${
                     viewMode === 'FORMATEUR'
                         ? 'bg-slate-50/90 border-indigo-100/70 shadow-indigo-100/20'
                         : 'bg-white border-slate-200/80'
@@ -349,23 +437,82 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     {/* Liens de navigation */}
                     <nav className="flex-1 py-6 px-4 space-y-2">
                         {navItems.map((item, index) => {
-                            const isActive = pathname === item.href;
+                            const hasSubItems = !!item.subItems && item.subItems.length > 0;
+                            const isExpanded = expandedMenu === item.name;
+                            const isActive = !hasSubItems && item.href && pathname === item.href;
                             const Icon = item.icon;
 
                             return (
-                                <a
-                                    key={index}
-                                    href={item.href}
-                                    className={`flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-extrabold transition-all duration-200 group relative ${isActive
-                                        ? viewMode === 'FORMATEUR'
-                                            ? 'bg-indigo-50 text-indigo-650 border border-indigo-100/90 shadow-2xs shadow-indigo-100/10'
-                                            : 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs'
-                                        : 'text-slate-600 hover:text-slate-955 hover:bg-slate-50 cursor-pointer'
-                                        }`}
-                                >
-                                    <Icon className={`w-5 h-5 shrink-0 ${isActive ? (viewMode === 'FORMATEUR' ? 'text-indigo-650' : 'text-blue-600') : 'text-slate-400 group-hover:text-indigo-600 transition-colors'}`} />
-                                    <span className="truncate flex-1">{item.name}</span>
-                                </a>
+                                <div key={index} className="space-y-1">
+                                    {hasSubItems ? (
+                                        <button
+                                            onClick={() => toggleMenu(item.name)}
+                                            className={`w-full flex items-center justify-between gap-3 px-4 py-3.5 rounded-xl text-sm font-extrabold transition-all duration-200 group relative cursor-pointer ${
+                                                isExpanded
+                                                    ? viewMode === 'FORMATEUR'
+                                                        ? 'bg-indigo-50 text-indigo-650 shadow-sm'
+                                                        : 'bg-blue-100 text-blue-700 shadow-sm'
+                                                    : 'text-slate-600 hover:text-slate-955 hover:bg-slate-50'
+                                            }`}
+                                        >
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                <Icon className={`w-5 h-5 shrink-0 ${isExpanded ? (viewMode === 'FORMATEUR' ? 'text-indigo-650' : 'text-blue-700') : 'text-slate-400 group-hover:text-indigo-600 transition-colors'}`} />
+                                                <span className="truncate">{item.name}</span>
+                                            </div>
+                                            <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${isExpanded ? 'rotate-180 text-blue-700' : ''}`} />
+                                        </button>
+                                    ) : (
+                                        <Link
+                                            href={item.href || '#'}
+                                            className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-extrabold transition-all duration-200 group relative ${isActive
+                                                ? viewMode === 'FORMATEUR'
+                                                    ? 'bg-indigo-50 text-indigo-650 border border-indigo-100/90 shadow-2xs shadow-indigo-100/10'
+                                                    : 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs'
+                                                : 'text-slate-600 hover:text-slate-955 hover:bg-slate-50 cursor-pointer'
+                                                }`}
+                                        >
+                                            <Icon className={`w-5 h-5 shrink-0 ${isActive ? (viewMode === 'FORMATEUR' ? 'text-indigo-655' : 'text-blue-600') : 'text-slate-400 group-hover:text-indigo-600 transition-colors'}`} />
+                                            <span className="truncate flex-1">{item.name}</span>
+                                        </Link>
+                                    )}
+
+                                    {hasSubItems && (
+                                        <AnimatePresence>
+                                            {isExpanded && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, height: 0 }}
+                                                    animate={{ opacity: 1, height: 'auto' }}
+                                                    exit={{ opacity: 0, height: 0 }}
+                                                    transition={{ duration: 0.2 }}
+                                                    className="overflow-hidden"
+                                                >
+                                                    <div className="pl-4 pr-2 py-1 space-y-1">
+                                                        {item.subItems!.map((sub, subIdx) => {
+                                                            const isSubActive = pathname === sub.href;
+                                                            const SubIcon = sub.icon;
+                                                            return (
+                                                                <Link
+                                                                    key={subIdx}
+                                                                    href={sub.href}
+                                                                    className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all group ${
+                                                                        isSubActive
+                                                                            ? viewMode === 'FORMATEUR'
+                                                                                ? 'bg-indigo-50 text-indigo-650 border border-indigo-100/90 shadow-2xs font-extrabold'
+                                                                                : 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs font-extrabold'
+                                                                            : 'text-slate-500 hover:text-slate-955 hover:bg-slate-50/80 cursor-pointer'
+                                                                    }`}
+                                                                >
+                                                                    <SubIcon className={`w-4 h-4 shrink-0 ${isSubActive ? (viewMode === 'FORMATEUR' ? 'text-indigo-600' : 'text-blue-600') : 'text-slate-400 group-hover:text-indigo-600 transition-colors'}`} />
+                                                                    <span className="truncate flex-1">{sub.name}</span>
+                                                                </Link>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    )}
+                                </div>
                             );
                         })}
                     </nav>
@@ -391,7 +538,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="flex-1 flex flex-col h-screen overflow-y-auto relative z-10">
 
                 {/* Header Premium (Sans bouton Hamburger sur PC) */}
-                <header className={`py-5 md:py-6 border-b bg-white/80 backdrop-blur-xl flex items-center justify-between px-8 md:px-12 sticky top-0 z-20 transition-all duration-300 ${
+                <header className={`py-5 md:py-6 border-b bg-white/80 backdrop-blur-xl flex items-center justify-between px-8 md:px-12 sticky top-0 z-40 transition-all duration-300 ${
                     viewMode === 'FORMATEUR'
                         ? 'border-indigo-100/40 shadow-xs shadow-indigo-100/5'
                         : 'border-slate-200/50'
@@ -437,7 +584,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                         <NotificationBell />
 
-                        <a
+                        <Link
                             href="/dashboard/profile"
                             className="flex items-center gap-3 p-1.5 hover:bg-slate-100/80 rounded-2xl transition-all cursor-pointer group"
                             title="Voir et modifier mon profil"
@@ -466,7 +613,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                     </div>
                                 )}
                             </div>
-                        </a>
+                        </Link>
                     </div>
                 </header>
 

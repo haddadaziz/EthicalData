@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../lib/api';
-import { Users, Award, DownloadCloud, MessageSquare, Calendar, ShieldCheck, ArrowUpRight, Plus, Activity, RefreshCw, Sparkles } from '@/components/icons';
+import { Users, Award, DownloadCloud, MessageSquare, Calendar, ShieldCheck, ArrowUpRight, Plus, Activity, RefreshCw, Sparkles, BookOpen } from '@/components/icons';
 import { motion } from 'framer-motion';
 
 export default function AdminDashboardPage() {
@@ -10,7 +10,7 @@ export default function AdminDashboardPage() {
         totalUsers: 0,
         activeUsers: 0,
         totalCerts: 0,
-        totalDownloads: 0,
+        totalCours: 0,
         totalSujets: 0,
         totalRdv: 0,
     });
@@ -20,10 +20,10 @@ export default function AdminDashboardPage() {
     const loadAdminData = async () => {
         setLoading(true);
         try {
-            const [usersData, certsData, resourcesData, rdvData] = await Promise.all([
+            const [usersData, certsData, coursData, rdvData] = await Promise.all([
                 apiFetch('/users'),
                 apiFetch('/certifications'),
-                apiFetch('/resources'),
+                apiFetch('/cours'),
                 apiFetch('/appointments/mes-rdv'),
             ]);
 
@@ -31,7 +31,7 @@ export default function AdminDashboardPage() {
                 totalUsers: usersData.length,
                 activeUsers: usersData.filter((u: any) => u.statut === 'ACTIF').length,
                 totalCerts: certsData.length,
-                totalDownloads: resourcesData.length,
+                totalCours: coursData.length,
                 totalRdv: rdvData.length,
             });
 
@@ -57,35 +57,7 @@ export default function AdminDashboardPage() {
     }
 
     return (
-        <div className="space-y-8 max-w-7xl mx-auto text-left">
-
-            {/* EN-TÊTE DU DASHBOARD ADMIN */}
-            <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 rounded-3xl p-8 md:p-10 text-white relative overflow-hidden shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-
-                <div className="space-y-2 relative z-10">
-                    <span className="px-3 py-1 bg-blue-500/20 border border-blue-500/30 text-blue-400 font-extrabold text-[10px] rounded-full uppercase tracking-wider flex items-center gap-1.5 w-max">
-                        <ShieldCheck className="w-3.5 h-3.5" />
-                        Console Super Admin & Direction
-                    </span>
-                    <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white">
-                        Vue Générale de la Plateforme
-                    </h1>
-                    <p className="text-xs text-slate-400 font-medium max-w-xl">
-                        Supervisez l'activité globale, la communauté, les certifications et la gestion des créneaux en temps réel.
-                    </p>
-                </div>
-
-                <div className="flex items-center gap-3 relative z-10 w-full md:w-auto">
-                    <a
-                        href="/admin/certifications"
-                        className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-blue-600/20 cursor-pointer w-full md:w-auto"
-                    >
-                        <Plus className="w-4 h-4" />
-                        <span>Nouvelle Certification</span>
-                    </a>
-                </div>
-            </div>
+        <div className="space-y-8 max-w-7xl mx-auto text-left pt-6">
 
             {/* CARTES KPI PRINCIPALES (GRID RESPONSIVE) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -117,17 +89,17 @@ export default function AdminDashboardPage() {
                     </div>
                 </div>
 
-                {/* Ressources Téléchargeables */}
+                {/* Cours sur la plateforme */}
                 <div className="p-6 bg-white border border-slate-200/80 rounded-3xl space-y-4 shadow-sm hover:shadow-md transition-all">
                     <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ressources & Fiches</span>
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Cours sur la plateforme</span>
                         <div className="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                            <DownloadCloud className="w-4 h-4" />
+                            <BookOpen className="w-4 h-4" />
                         </div>
                     </div>
                     <div>
-                        <span className="text-3xl font-black text-slate-950">{stats.totalDownloads}</span>
-                        <p className="text-[11px] text-slate-500 font-bold mt-1">PDF, Slides & Datasets</p>
+                        <span className="text-3xl font-black text-slate-950">{stats.totalCours}</span>
+                        <p className="text-[11px] text-slate-500 font-bold mt-1">Vidéos & Modules</p>
                     </div>
                 </div>
 
@@ -237,9 +209,13 @@ export default function AdminDashboardPage() {
                     {recentUsers.map((user) => (
                         <div key={user.id} className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-slate-950 text-white font-black text-xs flex items-center justify-center shrink-0">
-                                    {user.prenom[0]}{user.nom[0]}
-                                </div>
+                                {user.avatar ? (
+                                    <img src={user.avatar} alt={`${user.prenom} ${user.nom}`} className="w-10 h-10 rounded-xl object-cover shrink-0 shadow-sm" />
+                                ) : (
+                                    <div className="w-10 h-10 rounded-xl bg-slate-950 text-white font-black text-xs flex items-center justify-center shrink-0">
+                                        {user.prenom[0]}{user.nom[0]}
+                                    </div>
+                                )}
                                 <div>
                                     <h4 className="text-xs font-black text-slate-950">{user.prenom} {user.nom}</h4>
                                     <p className="text-[11px] text-slate-500 truncate max-w-[140px]">{user.email}</p>

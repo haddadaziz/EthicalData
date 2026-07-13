@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, Edit, Upload, Award, Layers, Clock } from '@/components/icons';
+import { useToast } from '@/context/ToastContext';
 
 interface Fournisseur {
   id: string;
@@ -15,7 +16,7 @@ interface CertificationPayload {
   niveau: 'DEBUTANT' | 'INTERMEDIAIRE' | 'AVANCE';
   dureeIndicative?: string | null;
   image?: string | null;
-  fournisseurId: string;
+  fournisseurId: number;
 }
 
 interface CertificationFormModalProps {
@@ -52,6 +53,8 @@ const getNiveauBadgeStyle = (niv: string) => {
 export function CertificationFormModal({
   isOpen, onClose, onSubmit, initialData, fournisseurs, modalLoading, modalError, onManageFournisseurs
 }: CertificationFormModalProps) {
+  const { showToast } = useToast();
+  const descRef = useRef<HTMLTextAreaElement>(null);
   const [nom, setNom] = useState('');
   const [codeExamen, setCodeExamen] = useState('');
   const [description, setDescription] = useState('');
@@ -83,6 +86,16 @@ export function CertificationFormModal({
         }
       }
       setImageError(false);
+      // Auto-resize textarea après remplissage
+      requestAnimationFrame(() => {
+        if (descRef.current) {
+          const el = descRef.current;
+          el.style.height = 'auto';
+          const newHeight = Math.min(el.scrollHeight, 200);
+          el.style.height = `${newHeight}px`;
+          el.style.overflowY = el.scrollHeight > 200 ? 'auto' : 'hidden';
+        }
+      });
     }
   }, [isOpen, initialData, fournisseurs]);
 
@@ -91,7 +104,7 @@ export function CertificationFormModal({
     if (!file) return;
 
     if (file.size > 2 * 1024 * 1024) {
-      alert("L'image est trop grande. La taille maximale est de 2 Mo.");
+      showToast("L'image est trop grande. La taille maximale est de 2 Mo.", "error");
       return;
     }
 
@@ -111,31 +124,30 @@ export function CertificationFormModal({
       niveau,
       dureeIndicative: dureeIndicative || null,
       image: image || null,
-      fournisseurId
+      fournisseurId: Number(fournisseurId)
     });
   };
 
-  if (!isOpen) return null;
-
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={() => { if (!modalLoading) onClose(); }}
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        />
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => { if (!modalLoading) onClose(); }}
+            className="absolute inset-0 bg-slate-900/80"
+          />
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="bg-slate-50 border border-slate-200/80 w-full max-w-5xl rounded-[32px] shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]"
-        >
-          {/* Header */}
-          <div className="p-6 border-b border-slate-200/80 flex items-center justify-between bg-slate-50/20">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="bg-slate-50 border border-slate-200/80 w-full max-w-5xl rounded-[32px] shadow-2xl relative z-10 flex flex-col md:max-h-[90vh] my-auto overflow-hidden"
+          >
+            {/* Header */}
+          <div className="p-6 border-b border-slate-200 flex items-center justify-between bg-white relative z-20">
             <div className="flex items-center gap-2">
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${initialData ? 'bg-blue-50 border-blue-100 text-blue-600' : 'bg-red-50 border-red-100 text-red-600'}`}>
                 {initialData ? <Edit className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
@@ -159,10 +171,10 @@ export function CertificationFormModal({
           </div>
 
           {/* Side-by-side content */}
-          <div className="flex-1 overflow-y-auto flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-slate-900">
+          <div className="flex-1 flex flex-col md:flex-row md:overflow-hidden">
             
             {/* Formulaire (Gauche) */}
-            <form onSubmit={handleSubmit} className="p-8 space-y-5 md:w-1/2 overflow-y-auto text-left">
+            <form onSubmit={handleSubmit} className="p-5 md:p-8 space-y-5 w-full md:w-1/2 md:overflow-y-auto text-left">
               {modalError && (
                 <div className="p-3.5 bg-rose-500/5 border border-rose-500/20 text-rose-500 rounded-xl text-xs font-bold">
                   {modalError}
@@ -200,7 +212,7 @@ export function CertificationFormModal({
                     <button
                       type="button"
                       onClick={onManageFournisseurs}
-                      className="text-[10px] text-red-600 hover:text-indigo-300 font-bold uppercase tracking-wider"
+                      className="text-[10px] text-red-600 hover:text-red-750 font-bold uppercase tracking-wider cursor-pointer"
                     >
                       + Gérer
                     </button>
@@ -299,12 +311,20 @@ export function CertificationFormModal({
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Description</label>
                 <textarea
+                  ref={descRef}
                   required
                   rows={3}
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(e) => {
+                    setDescription(e.target.value);
+                    const el = e.target;
+                    el.style.height = 'auto';
+                    const newHeight = Math.min(el.scrollHeight, 200);
+                    el.style.height = `${newHeight}px`;
+                    el.style.overflowY = el.scrollHeight > 200 ? 'auto' : 'hidden';
+                  }}
                   placeholder="Objectifs de la certification..."
-                  className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all resize-none"
+                  className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all resize-none overflow-y-hidden"
                 />
               </div>
 
@@ -333,82 +353,64 @@ export function CertificationFormModal({
             </form>
 
             {/* Prévisualisation (Droite) */}
-            <div className="p-8 md:w-1/2 bg-gradient-to-tr from-slate-950 to-indigo-950/15 flex flex-col items-center justify-center border-l border-slate-200/80 relative min-h-[450px]">
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-red-50 blur-3xl pointer-events-none" />
+            <div className="p-5 md:p-8 w-full md:w-1/2 bg-gradient-to-tr from-slate-950 to-indigo-950/15 flex flex-col items-center justify-center border-t md:border-t-0 md:border-l border-slate-200/80 relative min-h-[450px] md:overflow-y-auto shrink-0">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-red-50 opacity-20 pointer-events-none" />
 
               <div className="w-full max-w-xs space-y-5 relative z-10">
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-center">Aperçu en direct</span>
+                <div className="w-full max-w-xs flex flex-col group relative">
+                  <div className="relative w-full h-[340px] rounded-xl overflow-hidden shadow-lg border border-slate-200 bg-white">
+                    {/* Background Template */}
+                    <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
 
-                <div className="w-full max-w-xs bg-white backdrop-blur-md border border-slate-200 rounded-[28px] overflow-hidden shadow-xl hover:shadow-2xl hover:border-red-100 transition-all duration-300 group flex flex-col relative">
-
-                  <div className="h-40 w-full bg-slate-50 border-b border-slate-200 relative flex items-center justify-center overflow-hidden p-3">
-                    <div className="absolute w-32 h-32 rounded-full bg-red-50 blur-xl group-hover:bg-red-600/15 transition-all duration-500" />
-
-                    {image && !imageError ? (
-                      <img
-                        src={image}
-                        alt={nom || "Certification"}
-                        className="max-w-full max-h-full object-contain relative z-10 filter drop-shadow-sm group-hover:scale-[1.02] transition-all duration-500"
-                        onError={() => setImageError(true)}
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center z-10">
-                        <div className="w-12 h-12 rounded-2xl border border-dashed border-slate-700/80 bg-white shadow-sm flex items-center justify-center mb-2">
-                          <Award className="w-6 h-6 text-slate-600" />
+                    {/* Examen code overlay */}
+                    {codeExamen && (
+                      <div className="absolute top-4 left-4 z-30">
+                        <div className="bg-slate-900/80 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-700/50 shadow-sm flex items-center gap-1.5 group-hover:bg-red-600 group-hover:border-red-500 transition-colors">
+                          <span className="w-1 h-1 rounded-full bg-red-500 group-hover:bg-white animate-pulse transition-colors"></span>
+                          {codeExamen}
                         </div>
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                          Aucune image
-                        </span>
                       </div>
                     )}
-                  </div>
 
-                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className={`text-[9px] px-2.5 py-0.5 rounded-full font-extrabold uppercase tracking-wider ${getSupplierBadgeStyle(fournisseurs.find(f => f.id === fournisseurId)?.nom || '')}`}>
-                          {fournisseurs.find(f => f.id === fournisseurId)?.nom || 'Fournisseur'}
-                        </span>
-                        <span className={`text-[9px] px-2.5 py-0.5 rounded-full font-extrabold uppercase tracking-wider ${getNiveauBadgeStyle(niveau)}`}>
-                          {niveau}
-                        </span>
-                      </div>
-
-                      <div className="space-y-0.5 text-left">
-                        {codeExamen && (
-                          <span className="text-[10px] font-bold text-red-600 block uppercase tracking-wider">
-                            {codeExamen}
-                          </span>
-                        )}
-                        <h3 className="font-extrabold text-base text-slate-950 line-clamp-1 group-hover:text-red-600 transition-colors">
-                          {nom || 'Titre de la Certification'}
-                        </h3>
-                      </div>
-
-                      <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed text-left">
-                        {description || 'Aucune description rédigée pour le moment.'}
-                      </p>
-                    </div>
-
-                    <div className="pt-4 border-t border-slate-200 flex items-center justify-between text-[10px] text-slate-500 font-extrabold uppercase tracking-wider">
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5" />
-                        <span>{dureeIndicative || 'Non spécifiée'}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Layers className="w-3.5 h-3.5" />
-                        <span>0 module</span>
-                      </div>
+                    {/* Floating Badge Logo */}
+                    <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-20 w-32 flex justify-center">
+                      {image && !imageError ? (
+                        <img
+                          src={image}
+                          alt={nom || "Certification"}
+                          className="w-full h-auto object-contain filter drop-shadow-xl"
+                          onError={() => setImageError(true)}
+                        />
+                      ) : (
+                        <div className="w-20 h-20 bg-white/95 rounded-full flex items-center justify-center border border-slate-200 shadow-sm">
+                          <Award className="w-10 h-10 text-slate-400" />
+                        </div>
+                      )}
                     </div>
                   </div>
 
+                  {/* Title & details underneath (No view button) */}
+                  <div className="mt-4 flex flex-col gap-1.5 px-1 text-left">
+                    <h3 className="text-[13px] font-black text-slate-950 leading-snug line-clamp-2">
+                      {nom || 'Titre de la Certification'}
+                    </h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[8px] px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded font-black uppercase">
+                        {niveau}
+                      </span>
+                      <span className="text-[8px] px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded font-black uppercase">
+                        {fournisseurs.find(f => f.id === fournisseurId)?.nom || 'Fournisseur'}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
           </div>
         </motion.div>
-      </div>
+        </div>
+      )}
     </AnimatePresence>
   );
 }

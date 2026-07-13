@@ -163,25 +163,24 @@ export function QuestionsManagerModal({
     }
   };
 
-  if (!isOpen || !certification) return null;
-
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={() => { if (!questionLoading) { onClose(); resetForm(); setIsQuestionFormOpen(false); } }}
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        />
+      {(isOpen && certification) && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => { if (!questionLoading) { onClose(); resetForm(); setIsQuestionFormOpen(false); } }}
+            className="absolute inset-0 bg-slate-900/80"
+          />
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="bg-slate-50 border border-slate-200/80 w-full max-w-4xl rounded-[32px] shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]"
-        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="bg-slate-50 border border-slate-200/80 w-full max-w-4xl rounded-[32px] shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh] will-change-transform"
+          >
           {/* En-tête */}
           <div className="p-6 border-b border-slate-200/80 flex items-center justify-between bg-slate-50/20">
             <div className="flex items-center gap-2">
@@ -526,7 +525,8 @@ export function QuestionsManagerModal({
 
           </div>
         </motion.div>
-      </div>
+        </div>
+      )}
     </AnimatePresence>
   );
 }
