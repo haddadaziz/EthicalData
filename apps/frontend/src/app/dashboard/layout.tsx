@@ -382,7 +382,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                                                     return (
                                                                         <Link
                                                                             key={subIdx}
-                                                                            href={sub.href}
+                                                                            href={sub.href!}
                                                                             onClick={() => setSidebarOpen(false)}
                                                                             className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
                                                                                 isSubActive
@@ -493,7 +493,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                                             return (
                                                                 <Link
                                                                     key={subIdx}
-                                                                    href={sub.href}
+                                                                    href={sub.href!}
                                                                     className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all group ${
                                                                         isSubActive
                                                                             ? viewMode === 'FORMATEUR'

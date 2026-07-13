@@ -371,6 +371,37 @@ export class UsersService {
     });
   }
 
+  async searchFormateurs(query: string) {
+    const where: any = {
+      deletedAt: null,
+      roles: { some: { nom: 'FORMATEUR' } },
+    };
+
+    if (query.trim()) {
+      const q = query.trim();
+      where.OR = [
+        { prenom: { contains: q } },
+        { nom: { contains: q } },
+        { email: { contains: q } },
+        { telephone: { contains: q } },
+      ];
+    }
+
+    const users = await this.prisma.utilisateur.findMany({
+      where,
+      take: 20,
+      orderBy: { prenom: 'asc' },
+    });
+
+    return users.map((user) => {
+      const { motDePasse, ...result } = user;
+      return {
+        ...result,
+        id: result.id.toString(),
+      };
+    });
+  }
+
   // Met à jour admin
   async update(id: number, updateUserDto: UpdateUserDto) {
     const user = await this.prisma.utilisateur.findFirst({

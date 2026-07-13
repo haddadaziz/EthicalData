@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useConfirm } from '../../../context/ConfirmContext';
-import { Calendar, Clock, Plus, User, CheckCircle, Video, RefreshCw, X, Trash2, ShieldCheck, Sparkles, AlertCircle } from '@/components/icons';
+import { Calendar, CalendarCheck, Clock, Plus, User, CheckCircle, Video, RefreshCw, X, Trash2, ShieldCheck, Sparkles, AlertCircle, Search, ChevronDown, ChevronUp, Edit } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Formateur {
@@ -13,6 +13,7 @@ interface Formateur {
     nom: string;
     email: string;
     avatar?: string | null;
+    telephone?: string | null;
 }
 
 interface Creneau {
@@ -38,17 +39,29 @@ export default function AdminCoachingPage() {
     const { showToast } = useToast();
     const { confirm } = useConfirm();
 
+    const [tab, setTab] = useState<'creneaux' | 'rdv'>('creneaux');
     const [creneaux, setCreneaux] = useState<Creneau[]>([]);
     const [allRendezVous, setAllRendezVous] = useState<RendezVous[]>([]);
     const [loading, setLoading] = useState(true);
     const [createLoading, setCreateLoading] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-    // Formulaire d'ajout de créneau
     const [dateDebut, setDateDebut] = useState('');
     const [dateFin, setDateFin] = useState('');
+    const [selectedFormateur, setSelectedFormateur] = useState<Formateur | null>(null);
+    const [formateurSearch, setFormateurSearch] = useState('');
+    const [formateurResults, setFormateurResults] = useState<Formateur[]>([]);
+    const [searchLoading, setSearchLoading] = useState(false);
+    const [searchOpen, setSearchOpen] = useState(false);
+    const searchQueryRef = useRef('');
 
-    const fetchData = async () => {
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editingCreneau, setEditingCreneau] = useState<Creneau | null>(null);
+    const [editDateDebut, setEditDateDebut] = useState('');
+    const [editDateFin, setEditDateFin] = useState('');
+    const [editLoading, setEditLoading] = useState(false);
+
+    const fetchData = useCallback(async () => {
         setLoading(true);
         try {
             const [creneauxData, rdvData] = await Promise.all([
@@ -63,15 +76,52 @@ export default function AdminCoachingPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [showToast]);
 
     useEffect(() => {
         fetchData();
+    }, [fetchData]);
+
+    const handleSearchFormateur = useCallback(async (q: string) => {
+        if (!q.trim()) {
+            setFormateurResults([]);
+            setSearchOpen(false);
+            return;
+        }
+        searchQueryRef.current = q.trim();
+        setSearchLoading(true);
+        try {
+            const results = await apiFetch(`/users?q=${encodeURIComponent(q.trim())}`);
+            if (searchQueryRef.current === q.trim()) {
+                setFormateurResults(results);
+                setSearchOpen(results.length > 0);
+            }
+        } catch (err: any) {
+            console.error(err);
+            if (searchQueryRef.current === q.trim()) {
+                setFormateurResults([]);
+            }
+        } finally {
+            if (searchQueryRef.current === q.trim()) {
+                setSearchLoading(false);
+            }
+        }
     }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (isAddModalOpen) handleSearchFormateur(formateurSearch);
+        }, 250);
+        return () => clearTimeout(timer);
+    }, [formateurSearch, isAddModalOpen, handleSearchFormateur]);
 
     const handleCreateCreneau = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!dateDebut || !dateFin) return;
+        if (!selectedFormateur) {
+            showToast("Veuillez sélectionner un formateur.", "error");
+            return;
+        }
 
         setCreateLoading(true);
         try {
@@ -80,13 +130,17 @@ export default function AdminCoachingPage() {
                 body: {
                     dateDebut: new Date(dateDebut).toISOString(),
                     dateFin: new Date(dateFin).toISOString(),
+                    formateurId: parseInt(selectedFormateur.id),
                 },
             });
 
-            showToast("Nouveau créneau de disponibilité publié !", "success");
+            showToast(`Créneau publié pour ${selectedFormateur.prenom} ${selectedFormateur.nom} !`, "success");
             setIsAddModalOpen(false);
             setDateDebut('');
             setDateFin('');
+            setSelectedFormateur(null);
+            setFormateurSearch('');
+            setFormateurResults([]);
             fetchData();
         } catch (err: any) {
             showToast(err.message || "Erreur lors de la création du créneau.", "error");
@@ -115,6 +169,62 @@ export default function AdminCoachingPage() {
         }
     };
 
+    const handleDeleteCreneau = async (c: Creneau) => {
+        const isConfirmed = await confirm({
+            title: "Supprimer ce créneau ?",
+            message: `Êtes-vous sûr de vouloir supprimer le créneau du ${formatDate(c.dateDebut)} ?`,
+            confirmText: "Oui, supprimer",
+            cancelText: "Retour",
+            type: "danger",
+        });
+
+        if (!isConfirmed) return;
+
+        try {
+            await apiFetch(`/appointments/creneaux/${c.id}`, { method: 'DELETE' });
+            showToast("Créneau supprimé.", "success");
+            fetchData();
+        } catch (err: any) {
+            showToast(err.message || "Erreur lors de la suppression.", "error");
+        }
+    };
+
+    const openEditModal = (c: Creneau) => {
+        setEditingCreneau(c);
+        const toDatetimeLocal = (iso: string) => {
+            const d = new Date(iso);
+            const pad = (n: number) => n.toString().padStart(2, '0');
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        };
+        setEditDateDebut(toDatetimeLocal(c.dateDebut));
+        setEditDateFin(toDatetimeLocal(c.dateFin));
+        setIsEditModalOpen(true);
+    };
+
+    const handleUpdateCreneau = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editDateDebut || !editDateFin || !editingCreneau) return;
+
+        setEditLoading(true);
+        try {
+            await apiFetch(`/appointments/creneaux/${editingCreneau.id}`, {
+                method: 'PATCH',
+                body: {
+                    dateDebut: new Date(editDateDebut).toISOString(),
+                    dateFin: new Date(editDateFin).toISOString(),
+                },
+            });
+            showToast("Créneau modifié avec succès.", "success");
+            setIsEditModalOpen(false);
+            setEditingCreneau(null);
+            fetchData();
+        } catch (err: any) {
+            showToast(err.message || "Erreur lors de la modification.", "error");
+        } finally {
+            setEditLoading(false);
+        }
+    };
+
     const formatDate = (dateStr: string) => {
         return new Date(dateStr).toLocaleDateString('fr-FR', {
             weekday: 'long',
@@ -131,86 +241,9 @@ export default function AdminCoachingPage() {
         });
     };
 
-
-
-    const RendezVousList = React.useMemo(() => {
-        if (allRendezVous.length === 0) {
-            return (
-                <div className="p-10 text-center bg-white border border-slate-200 rounded-3xl space-y-2">
-                    <Clock className="w-8 h-8 text-slate-300 mx-auto" />
-                    <p className="text-xs font-bold text-slate-600">Aucun rendez-vous réservé pour l'instant</p>
-                </div>
-            );
-        }
-        return (
-            <div className="grid grid-cols-1 gap-4">
-                {allRendezVous.map((rdv) => (
-                    <div
-                        key={rdv.id}
-                        className="p-5 bg-white border border-slate-200/90 rounded-3xl space-y-3 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
-                    >
-                        <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                                <h3 className="text-xs font-black text-slate-950">Apprenant : {rdv.candidat.prenom} {rdv.candidat.nom}</h3>
-                                <span className="px-2 py-0.5 bg-blue-50 text-blue-700 font-extrabold text-[10px] rounded-full">
-                                    {rdv.type}
-                                </span>
-                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${rdv.statut === 'CONFIRME' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
-                                    {rdv.statut}
-                                </span>
-                            </div>
-
-                            <p className="text-xs font-bold text-slate-600 capitalize">
-                                📅 {formatDate(rdv.creneau.dateDebut)} de {formatTime(rdv.creneau.dateDebut)} à {formatTime(rdv.creneau.dateFin)}
-                            </p>
-
-                            {rdv.motif && (
-                                <p className="text-xs text-slate-500 italic">
-                                    Motif : "{rdv.motif}"
-                                </p>
-                            )}
-                        </div>
-
-                        {rdv.statut === 'CONFIRME' && (
-                            <div className="flex items-center gap-2">
-                                <button
-                                    onClick={() => showToast("Lancement de la salle visio sécurisée...", "info")}
-                                    className="px-4 py-2 bg-slate-950 hover:bg-slate-800 text-white font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer"
-                                >
-                                    <Video className="w-4 h-4 text-red-500" />
-                                    <span>Rejoindre</span>
-                                </button>
-
-                                <button
-                                    onClick={() => handleCancelRdv(rdv.id)}
-                                    className="px-3 py-2 text-rose-600 hover:bg-rose-50 font-bold rounded-xl text-xs cursor-pointer border border-rose-200"
-                                >
-                                    Annuler
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                ))}
-            </div>
-        );
-    }, [allRendezVous]); // eslint-disable-line react-hooks/exhaustive-deps
-
-    const CreneauxGrid = React.useMemo(() => {
-        return (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {creneaux.map((c) => (
-                    <div key={c.id} className="p-4 bg-white border border-slate-200/90 rounded-2xl space-y-2 shadow-sm">
-                        <p className="text-xs font-extrabold text-slate-900 capitalize">📅 {formatDate(c.dateDebut)}</p>
-                        <p className="text-xs text-slate-500 font-bold">⏰ {formatTime(c.dateDebut)} - {formatTime(c.dateFin)}</p>
-                        <div className="pt-2 flex items-center justify-between border-t border-slate-100">
-                            <span className="text-[10px] text-emerald-600 font-extrabold uppercase">Disponible</span>
-                            <span className="text-[10px] text-slate-400 font-bold">Formateur: {c.formateur.prenom}</span>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        );
-    }, [creneaux]); // eslint-disable-line react-hooks/exhaustive-deps
+    const now = new Date();
+    const rdvAVenir = allRendezVous.filter(rdv => new Date(rdv.creneau.dateDebut) > now);
+    const rdvPasses = allRendezVous.filter(rdv => new Date(rdv.creneau.dateDebut) <= now);
 
     if (loading) {
         return (
@@ -223,54 +256,176 @@ export default function AdminCoachingPage() {
 
     return (
         <div className="space-y-8 max-w-6xl mx-auto text-left">
-            {/* EN-TÊTE ADMIN */}
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm">
-                <div>
-                    <h1 className="text-2xl font-black text-slate-950 tracking-tight flex items-center gap-3">
-                        <Calendar className="w-7 h-7 text-red-600" />
-                        <span>Planning & Gestion des Créneaux</span>
-                    </h1>
-                    <p className="text-xs text-slate-500 font-medium mt-1">
-                        Proposez des créneaux de disponibilité pour vos apprenants et suivez vos séances de coaching attribuées.
-                    </p>
-                </div>
 
+            {/* Tabs */}
+            <div className="flex items-center gap-2 bg-white border border-slate-200/80 rounded-2xl p-1.5 w-fit shadow-xs">
                 <button
-                    onClick={() => setIsAddModalOpen(true)}
-                    className="px-5 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl text-xs flex items-center gap-2 transition-all shadow-md shadow-red-600/20 cursor-pointer shrink-0"
+                    onClick={() => setTab('creneaux')}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${tab === 'creneaux' ? 'bg-slate-950 text-white shadow-sm' : 'text-slate-500 hover:text-slate-950'}`}
                 >
-                    <Plus className="w-4 h-4" />
-                    <span>Ouvrir un nouveau créneau</span>
+                    Créneaux Ouverts
+                </button>
+                <button
+                    onClick={() => setTab('rdv')}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${tab === 'rdv' ? 'bg-slate-950 text-white shadow-sm' : 'text-slate-500 hover:text-slate-950'}`}
+                >
+                    Rendez-vous
                 </button>
             </div>
 
-            {/* SECTION 1 : RENDEZ-VOUS ÉTABLIS */}
-            <div className="space-y-4">
-                <h2 className="text-xs font-black uppercase tracking-wider text-slate-500">Rendez-vous Réservés par les Apprenants ({allRendezVous.length})</h2>
+            {tab === 'creneaux' && (
+                <>
+                    {/* Stats bar */}
+                    <div className="grid grid-cols-3 gap-4">
+                        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 space-y-1 shadow-sm">
+                            <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Total RDV</p>
+                            <p className="text-2xl font-black text-slate-950">{allRendezVous.length}</p>
+                        </div>
+                        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 space-y-1 shadow-sm">
+                            <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">À venir</p>
+                            <p className="text-2xl font-black text-emerald-600">{rdvAVenir.length}</p>
+                        </div>
+                        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 space-y-1 shadow-sm">
+                            <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Passés</p>
+                            <p className="text-2xl font-black text-slate-500">{rdvPasses.length}</p>
+                        </div>
+                    </div>
 
-                {RendezVousList}
-            </div>
+                    {/* Créneaux grid */}
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-xs font-black uppercase tracking-wider text-slate-500">Créneaux Ouverts ({creneaux.length})</h2>
+                            <button
+                                onClick={() => setIsAddModalOpen(true)}
+                                className="flex items-center justify-center gap-2 px-5 py-2.5 bg-slate-950 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold cursor-pointer transition-all shadow-md hover:shadow-lg active:scale-95"
+                            >
+                                <Plus className="w-3 h-3" />
+                                <span>Nouveau créneau</span>
+                            </button>
+                        </div>
 
-            {/* SECTION 2 : CRÉNEAUX OUVERTS EN ATTENTE DE RÉSERVATION */}
-            <div className="space-y-4 pt-4">
-                <h2 className="text-xs font-black uppercase tracking-wider text-slate-500">Créneaux Ouverts Disponibles ({creneaux.length})</h2>
+                        {creneaux.length === 0 ? (
+                            <div className="p-10 text-center bg-white border border-slate-200 rounded-3xl space-y-2">
+                                <Calendar className="w-8 h-8 text-slate-300 mx-auto" />
+                                <p className="text-xs font-bold text-slate-600">Aucun créneau disponible pour le moment</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                {creneaux.map((c) => (
+                                    <div key={c.id} className="p-3 bg-white border border-slate-200/90 rounded-2xl shadow-sm hover:shadow-md hover:border-slate-300 transition-all flex flex-col justify-between">
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
+                                                {c.formateur.avatar ? (
+                                                    <img src={c.formateur.avatar} alt={c.formateur.prenom} className="w-8 h-8 rounded-lg object-cover border border-slate-200" />
+                                                ) : (
+                                                    <div className="w-8 h-8 rounded-lg bg-slate-950 text-white font-black text-[10px] flex items-center justify-center">
+                                                        {c.formateur.prenom[0]}{c.formateur.nom[0]}
+                                                    </div>
+                                                )}
+                                                <div>
+                                                    <h4 className="text-[11px] font-black text-slate-950">{c.formateur.prenom} {c.formateur.nom}</h4>
+                                                    <span className="text-[9px] text-blue-600 font-bold uppercase tracking-wider">Formateur</span>
+                                                </div>
+                                            </div>
 
-                {CreneauxGrid}
-            </div>
+                                            <div className="space-y-1 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                                                <p className="text-[11px] font-extrabold text-slate-900 capitalize flex items-center gap-1.5">
+                                                    <Calendar className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                                                    <span>{formatDate(c.dateDebut)}</span>
+                                                </p>
+                                                <p className="text-[11px] font-bold text-slate-600 flex items-center gap-1.5">
+                                                    <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                                    <span>{formatTime(c.dateDebut)} - {formatTime(c.dateFin)}</span>
+                                                </p>
+                                            </div>
+                                        </div>
 
-            {/* MODALE CRÉATION CRÉNEAU */}
+                                        <div className="flex items-center gap-2 pt-2 border-t border-slate-100 mt-2">
+                                            <button
+                                                onClick={() => openEditModal(c)}
+                                                className="flex-1 py-1.5 text-xs font-bold bg-slate-950 hover:bg-slate-800 text-white rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
+                                                title="Gérer"
+                                            >
+                                                <Edit className="w-3 h-3" />
+                                                <span>Gérer</span>
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteCreneau(c)}
+                                                className="flex-1 py-1.5 text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
+                                                title="Supprimer"
+                                            >
+                                                <Trash2 className="w-3 h-3" />
+                                                <span>Supprimer</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </>
+            )}
+
+            {tab === 'rdv' && (
+                <div className="space-y-6">
+                    {/* À venir */}
+                    <div className="space-y-3">
+                        <h3 className="text-xs font-black uppercase tracking-wider text-emerald-600 flex items-center gap-2">
+                            <Sparkles className="w-3.5 h-3.5" />
+                            <span>À venir ({rdvAVenir.length})</span>
+                        </h3>
+
+                        {rdvAVenir.length === 0 ? (
+                            <div className="p-8 text-center bg-white border border-slate-200 rounded-3xl space-y-2">
+                                <Clock className="w-8 h-8 text-slate-300 mx-auto" />
+                                <p className="text-xs font-bold text-slate-600">Aucun rendez-vous à venir</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-4">
+                                {rdvAVenir.map((rdv) => (
+                                    <RdvCard key={rdv.id} rdv={rdv} handleCancelRdv={handleCancelRdv} showToast={showToast} />
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Historique */}
+                    <div className="space-y-3">
+                        <h3 className="text-xs font-black uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                            <Clock className="w-3.5 h-3.5" />
+                            <span>Historique ({rdvPasses.length})</span>
+                        </h3>
+
+                        {rdvPasses.length === 0 ? (
+                            <div className="p-8 text-center bg-white border border-slate-200 rounded-3xl space-y-2">
+                                <Calendar className="w-8 h-8 text-slate-300 mx-auto" />
+                                <p className="text-xs font-bold text-slate-600">Aucun rendez-vous passé</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-4">
+                                {rdvPasses.map((rdv) => (
+                                    <RdvCard key={rdv.id} rdv={rdv} handleCancelRdv={handleCancelRdv} showToast={showToast} />
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* MODALE CRÉATION */}
             <AnimatePresence>
                 {isAddModalOpen && (
                     <div
                         onClick={() => setIsAddModalOpen(false)}
-                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md"
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70"
                     >
                         <motion.div
                             onClick={(e) => e.stopPropagation()}
-                            initial={{ opacity: 0, scale: 0.95, y: 15 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 15 }}
-                            className="w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-2xl p-6 md:p-8 space-y-6 text-left relative"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            transition={{ duration: 0.15 }}
+                            className="w-full max-w-lg bg-white border border-slate-200 rounded-3xl shadow-2xl p-6 md:p-8 space-y-6 text-left relative"
                         >
                             <button
                                 onClick={() => setIsAddModalOpen(false)}
@@ -281,10 +436,63 @@ export default function AdminCoachingPage() {
 
                             <div className="space-y-1">
                                 <h3 className="text-lg font-black text-slate-950">Ouvrir un créneau horaire</h3>
-                                <p className="text-xs text-slate-500 font-medium">Définissez la plage horaire durant laquelle vous serez disponible.</p>
+                                <p className="text-xs text-slate-500 font-medium">Sélectionnez le formateur et définissez la plage horaire.</p>
                             </div>
 
                             <form onSubmit={handleCreateCreneau} className="space-y-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-bold text-slate-700">Formateur concerné *</label>
+                                    <div className="relative">
+                                        <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 pointer-events-none">
+                                            <Search className="w-3.5 h-3.5" />
+                                        </span>
+                                        <input
+                                            type="text"
+                                            placeholder="Rechercher par nom, prénom, email ou téléphone..."
+                                            value={formateurSearch}
+                                            onChange={(e) => {
+                                                setFormateurSearch(e.target.value);
+                                                if (selectedFormateur) setSelectedFormateur(null);
+                                            }}
+                                            onFocus={() => formateurResults.length > 0 && setSearchOpen(true)}
+                                            className="w-full pl-10 pr-3 py-3 bg-slate-50 border border-slate-200 focus:border-red-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
+                                        />
+                                        {searchLoading && (
+                                            <span className="absolute inset-y-0 right-3 flex items-center">
+                                                <RefreshCw className="w-3.5 h-3.5 animate-spin text-slate-400" />
+                                            </span>
+                                        )}
+                                        {searchOpen && formateurResults.length > 0 && (
+                                            <div className="absolute top-full mt-1 left-0 right-0 bg-white border border-slate-200 rounded-2xl shadow-xl max-h-48 overflow-y-auto z-20">
+                                                {formateurResults.map((f) => (
+                                                    <button
+                                                        key={f.id}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setSelectedFormateur(f);
+                                                            setFormateurSearch(`${f.prenom} ${f.nom}`);
+                                                            setSearchOpen(false);
+                                                        }}
+                                                        className="w-full px-4 py-3 flex items-center gap-3 hover:bg-slate-50 text-left transition-colors border-b border-slate-100 last:border-0 cursor-pointer"
+                                                    >
+                                                        {f.avatar ? (
+                                                            <img src={f.avatar} alt={f.prenom} className="w-8 h-8 rounded-xl object-cover border border-slate-200 shrink-0" />
+                                                        ) : (
+                                                            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-black text-[10px] shrink-0">
+                                                                {f.prenom[0]}{f.nom[0]}
+                                                            </div>
+                                                        )}
+                                                        <div>
+                                                            <p className="text-xs font-bold text-slate-950">{f.prenom} {f.nom}</p>
+                                                            <p className="text-[10px] text-slate-400 font-medium">{f.email}{f.telephone ? ` · ${f.telephone}` : ''}</p>
+                                                        </div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
                                 <div className="space-y-1.5">
                                     <label className="text-xs font-bold text-slate-700">Date et heure de début *</label>
                                     <input
@@ -317,7 +525,7 @@ export default function AdminCoachingPage() {
                                     </button>
                                     <button
                                         type="submit"
-                                        disabled={createLoading}
+                                        disabled={createLoading || !selectedFormateur}
                                         className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 transition-all shadow-md shadow-red-600/20 cursor-pointer disabled:opacity-50"
                                     >
                                         {createLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
@@ -329,6 +537,142 @@ export default function AdminCoachingPage() {
                     </div>
                 )}
             </AnimatePresence>
+
+            {/* MODALE ÉDITION */}
+            <AnimatePresence>
+                {isEditModalOpen && editingCreneau && (
+                    <div
+                        onClick={() => setIsEditModalOpen(false)}
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70"
+                    >
+                        <motion.div
+                            onClick={(e) => e.stopPropagation()}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            transition={{ duration: 0.15 }}
+                            className="w-full max-w-lg bg-white border border-slate-200 rounded-3xl shadow-2xl p-6 md:p-8 space-y-6 text-left relative"
+                        >
+                            <button
+                                onClick={() => setIsEditModalOpen(false)}
+                                className="absolute right-5 top-5 p-2 text-slate-400 hover:text-slate-950 rounded-2xl hover:bg-slate-100 transition-colors cursor-pointer"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+
+                            <div className="space-y-1">
+                                <h3 className="text-lg font-black text-slate-950">Modifier le créneau</h3>
+                                <p className="text-xs text-slate-500 font-medium">
+                                    {editingCreneau.formateur.prenom} {editingCreneau.formateur.nom} — {formatDate(editingCreneau.dateDebut)}
+                                </p>
+                            </div>
+
+                            <form onSubmit={handleUpdateCreneau} className="space-y-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-bold text-slate-700">Nouvelle date et heure de début *</label>
+                                    <input
+                                        type="datetime-local"
+                                        required
+                                        value={editDateDebut}
+                                        onChange={(e) => setEditDateDebut(e.target.value)}
+                                        className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-red-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
+                                    />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-bold text-slate-700">Nouvelle date et heure de fin *</label>
+                                    <input
+                                        type="datetime-local"
+                                        required
+                                        value={editDateFin}
+                                        onChange={(e) => setEditDateFin(e.target.value)}
+                                        className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-red-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
+                                    />
+                                </div>
+
+                                <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsEditModalOpen(false)}
+                                        className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs cursor-pointer"
+                                    >
+                                        Annuler
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={editLoading}
+                                        className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 transition-all shadow-md shadow-blue-600/20 cursor-pointer disabled:opacity-50"
+                                    >
+                                        {editLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Edit className="w-4 h-4" />}
+                                        <span>Enregistrer</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+}
+
+function RdvCard({ rdv, handleCancelRdv, showToast }: { rdv: RendezVous; handleCancelRdv: (id: string) => void; showToast: any }) {
+    return (
+        <div className="p-5 bg-white border border-slate-200/90 rounded-3xl space-y-3 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                    {rdv.candidat.avatar ? (
+                        <img src={rdv.candidat.avatar} alt={rdv.candidat.prenom} className="w-8 h-8 rounded-xl object-cover border border-slate-200 shrink-0" />
+                    ) : (
+                        <div className="w-8 h-8 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-700 font-black text-xs shrink-0">
+                            {rdv.candidat.prenom[0]}{rdv.candidat.nom[0]}
+                        </div>
+                    )}
+                    <div>
+                        <h3 className="text-xs font-black text-slate-950">{rdv.candidat.prenom} {rdv.candidat.nom}</h3>
+                        <div className="flex items-center gap-2">
+                            <span className="px-2 py-0.5 bg-blue-50 text-blue-700 font-extrabold text-[10px] rounded-full">
+                                {rdv.type}
+                            </span>
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${rdv.statut === 'CONFIRME' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
+                                {rdv.statut}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600 ml-10">
+                    <Calendar className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                    <span className="capitalize">{new Date(rdv.creneau.dateDebut).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                    <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-1" />
+                    <span>{new Date(rdv.creneau.dateDebut).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} - {new Date(rdv.creneau.dateFin).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
+
+                {rdv.motif && (
+                    <p className="text-xs text-slate-500 italic ml-10">
+                        Motif : &quot;{rdv.motif}&quot;
+                    </p>
+                )}
+            </div>
+
+            {rdv.statut === 'CONFIRME' && (
+                <div className="flex items-center gap-2 shrink-0">
+                    <button
+                        onClick={() => showToast("Lancement de la salle visio sécurisée...", "info")}
+                        className="px-4 py-2 bg-slate-950 hover:bg-slate-800 text-white font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer"
+                    >
+                        <Video className="w-4 h-4 text-red-500" />
+                        <span>Rejoindre</span>
+                    </button>
+
+                    <button
+                        onClick={() => handleCancelRdv(rdv.id)}
+                        className="px-3 py-2 text-rose-600 hover:bg-rose-50 font-bold rounded-xl text-xs cursor-pointer border border-rose-200"
+                    >
+                        Annuler
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

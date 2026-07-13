@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useConfirm } from '../../../context/ConfirmContext';
-import { BookOpen, Plus, Search, Edit, Trash2, Globe, Clock, User, Users } from '@/components/icons';
+import { BookOpen, Plus, Search, Edit, Trash2, Globe, Clock, User, Users, ArrowRight } from '@/components/icons';
 import { CourseFormModal } from '../../../components/admin/courses/CourseFormModal';
 
 interface FormateurInfo {
@@ -40,6 +41,7 @@ interface CourseData {
 export default function AdminCoursesPage() {
     const { showToast } = useToast();
     const { confirm } = useConfirm();
+    const router = useRouter();
 
     const [courses, setCourses] = useState<CourseData[]>([]);
     const [certifications, setCertifications] = useState<CertificationInfo[]>([]);
@@ -48,16 +50,11 @@ export default function AdminCoursesPage() {
     const [statusFilter, setStatusFilter] = useState('ALL');
     const [certFilter, setCertFilter] = useState('ALL');
 
-    // Create Modal state
-    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    const [createLoading, setCreateLoading] = useState(false);
-
     // Edit Modal state
     const [selectedCourse, setSelectedCourse] = useState<any>(null);
     const [updateLoading, setUpdateLoading] = useState(false);
 
     // Modal error states
-    const [createModalError, setCreateModalError] = useState<string | null>(null);
     const [editModalError, setEditModalError] = useState<string | null>(null);
 
     const fetchCoursesAndCerts = async () => {
@@ -79,28 +76,6 @@ export default function AdminCoursesPage() {
 
     useEffect(() => {
         fetchCoursesAndCerts();
-    }, []);
-
-    const handleCreateCourse = useCallback(async (payload: any) => {
-        setCreateLoading(true);
-        setCreateModalError(null);
-
-        try {
-            await apiFetch('/cours', {
-                method: 'POST',
-                body: payload
-            });
-
-            showToast(`Le cours "${payload.titre}" a été créé avec succès en tant que brouillon.`, "success");
-            setIsCreateModalOpen(false);
-            fetchCoursesAndCerts();
-        } catch (err: any) {
-            const msg = err.message || "Erreur lors de la création du cours.";
-            setCreateModalError(msg);
-            showToast(msg, "error");
-        } finally {
-            setCreateLoading(false);
-        }
     }, []);
 
     const handleOpenEditModal = (course: CourseData) => {
@@ -204,7 +179,6 @@ export default function AdminCoursesPage() {
         return { total, published, draft };
     }, [courses]);
 
-    const closeCreateModal = useCallback(() => { if (!createLoading) setIsCreateModalOpen(false); }, [createLoading]);
     const closeEditModal = useCallback(() => { if (!updateLoading) setSelectedCourse(null); }, [updateLoading]);
 
     return (
@@ -284,14 +258,6 @@ export default function AdminCoursesPage() {
                         </select>
                     </div>
                 </div>
-
-                <button
-                    onClick={() => setIsCreateModalOpen(true)}
-                    className="flex items-center justify-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-xs font-bold cursor-pointer transition-all shadow-md shadow-red-600/10 hover:shadow-lg active:scale-95"
-                >
-                    <Plus className="w-4 h-4" />
-                    <span>Nouveau Cours</span>
-                </button>
             </div>
 
             {/* GRILLE RESPONSIVE DE COURS */}
@@ -312,7 +278,7 @@ export default function AdminCoursesPage() {
                             className="group bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-xs hover:shadow-lg hover:border-slate-350 transition-all duration-300 flex flex-col"
                         >
                             {/* Image Header */}
-                            <div className="relative aspect-[750/422] bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden">
+                            <div onClick={() => handleOpenEditModal(course)} className="relative w-full h-[200px] bg-gradient-to-br from-slate-100 to-slate-200 cursor-pointer">
                                 {course.imageUrl ? (
                                     <img src={course.imageUrl} alt={course.titre} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                 ) : (
@@ -320,12 +286,12 @@ export default function AdminCoursesPage() {
                                         <BookOpen className="w-10 h-10 text-slate-300 group-hover:scale-105 transition-transform duration-500" />
                                     </div>
                                 )}
-                                <span className={`absolute top-3 left-3 px-2 py-0.5 rounded-md font-extrabold text-[8px] uppercase tracking-wider backdrop-blur-sm ${
-                                    course.statut === 'PUBLIE' ? 'bg-emerald-500 text-white' : course.statut === 'ARCHIVE' ? 'bg-slate-500 text-white' : 'bg-amber-500 text-white'
+                                <span className={`absolute top-3 left-3 px-2 py-0.5 rounded-md font-extrabold text-[8px] uppercase tracking-wider z-10 pointer-events-none ${
+                                    course.statut === 'PUBLIE' ? 'bg-emerald-600 text-white' : course.statut === 'ARCHIVE' ? 'bg-slate-600 text-white' : 'bg-amber-600 text-white'
                                 }`}>
                                     {course.statut}
                                 </span>
-                                <span className="absolute bottom-3 left-3 px-2 py-0.5 bg-slate-900/70 text-white text-[8px] font-extrabold rounded-md uppercase tracking-wider backdrop-blur-sm">
+                                <span className="absolute bottom-3 left-3 px-2 py-0.5 bg-slate-900/80 text-white text-[8px] font-extrabold rounded-md uppercase tracking-wider z-10 pointer-events-none">
                                     {course.certification?.codeExamen || course.certification?.nom || 'Certification'}
                                 </span>
                             </div>
@@ -370,49 +336,45 @@ export default function AdminCoursesPage() {
                                     </div>
                                     <span className="truncate">Par {course.formateur ? `${course.formateur.prenom} ${course.formateur.nom}` : 'Ethical Data'}</span>
                                 </div>
+
+                                <button
+                                    onClick={() => router.push(`/dashboard/cours/${course.id}`)}
+                                    className="self-start flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 transition-colors"
+                                >
+                                    Consulter <ArrowRight className="w-3 h-3" />
+                                </button>
                             </div>
 
                             {/* Actions / Card Footer */}
-                            <div className="border-t border-slate-100 p-3 flex items-center justify-end gap-2 bg-slate-50/50">
-                                {course.statut === 'BROUILLON' && (
-                                    <button
-                                        onClick={() => handlePublishCourse(course)}
-                                        className="p-2 hover:bg-emerald-50 hover:text-emerald-700 text-emerald-600 rounded-xl transition-colors cursor-pointer"
-                                        title="Publier le cours"
-                                    >
-                                        <Globe className="w-4 h-4" />
-                                    </button>
-                                )}
+                            <div className="border-t border-slate-100 p-3 flex items-center gap-2 bg-slate-50/50">
                                 <button
                                     onClick={() => handleOpenEditModal(course)}
-                                    className="p-2 hover:bg-blue-50 hover:text-blue-700 text-blue-600 rounded-xl transition-colors cursor-pointer"
-                                    title="Modifier le cours"
+                                    className="flex-1 py-2 bg-slate-950 hover:bg-slate-800 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                                 >
-                                    <Edit className="w-4 h-4" />
+                                    <Edit className="w-3.5 h-3.5" />
+                                    <span>Modifier</span>
                                 </button>
+                                {course.statut === 'BROUILLON' && (
+                                <button
+                                    onClick={() => handlePublishCourse(course)}
+                                    className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                                >
+                                    <Globe className="w-3.5 h-3.5" />
+                                    <span>Publier</span>
+                                </button>
+                                )}
                                 <button
                                     onClick={() => handleDeleteCourse(course)}
-                                    className="p-2 hover:bg-rose-50 hover:text-rose-700 text-rose-600 rounded-xl transition-colors cursor-pointer"
-                                    title="Supprimer le cours"
+                                    className="flex-1 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                                 >
-                                    <Trash2 className="w-4 h-4" />
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                    <span>Supprimer</span>
                                 </button>
                             </div>
                         </div>
-                    ))}
+                        ))}
                 </div>
             )}
-
-            {/* MODALE DE CRÉATION */}
-            <CourseFormModal
-                isOpen={isCreateModalOpen}
-                onClose={closeCreateModal}
-                onSubmit={handleCreateCourse}
-                initialData={null}
-                certifications={certifications}
-                modalLoading={createLoading}
-                modalError={createModalError}
-            />
 
             {/* MODALE D'ÉDITION */}
             <CourseFormModal

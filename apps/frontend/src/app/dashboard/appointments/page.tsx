@@ -614,7 +614,7 @@ export default function AppointmentsPage() {
                                                 )}
                                                 <div>
                                                     <h4 className="text-xs font-black text-slate-950">{c.formateur.prenom} {c.formateur.nom}</h4>
-                                                    <span className="text-[10px] text-blue-600 font-bold uppercase tracking-wider">Formateur Expert</span>
+                                                    <span className="text-[10px] text-blue-600 font-bold uppercase tracking-wider">Formateur</span>
                                                 </div>
                                             </div>
 

@@ -42,4 +42,8 @@ export class CreateRessourceDto {
     @IsNumber({}, { message: 'La certification associée doit être un identifiant numérique.' })
     @IsOptional()
     certificationId?: number;
+
+    @IsNumber({}, { message: 'Le cours associé doit être un identifiant numérique.' })
+    @IsOptional()
+    coursId?: number;
 }

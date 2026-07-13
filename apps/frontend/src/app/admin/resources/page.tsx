@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useConfirm } from '../../../context/ConfirmContext';
-import { FileText, Search, Plus, RefreshCw, X, Edit, Trash2, Award, ArrowLeft, ArrowRight, ChevronDown, ChevronUp, FolderOpen, BookOpen, Clock } from '@/components/icons';
+import { FileText, Search, Plus, X, Edit, Trash2, Award, ArrowLeft, ArrowRight, ChevronDown, ChevronUp, FolderOpen, BookOpen, Clock } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Resource {
@@ -288,30 +288,7 @@ export default function ResourcesAdminPage() {
     <div className="space-y-6 md:space-y-8 pb-12 text-slate-800">
       
       {/* En-tête de page */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-left">
-        <div>
-          <h1 className="text-3xl font-black text-slate-950 tracking-tight">Gestion des Ressources</h1>
-          <p className="text-slate-500 text-xs mt-1 font-semibold">Support de cours, documentations et ressources de préparation d'examens.</p>
-        </div>
-
-        <div className="flex items-center gap-3 shrink-0">
-          <button
-            onClick={fetchData}
-            disabled={loading}
-            className="p-3 bg-white border border-slate-200/80 text-slate-400 hover:text-slate-800 rounded-2xl cursor-pointer disabled:opacity-50 transition-colors shadow-sm"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          </button>
-
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-5 py-3 bg-slate-950 hover:bg-slate-900 text-white font-extrabold rounded-2xl text-xs cursor-pointer shadow-md hover:shadow-lg transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Nouveau Document</span>
-          </button>
-        </div>
-      </div>
+      <h1 className="text-3xl font-black text-slate-950 tracking-tight">Gestion des Ressources</h1>
 
       {/* Cartes de Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -408,12 +385,21 @@ export default function ResourcesAdminPage() {
             )}
           </div>
 
-          <div className="text-xs text-slate-400 font-extrabold uppercase tracking-wider shrink-0">
-            {activeView === 'COURS' ? (
-              <span>{filteredCourses.length} Cours trouvés</span>
-            ) : (
-              <span>{filteredResources.length} document{filteredResources.length > 1 ? 's' : ''}</span>
-            )}
+          <div className="flex items-center gap-3 shrink-0">
+            <span className="text-xs text-slate-400 font-extrabold uppercase tracking-wider">
+              {activeView === 'COURS' ? (
+                <span>{filteredCourses.length} cours</span>
+              ) : (
+                <span>{filteredResources.length} document{filteredResources.length > 1 ? 's' : ''}</span>
+              )}
+            </span>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center gap-2 px-5 py-2.5 bg-slate-950 hover:bg-slate-900 text-white font-extrabold rounded-2xl text-xs cursor-pointer shadow-md hover:shadow-lg transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Nouveau Document</span>
+            </button>
           </div>
         </div>
 

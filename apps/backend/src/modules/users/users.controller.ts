@@ -9,6 +9,7 @@ import {
   Patch,
   Delete,
   Req,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -58,10 +59,14 @@ export class UsersController {
   }
 
   // GET /users -> Récupérer tous les utilisateurs (Admin)
+  // GET /users?q=...&role=FORMATEUR -> Rechercher des formateurs
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('SUPER_ADMIN', 'ADMIN')
   @Get()
-  async findAll() {
+  async findAll(@Query('q') query?: string) {
+    if (query) {
+      return this.usersService.searchFormateurs(query);
+    }
     return this.usersService.findAll();
   }
 

@@ -14,16 +14,21 @@ import { AppointmentsService } from './appointments.service';
 import { CreateCreneauDto } from './dto/create-creneau.dto';
 import { BookAppointmentDto } from './dto/book-appointment.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('appointments')
 @UseGuards(JwtAuthGuard)
 export class AppointmentsController {
   constructor(private readonly appointmentsService: AppointmentsService) {}
 
-  // 1. Créer un créneau de disponibilité (Formateur / Admin)
+  // 1. Créer un créneau de disponibilité (Admin / Formateur)
   @Post('creneaux')
   async createCreneau(@Req() req: any, @Body() dto: CreateCreneauDto) {
-    return this.appointmentsService.createCreneau(req.user.id, dto);
+    const userRoles: string[] = req.user.roles || [];
+    const isAdmin = userRoles.some(r => r === 'ADMIN' || r === 'SUPER_ADMIN');
+    const formateurId = isAdmin && dto.formateurId ? dto.formateurId : req.user.id;
+    return this.appointmentsService.createCreneau(formateurId, dto);
   }
 
   // 2. Récupérer les créneaux disponibles pour réservation
@@ -51,9 +56,21 @@ export class AppointmentsController {
     return this.appointmentsService.cancelAppointment(req.user.id, userRoles, id);
   }
 
-  // 6. Supprimer un créneau libre (Formateur)
+  // 6. Supprimer un créneau libre (Admin / Formateur)
   @Delete('creneaux/:id')
   async deleteCreneau(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
-    return this.appointmentsService.deleteCreneau(req.user.id, id);
+    const userRoles = req.user.roles || [];
+    return this.appointmentsService.deleteCreneau(req.user.id, userRoles, id);
+  }
+
+  // 7. Mettre à jour un créneau libre (Admin / Formateur)
+  @Patch('creneaux/:id')
+  async updateCreneau(
+    @Req() req: any,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: CreateCreneauDto,
+  ) {
+    const userRoles = req.user.roles || [];
+    return this.appointmentsService.updateCreneau(req.user.id, userRoles, id, dto);
   }
 }

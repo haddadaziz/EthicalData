@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useConfirm } from '../../../context/ConfirmContext';
-import { Users, Search, ShieldCheck, Plus, Edit, Trash2, X, RefreshCw, Mail, Phone, Calendar, Lock, Eye, EyeOff } from '@/components/icons';
+import { Users, Search, ShieldCheck, Plus, Edit, Trash2, X, RefreshCw, Mail, Phone, Calendar, Lock, Eye, EyeOff, ArrowLeft, ArrowRight } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Role {
@@ -56,6 +56,8 @@ export default function AdminUsersPage() {
     const [updateLoading, setUpdateLoading] = useState(false);
 
     const [currentUserRoles, setCurrentUserRoles] = useState<string[]>([]);
+    const itemsPerPage = 6;
+    const [currentPage, setCurrentPage] = useState(1);
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -194,6 +196,15 @@ export default function AdminUsersPage() {
         });
     }, [users, searchQuery, roleFilter, statusFilter]);
 
+    const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const paginatedUsers = React.useMemo(() => filteredUsers.slice(indexOfFirstItem, indexOfLastItem), [filteredUsers, indexOfFirstItem, indexOfLastItem]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, roleFilter, statusFilter]);
+
     const formatDate = (dateStr: string) => {
         return new Date(dateStr).toLocaleDateString('fr-FR', {
             day: 'numeric',
@@ -203,7 +214,7 @@ export default function AdminUsersPage() {
     };
 
     const UserGrid = React.useMemo(() => {
-        if (filteredUsers.length === 0) {
+        if (paginatedUsers.length === 0) {
             return (
                 <div className="p-12 text-center bg-white border border-slate-200/80 rounded-3xl text-slate-400 font-medium">
                     Aucun utilisateur ne correspond à votre recherche.
@@ -213,7 +224,7 @@ export default function AdminUsersPage() {
 
         return (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {filteredUsers.map((user) => {
+                {paginatedUsers.map((user) => {
                     const mainRole = user.roles && user.roles.length > 0 ? user.roles[0].nom : 'APPRENANT';
 
                     return (
@@ -272,21 +283,21 @@ export default function AdminUsersPage() {
                             </div>
 
                             {/* Actions sur le Compte */}
-                            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                            <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
                                 <button
                                     onClick={() => handleOpenEditModal(user)}
-                                    className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                                    className="flex-1 py-2 bg-slate-950 hover:bg-slate-800 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                                 >
-                                    <Edit className="w-3.5 h-3.5 text-slate-600" />
+                                    <Edit className="w-3.5 h-3.5" />
                                     <span>Modifier</span>
                                 </button>
 
                                 <button
                                     onClick={() => handleDeleteUser(user)}
-                                    className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"
-                                    title="Désactiver ce compte"
+                                    className="flex-1 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                                 >
-                                    <Trash2 className="w-4 h-4" />
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                    <span>Supprimer</span>
                                 </button>
                             </div>
                         </div>
@@ -294,7 +305,7 @@ export default function AdminUsersPage() {
                 })}
             </div>
         );
-    }, [filteredUsers]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [paginatedUsers]); // eslint-disable-line react-hooks/exhaustive-deps
 
     if (loading) {
         return (
@@ -313,7 +324,7 @@ export default function AdminUsersPage() {
                 <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
-                        className="w-full sm:w-auto px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-red-600/20 cursor-pointer shrink-0"
+                        className="flex items-center justify-center gap-2 px-5 py-2.5 bg-slate-950 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold cursor-pointer transition-all shadow-md hover:shadow-lg active:scale-95"
                     >
                         <Plus className="w-4 h-4" />
                         <span>Ajouter un utilisateur</span>
@@ -359,6 +370,45 @@ export default function AdminUsersPage() {
 
             {/* GRILLE RESPONSIVE DE CARTES UTILISATEURS */}
             {UserGrid}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <div className="flex items-center justify-between bg-white border border-slate-200/80 rounded-2xl p-3 shadow-sm">
+                    <button
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                        className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
+                    >
+                        <ArrowLeft className="w-3.5 h-3.5" />
+                        <span>Précédent</span>
+                    </button>
+
+                    <div className="flex items-center gap-1">
+                        {Array.from({ length: totalPages }).map((_, index) => {
+                            const pageNum = index + 1;
+                            const isActive = currentPage === pageNum;
+                            return (
+                                <button
+                                    key={pageNum}
+                                    onClick={() => setCurrentPage(pageNum)}
+                                    className={`w-9 h-9 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center ${isActive ? 'bg-slate-950 text-white shadow-md' : 'bg-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-955'}`}
+                                >
+                                    {pageNum}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    <button
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                        className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
+                    >
+                        <span>Suivant</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                </div>
+            )}
 
             {/* MODALE DE CRÉATION D'UTILISATEUR */}
             <AnimatePresence>

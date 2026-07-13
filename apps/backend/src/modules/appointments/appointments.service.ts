@@ -103,7 +103,6 @@ export class AppointmentsService {
 
     let rdv;
     if (existingRdv) {
-      // Réactivation du créneau avec le nouveau candidat
       rdv = await this.prisma.rendezVous.update({
         where: { id: existingRdv.id },
         data: {
@@ -120,7 +119,6 @@ export class AppointmentsService {
         },
       });
     } else {
-      // Création d'un nouveau rendez-vous
       rdv = await this.prisma.rendezVous.create({
         data: {
           candidatId: BigInt(candidatId),
@@ -138,7 +136,6 @@ export class AppointmentsService {
       });
     }
 
-    // Marquer le créneau comme réservé
     await this.prisma.creneauDisponibilite.update({
       where: { id: creneau.id },
       data: { estReserve: true },
@@ -151,7 +148,6 @@ export class AppointmentsService {
       minute: '2-digit',
     });
 
-    // Notification pour le candidat
     await this.notificationsService.createNotification(
       candidatId.toString(),
       "Rendez-vous confirmé",
@@ -160,7 +156,6 @@ export class AppointmentsService {
       "/dashboard/appointments",
     );
 
-    // Notification pour le formateur (si différent)
     if (candidatId.toString() !== creneau.formateurId.toString()) {
       await this.notificationsService.createNotification(
         creneau.formateurId.toString(),
@@ -229,13 +224,11 @@ export class AppointmentsService {
       throw new ForbiddenException('Vous ne pouvez pas annuler ce rendez-vous.');
     }
 
-    // Mettre à jour statut du RDV
     await this.prisma.rendezVous.update({
       where: { id: BigInt(rdvId) },
       data: { statut: 'ANNULE' },
     });
 
-    // Libérer le créneau
     await this.prisma.creneauDisponibilite.update({
       where: { id: rdv.creneauId },
       data: { estReserve: false },
@@ -251,7 +244,6 @@ export class AppointmentsService {
     const isActorFormateur = BigInt(userId) === rdv.formateurId;
 
     if (isActorFormateur) {
-      // Le formateur a annulé -> notifier l'apprenant
       await this.notificationsService.createNotification(
         rdv.candidatId.toString(),
         "Rendez-vous Annulé par le Formateur",
@@ -260,7 +252,6 @@ export class AppointmentsService {
         "/dashboard/appointments",
       );
     } else {
-      // L'apprenant a annulé -> notifier le formateur
       await this.notificationsService.createNotification(
         rdv.formateurId.toString(),
         "Rendez-vous Annulé par l'Apprenant",
@@ -269,7 +260,6 @@ export class AppointmentsService {
         "/dashboard/appointments",
       );
 
-      // Notifier l'apprenant pour confirmer son action
       await this.notificationsService.createNotification(
         rdv.candidatId.toString(),
         "Rendez-vous Annulé",
@@ -282,8 +272,39 @@ export class AppointmentsService {
     return { message: 'Rendez-vous annulé et créneau libéré.' };
   }
 
-  // 6. Supprimer un créneau libre (Formateur)
-  async deleteCreneau(formateurId: number, creneauId: number) {
+  // 6. Supprimer un créneau libre (Admin / Formateur propriétaire)
+  async deleteCreneau(userId: number, userRoles: string[], creneauId: number) {
+    const creneau = await this.prisma.creneauDisponibilite.findUnique({
+      where: { id: BigInt(creneauId) },
+      include: { rendezVous: true },
+    });
+
+    if (!creneau) {
+      throw new NotFoundException("Le créneau demandé n'existe pas.");
+    }
+
+    const isAdmin = userRoles.includes('SUPER_ADMIN') || userRoles.includes('ADMIN');
+    if (!isAdmin && creneau.formateurId !== BigInt(userId)) {
+      throw new ForbiddenException("Vous ne pouvez pas supprimer un créneau qui ne vous appartient pas.");
+    }
+
+    if (creneau.estReserve) {
+      throw new BadRequestException("Vous ne pouvez pas supprimer un créneau déjà réservé. Veuillez annuler le rendez-vous associé.");
+    }
+
+    if (creneau.rendezVous) {
+      await this.prisma.rendezVous.delete({ where: { id: creneau.rendezVous.id } });
+    }
+
+    await this.prisma.creneauDisponibilite.delete({
+      where: { id: BigInt(creneauId) },
+    });
+
+    return { message: "Créneau supprimé avec succès." };
+  }
+
+  // 7. Mettre à jour un créneau libre (Admin / Formateur propriétaire)
+  async updateCreneau(userId: number, userRoles: string[], creneauId: number, dto: CreateCreneauDto) {
     const creneau = await this.prisma.creneauDisponibilite.findUnique({
       where: { id: BigInt(creneauId) },
     });
@@ -292,18 +313,43 @@ export class AppointmentsService {
       throw new NotFoundException("Le créneau demandé n'existe pas.");
     }
 
-    if (creneau.formateurId !== BigInt(formateurId)) {
-      throw new ForbiddenException("Vous ne pouvez pas supprimer un créneau qui ne vous appartient pas.");
+    const isAdmin = userRoles.includes('SUPER_ADMIN') || userRoles.includes('ADMIN');
+    if (!isAdmin && creneau.formateurId !== BigInt(userId)) {
+      throw new ForbiddenException("Vous ne pouvez pas modifier un créneau qui ne vous appartient pas.");
     }
 
     if (creneau.estReserve) {
-      throw new BadRequestException("Vous ne pouvez pas supprimer un créneau déjà réservé. Veuillez annuler le rendez-vous associé.");
+      throw new BadRequestException("Vous ne pouvez pas modifier un créneau déjà réservé.");
     }
 
-    await this.prisma.creneauDisponibilite.delete({
+    const debut = new Date(dto.dateDebut);
+    const fin = new Date(dto.dateFin);
+
+    if (debut >= fin) {
+      throw new BadRequestException('La date de début doit être antérieure à la date de fin.');
+    }
+
+    const updated = await this.prisma.creneauDisponibilite.update({
       where: { id: BigInt(creneauId) },
+      data: {
+        dateDebut: debut,
+        dateFin: fin,
+      },
+      include: {
+        formateur: {
+          select: { id: true, prenom: true, nom: true, avatar: true },
+        },
+      },
     });
 
-    return { message: "Créneau supprimé avec succès." };
+    return {
+      ...updated,
+      id: updated.id.toString(),
+      formateurId: updated.formateurId.toString(),
+      formateur: {
+        ...updated.formateur,
+        id: updated.formateur.id.toString(),
+      },
+    };
   }
 }

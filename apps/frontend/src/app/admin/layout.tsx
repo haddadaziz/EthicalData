@@ -114,7 +114,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       subItems: [
         { name: 'Certifications', href: '/admin/certifications', icon: Award },
         { name: 'Gestion des Cours', href: '/admin/courses', icon: BookOpen },
-        { name: 'Ressources & Fiches', href: '/admin/resources', icon: DownloadCloud },
+        { name: 'Ressources', href: '/admin/resources', icon: DownloadCloud },
+        { name: 'Simulations', icon: Activity, disabled: true, badge: 'Bientôt' },
       ]
     },
     {
@@ -122,7 +123,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       icon: Users,
       subItems: [
         { name: 'Modération Forum', href: '/admin/community', icon: MessageSquare },
-        { name: 'Planning & Coaching', href: '/admin/coaching', icon: Calendar },
+        { name: 'Coaching', href: '/admin/coaching', icon: Calendar },
       ]
     },
     {
@@ -150,7 +151,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       return { title: 'Tableau de Bord Général', subtitle: 'Console de supervision Ethical Data' };
     }
     if (pathname === '/admin/certifications') {
-      return { title: 'Gestion des Certifications', subtitle: 'Catalogue et banques de questions' };
+      return { title: 'Gestion des Certifications', subtitle: 'Catalogue des certifications et constructeurs' };
     }
     if (pathname === '/admin/courses') {
       return { title: 'Gestion des Cours', subtitle: 'Catalogue global de cours de la plateforme' };
@@ -158,11 +159,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (pathname === '/admin/downloads') {
       return { title: 'Ressources Téléchargeables', subtitle: 'Gestion des fiches et quotas' };
     }
+    if (pathname === '/admin/resources') {
+      return { title: 'Ressources & Fiches', subtitle: 'Supports de cours, documentations et fichiers pédagogiques' };
+    }
     if (pathname === '/admin/community') {
       return { title: 'Modération du Forum', subtitle: 'Gestion des sujets et des signalements' };
     }
     if (pathname === '/admin/coaching') {
-      return { title: 'Planning & Coaching', subtitle: 'Ouverture des créneaux et rendez-vous' };
+      return { title: 'Coaching', subtitle: 'Ouverture des créneaux et rendez-vous' };
     }
     if (pathname === '/admin/users') {
       return { title: 'Gestion des Utilisateurs', subtitle: 'Administration des comptes et attribution des rôles' };
@@ -271,10 +275,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 {item.subItems!.map((sub, subIdx) => {
                                   const isSubActive = pathname === sub.href;
                                   const SubIcon = sub.icon;
-                                  return (
+                                  return sub.disabled ? (
+                                    <span
+                                      key={subIdx}
+                                      className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all group opacity-40 cursor-not-allowed"
+                                    >
+                                      <SubIcon className="w-4 h-4 shrink-0 text-slate-400" />
+                                      <span className="truncate flex-1">{sub.name}</span>
+                                      {sub.badge && (
+                                        <span className="text-[9px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full shrink-0 font-extrabold uppercase tracking-wider">
+                                          {sub.badge}
+                                        </span>
+                                      )}
+                                    </span>
+                                  ) : (
                                     <Link
                                       key={subIdx}
-                                      href={sub.href}
+                                      href={sub.href!}
                                       onClick={() => setSidebarOpen(false)}
                                       className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all group ${isSubActive
                                           ? 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs font-extrabold'
@@ -283,6 +300,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                     >
                                       <SubIcon className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600 transition-colors'}`} />
                                       <span className="truncate flex-1">{sub.name}</span>
+                                      {sub.badge && (
+                                        <span className="text-[9px] bg-blue-50 text-blue-600 border border-blue-100 px-2 py-0.5 rounded-full shrink-0 font-extrabold uppercase tracking-wider">
+                                          {sub.badge}
+                                        </span>
+                                      )}
                                     </Link>
                                   );
                                 })}
@@ -380,10 +402,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             {item.subItems!.map((sub, subIdx) => {
                               const isSubActive = pathname === sub.href;
                               const SubIcon = sub.icon;
-                              return (
+                              return sub.disabled ? (
+                                <span
+                                  key={subIdx}
+                                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all group opacity-40 cursor-not-allowed"
+                                >
+                                  <SubIcon className="w-4 h-4 shrink-0 text-slate-400" />
+                                  <span className="truncate flex-1">{sub.name}</span>
+                                  {sub.badge && (
+                                    <span className="text-[9px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full shrink-0 font-extrabold uppercase tracking-wider">
+                                      {sub.badge}
+                                    </span>
+                                  )}
+                                </span>
+                              ) : (
                                 <Link
                                   key={subIdx}
-                                  href={sub.href}
+                                  href={sub.href!}
                                   className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all group ${isSubActive
                                       ? 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs font-extrabold'
                                       : 'text-slate-500 hover:text-slate-950 hover:bg-slate-50/80 cursor-pointer'
@@ -391,6 +426,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 >
                                   <SubIcon className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600 transition-colors'}`} />
                                   <span className="truncate flex-1">{sub.name}</span>
+                                  {sub.badge && (
+                                    <span className="text-[9px] bg-blue-50 text-blue-600 border border-blue-100 px-2 py-0.5 rounded-full shrink-0 font-extrabold uppercase tracking-wider">
+                                      {sub.badge}
+                                    </span>
+                                  )}
                                 </Link>
                               );
                             })}

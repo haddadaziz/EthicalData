@@ -147,31 +147,6 @@ export default function AdminCertificationsPage() {
       {/* Container Principal */}
       <div className="max-w-7xl mx-auto space-y-8">
         
-        {/* Header Section */}
-        <div className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200/80 shadow-sm relative overflow-hidden group">
-          {/* Effects */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-red-50 rounded-full blur-3xl opacity-50 group-hover:opacity-70 transition-opacity duration-700 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-50 rounded-full blur-3xl opacity-50 group-hover:opacity-70 transition-opacity duration-700 pointer-events-none" />
-
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="space-y-2">
-
-              <h1 className="text-3xl sm:text-4xl font-black text-slate-950 tracking-tight">Catalogue de Certifications</h1>
-              <p className="text-slate-500 font-medium max-w-xl text-sm leading-relaxed">
-                Gérez le catalogue officiel des certifications proposées sur la plateforme. Ajoutez de nouvelles offres, configurez les examens blancs et suivez les statistiques globales.
-              </p>
-            </div>
-
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="px-6 py-3.5 bg-slate-950 hover:bg-slate-800 text-white font-black rounded-2xl flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-xl hover:-translate-y-0.5 cursor-pointer shrink-0 uppercase tracking-wider text-xs"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Nouvelle certification</span>
-            </button>
-          </div>
-        </div>
-
         {/* Filters */}
         <div className="bg-white border border-slate-200/80 rounded-3xl overflow-hidden shadow-sm">
           <div className="p-6 border-b border-slate-200/80 space-y-4">
@@ -211,8 +186,17 @@ export default function AdminCertificationsPage() {
                 ))}
               </select>
 
-              <div className="text-xs text-slate-500 font-bold ml-auto shrink-0">
-                {filteredCerts.length} certification{filteredCerts.length > 1 ? 's' : ''} trouvée{filteredCerts.length > 1 ? 's' : ''}
+              <div className="flex items-center gap-3 ml-auto shrink-0">
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="flex items-center justify-center gap-2 px-5 py-2.5 bg-slate-950 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold cursor-pointer transition-all shadow-md hover:shadow-lg active:scale-95"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Nouvelle certification</span>
+                </button>
+                <span className="text-xs text-slate-500 font-bold">
+                  {filteredCerts.length} certification{filteredCerts.length > 1 ? 's' : ''}
+                </span>
               </div>
             </div>
           </div>
@@ -223,7 +207,6 @@ export default function AdminCertificationsPage() {
             error={error}
             onRetry={fetchInitialData}
             onEdit={handleOpenEditModal}
-            onManageQuestions={handleOpenQuestionsModal}
             onDelete={handleDeleteCert}
           />
         </div>

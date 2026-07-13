@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Users, Clock, Award, Edit, Layers, Trash2, ArrowLeft, ArrowRight } from '@/components/icons';
+import { Users, Clock, Award, Edit, Trash2, ArrowLeft, ArrowRight } from '@/components/icons';
 
 interface CertificationsGridProps {
   filteredCerts: any[];
@@ -7,7 +7,6 @@ interface CertificationsGridProps {
   error: string | null;
   onRetry: () => void;
   onEdit: (cert: any) => void;
-  onManageQuestions: (cert: any) => void;
   onDelete: (id: string, nom: string) => void;
 }
 
@@ -21,7 +20,7 @@ const getNiveauBadgeStyle = (niv: string) => {
 };
 
 export function CertificationsGrid({
-  filteredCerts, loading, error, onRetry, onEdit, onManageQuestions, onDelete
+  filteredCerts, loading, error, onRetry, onEdit, onDelete
 }: CertificationsGridProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
@@ -78,13 +77,13 @@ export function CertificationsGrid({
             className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-col justify-between group transition-all duration-300 hover:shadow-lg hover:border-slate-300"
           >
             {/* Visual Box (Landing Page Style) */}
-            <div className="relative w-full h-[240px] rounded-xl overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-300 bg-white border border-slate-100">
+            <div onClick={() => onEdit(cert)} className="relative w-full h-[240px] rounded-xl overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-300 bg-white border border-slate-100 cursor-pointer">
               {/* Background Template */}
-              <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
+              <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none" />
 
               {/* Examen code overlay */}
               {cert.codeExamen && (
-                <div className="absolute top-3 left-3 z-30">
+                <div className="absolute top-3 left-3 z-30 pointer-events-none">
                   <div className="bg-slate-900/80 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-700/50 shadow-sm flex items-center gap-1.5 group-hover:bg-red-600 group-hover:border-red-500 transition-colors">
                     <span className="w-1 h-1 rounded-full bg-red-500 group-hover:bg-white animate-pulse transition-colors"></span>
                     {cert.codeExamen}
@@ -93,7 +92,7 @@ export function CertificationsGrid({
               )}
 
               {/* Floating Badge Logo */}
-              <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20 w-24 flex justify-center">
+              <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20 w-24 flex justify-center pointer-events-none">
                 {cert.image ? (
                   <img src={cert.image} alt={cert.nom} className="w-full h-auto object-contain filter drop-shadow-xl" />
                 ) : (
@@ -125,19 +124,11 @@ export function CertificationsGrid({
                 </button>
 
                 <button
-                  onClick={() => onManageQuestions(cert)}
-                  className="p-2 text-slate-500 bg-slate-100 hover:bg-slate-200 hover:text-slate-900 rounded-xl transition-all cursor-pointer"
-                  title="Gérer la banque de questions"
-                >
-                  <Layers className="w-4 h-4" />
-                </button>
-
-                <button
                   onClick={() => onDelete(cert.id, cert.nom)}
-                  className="p-2 text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-xl transition-all cursor-pointer"
-                  title="Supprimer la certification"
+                  className="flex-1 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-sm"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Supprimer</span>
                 </button>
               </div>
             </div>
