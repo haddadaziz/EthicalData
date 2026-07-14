@@ -214,16 +214,23 @@ export default function DownloadsPage() {
                 <>
                 {/* Filtre progression */}
                 <div className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-wrap items-center gap-3">
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Statut</span>
-                    <div className="flex items-center gap-1.5">
-                        {(['TOUS', 'EN_COURS', 'TERMINE'] as const).map((val) => (
-                            <button key={val} onClick={() => setProgressionFilter(val)}
-                                className={`px-3.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
-                                    progressionFilter === val
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Statut</span>
+                    <div className="flex flex-wrap gap-2">
+                        {[
+                            { val: 'TOUS', label: 'Tous' },
+                            { val: 'EN_COURS', label: 'En cours' },
+                            { val: 'TERMINE', label: 'Terminés' }
+                        ].map((item) => (
+                            <button
+                                key={item.val}
+                                onClick={() => setProgressionFilter(item.val as any)}
+                                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                                    progressionFilter === item.val
                                         ? 'bg-slate-950 text-white shadow-sm'
-                                        : 'bg-slate-50 text-slate-500 hover:text-slate-700 border border-slate-200/80'
-                                }`}>
-                                {val === 'TOUS' ? 'Tous' : val === 'EN_COURS' ? 'En cours' : 'Terminés'}
+                                        : 'bg-slate-50 border border-slate-200/80 hover:border-slate-300 text-slate-600'
+                                }`}
+                            >
+                                {item.label}
                             </button>
                         ))}
                     </div>

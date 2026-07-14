@@ -4,19 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch } from '../../../lib/api';
 import { Award, BookOpen, Clock, FileText, Search, Play, ArrowRight, ArrowLeft, Users, CheckCircle2, Target, Check, X, ChevronDown } from '@/components/icons';
-
-const getProviderLogo = (slugOrName: string) => {
-  const name = (slugOrName || '').toLowerCase();
-  if (name.includes('microsoft')) return '/logos/microsoft.png';
-  if (name.includes('aws') || name.includes('amazon')) return '/logos/aws.png';
-  if (name.includes('gcp') || name.includes('google')) return '/logos/gcp.svg';
-  if (name.includes('cisco')) return '/logos/cisco.png';
-  if (name.includes('comptia')) return '/logos/comptia.png';
-  if (name.includes('fortinet')) return '/logos/fortinet.png';
-  if (name.includes('paloalto') || name.includes('palo alto')) return '/logos/paloalto.png';
-  if (name.includes('pecb')) return '/logos/pecb.png';
-  return '';
-};
+import { getProviderLogo } from '@/lib/certification-utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '../../../context/ToastContext';
 import { useMutationGuard } from '../../../hooks/useMutationGuard';

@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowRight } from '@/components/icons';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
+import { getCertificateBadgeLogo } from '../../lib/certification-utils';
 
 interface CertificationsSectionProps {
   realCertifications: any[];
@@ -11,23 +12,6 @@ interface CertificationsSectionProps {
 }
 
 export function CertificationsSection({ realCertifications, courses, setSelectedCourse, cleanTitle }: CertificationsSectionProps) {
-  const getCertificateBadgeLogo = (cert: any) => {
-    if (cert.image) return cert.image;
-    if (cert.logo) return cert.logo;
-    
-    const code = (cert.codeExamen || cert.code || '').toLowerCase();
-    const nom = (cert.nom || cert.title || '').toLowerCase();
-
-    if (code.includes('az-900') || nom.includes('az-900') || nom.includes('azure fundamentals')) return '/badges/az-900.svg';
-    if (code.includes('clf') || nom.includes('cloud practitioner')) return '/badges/aws-clf.svg';
-    if (code.includes('saa') || nom.includes('solutions architect')) return '/badges/aws-saa.svg';
-    if (code.includes('iso-27001') || nom.includes('iso 27001') || nom.includes('pecb')) return '/badges/pecb-iso.svg';
-    if (code.includes('sy0') || nom.includes('security+')) return '/badges/comptia-sec.svg';
-    if (code.includes('sc-900') || nom.includes('sc-900')) return '/badges/sc-900.svg';
-
-    return '/badges/az-900.svg';
-  };
-
   const catalogCourses = realCertifications.length > 0
     ? realCertifications.map(c => ({
         id: c.id,

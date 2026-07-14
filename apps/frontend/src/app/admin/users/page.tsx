@@ -74,14 +74,11 @@ export default function AdminUsersPage() {
     };
 
     useEffect(() => {
-        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-        if (token) {
-            try {
-                const payloadBase64 = token.split('.')[1];
-                const decodedPayload = JSON.parse(atob(payloadBase64));
-                setCurrentUserRoles(decodedPayload.roles || []);
-            } catch (e) {}
-        }
+        apiFetch('/users/me/profile').then((profile) => {
+            if (profile?.roles) {
+                setCurrentUserRoles(profile.roles.map((r: any) => r.nom));
+            }
+        }).catch(() => {});
         fetchUsers();
     }, []);
 

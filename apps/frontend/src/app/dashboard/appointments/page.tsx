@@ -70,6 +70,7 @@ export default function AppointmentsPage() {
     const { confirm } = useConfirm();
     
     const [activeTab, setActiveTab] = useState<'BOOK' | 'MY_RDV'>('BOOK');
+    const [timeFilter, setTimeFilter] = useState<'TOUS' | 'A_VENIR' | 'PASSE'>('A_VENIR');
     const [creneaux, setCreneaux] = useState<Creneau[]>([]);
     const [myAppointments, setMyAppointments] = useState<RendezVous[]>([]);
     const [certs, setCerts] = useState<any[]>([]);
@@ -133,6 +134,18 @@ export default function AppointmentsPage() {
     useEffect(() => {
         fetchData();
     }, []);
+
+    // Bloquer le scroll en arrière-plan lorsque la modale est active
+    useEffect(() => {
+        if (selectedCreneau) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [selectedCreneau]);
 
     const handleCreateSlot = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -279,6 +292,29 @@ export default function AppointmentsPage() {
         }
 
         return true;
+    });
+
+    const filteredMyAppointments = myAppointments.filter(rdv => {
+        if (rdv.statut !== 'CONFIRME') return false;
+        
+        const now = new Date();
+        const start = new Date(rdv.creneau.dateDebut);
+        
+        if (timeFilter === 'A_VENIR') {
+            return start >= now;
+        } else if (timeFilter === 'PASSE') {
+            return start < now;
+        }
+        return true;
+    });
+
+    const sortedMyAppointments = [...filteredMyAppointments].sort((a, b) => {
+        const dateA = new Date(a.creneau.dateDebut).getTime();
+        const dateB = new Date(b.creneau.dateDebut).getTime();
+        if (timeFilter === 'PASSE') {
+            return dateB - dateA;
+        }
+        return dateA - dateB;
     });
 
     if (loading) {
@@ -517,11 +553,6 @@ export default function AppointmentsPage() {
                         <span>Mes Rendez-vous ({myAppointments.filter(r => r.statut === 'CONFIRME').length})</span>
                     </button>
                 </div>
-
-                <div className="flex items-center gap-2 text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 px-3.5 py-2 rounded-2xl shrink-0">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span>{myAppointments.filter(r => r.statut === 'CONFIRME').length} RDV confirmé(s) à venir</span>
-                </div>
             </div>
 
             {/* CONTENU ONGLET 1 : SÉLECTION DES CRÉNEAUX EN PREMIER */}
@@ -648,17 +679,49 @@ export default function AppointmentsPage() {
             {/* CONTENU ONGLET 2 : MES RENDEZ-VOUS */}
             {activeTab === 'MY_RDV' && (
                 <div className="space-y-4">
-                    {myAppointments.filter(r => r.statut === 'CONFIRME').length === 0 ? (
+                    {/* Filtre de Temps (À venir / Passés) */}
+                    <div className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-wrap items-center gap-3">
+                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Période</span>
+                        <div className="flex flex-wrap gap-2">
+                            {[
+                                { val: 'TOUS', label: 'Tous' },
+                                { val: 'A_VENIR', label: 'À venir' },
+                                { val: 'PASSE', label: 'Passés' }
+                            ].map((item) => (
+                                <button
+                                    key={item.val}
+                                    type="button"
+                                    onClick={() => setTimeFilter(item.val as any)}
+                                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                                        timeFilter === item.val
+                                            ? 'bg-slate-950 text-white shadow-sm'
+                                            : 'bg-slate-50 border border-slate-200/80 hover:border-slate-300 text-slate-600'
+                                    }`}
+                                >
+                                    {item.label}
+                                </button>
+                            ))}
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-bold ml-auto">
+                            {filteredMyAppointments.length} rendez-vous
+                        </span>
+                    </div>
+
+                    {sortedMyAppointments.length === 0 ? (
                         <div className="p-12 text-center bg-white border border-slate-200 rounded-3xl space-y-3">
                             <Clock className="w-10 h-10 text-slate-300 mx-auto" />
-                            <h3 className="text-sm font-bold text-slate-700">Aucun rendez-vous réservé</h3>
+                            <h3 className="text-sm font-bold text-slate-700">Aucun rendez-vous trouvé</h3>
                             <p className="text-xs text-slate-400 font-medium">
-                                Cliquez sur "Sélectionner un Créneau" pour fixer votre première séance de coaching avec un formateur.
+                                {timeFilter === 'A_VENIR' 
+                                    ? 'Vous n\'avez aucun rendez-vous à venir. Vous pouvez réserver un créneau ci-dessus.' 
+                                    : timeFilter === 'PASSE'
+                                    ? 'Vous n\'avez aucun rendez-vous passé.'
+                                    : 'Vous n\'avez aucun rendez-vous dans cette liste.'}
                             </p>
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            {myAppointments.filter(r => r.statut === 'CONFIRME').map((rdv) => (
+                            {sortedMyAppointments.map((rdv) => (
                                 <div
                                     key={rdv.id}
                                     className={`p-6 bg-white border rounded-3xl space-y-4 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6 ${rdv.statut === 'ANNULE' ? 'opacity-60 border-slate-200' : 'border-slate-200/90'
@@ -725,56 +788,59 @@ export default function AppointmentsPage() {
                 {selectedCreneau && (
                     <div
                         onClick={() => setSelectedCreneau(null)}
-                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md overflow-y-auto"
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 overflow-y-auto"
                     >
                         <motion.div
                             onClick={(e) => e.stopPropagation()}
                             initial={{ opacity: 0, scale: 0.95, y: 15 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 15 }}
-                            className="w-full max-w-2xl bg-white border border-slate-200 rounded-3xl shadow-2xl p-6 md:p-8 space-y-6 text-left relative max-h-[90vh] overflow-y-auto"
+                            className="w-full max-w-2xl bg-white border border-slate-200 rounded-3xl shadow-2xl text-left relative max-h-[90vh] flex flex-col overflow-hidden"
                         >
-                            <button
-                                onClick={() => setSelectedCreneau(null)}
-                                className="absolute right-5 top-5 p-2 text-slate-400 hover:text-slate-950 rounded-2xl hover:bg-slate-100 transition-colors cursor-pointer"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
+                            <div className="p-6 md:p-8 pb-4 border-b border-slate-100 shrink-0 relative">
+                                <button
+                                    onClick={() => setSelectedCreneau(null)}
+                                    className="absolute right-5 top-5 p-2 text-slate-400 hover:text-slate-950 rounded-2xl hover:bg-slate-100 transition-colors cursor-pointer"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
 
-                            {/* RAPPEL DU CRÉNEAU SÉLECTIONNÉ (ÉTAPE 1) */}
-                            <div className="space-y-2 border-b border-slate-100 pb-4">
-                                <span className="px-3 py-1 bg-blue-50 text-blue-700 font-extrabold text-[10px] rounded-full uppercase tracking-wider">
-                                    Étape 2 / 2 : Configuration de la séance
-                                </span>
-                                <h3 className="text-xl font-black text-slate-950">
-                                    Finaliser votre réservation de coaching
-                                </h3>
+                                {/* RAPPEL DU CRÉNEAU SÉLECTIONNÉ (ÉTAPE 1) */}
+                                <div className="space-y-2">
+                                    <span className="px-3 py-1 bg-blue-50 text-blue-700 font-extrabold text-[10px] rounded-full uppercase tracking-wider">
+                                        Étape 2 / 2 : Configuration de la séance
+                                    </span>
+                                    <h3 className="text-xl font-black text-slate-955">
+                                        Finaliser votre réservation de coaching
+                                    </h3>
 
-                                <div className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs mt-2">
-                                    <div className="space-y-1">
-                                        <p className="font-extrabold text-slate-900 capitalize flex items-center gap-2">
-                                            <Calendar className="w-4 h-4 text-blue-600" />
-                                            <span>{formatDate(selectedCreneau.dateDebut)}</span>
-                                        </p>
-                                        <p className="font-bold text-slate-600 flex items-center gap-2">
-                                            <Clock className="w-4 h-4 text-slate-400" />
-                                            <span>{formatTime(selectedCreneau.dateDebut)} - {formatTime(selectedCreneau.dateFin)}</span>
-                                        </p>
-                                    </div>
-                                    <div className="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200/60">
-                                        {selectedCreneau.formateur.avatar ? (
-                                            <img src={selectedCreneau.formateur.avatar} alt={selectedCreneau.formateur.prenom} className="w-7 h-7 rounded-lg object-cover" />
-                                        ) : (
-                                            <div className="w-7 h-7 rounded-lg bg-slate-950 text-white font-black text-[10px] flex items-center justify-center">
-                                                {selectedCreneau.formateur.prenom[0]}{selectedCreneau.formateur.nom[0]}
-                                            </div>
-                                        )}
-                                        <span className="font-bold text-slate-900 text-xs">{selectedCreneau.formateur.prenom} {selectedCreneau.formateur.nom}</span>
+                                    <div className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs mt-2">
+                                        <div className="space-y-1">
+                                            <p className="font-extrabold text-slate-900 capitalize flex items-center gap-2">
+                                                <Calendar className="w-4 h-4 text-blue-600" />
+                                                <span>{formatDate(selectedCreneau.dateDebut)}</span>
+                                            </p>
+                                            <p className="font-bold text-slate-600 flex items-center gap-2">
+                                                <Clock className="w-4 h-4 text-slate-400" />
+                                                <span>{formatTime(selectedCreneau.dateDebut)} - {formatTime(selectedCreneau.dateFin)}</span>
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200/60">
+                                            {selectedCreneau.formateur.avatar ? (
+                                                <img src={selectedCreneau.formateur.avatar} alt={selectedCreneau.formateur.prenom} className="w-7 h-7 rounded-lg object-cover" />
+                                            ) : (
+                                                <div className="w-7 h-7 rounded-lg bg-slate-950 text-white font-black text-[10px] flex items-center justify-center">
+                                                    {selectedCreneau.formateur.prenom[0]}{selectedCreneau.formateur.nom[0]}
+                                                </div>
+                                            )}
+                                            <span className="font-bold text-slate-900 text-xs">{selectedCreneau.formateur.prenom} {selectedCreneau.formateur.nom}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <form onSubmit={handleBookAppointment} className="space-y-6">
+                            <div className="overflow-y-auto flex-1 p-6 md:p-8 pt-4">
+                                <form onSubmit={handleBookAppointment} className="space-y-6">
                                 {/* CHOIX DU TYPE DE SÉANCE */}
                                 <div className="space-y-3">
                                     <label className="text-xs font-black uppercase tracking-wider text-slate-950 block">
@@ -880,6 +946,7 @@ export default function AppointmentsPage() {
                                     </button>
                                 </div>
                             </form>
+                            </div>
                         </motion.div>
                     </div>
                 )}

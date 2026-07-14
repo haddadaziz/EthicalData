@@ -69,8 +69,11 @@ export class UsersService {
 
   // Recherche par email
   async findByEmail(email: string) {
-    return this.prisma.utilisateur.findUnique({
-      where: { email },
+    return this.prisma.utilisateur.findFirst({
+      where: {
+        email: { equals: email, mode: 'insensitive' },
+        deletedAt: null,
+      },
       include: {
         roles: true,
       },
@@ -488,7 +491,7 @@ export class UsersService {
     const accessToken = this.jwtService.sign(payload);
 
     return {
-      accessToken,
+      access_token: accessToken,
       message: 'Félicitations ! Vous êtes maintenant formateur.',
       roles: updatedUser!.roles.map((r) => r.nom),
     };

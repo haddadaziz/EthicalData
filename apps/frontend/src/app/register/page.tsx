@@ -190,10 +190,6 @@ export default function RegisterPage() {
 
             setSuccessMessage('Compte créé avec succès ! Redirection...');
 
-            if (data.access_token) {
-                localStorage.setItem('token', data.access_token);
-            }
-
             setTimeout(() => {
                 router.push('/dashboard');
             }, 1000);

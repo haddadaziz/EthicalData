@@ -42,8 +42,18 @@ export class AuthService {
       email: user.email,
       roles: user.roles.map((role: any) => role.nom),
     };
+    const token = this.jwtService.sign(payload);
+    return { access_token: token };
+  }
+
+  getCookieOptions() {
+    const isProd = process.env.NODE_ENV === 'production';
     return {
-      access_token: this.jwtService.sign(payload),
+      httpOnly: true,
+      secure: isProd,
+      sameSite: 'lax' as const,
+      path: '/',
+      maxAge: 24 * 60 * 60, // 24h (doit correspondre à JWT_EXPIRATION)
     };
   }
 }

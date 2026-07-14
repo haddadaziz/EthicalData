@@ -79,69 +79,76 @@ export class AppointmentsService {
 
   // 3. Réserver un rendez-vous (Apprenant) (+ NOTIFICATIONS)
   async bookAppointment(candidatId: number, dto: BookAppointmentDto) {
-    const creneau = await this.prisma.creneauDisponibilite.findUnique({
-      where: { id: BigInt(dto.creneauId) },
-      include: { formateur: true },
-    });
-
-    if (!creneau) {
-      throw new NotFoundException('Créneau introuvable.');
-    }
-
-    if (creneau.estReserve) {
-      throw new ConflictException('Ce créneau a déjà été réservé par un autre candidat.');
-    }
-
     const candidat = await this.prisma.utilisateur.findUnique({
       where: { id: BigInt(candidatId) },
     });
 
-    // Vérifier s'il existe déjà un rendez-vous (ex: précédemment annulé)
-    const existingRdv = await this.prisma.rendezVous.findUnique({
-      where: { creneauId: creneau.id },
+    const result = await this.prisma.$transaction(async (tx) => {
+      const creneau = await tx.creneauDisponibilite.findUnique({
+        where: { id: BigInt(dto.creneauId) },
+        include: { formateur: true },
+      });
+
+      if (!creneau) {
+        throw new NotFoundException('Créneau introuvable.');
+      }
+
+      if (creneau.estReserve) {
+        throw new ConflictException('Ce créneau a déjà été réservé par un autre candidat.');
+      }
+
+      const claimed = await tx.creneauDisponibilite.updateMany({
+        where: { id: BigInt(dto.creneauId), estReserve: false },
+        data: { estReserve: true },
+      });
+
+      if (claimed.count === 0) {
+        throw new ConflictException('Ce créneau a été réservé entre-temps.');
+      }
+
+      const existingRdv = await tx.rendezVous.findUnique({
+        where: { creneauId: creneau.id },
+      });
+
+      let rdv;
+      if (existingRdv) {
+        rdv = await tx.rendezVous.update({
+          where: { id: existingRdv.id },
+          data: {
+            candidatId: BigInt(candidatId),
+            formateurId: creneau.formateurId,
+            type: dto.type as any,
+            motif: dto.motif || null,
+            statut: 'CONFIRME',
+          },
+          include: {
+            candidat: { select: { id: true, prenom: true, nom: true, email: true } },
+            formateur: { select: { id: true, prenom: true, nom: true, email: true } },
+            creneau: true,
+          },
+        });
+      } else {
+        rdv = await tx.rendezVous.create({
+          data: {
+            candidatId: BigInt(candidatId),
+            formateurId: creneau.formateurId,
+            creneauId: creneau.id,
+            type: dto.type as any,
+            motif: dto.motif,
+            statut: 'CONFIRME',
+          },
+          include: {
+            candidat: { select: { id: true, prenom: true, nom: true, email: true } },
+            formateur: { select: { id: true, prenom: true, nom: true, email: true } },
+            creneau: true,
+          },
+        });
+      }
+
+      return { rdv, creneau };
     });
 
-    let rdv;
-    if (existingRdv) {
-      rdv = await this.prisma.rendezVous.update({
-        where: { id: existingRdv.id },
-        data: {
-          candidatId: BigInt(candidatId),
-          formateurId: creneau.formateurId,
-          type: dto.type as any,
-          motif: dto.motif || null,
-          statut: 'CONFIRME',
-        },
-        include: {
-          candidat: { select: { id: true, prenom: true, nom: true, email: true } },
-          formateur: { select: { id: true, prenom: true, nom: true, email: true } },
-          creneau: true,
-        },
-      });
-    } else {
-      rdv = await this.prisma.rendezVous.create({
-        data: {
-          candidatId: BigInt(candidatId),
-          formateurId: creneau.formateurId,
-          creneauId: creneau.id,
-          type: dto.type as any,
-          motif: dto.motif,
-          statut: 'CONFIRME',
-        },
-        include: {
-          candidat: { select: { id: true, prenom: true, nom: true, email: true } },
-          formateur: { select: { id: true, prenom: true, nom: true, email: true } },
-          creneau: true,
-        },
-      });
-    }
-
-    await this.prisma.creneauDisponibilite.update({
-      where: { id: creneau.id },
-      data: { estReserve: true },
-    });
-
-    const dateFormatted = new Date(creneau.dateDebut).toLocaleDateString('fr-FR', {
+    const dateFormatted = new Date(result.creneau.dateDebut).toLocaleDateString('fr-FR', {
       day: 'numeric',
       month: 'short',
       hour: '2-digit',
@@ -151,14 +158,14 @@ export class AppointmentsService {
     await this.notificationsService.createNotification(
       candidatId.toString(),
       "Rendez-vous confirmé",
-      `Votre séance de coaching (${dto.type}) avec ${creneau.formateur.prenom} ${creneau.formateur.nom} est confirmée pour le ${dateFormatted}.`,
+      `Votre séance de coaching (${dto.type}) avec ${result.creneau.formateur.prenom} ${result.creneau.formateur.nom} est confirmée pour le ${dateFormatted}.`,
       "SYSTEM",
       "/dashboard/appointments",
     );
 
-    if (candidatId.toString() !== creneau.formateurId.toString()) {
+    if (candidatId.toString() !== result.creneau.formateurId.toString()) {
       await this.notificationsService.createNotification(
-        creneau.formateurId.toString(),
+        result.creneau.formateurId.toString(),
         "Nouveau RDV Réservé",
         `L'apprenant ${candidat?.prenom} ${candidat?.nom} a réservé le créneau du ${dateFormatted} (${dto.type}).`,
         "SYSTEM",
@@ -166,6 +173,7 @@ export class AppointmentsService {
       );
     }
 
+    const rdv = result.rdv as any;
     return {
       ...rdv,
       id: rdv.id.toString(),

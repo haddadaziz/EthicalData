@@ -29,10 +29,18 @@ export class ForumController {
     @Req() req: any,
     @Query('theme') theme?: string,
     @Query('certificationId') certificationId?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
   ) {
     const certId = certificationId ? parseInt(certificationId) : undefined;
     const userId = req.user?.id ? Number(req.user.id) : undefined;
-    return this.forumService.findAllSujets({ theme, certificationId: certId, userId });
+    return this.forumService.findAllSujets({
+      theme,
+      certificationId: certId,
+      userId,
+      page: page ? parseInt(page) : undefined,
+      limit: limit ? parseInt(limit) : undefined,
+    });
   }
 
   // ==========================================

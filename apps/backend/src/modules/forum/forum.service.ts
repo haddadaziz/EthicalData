@@ -322,7 +322,10 @@ export class ForumService {
       throw new ForbiddenException('Vous ne pouvez pas supprimer cette publication.');
     }
 
-    await this.prisma.sujet.delete({ where: { id: BigInt(sujetId) } });
+    await this.prisma.sujet.update({
+      where: { id: BigInt(sujetId) },
+      data: { deletedAt: new Date() },
+    });
 
     if (isAdmin && !isOwner) {
       await this.notificationsService.createNotification(
@@ -445,7 +448,10 @@ export class ForumService {
       throw new ForbiddenException('Vous ne pouvez pas supprimer ce commentaire.');
     }
 
-    await this.prisma.commentaire.delete({ where: { id: BigInt(commentId) } });
+    await this.prisma.commentaire.update({
+      where: { id: BigInt(commentId) },
+      data: { deletedAt: new Date() },
+    });
     return { message: 'Commentaire supprimé.' };
   }
 

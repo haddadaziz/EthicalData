@@ -83,6 +83,7 @@ export class SimulationsController {
     // ─── Questions par certification ─────────────────────────────────
 
     @Get('certifications/:certId/questions')
+    @UseGuards(JwtAuthGuard)
     async findQuestionsByCertification(@Param('certId', ParseIntPipe) certId: number) {
         return this.simulationsService.findQuestionsByCertification(certId);
     }

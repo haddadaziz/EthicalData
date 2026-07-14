@@ -180,31 +180,22 @@ export default function LoginPage() {
         setError(null);
 
         try {
-            const data = await apiFetch('/auth/login', {
+            await apiFetch('/auth/login', {
                 method: 'POST',
                 body: { email, motDePasse: password },
             });
 
-            if (rememberMe) {
-                localStorage.setItem('token', data.access_token);
-                sessionStorage.removeItem('token');
-            } else {
-                sessionStorage.setItem('token', data.access_token);
-                localStorage.removeItem('token');
-            }
-
-            const payloadBase64 = data.access_token.split('.')[1];
-            const decodedPayload = JSON.parse(atob(payloadBase64));
-            
-            // Gestion robuste : le backend peut renvoyer `role` (string) ou `roles` (array)
-            const rolesData = decodedPayload.roles || decodedPayload.role || [];
-            const roleArray = Array.isArray(rolesData) ? rolesData : [rolesData];
-
             showToast("Connecté avec succès", "success");
 
-            if (roleArray.includes('SUPER_ADMIN') || roleArray.includes('ADMIN')) {
-                router.push('/admin');
-            } else {
+            try {
+                const profile = await apiFetch('/users/me/profile');
+                const roles = profile?.roles?.map((r: any) => r.nom) || [];
+                if (roles.includes('SUPER_ADMIN') || roles.includes('ADMIN')) {
+                    router.push('/admin');
+                } else {
+                    router.push('/dashboard');
+                }
+            } catch {
                 router.push('/dashboard');
             }
         } catch (err: any) {

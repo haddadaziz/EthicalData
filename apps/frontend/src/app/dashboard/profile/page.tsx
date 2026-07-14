@@ -5,6 +5,7 @@ import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { User, ShieldCheck, KeyRound, CheckCircle, Save, RefreshCw, MessageCircle, Heart, Camera, Phone, Mail, FileText, Lock, Eye, EyeOff, Upload, Target, ChevronRight, Reply } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getCertificateBadgeLogo } from '@/lib/certification-utils';
 
 interface UserProfileData {
     id: string;
@@ -24,21 +25,6 @@ interface UserProfileData {
     };
     obtainedCertifications?: any[];
 }
-
-const getCertificateBadgeLogo = (cert: any) => {
-    if (cert.image && (cert.image.endsWith('.svg') || cert.image.endsWith('.png'))) return cert.image;
-    const code = (cert.codeExamen || cert.code || '').toLowerCase();
-    const nom = (cert.nom || cert.title || '').toLowerCase();
-
-    if (code.includes('az-900') || nom.includes('az-900') || nom.includes('azure fundamentals')) return '/badges/az-900.svg';
-    if (code.includes('clf') || nom.includes('cloud practitioner')) return '/badges/aws-clf.svg';
-    if (code.includes('saa') || nom.includes('solutions architect')) return '/badges/aws-saa.svg';
-    if (code.includes('iso-27001') || nom.includes('iso 27001') || nom.includes('pecb')) return '/badges/pecb-iso.svg';
-    if (code.includes('sy0') || nom.includes('security+')) return '/badges/comptia-sec.svg';
-    if (code.includes('sc-900') || nom.includes('sc-900')) return '/badges/sc-900.svg';
-
-    return cert.image || cert.logoUrl || '/badges/az-900.svg';
-};
 
 export default function ProfilePage() {
     const { showToast } = useToast();
@@ -171,15 +157,6 @@ export default function ProfilePage() {
             const result = await apiFetch('/users/become-trainer', {
                 method: 'POST',
             });
-
-            // Remplacer silencieusement l'ancien token par le nouveau (sans déco/reco)
-            if (result.accessToken) {
-                if (localStorage.getItem('token')) {
-                    localStorage.setItem('token', result.accessToken);
-                } else {
-                    sessionStorage.setItem('token', result.accessToken);
-                }
-            }
 
             // Passer en mode formateur immédiatement
             localStorage.setItem('viewMode', 'FORMATEUR');

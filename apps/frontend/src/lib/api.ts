@@ -14,16 +14,10 @@ export async function apiFetch(endpoint: string, options: FetchOptions = {}) {
     headers.set('Content-Type', 'application/json');
   }
 
-  if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-    if (token) {
-      headers.set('Authorization', `Bearer ${token}`);
-    }
-  }
-
   const config: RequestInit = {
     ...options,
     headers,
+    credentials: 'include',
     body: options.body && !(options.body instanceof FormData) ? JSON.stringify(options.body) : options.body,
   };
 

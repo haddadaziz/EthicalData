@@ -7,6 +7,7 @@ import { useToast } from '../../context/ToastContext';
 import { BookOpen, Award, Settings, LogOut, ShieldCheck, Menu, X, User, DownloadCloud, HelpCircle, MessageSquare, Calendar, GraduationCap, ChalkboardTeacher, ChevronDown } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import NotificationBell from '../../components/NotificationBell';
+import ErrorBoundary from '../../components/ErrorBoundary';
 import { apiFetch } from '../../lib/api';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -27,41 +28,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     };
 
     // Rôles et mode de vue (Apprenant / Formateur) initialisés de façon synchrone pour éviter le clignotement
-    const [userRoles, setUserRoles] = useState<string[]>(() => {
-        if (typeof window !== 'undefined') {
-            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-            if (token) {
-                try {
-                    const payloadBase64 = token.split('.')[1];
-                    const decodedPayload = JSON.parse(atob(payloadBase64));
-                    return decodedPayload.roles || [];
-                } catch (e) {
-                    return [];
-                }
-            }
-        }
-        return [];
-    });
+    const [userRoles, setUserRoles] = useState<string[]>([]);
 
     const [viewMode, setViewMode] = useState<'APPRENANT' | 'FORMATEUR'>(() => {
         if (typeof window !== 'undefined') {
-            // Priorité au choix explicite de l'utilisateur sauvegardé dans localStorage
             const savedMode = localStorage.getItem('viewMode');
-            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-            if (token) {
-                try {
-                    const payloadBase64 = token.split('.')[1];
-                    const decodedPayload = JSON.parse(atob(payloadBase64));
-                    const roles = decodedPayload.roles || [];
-                    const isFormateur = roles.includes('FORMATEUR');
-                    // Si l'utilisateur a un choix sauvegardé, le respecter (sauf s'il n'a pas le rôle)
-                    if (savedMode === 'APPRENANT') return 'APPRENANT';
-                    if (savedMode === 'FORMATEUR' && isFormateur) return 'FORMATEUR';
-                    // Pas de choix sauvegardé : défaut selon le rôle
-                    if (isFormateur) return 'FORMATEUR';
-                } catch (e) {}
-            }
+            if (savedMode === 'APPRENANT' || savedMode === 'FORMATEUR') return savedMode;
         }
+        return 'APPRENANT';
     });
 
     const [isSwitching, setIsSwitching] = useState(false);
@@ -77,28 +51,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Écouter les changements de rôle émis par d'autres composants (ex: "Devenir Formateur")
     useEffect(() => {
         const handleRolesUpdated = () => {
-            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-            if (token) {
-                try {
-                    const payloadBase64 = token.split('.')[1];
-                    const decodedPayload = JSON.parse(atob(payloadBase64));
-                    const roles = decodedPayload.roles || [];
-                    setUserRoles(roles);
-                    if (roles.includes('FORMATEUR')) {
-                        setViewMode('FORMATEUR');
-                        localStorage.setItem('viewMode', 'FORMATEUR');
+            apiFetch('/users/me/profile')
+                .then((profile) => {
+                    if (!profile) return;
+                    if (profile.roles) {
+                        const roles = profile.roles.map((r: any) => r.nom);
+                        setUserRoles(roles);
+                        if (roles.includes('FORMATEUR')) {
+                            setViewMode('FORMATEUR');
+                            localStorage.setItem('viewMode', 'FORMATEUR');
+                        }
                     }
-                    // Mettre à jour les infos utilisateur si disponibles dans le token
-                    if (decodedPayload.prenom) setUserFirstName(decodedPayload.prenom);
-                    if (decodedPayload.nom) setUserLastName(decodedPayload.nom);
-                    if (decodedPayload.avatar) setUserAvatar(decodedPayload.avatar);
-                } catch (e) {
-                    console.warn('Erreur lors du décodage du token après mise à jour des rôles:', e);
-                }
-            }
+                })
+                .catch(() => {});
         };
 
         window.addEventListener('rolesUpdated', handleRolesUpdated);
@@ -106,66 +73,32 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }, []);
 
     useEffect(() => {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-
-        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-        if (!token) {
-            router.push('/login');
-            return;
-        }
-
-        try {
-            const payloadBase64 = token.split('.')[1];
-            const decodedPayload = JSON.parse(atob(payloadBase64));
-
-            const now = Math.floor(Date.now() / 1000);
-            if (decodedPayload.exp && decodedPayload.exp < now) {
-                throw new Error("Jeton expiré");
-            }
-
-            setUserEmail(decodedPayload.email || 'apprenant@ethicaldata.local');
-            setUserFirstName(decodedPayload.prenom || decodedPayload.email?.split('@')[0] || 'Étudiant');
-            setUserLastName(decodedPayload.nom || '');
-            setUserAvatar(decodedPayload.avatar || null);
-            setAuthorized(true);
-
-            // Charger le profil utilisateur à jour avec ses rôles
-            apiFetch('/users/me/profile')
-                .then((profile) => {
-                    if (profile) {
-                        if (profile.prenom) setUserFirstName(profile.prenom);
-                        if (profile.nom) setUserLastName(profile.nom);
-                        if (profile.email) setUserEmail(profile.email);
-                        if (profile.avatar) setUserAvatar(profile.avatar);
-                        if (profile.roles) {
-                            const roles = profile.roles.map((r: any) => r.nom);
-                            console.log('API me/profile roles loaded:', roles);
-                            setUserRoles(roles);
-                            console.log('isTrainer value:', roles.includes('FORMATEUR'));
-                            
-                            const savedMode = localStorage.getItem('viewMode');
-                            const isFormateur = roles.includes('FORMATEUR');
-                            // Corriger uniquement si l'utilisateur n'a PAS le rôle mais tente le mode formateur
-                            if (!isFormateur && savedMode === 'FORMATEUR') {
-                                setViewMode('APPRENANT');
-                                localStorage.setItem('viewMode', 'APPRENANT');
-                            }
-                        }
+        apiFetch('/users/me/profile')
+            .then((profile) => {
+                if (!profile) { router.push('/login'); return; }
+                setUserEmail(profile.email);
+                setUserFirstName(profile.prenom);
+                setUserLastName(profile.nom);
+                setUserAvatar(profile.avatar || null);
+                if (profile.roles) {
+                    const roles = profile.roles.map((r: any) => r.nom);
+                    setUserRoles(roles);
+                    const savedMode = localStorage.getItem('viewMode');
+                    const isFormateur = roles.includes('FORMATEUR');
+                    if (!isFormateur && savedMode === 'FORMATEUR') {
+                        setViewMode('APPRENANT');
+                        localStorage.setItem('viewMode', 'APPRENANT');
                     }
-                })
-                .catch((err) => console.warn("Impossible de charger le profil de l'utilisateur connecté:", err));
-        } catch (error) {
-            console.error("Vérification session échouée :", error);
-            localStorage.removeItem('token');
-            sessionStorage.removeItem('token');
-            router.push('/login');
-        }
+                }
+                setAuthorized(true);
+            })
+            .catch(() => {
+                router.push('/login');
+            });
     }, [router]);
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        sessionStorage.removeItem('token');
+    const handleLogout = async () => {
+        try { await apiFetch('/auth/logout', { method: 'POST' }); } catch {}
         showToast("Déconnecté avec succès, à bientôt", "success");
         router.push('/login');
     };
@@ -665,7 +598,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                 {/* Contenu principal de la page */}
                 <main className="flex-1 p-6 md:p-10">
-                    {children}
+                    <ErrorBoundary>
+                        {children}
+                    </ErrorBoundary>
                 </main>
             </div>
         </div>

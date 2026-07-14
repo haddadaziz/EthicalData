@@ -233,6 +233,7 @@ model Telechargement {
   utilisateurId BigInt
   utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
 
+  @@index([utilisateurId, ressourceId])
   @@map("telechargements")
 }
 
@@ -256,6 +257,8 @@ model Question {
 
   options Option[]
 
+  @@index([certificationId])
+  @@index([simulationId])
   @@map("questions")
 }
 
@@ -267,6 +270,7 @@ model Option {
   questionId BigInt
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
+  @@index([questionId])
   @@map("options")
 }
 
@@ -290,6 +294,8 @@ model Simulation {
   tentatives Tentative[]
   questions  Question[]
 
+  @@index([coursId])
+  @@index([certificationId])
   @@map("simulations")
 }
 
@@ -326,6 +332,9 @@ model Sujet {
   likes           LikeSujet[]
   signalements    SignalementSujet[]
 
+  @@index([auteurId])
+  @@index([theme])
+  @@index([deletedAt])
   @@map("sujets")
 }
 
@@ -394,6 +403,7 @@ model SignalementSujet {
   utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
 
   @@unique([sujetId, utilisateurId])
+  @@index([traite])
   @@map("signalements_sujets")
 }
 
@@ -410,6 +420,7 @@ model SignalementCommentaire {
   utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
 
   @@unique([commentaireId, utilisateurId])
+  @@index([traite])
   @@map("signalements_commentaires")
 }
 
@@ -512,5 +523,7 @@ model RendezVous {
   creneauId BigInt               @unique @map("creneau_id")
   creneau   CreneauDisponibilite @relation(fields: [creneauId], references: [id], onDelete: Cascade)
 
+  @@index([candidatId])
+  @@index([formateurId])
   @@map("rendez_vous")
 }

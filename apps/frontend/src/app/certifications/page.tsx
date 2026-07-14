@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { apiFetch } from '../../lib/api';
 import { useToast } from '../../context/ToastContext';
 import { useMutationGuard } from '../../hooks/useMutationGuard';
+import { getCertificateBadgeLogo } from '@/lib/certification-utils';
 
 const TriangleLogo = ({ className = "w-5 h-5" }: { className?: string }) => (
     <svg className={`${className} text-red-600`} viewBox="0 0 100 100" fill="currentColor">
@@ -16,21 +17,6 @@ const TriangleLogo = ({ className = "w-5 h-5" }: { className?: string }) => (
         <polygon points="50,45 40,65 60,65" className="fill-red-600" />
     </svg>
 );
-
-const getCertificateBadgeLogo = (cert: any) => {
-    if (cert.image && (cert.image.endsWith('.svg') || cert.image.endsWith('.png'))) return cert.image;
-    const code = (cert.codeExamen || cert.code || '').toLowerCase();
-    const nom = (cert.nom || cert.title || '').toLowerCase();
-
-    if (code.includes('az-900') || nom.includes('az-900') || nom.includes('azure fundamentals')) return '/badges/az-900.svg';
-    if (code.includes('clf') || nom.includes('cloud practitioner')) return '/badges/aws-clf.svg';
-    if (code.includes('saa') || nom.includes('solutions architect')) return '/badges/aws-saa.svg';
-    if (code.includes('iso-27001') || nom.includes('iso 27001') || nom.includes('pecb')) return '/badges/pecb-iso.svg';
-    if (code.includes('sy0') || nom.includes('security+')) return '/badges/comptia-sec.svg';
-    if (code.includes('sc-900') || nom.includes('sc-900')) return '/badges/sc-900.svg';
-
-    return cert.image || cert.logoUrl || '/badges/az-900.svg';
-};
 
 function getLevelBadgeStyle(niveau: string) {
     switch (niveau?.toUpperCase()) {
@@ -123,15 +109,14 @@ export default function CertificationsPublicPage() {
 
     useEffect(() => {
         setMounted(true);
-        const connected = !!(localStorage.getItem('token') || sessionStorage.getItem('token'));
-        setIsConnected(connected);
-        if (connected) {
-            apiFetch('/users/me/profile').then((profile) => {
-                setUserProfile(profile);
-                const tIds = (profile.preferences?.targetCertifications || []).map((id: any) => id.toString());
-                setTargetCertIds(tIds);
-            }).catch(() => {});
-        }
+        apiFetch('/users/me/profile').then((profile) => {
+            setIsConnected(true);
+            setUserProfile(profile);
+            const tIds = (profile.preferences?.targetCertifications || []).map((id: any) => id.toString());
+            setTargetCertIds(tIds);
+        }).catch(() => {
+            setIsConnected(false);
+        });
     }, []);
     const [certifications, setCertifications] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);

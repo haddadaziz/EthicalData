@@ -4,8 +4,11 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Res,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
+import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 
@@ -13,11 +16,10 @@ import { LoginDto } from './dto/login.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  // Endpoint de login POST /auth/login
-
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() loginDto: LoginDto) {
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
     const user = await this.authService.validateUser(
       loginDto.email,
       loginDto.motDePasse,
@@ -27,7 +29,23 @@ export class AuthController {
       throw new UnauthorizedException('Identifiants de connexion incorrects.');
     }
 
-    // Generer et retourner le token JWT
-    return this.authService.login(user);
+    const result = await this.authService.login(user);
+
+    res.cookie('token', result.access_token, this.authService.getCookieOptions());
+
+    return { message: 'Connexion réussie' };
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  async logout(@Res({ passthrough: true }) res: Response) {
+    res.cookie('token', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 0,
+    });
+    return { message: 'Déconnecté' };
   }
 }

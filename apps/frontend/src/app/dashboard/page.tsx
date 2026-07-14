@@ -3,43 +3,32 @@
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../lib/api';
 import { 
-    ListChecks, 
     Play, 
-    Video, 
     Calendar,
     CalendarCheck, 
     BookMarked,
     Users, 
-    CheckCircle2, 
     AlertTriangle, 
     Clock, 
     ChevronRight,
+    ChevronDown,
     Award,
     Target,
     BookOpen,
     X,
     FileText
 } from '@/components/icons';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-
-// Helper pour récupérer l'écousson/badge officiel du certificat
-const getCertificateBadgeLogo = (cert: any) => {
-    if (cert.image && (cert.image.endsWith('.svg') || cert.image.endsWith('.png'))) return cert.image;
-    const code = (cert.codeExamen || cert.code || '').toLowerCase();
-    const nom = (cert.nom || cert.title || '').toLowerCase();
-
-    if (code.includes('az-900') || nom.includes('az-900') || nom.includes('azure fundamentals')) return '/badges/az-900.svg';
-    if (code.includes('clf') || nom.includes('cloud practitioner')) return '/badges/aws-clf.svg';
-    if (code.includes('saa') || nom.includes('solutions architect')) return '/badges/aws-saa.svg';
-    if (code.includes('iso-27001') || nom.includes('iso 27001') || nom.includes('pecb')) return '/badges/pecb-iso.svg';
-    if (code.includes('sy0') || nom.includes('security+')) return '/badges/comptia-sec.svg';
-    if (code.includes('sc-900') || nom.includes('sc-900')) return '/badges/sc-900.svg';
-
-    return cert.image || cert.logoUrl || '/badges/az-900.svg';
-};
+import { getCertificateBadgeLogo } from '@/lib/certification-utils';
+import WelcomeSection from '@/components/dashboard/WelcomeSection';
+import RecentActivity from '@/components/dashboard/RecentActivity';
+import CertDetailModal from '@/components/dashboard/CertDetailModal';
+import QuickActions from '@/components/dashboard/QuickActions';
 
 export default function StudentDashboard() {
+    const router = useRouter();
     const [certs, setCerts] = useState<any[]>([]);
     const [targetCertIds, setTargetCertIds] = useState<string[]>([]);
     const [stats, setStats] = useState<any>({ totalAttempts: 0, averageScore: 0, readinessScore: 0, readinessLabel: 'NON_PRET' });
@@ -48,23 +37,13 @@ export default function StudentDashboard() {
     const [loading, setLoading] = useState(true);
     const [firstName, setFirstName] = useState('Étudiant');
     const [activeStep, setActiveStep] = useState<number | null>(null);
+    const [certDropdownOpen, setCertDropdownOpen] = useState(false);
+    const [selectedCertModal, setSelectedCertModal] = useState<any>(null);
 
     const [viewMode, setViewMode] = useState<'APPRENANT' | 'FORMATEUR'>(() => {
         if (typeof window !== 'undefined') {
-            // Priorité au choix explicite de l'utilisateur sauvegardé dans localStorage
             const savedMode = localStorage.getItem('viewMode');
-            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-            if (token) {
-                try {
-                    const payloadBase64 = token.split('.')[1];
-                    const decodedPayload = JSON.parse(atob(payloadBase64));
-                    const roles = decodedPayload.roles || [];
-                    const isFormateur = roles.includes('FORMATEUR');
-                    if (savedMode === 'APPRENANT') return 'APPRENANT';
-                    if (savedMode === 'FORMATEUR' && isFormateur) return 'FORMATEUR';
-                    if (isFormateur) return 'FORMATEUR';
-                } catch (e) {}
-            }
+            if (savedMode === 'APPRENANT' || savedMode === 'FORMATEUR') return savedMode;
         }
         return 'APPRENANT';
     });
@@ -97,16 +76,11 @@ export default function StudentDashboard() {
     }, []);
 
     useEffect(() => {
-        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-        if (token) {
-            try {
-                const payloadBase64 = token.split('.')[1];
-                const decodedPayload = JSON.parse(atob(payloadBase64));
-                setFirstName(decodedPayload.prenom || decodedPayload.email?.split('@')[0] || 'Candidat');
-            } catch (e) {
-                console.error(e);
+        apiFetch('/users/me/profile').then((profile) => {
+            if (profile) {
+                setFirstName(profile.prenom || profile.email?.split('@')[0] || 'Candidat');
             }
-        }
+        }).catch(() => {});
 
         const loadDashboardData = async () => {
             try {
@@ -273,24 +247,7 @@ export default function StudentDashboard() {
                     {/* COLONNE DE GAUCHE (8 COLS) */}
                     <div className="lg:col-span-8 flex flex-col justify-between">
                         {trainerModulesCount === 0 ? (
-                            /* CTA CRÉER PREMIER COURS */
-                            <div className="bg-white border border-slate-200/80 rounded-3xl p-8 shadow-xs flex-1 flex flex-col items-center justify-center text-center space-y-6">
-                                <div className="w-16 h-16 rounded-3xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
-                                    <BookOpen className="w-8 h-8" />
-                                </div>
-                                <div className="space-y-2 max-w-md">
-                                    <h3 className="text-lg font-black text-slate-955">Créez votre premier module de cours</h3>
-                                    <p className="text-xs text-slate-500 font-medium leading-relaxed">
-                                        Proposez des chapitres de révision, des fiches méthodologiques et des quiz pour accompagner vos élèves vers la réussite de leurs examens.
-                                    </p>
-                                </div>
-                                <Link
-                                    href="/dashboard/courses"
-                                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-2xl transition-all shadow-md shadow-blue-600/20 cursor-pointer"
-                                >
-                                    Créer un cours maintenant
-                                </Link>
-                            </div>
+                            <WelcomeSection userName={firstName} onDismiss={() => router.push('/dashboard/courses')} />
                         ) : (
                             /* LISTE DES MODULES CRÉÉS */
                             <div className="bg-white border border-slate-200/80 rounded-3xl p-6 md:p-8 shadow-xs flex-1 space-y-6">
@@ -334,47 +291,11 @@ export default function StudentDashboard() {
 
                     {/* COLONNE DE DROITE : PROCHAINES SESSIONS & ACTIONS RAPIDES (4 COLS) */}
                     <div className="lg:col-span-4 space-y-8">
-                        {/* COMPAGNON ACTIONS RAPIDES */}
-                        <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs space-y-4">
-                            <h3 className="text-sm font-black text-slate-955 border-b border-slate-100 pb-3 flex items-center gap-2">
-                                <ListChecks className="w-4 h-4 text-blue-600" />
-                                <span>Actions rapides</span>
-                            </h3>
-                            <div className="space-y-2">
-                                <Link
-                                    href="/dashboard/appointments"
-                                    className="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-blue-50/60 border border-slate-100 hover:border-blue-100 rounded-2xl text-left group transition-all"
-                                >
-                                    <div>
-                                        <span className="text-xs font-black text-slate-900 group-hover:text-blue-600 transition-colors block">Créer un créneau libre</span>
-                                        <span className="text-[10px] text-slate-400 font-bold uppercase">Ajouter mes dispo de coaching</span>
-                                    </div>
-                                    <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all" />
-                                </Link>
-
-                                <Link
-                                    href="/dashboard/courses"
-                                    className="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-indigo-50/60 border border-slate-100 hover:border-indigo-100 rounded-2xl text-left group transition-all"
-                                >
-                                    <div>
-                                        <span className="text-xs font-black text-slate-900 group-hover:text-indigo-600 transition-colors block">Ajouter un module de cours</span>
-                                        <span className="text-[10px] text-slate-400 font-bold uppercase">Publier de nouvelles fiches</span>
-                                    </div>
-                                    <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-0.5 transition-all" />
-                                </Link>
-
-                                <Link
-                                    href="/dashboard/community"
-                                    className="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-emerald-50/60 border border-slate-100 hover:border-emerald-100 rounded-2xl text-left group transition-all"
-                                >
-                                    <div>
-                                        <span className="text-xs font-black text-slate-900 group-hover:text-emerald-600 transition-colors block">Échanger avec les élèves</span>
-                                        <span className="text-[10px] text-slate-400 font-bold uppercase">Participer au forum d'entraide</span>
-                                    </div>
-                                    <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
-                                </Link>
-                            </div>
-                        </div>
+                        <QuickActions
+                            onStartPractice={() => router.push('/dashboard/appointments')}
+                            onBrowseCourses={() => router.push('/dashboard/courses')}
+                            onGoToCommunity={() => router.push('/dashboard/community')}
+                        />
 
                         {/* PROCHAINES SESSIONS DU FORMATEUR */}
                         <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs space-y-4">
@@ -426,27 +347,64 @@ export default function StudentDashboard() {
                     </p>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+                <div className="flex flex-wrap items-center gap-2.5 shrink-0 w-full sm:w-auto">
                     {/* Sélecteur de certification filtré selon les objectifs visés */}
                     {targetedCerts.length > 0 ? (
-                        <select
-                            value={selectedCert?.id || ''}
-                            onChange={(e) => {
-                                const found = targetedCerts.find(c => c.id.toString() === e.target.value);
-                                if (found) handleSelectCert(found);
-                            }}
-                            className="bg-white border border-slate-200 text-slate-800 font-extrabold rounded-xl px-3 py-2 text-xs outline-none focus:border-blue-600 cursor-pointer shadow-2xs"
-                        >
-                            {targetedCerts.map(c => {
-                                const label = c.codeExamen && !c.nom.toLowerCase().startsWith(c.codeExamen.toLowerCase())
-                                    ? `${c.codeExamen} - ${c.nom}`
-                                    : c.nom;
-                                const truncated = label.length > 38 ? `${label.substring(0, 35)}...` : label;
-                                return (
-                                    <option key={c.id} value={c.id.toString()}>{truncated}</option>
-                                );
-                            })}
-                        </select>
+                        <div className="relative w-full sm:w-auto sm:shrink-0">
+                            <button
+                                type="button"
+                                onClick={() => setCertDropdownOpen(!certDropdownOpen)}
+                                className="w-full flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 focus:border-blue-600 rounded-2xl text-slate-955 text-xs font-bold outline-none cursor-pointer hover:bg-slate-50 transition-all sm:min-w-[220px]"
+                            >
+                                {selectedCert && getCertificateBadgeLogo(selectedCert) && (
+                                    <img src={getCertificateBadgeLogo(selectedCert)} alt="" className="w-5 h-5 object-contain rounded shrink-0" />
+                                )}
+                                <span className="flex-1 text-left truncate">
+                                    {selectedCert 
+                                        ? (selectedCert.codeExamen && !selectedCert.nom.toLowerCase().startsWith(selectedCert.codeExamen.toLowerCase())
+                                            ? `${selectedCert.codeExamen} - ${selectedCert.nom}`
+                                            : selectedCert.nom)
+                                        : 'Sélectionner une certification'
+                                    }
+                                </span>
+                                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${certDropdownOpen ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            {certDropdownOpen && (
+                                <>
+                                    <div className="fixed inset-0 z-40" onClick={() => setCertDropdownOpen(false)} />
+                                    <div className="absolute left-0 sm:left-auto sm:right-0 mt-1.5 z-50 w-full sm:w-72 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden animate-fadeIn">
+                                        <div className="max-h-64 overflow-y-auto">
+                                            {targetedCerts.map(c => {
+                                                const logo = getCertificateBadgeLogo(c);
+                                                const label = c.codeExamen && !c.nom.toLowerCase().startsWith(c.codeExamen.toLowerCase())
+                                                    ? `${c.codeExamen} - ${c.nom}`
+                                                    : c.nom;
+                                                return (
+                                                    <button
+                                                        key={c.id}
+                                                        type="button"
+                                                        onClick={() => { handleSelectCert(c); setCertDropdownOpen(false); }}
+                                                        className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
+                                                            selectedCert?.id === c.id ? 'bg-slate-100 text-slate-955' : 'text-slate-650'
+                                                        }`}
+                                                    >
+                                                        {logo ? (
+                                                            <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0" />
+                                                        ) : (
+                                                            <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                                                <Award className="w-4 h-4 text-slate-500" />
+                                                            </div>
+                                                        )}
+                                                        <span className="block truncate font-bold text-left flex-1">{label}</span>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
                     ) : (
                         <Link 
                             href="/dashboard/certifications"
@@ -834,119 +792,11 @@ export default function StudentDashboard() {
                 </div>
             </div>
 
-            {/* GRILLE DERN IÈRES TENTATIVES D'EXAMENS BLANCS (RÉSEAU DE TENTATIVES RÉELLES DU BACKEND) */}
-            <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-7 shadow-2xs space-y-5 text-left">
-                <div className="flex items-center justify-between gap-4">
-                    <div>
-                        <h2 className="text-lg font-black text-slate-950 tracking-tight">
-                            Dernières Tentatives d&apos;Examens Blancs
-                        </h2>
-                        <p className="text-xs text-slate-500 font-semibold mt-0.5">
-                        {selectedCert
-                            ? `Historique des simulations pour ${selectedCert.codeExamen || selectedCert.nom}`
-                            : "Veuillez viser un certificat pour consulter vos tentatives"
-                        }
-                        </p>
-                    </div>
-
-                    <span className="text-xs font-extrabold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-xl shrink-0">
-                        {selectedCert ? filteredHistory.length : 0} tentative(s) enregistrée(s)
-                    </span>
-                </div>
-
-                {selectedCert && filteredHistory && filteredHistory.length > 0 ? (
-                    <div className="divide-y divide-slate-100 border border-slate-100 rounded-2xl overflow-hidden">
-                        {filteredHistory.slice(0, 5).map((attempt: any, idx: number) => {
-                            const isPassed = attempt.score >= 80;
-                            const isWarning = attempt.score >= 65 && attempt.score < 80;
-
-                            return (
-                                <div key={attempt.id || idx} className="p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors">
-                                    <div className="flex items-center gap-4">
-                                        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-xs shrink-0 ${
-                                            isPassed ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-                                            isWarning ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-                                            'bg-rose-50 text-rose-700 border border-rose-200'
-                                        }`}>
-                                            {attempt.score}%
-                                        </div>
-
-                                        <div className="space-y-0.5">
-                                            <h3 className="font-extrabold text-slate-950 text-sm">
-                                                {attempt.certificationName || selectedCert?.nom || 'Simulation d\'Examen Blanc'}
-                                            </h3>
-                                            <div className="flex items-center gap-3 text-xs text-slate-400 font-semibold">
-                                                <span className="flex items-center gap-1">
-                                                    <Clock className="w-3.5 h-3.5" />
-                                                    <span>{new Date(attempt.datePassage).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-3 self-end sm:self-center shrink-0">
-                                        <span className={`text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-lg border ${
-                                            isPassed ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                                            isWarning ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                                            'bg-rose-50 text-rose-700 border-rose-200'
-                                        }`}>
-                                            {isPassed ? 'RÉUSSI' : isWarning ? 'À PEAUFINER' : 'À RENFORCER'}
-                                        </span>
-
-                                        <Link
-                                            href={`/dashboard/practice${(attempt.certificationSlug || selectedCert?.slug) ? `?cert=${attempt.certificationSlug || selectedCert?.slug}` : ''}`}
-                                            className="px-3.5 py-1.5 bg-slate-950 hover:bg-slate-900 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer inline-flex items-center gap-1.5"
-                                        >
-                                            <Play className="w-3 h-3 fill-white text-white" />
-                                            <span>Refaire</span>
-                                        </Link>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                ) : (
-                    <div className="bg-slate-50/80 border border-dashed border-slate-200 rounded-2xl p-8 text-center space-y-3">
-                        <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
-                            {selectedCert ? (
-                                <Play className="w-6 h-6 fill-blue-600 text-blue-600" />
-                            ) : (
-                                <Target className="w-6 h-6 text-blue-600" />
-                            )}
-                        </div>
-                        <div className="space-y-1">
-                            <h3 className="font-extrabold text-slate-950 text-sm">
-                                {selectedCert 
-                                    ? `Aucune tentative effectuée pour ${selectedCert.codeExamen || selectedCert.nom}`
-                                    : "Veuillez viser un certificat pour consulter vos tentatives"
-                                }
-                            </h3>
-                            <p className="text-xs text-slate-500 font-medium max-w-md mx-auto">
-                                {selectedCert
-                                    ? "Lancez votre premier examen blanc sur ce simulateur interactif pour générer votre analyse d'éligibilité."
-                                    : "Sélectionnez votre première certification cible dans le catalogue pour effectuer vos simulations et consulter votre historique."
-                                }
-                            </p>
-                        </div>
-                        <Link
-                            href={selectedCert ? `/dashboard/practice?cert=${selectedCert.slug}` : "/dashboard/certifications"}
-                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer"
-                        >
-                            {selectedCert ? (
-                                <>
-                                    <Play className="w-3.5 h-3.5 fill-white text-white" />
-                                    <span>Lancer un Examen Blanc</span>
-                                </>
-                            ) : (
-                                <>
-                                    <BookOpen className="w-3.5 h-3.5 text-white" />
-                                    <span>Accéder au Catalogue</span>
-                                </>
-                            )}
-                        </Link>
-                    </div>
-                )}
-            </div>
+            <RecentActivity
+                history={filteredHistory || []}
+                certifications={selectedCert ? [selectedCert] : []}
+                onCertClick={(cert: any) => router.push(`/dashboard/practice?cert=${cert.slug || cert.id}`)}
+            />
 
             {/* GRILLE 4 : VOS EXAMENS ET CERTIFICATIONS VISÉS PAR L'APPRENANT */}
             <div className="space-y-4 pt-4 text-left">
@@ -970,82 +820,69 @@ export default function StudentDashboard() {
                 </div>
 
                 {targetedCerts.length > 0 ? (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
                         {targetedCerts.map((cert: any, idx: number) => {
                             const badgeLogo = getCertificateBadgeLogo(cert);
 
                             return (
                                 <div 
                                     key={cert.id || idx} 
-                                    className="bg-white border border-slate-200/90 hover:border-blue-300 hover:shadow-xl rounded-3xl p-6 sm:p-7 flex flex-col justify-between group transition-all duration-300 text-left space-y-5"
+                                    className="bg-white border border-slate-200/80 rounded-3xl p-4 flex flex-col justify-between group transition-all duration-300 hover:shadow-lg hover:border-slate-350 text-left"
                                 >
-                                    {/* PARTIE SUPÉRIEURE : EN-TÊTE STYLE UDEMY */}
-                                    <div className="flex items-start justify-between gap-4">
-                                        {/* Côté Gauche : Badges, Titre & Description */}
-                                        <div className="space-y-3 flex-1">
-                                            <div className="flex flex-wrap items-center gap-2">
-                                                <span className="font-extrabold text-slate-900 text-[10px] uppercase tracking-wider px-2.5 py-1 bg-slate-100 border border-slate-200 rounded-lg">
-                                                    {cert.fournisseur?.nom || 'Éditeur'}
-                                                </span>
-                                                {cert.codeExamen && (
-                                                    <span className="font-black text-blue-600 text-[10px] uppercase tracking-wider px-2.5 py-1 bg-blue-50 border border-blue-100 rounded-lg">
-                                                        {cert.codeExamen}
-                                                    </span>
+                                    {/* Visual Box (Landing Page Style) */}
+                                    <div 
+                                        onClick={() => setSelectedCertModal(cert)} 
+                                        className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-2xs transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-md bg-white border border-slate-100 cursor-pointer shrink-0"
+                                    >
+                                        {/* Background Template */}
+                                        <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
+
+                                        {/* Examen code overlay */}
+                                        {cert.codeExamen && (
+                                            <div className="absolute top-3 left-3 z-30">
+                                                <div className="bg-slate-955 text-white font-black uppercase text-[8px] tracking-widest px-2 py-0.5 rounded-md border border-slate-800 shadow-sm flex items-center group-hover:bg-blue-600 group-hover:border-blue-500 transition-colors">
+                                                    {cert.codeExamen}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Floating Badge Logo */}
+                                        <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+                                            <div className="w-20 h-20 flex items-center justify-center transition-transform duration-500 -translate-y-2 group-hover:-translate-y-3.5">
+                                                {badgeLogo ? (
+                                                    <img src={badgeLogo} alt={cert.nom} className="max-w-full max-h-full object-contain filter drop-shadow-xl" />
+                                                ) : (
+                                                    <div className="w-12 h-12 bg-white/95 rounded-full flex items-center justify-center border border-slate-200 shadow-sm">
+                                                        <Award className="w-6 h-6 text-slate-400" />
+                                                    </div>
                                                 )}
-                                                <span className={`text-[9px] px-2.5 py-1 rounded-lg font-extrabold uppercase tracking-wider border ${getNiveauBadgeStyle(cert.niveau)}`}>
-                                                    {cert.niveau || 'DEBUTANT'}
-                                                </span>
                                             </div>
-
-                                            <div>
-                                                <h3 className="font-extrabold text-slate-950 text-lg leading-snug group-hover:text-blue-600 transition-colors">
-                                                    {cert.nom}
-                                                </h3>
-                                                <p className="text-xs text-slate-500 font-medium line-clamp-2 mt-1.5 leading-relaxed">
-                                                    {cert.description || 'Préparez-vous à l\'examen officiel sur nos simulateurs interactifs.'}
-                                                </p>
-                                            </div>
-
-                                            <div className="flex items-center gap-4 text-xs font-bold text-slate-400 pt-1">
-                                                <span className="flex items-center gap-1.5 text-slate-600">
-                                                    <Users className="w-3.5 h-3.5 text-slate-400" />
-                                                    <span>Candidats en préparation</span>
-                                                </span>
-                                                <span className="flex items-center gap-1 text-slate-500">
-                                                    <Clock className="w-3.5 h-3.5" />
-                                                    <span>{cert.dureeIndicative || '15h indicatives'}</span>
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        {/* Côté Droit : Écusson/Badge Officiel Flottant du Certificat */}
-                                        <div className="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center shrink-0 p-1">
-                                            {badgeLogo ? (
-                                                <img
-                                                    src={badgeLogo}
-                                                    alt={cert.nom}
-                                                    className="max-h-full max-w-full object-contain filter drop-shadow-md transition-transform duration-300 group-hover:scale-110"
-                                                />
-                                            ) : (
-                                                <Award className="w-12 h-12 text-slate-300" />
-                                            )}
                                         </div>
                                     </div>
 
-                                    {/* BAS DE CARTE : ACTIONS & CTAS DISCRETS AVEC NOUVELLE PALETTE BLEUE */}
-                                    <div className="border-t border-slate-100 pt-4 flex items-center justify-between gap-3 text-xs">
-                                        <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1.5">
-                                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                                            <span>Examen Blanc & Quiz inclus</span>
-                                        </span>
+                                    {/* Title & Info & Actions */}
+                                    <div className="mt-4 flex-1 flex flex-col justify-between space-y-4">
+                                        <div className="space-y-1">
+                                            <h3 
+                                                onClick={() => setSelectedCertModal(cert)} 
+                                                className="text-xs font-black text-slate-950 leading-snug line-clamp-2 cursor-pointer hover:text-blue-600 transition-colors"
+                                            >
+                                                {cert.nom}
+                                            </h3>
+                                            <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">
+                                                {cert.fournisseur?.nom || 'Officiel'} • {cert.niveau} • {cert.dureeIndicative || '15h'}
+                                            </p>
+                                        </div>
 
-                                        <Link 
-                                            href={`/dashboard/practice?cert=${cert.slug || cert.id}`}
-                                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs hover:shadow-md"
-                                        >
-                                            <Play className="w-3 h-3 fill-white text-white" />
-                                            <span>S&apos;entraîner</span>
-                                        </Link>
+                                        <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => setSelectedCertModal(cert)}
+                                                className="flex-1 py-2 bg-slate-950 hover:bg-slate-900 text-white font-black rounded-xl text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md"
+                                            >
+                                                <span>Consulter</span>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             );
@@ -1072,6 +909,35 @@ export default function StudentDashboard() {
                     </div>
                 )}
             </div>
+
+            {/* Modal détail */}
+            <AnimatePresence>
+                {selectedCertModal && (
+                    <div 
+                        className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-955/50 overflow-y-auto"
+                        onClick={(e) => { if (e.target === e.currentTarget) setSelectedCertModal(null); }}
+                    >
+                        <motion.div 
+                            initial={{ opacity: 0, y: 20 }} 
+                            animate={{ opacity: 1, y: 0 }} 
+                            exit={{ opacity: 0, y: 20 }} 
+                            transition={{ duration: 0.2 }}
+                            className="bg-white rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden my-auto"
+                        >
+                            <CertDetailModal 
+                                cert={selectedCertModal} 
+                                onClose={() => setSelectedCertModal(null)} 
+                                onPractice={(c: any) => { 
+                                    setSelectedCertModal(null); 
+                                    router.push(`/dashboard/practice?cert=${c.slug || c.id}`); 
+                                }} 
+                                isTargeted={true}
+                            />
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
+

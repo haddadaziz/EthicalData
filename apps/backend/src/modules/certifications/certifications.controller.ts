@@ -8,9 +8,11 @@ import {
     Param,
     ParseIntPipe,
     UseGuards,
+    UseInterceptors,
     Req,
     Request,
 } from '@nestjs/common';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 import { CertificationsService } from './certifications.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { CreateRessourceDto } from './dto/create-ressource.dto';
@@ -23,6 +25,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('certifications')
+@UseInterceptors(CacheInterceptor)
 export class CertificationsController {
     constructor(private readonly certificationsService: CertificationsService) { }
 

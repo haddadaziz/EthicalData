@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { json, urlencoded } from 'express';
@@ -18,11 +19,25 @@ async function bootstrap() {
   app.use(json({ limit: '10mb' }));
   app.use(urlencoded({ limit: '10mb', extended: true }));
 
+  // Parser les cookies pour l'authentification httpOnly
+  app.use(cookieParser());
+
   // Injection des en-têtes de sécurité HTTP Helmet (XSS, Clickjacking, CSP)
   app.use(
     helmet({
       crossOriginEmbedderPolicy: false,
-      contentSecurityPolicy: false,
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://ka-f.fontawesome.com"],
+          fontSrc: ["'self'", "https://fonts.gstatic.com", "https://ka-f.fontawesome.com"],
+          scriptSrc: ["'self'"],
+          imgSrc: ["'self'", "data:", "blob:"],
+          connectSrc: ["'self'", process.env.FRONTEND_URL || 'http://localhost:3001'],
+          frameAncestors: ["'none'"],
+          baseUri: ["'self'"],
+        },
+      },
     }),
   );
 

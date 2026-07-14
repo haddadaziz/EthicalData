@@ -81,21 +81,13 @@ export default function LandingPage() {
 
   useEffect(() => {
     setMounted(true);
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-    if (token) {
+    apiFetch('/users/me/profile').then((profile) => {
       setIsConnected(true);
-      try {
-        const payloadBase64 = token.split('.')[1];
-        const decodedPayload = JSON.parse(atob(payloadBase64));
-        const rolesData = decodedPayload.roles || decodedPayload.role || [];
-        const roleArray = Array.isArray(rolesData) ? rolesData : [rolesData];
-        if (roleArray.includes('SUPER_ADMIN') || roleArray.includes('ADMIN')) {
-          setIsAdmin(true);
-        }
-      } catch (e) {
-        console.error("Token decoding error:", e);
+      const roles = profile?.roles?.map((r: any) => r.nom) || [];
+      if (roles.includes('SUPER_ADMIN') || roles.includes('ADMIN')) {
+        setIsAdmin(true);
       }
-    }
+    }).catch(() => {});
   }, []);
 
   useEffect(() => {

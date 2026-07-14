@@ -7,6 +7,7 @@ import { useToast } from '../../context/ToastContext';
 import { LayoutDashboard, Users, BookOpen, MessageSquare, ShieldCheck, LogOut, DownloadCloud, Award, Bell, Calendar, FileText, Settings, User, X, Menu, Activity, ChevronDown } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import NotificationBell from '../../components/NotificationBell';
+import ErrorBoundary from '../../components/ErrorBoundary';
 
 import { apiFetch } from '../../lib/api';
 
@@ -19,6 +20,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [userEmail, setUserEmail] = useState<string>('');
   const [userName, setUserName] = useState<string>('');
   const [userAvatar, setUserAvatar] = useState<string | null>(null);
+  const [userFirstName, setUserFirstName] = useState<string>('');
+  const [userLastName, setUserLastName] = useState<string>('');
+  const [userRoles, setUserRoles] = useState<string[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
@@ -43,56 +47,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Initialisation en thème clair & Chargement du profil
+  // Chargement du profil via httpOnly cookie
   useEffect(() => {
-    document.documentElement.classList.remove('dark');
-    localStorage.setItem('theme', 'light');
-
-    // Vérification token
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-    if (!token) {
-      router.push('/login');
-      return;
-    }
-
-    try {
-      const payloadBase64 = token.split('.')[1];
-      const decodedPayload = JSON.parse(atob(payloadBase64));
-
-      const now = Math.floor(Date.now() / 1000);
-      if (decodedPayload.exp && decodedPayload.exp < now) {
-        throw new Error("Jeton expiré");
-      }
-
-      const roles = decodedPayload.roles || [];
-      if (!roles.includes('SUPER_ADMIN') && !roles.includes('ADMIN')) {
-        throw new Error("Accès refusé - Rôle insuffisant");
-      }
-
-      setUserRole(roles.includes('SUPER_ADMIN') ? 'Super Admin' : 'Admin');
-      setUserEmail(decodedPayload.email || 'admin@ethicaldata.local');
-      setAuthorized(true);
-
-      apiFetch('/users/me/profile').then(profile => {
-        if (profile) {
-          setUserAvatar(profile.avatar || null);
-          if (profile.prenom || profile.nom) {
-            setUserName(`${profile.prenom || ''} ${profile.nom || ''}`.trim());
-          }
+    apiFetch('/users/me/profile')
+      .then((profile: any) => {
+        if (!profile) { router.push('/login'); return; }
+        setUserEmail(profile.email);
+        setUserFirstName(profile.prenom);
+        setUserLastName(profile.nom);
+        setUserName(`${profile.prenom || ''} ${profile.nom || ''}`.trim());
+        setUserAvatar(profile.avatar || null);
+        if (profile.roles) {
+          const roles = profile.roles.map((r: any) => r.nom);
+          const isAdmin = roles.includes('SUPER_ADMIN') || roles.includes('ADMIN');
+          if (!isAdmin) { router.push('/dashboard'); return; }
+          setUserRoles(roles);
+          setUserRole(roles.includes('SUPER_ADMIN') ? 'Super Admin' : 'Admin');
         }
-      }).catch(err => console.error("Erreur chargement profil admin layout:", err));
-
-    } catch (error) {
-      console.error("Erreur d'authentification :", error);
-      localStorage.removeItem('token');
-      sessionStorage.removeItem('token');
-      router.push('/login');
-    }
+        setAuthorized(true);
+      })
+      .catch(() => {
+        router.push('/login');
+      });
   }, [router]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    sessionStorage.removeItem('token');
+  const handleLogout = async () => {
+    try { await apiFetch('/auth/logout', { method: 'POST' }); } catch {}
     showToast("Déconnecté avec succès, à bientôt", "success");
     router.push('/login');
   };
@@ -524,7 +504,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </header>
 
         <main className="flex-1 p-4 md:p-10 relative">
-          {children}
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
         </main>
       </div>
     </div>
