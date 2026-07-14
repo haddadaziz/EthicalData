@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { apiFetch } from '../../lib/api';
-import { Users, Award, DownloadCloud, MessageSquare, Calendar, ShieldCheck, ArrowUpRight, Plus, Activity, RefreshCw, Sparkles, BookOpen } from '@/components/icons';
+import { Users, Award, MessageSquare, Calendar, ArrowUpRight, BookOpen } from '@/components/icons';
 import { motion } from 'framer-motion';
 
 export default function AdminDashboardPage() {
+    const router = useRouter();
     const [stats, setStats] = useState<any>({
         totalUsers: 0,
         activeUsers: 0,
@@ -35,7 +37,7 @@ export default function AdminDashboardPage() {
                 totalRdv: rdvData.length,
             });
 
-            setRecentUsers(usersData.slice(0, 5));
+            setRecentUsers(usersData.slice(0, 6));
         } catch (err: any) {
             console.error("Erreur chargement stats admin:", err);
         } finally {
@@ -60,7 +62,9 @@ export default function AdminDashboardPage() {
         <div className="space-y-8 max-w-7xl mx-auto text-left pt-6">
 
             {/* CARTES KPI PRINCIPALES (GRID RESPONSIVE) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="space-y-4">
+                <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">Statistiques Globales</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 {/* Utilisateurs Totaux */}
                 <div className="p-6 bg-white border border-slate-200/80 rounded-3xl space-y-4 shadow-sm hover:shadow-md transition-all">
                     <div className="flex items-center justify-between">
@@ -115,6 +119,7 @@ export default function AdminDashboardPage() {
                         <span className="text-3xl font-black text-slate-950">{stats.totalRdv}</span>
                         <p className="text-[11px] text-purple-600 font-bold mt-1">Séances individuelles</p>
                     </div>
+                </div>
                 </div>
             </div>
 
@@ -195,19 +200,23 @@ export default function AdminDashboardPage() {
 
             {/* SECTION DERNIERS UTILISATEURS INSCRIOTS */}
             <div className="bg-white border border-slate-200/90 rounded-3xl p-6 md:p-8 space-y-4 shadow-sm">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
                     <div>
                         <h3 className="text-base font-black text-slate-950">Derniers Inscrits</h3>
                         <p className="text-xs text-slate-500 font-medium">Les plus récents candidats ayant rejoint la plateforme.</p>
                     </div>
-                    <a href="/admin/users" className="text-xs font-extrabold text-blue-600 hover:underline">
-                        Voir tous les utilisateurs →
+                    <a
+                        href="/admin/users"
+                        className="px-4 py-2.5 bg-slate-950 hover:bg-slate-800 text-white font-bold rounded-xl transition-all text-xs flex items-center justify-center gap-1.5 self-end sm:self-auto shadow-sm"
+                    >
+                        <span>Voir tous les utilisateurs</span>
+                        <ArrowUpRight className="w-3.5 h-3.5 text-white/80" />
                     </a>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {recentUsers.map((user) => (
-                        <div key={user.id} className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center justify-between">
+                        <div key={user.id} onClick={() => router.push(`/dashboard/profile/${user.id}`)} className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-slate-100 hover:border-slate-300 transition-all">
                             <div className="flex items-center gap-3">
                                 {user.avatar ? (
                                     <img src={user.avatar} alt={`${user.prenom} ${user.nom}`} className="w-10 h-10 rounded-xl object-cover shrink-0 shadow-sm" />

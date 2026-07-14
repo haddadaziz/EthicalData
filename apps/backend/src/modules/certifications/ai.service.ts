@@ -17,12 +17,11 @@ export class AiService {
 
   async evaluerReponseOuverte(
     enonce: string,
-    reponseCorrecte: string,
+    reponseCorrecte: string | null,
     grilleNotation: string | null,
     reponseCandidat: string,
   ): Promise<ResultatEvaluation> {
     if (!this.apiKey || this.apiKey.includes('AIzaSy...')) {
-      // Fallback si la clé n'est pas encore configurée (pour éviter de bloquer l'application)
       return this.evaluationSimulee(reponseCandidat, reponseCorrecte);
     }
 
@@ -32,7 +31,7 @@ export class AiService {
 
 DÉTAILS DE LA QUESTION :
 - Énoncé de la question : "${enonce}"
-- Corrigé officiel / Réponse attendue : "${reponseCorrecte}"
+${reponseCorrecte ? `- Corrigé officiel / Réponse attendue : "${reponseCorrecte}"` : ''}
 ${grilleNotation ? `- Critères d'évaluation additionnels : "${grilleNotation}"` : ''}
 
 RÉPONSE DU CANDIDAT :
@@ -110,9 +109,9 @@ INSTRUCTIONS DE NOTATION :
   /**
    * Méthode de secours simulant l'évaluation si l'API est indisponible ou non configurée.
    */
-  private evaluationSimulee(reponseCandidat: string, reponseCorrecte: string): ResultatEvaluation {
+  private evaluationSimulee(reponseCandidat: string, reponseCorrecte: string | null): ResultatEvaluation {
     const cleanCand = reponseCandidat.trim().toLowerCase();
-    const cleanCorr = reponseCorrecte.trim().toLowerCase();
+    const cleanCorr = (reponseCorrecte || '').trim().toLowerCase();
 
     if (!cleanCand) {
       return {

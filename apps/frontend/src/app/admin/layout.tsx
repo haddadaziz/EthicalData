@@ -30,7 +30,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // Détection de la taille d'écran
   useEffect(() => {
     const handleResize = () => {
-      const mobile = window.innerWidth < 768;
+      const mobile = window.innerWidth < 1280;
       setIsMobile(mobile);
       if (mobile) {
         setSidebarOpen(false);
@@ -115,7 +115,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { name: 'Certifications', href: '/admin/certifications', icon: Award },
         { name: 'Gestion des Cours', href: '/admin/courses', icon: BookOpen },
         { name: 'Ressources', href: '/admin/resources', icon: DownloadCloud },
-        { name: 'Simulations', icon: Activity, disabled: true, badge: 'Bientôt' },
+        { name: 'Simulations', href: '/admin/simulations', icon: Activity },
       ]
     },
     {
@@ -133,7 +133,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { name: 'Utilisateurs & Rôles', href: '/admin/users', icon: ShieldCheck },
         { name: 'Santé Système', href: '/admin/health', icon: Activity },
       ]
-    }
+    },
+    { name: 'Mon Profil', href: '/admin/profile', icon: User },
+    { name: 'Paramètres', href: '/admin/settings', icon: Settings },
   ];
 
   if (!authorized) {
@@ -160,7 +162,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       return { title: 'Ressources Téléchargeables', subtitle: 'Gestion des fiches et quotas' };
     }
     if (pathname === '/admin/resources') {
-      return { title: 'Ressources & Fiches', subtitle: 'Supports de cours, documentations et fichiers pédagogiques' };
+      return { title: 'Ressources', subtitle: 'Supports de cours, documentations et fichiers pédagogiques' };
+    }
+    if (pathname === '/admin/simulations') {
+      return { title: 'Gestion des Simulations', subtitle: 'Création et gestion des examens blancs et simulations' };
     }
     if (pathname === '/admin/community') {
       return { title: 'Modération du Forum', subtitle: 'Gestion des sujets et des signalements' };
@@ -173,6 +178,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
     if (pathname === '/admin/health') {
       return { title: 'Santé & Monitoring Système', subtitle: 'Surveillance des performances serveur, BDD et RAM' };
+    }
+    if (pathname === '/admin/profile') {
+      return { title: 'Mon Profil Administrateur', subtitle: 'Gestion de vos informations personnelles et sécurité' };
+    }
+    if (pathname === '/admin/settings') {
+      return { title: 'Paramètres', subtitle: 'Notifications, visibilité du profil et préférences système' };
     }
     return { title: 'Administration', subtitle: 'Ethical Data' };
   };
@@ -334,7 +345,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Sidebar Desktop Fixe & Élégante */}
       {!isMobile && (
-        <aside className="hidden md:flex flex-col bg-white border-r border-slate-200/80 relative z-10 shrink-0 sticky top-0 h-screen shadow-sm w-[280px] overflow-y-auto overflow-x-hidden">
+        <aside className="hidden xl:flex flex-col bg-white border-r border-slate-200/80 relative z-10 shrink-0 sticky top-0 h-screen shadow-sm w-[280px] overflow-y-auto overflow-x-hidden">
           {/* Logo */}
           <div className="h-20 flex items-center px-6 border-b border-slate-200/80">
             <Link href="/" className="flex items-center group cursor-pointer">
@@ -467,7 +478,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="md:hidden p-3 bg-slate-50 border border-slate-200 hover:border-blue-600 text-slate-600 hover:text-blue-600 rounded-xl transition-all duration-200 cursor-pointer shadow-sm flex items-center justify-center"
+              className="p-3 bg-slate-50 border border-slate-200 hover:border-blue-600 text-slate-600 hover:text-blue-600 rounded-xl transition-all duration-200 cursor-pointer shadow-sm flex items-center justify-center xl:hidden"
               aria-label="Ouvrir le menu"
             >
               <Menu className="w-5 h-5" />
@@ -484,7 +495,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <NotificationBell />
 
             <Link
-              href="/dashboard/profile"
+              href="/admin/profile"
               className="flex items-center gap-3 p-1.5 hover:bg-slate-100/80 rounded-2xl transition-all cursor-pointer group"
               title="Voir et modifier mon profil"
             >

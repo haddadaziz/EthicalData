@@ -9,6 +9,35 @@ import LearnerProfileModal from '../../../components/LearnerProfileModal';
 import { MessageSquare, Heart, Plus, Search, RefreshCw, X, Send, Flag, Trash2, Award, User, Sparkles, MessageCircle, ShieldAlert, Reply, ChevronDown, ChevronUp, CornerDownRight, AtSign } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const getProviderLogo = (slugOrName: string) => {
+  const name = (slugOrName || '').toLowerCase();
+  if (name.includes('microsoft')) return '/logos/microsoft.png';
+  if (name.includes('aws') || name.includes('amazon')) return '/logos/aws.png';
+  if (name.includes('gcp') || name.includes('google')) return '/logos/gcp.svg';
+  if (name.includes('cisco')) return '/logos/cisco.png';
+  if (name.includes('comptia')) return '/logos/comptia.png';
+  if (name.includes('fortinet')) return '/logos/fortinet.png';
+  if (name.includes('paloalto') || name.includes('palo alto')) return '/logos/paloalto.png';
+  if (name.includes('pecb')) return '/logos/pecb.png';
+  return '';
+};
+
+const getCertificateBadgeLogo = (cert: any) => {
+    if (!cert) return '';
+    if (cert.image && (cert.image.endsWith('.svg') || cert.image.endsWith('.png'))) return cert.image;
+    const code = (cert.codeExamen || cert.code || '').toLowerCase();
+    const nom = (cert.nom || cert.title || '').toLowerCase();
+
+    if (code.includes('az-900') || nom.includes('az-900') || nom.includes('azure fundamentals')) return '/badges/az-900.svg';
+    if (code.includes('clf') || nom.includes('cloud practitioner')) return '/badges/aws-clf.svg';
+    if (code.includes('saa') || nom.includes('solutions architect')) return '/badges/aws-saa.svg';
+    if (code.includes('iso-27001') || nom.includes('iso 27001') || nom.includes('pecb')) return '/badges/pecb-iso.svg';
+    if (code.includes('sy0') || nom.includes('security+')) return '/badges/comptia-sec.svg';
+    if (code.includes('sc-900') || nom.includes('sc-900')) return '/badges/sc-900.svg';
+
+    return cert.image || cert.logoUrl || '';
+};
+
 interface Sujet {
     id: string;
     titre: string;
@@ -82,6 +111,14 @@ export default function CommunityPage() {
     const [selectedTheme, setSelectedTheme] = useState('TOUS');
     const [selectedCert, setSelectedCert] = useState('');
 
+    const [selectedProviderFilter, setSelectedProviderFilter] = useState('');
+    const [providerFilterDropdownOpen, setProviderFilterDropdownOpen] = useState(false);
+    const [certFilterDropdownOpen, setCertFilterDropdownOpen] = useState(false);
+
+    useEffect(() => {
+        setSelectedCert('');
+    }, [selectedProviderFilter]);
+
     // Utilisateur courant
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
     const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
@@ -94,6 +131,15 @@ export default function CommunityPage() {
     const [newContenu, setNewContenu] = useState('');
     const [modalLoading, setModalLoading] = useState(false);
 
+    const [fournisseurs, setFournisseurs] = useState<any[]>([]);
+    const [selectedProviderInModal, setSelectedProviderInModal] = useState<string>('');
+    const [modalProviderDropdownOpen, setModalProviderDropdownOpen] = useState(false);
+    const [modalCertDropdownOpen, setModalCertDropdownOpen] = useState(false);
+
+    useEffect(() => {
+        setNewCertId('');
+    }, [selectedProviderInModal]);
+
     // Modal de Signalement Enrichi
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const [reportSujetId, setReportSujetId] = useState<string | null>(null);
@@ -102,6 +148,18 @@ export default function CommunityPage() {
     const [reportReasonOption, setReportReasonOption] = useState('Contenu haineux, diffamatoire ou inapproprié');
     const [customReportDetails, setCustomReportDetails] = useState('');
     const [reportLoading, setReportLoading] = useState(false);
+
+    // Verrouillage du scroll en arrière-plan lorsque les modales sont ouvertes
+    useEffect(() => {
+        if (isNewSubjectModalOpen || isReportModalOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isNewSubjectModalOpen, isReportModalOpen]);
 
     const REPORT_PREDEFINED_MOTIFS = [
         'Contenu haineux, diffamatoire ou inapproprié',
@@ -145,15 +203,18 @@ export default function CommunityPage() {
             if (selectedCert) queryParams.append('certificationId', selectedCert);
 
             const endpoint = queryParams.toString() ? `/forum?${queryParams.toString()}` : '/forum';
-            const [sujetsData, certsData] = await Promise.all([
+            const [sujetsData, certsData, provData] = await Promise.all([
                 apiFetch(endpoint),
                 apiFetch('/certifications').catch(() => []),
+                apiFetch('/certifications/fournisseurs').catch(() => []),
             ]);
 
             const listSujets = Array.isArray(sujetsData) ? sujetsData : (sujetsData?.data || []);
             const listCerts = Array.isArray(certsData) ? certsData : (certsData?.data || []);
+            const listProvs = Array.isArray(provData) ? provData : (provData?.data || []);
             setSujets(listSujets);
             setCerts(listCerts);
+            setFournisseurs(listProvs);
         } catch (err: any) {
             console.error("Erreur de chargement de la communauté:", err);
             showToast(err.message || "Impossible de charger les publications du forum.", "error");
@@ -531,6 +592,19 @@ export default function CommunityPage() {
 
     const filteredSujets = (Array.isArray(sujets) ? sujets : []).filter((s) => {
         if (!s) return false;
+        
+        // Filtrage local par constructeur si sélectionné et aucune certif spécifique choisie
+        if (selectedProviderFilter && !selectedCert) {
+            if (!s.certification) return false;
+            const certObj = certs.find(c => String(c.id) === String(s.certification?.id));
+            if (!certObj) return false;
+            
+            const isMatch = String(certObj.fournisseur?.id) === String(selectedProviderFilter) ||
+                            String(certObj.fournisseurId) === String(selectedProviderFilter) ||
+                            String(certObj.fournisseur?.slug) === String(selectedProviderFilter);
+            if (!isMatch) return false;
+        }
+
         const titre = s.titre || '';
         const contenu = s.contenu || '';
         const name = getAuthorFullName(s.auteur);
@@ -600,27 +674,152 @@ export default function CommunityPage() {
                         )}
                     </div>
 
-                    {/* Filtre Certification */}
-                    <select
-                        value={selectedCert}
-                        onChange={(e) => setSelectedCert(e.target.value)}
-                        className="p-3 bg-slate-50 border border-slate-200/80 focus:border-blue-600 rounded-2xl text-slate-950 text-xs font-bold outline-none transition-all cursor-pointer"
-                    >
-                        <option value="">Toutes les Certifications</option>
-                        {certs.map((c) => (
-                            <option key={c.id} value={c.id}>
-                                {c.codeExamen ? `[${c.codeExamen}] ${c.nom}` : c.nom}
-                            </option>
-                        ))}
-                    </select>
+                    {/* Filtre Constructeur */}
+                    <div className="relative w-full md:w-auto md:shrink-0">
+                        <button
+                            type="button"
+                            onClick={() => setProviderFilterDropdownOpen(!providerFilterDropdownOpen)}
+                            className="w-full flex items-center gap-2 px-4 py-3 bg-slate-50 border border-slate-200/80 focus:border-blue-600 rounded-2xl text-slate-955 text-xs font-bold outline-none cursor-pointer hover:bg-slate-100 transition-all md:min-w-[170px]"
+                        >
+                            {selectedProviderFilter && getProviderLogo(fournisseurs.find((f: any) => f.id === selectedProviderFilter)?.slug || '') && (
+                                <img src={getProviderLogo(fournisseurs.find((f: any) => f.id === selectedProviderFilter)?.slug || '')} alt="" className="w-4 h-4 object-contain rounded shrink-0" />
+                            )}
+                            <span className="flex-1 text-left truncate">
+                                {!selectedProviderFilter ? 'Tous les constructeurs' : fournisseurs.find((f: any) => f.id === selectedProviderFilter)?.nom || 'Sélectionner'}
+                            </span>
+                            <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${providerFilterDropdownOpen ? 'rotate-180' : ''}`} />
+                        </button>
 
-                    <button
-                        onClick={loadData}
-                        className="p-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl transition-all cursor-pointer flex items-center justify-center shrink-0"
-                        title="Rafraîchir"
-                    >
-                        <RefreshCw className="w-4 h-4" />
-                    </button>
+                        {providerFilterDropdownOpen && (
+                            <>
+                                <div className="fixed inset-0 z-40" onClick={() => setProviderFilterDropdownOpen(false)} />
+                                <div className="absolute left-0 md:left-auto md:right-0 mt-1.5 z-50 w-full md:w-64 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden animate-fadeIn">
+                                    <button
+                                        type="button"
+                                        onClick={() => { setSelectedProviderFilter(''); setProviderFilterDropdownOpen(false); }}
+                                        className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
+                                            !selectedProviderFilter ? 'bg-slate-100 text-slate-955' : 'text-slate-600'
+                                        }`}
+                                    >
+                                        <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                            <Award className="w-4 h-4 text-slate-500" />
+                                        </div>
+                                        <span className="truncate">Tous les constructeurs</span>
+                                    </button>
+                                    <div className="border-t border-slate-100" />
+                                    <div className="max-h-48 overflow-y-auto">
+                                        {fournisseurs.map((f: any) => {
+                                            const logo = getProviderLogo(f.slug || f.nom || '');
+                                            return (
+                                                <button
+                                                    key={f.id}
+                                                    type="button"
+                                                    onClick={() => { setSelectedProviderFilter(f.id); setProviderFilterDropdownOpen(false); }}
+                                                    className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
+                                                        selectedProviderFilter === f.id ? 'bg-slate-100 text-slate-955' : 'text-slate-650'
+                                                    }`}
+                                                >
+                                                    {logo ? (
+                                                        <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0" />
+                                                    ) : (
+                                                        <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                                            <Award className="w-4 h-4 text-slate-500" />
+                                                        </div>
+                                                    )}
+                                                    <span className="block truncate font-bold text-left flex-1">{f.nom}</span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                    </div>
+
+                    {/* Filtre Certification */}
+                    <div className="relative w-full md:w-auto md:shrink-0">
+                        <button
+                            type="button"
+                            disabled={!selectedProviderFilter}
+                            onClick={() => setCertFilterDropdownOpen(!certFilterDropdownOpen)}
+                            className={`w-full flex items-center gap-2 px-4 py-3 border focus:border-blue-600 rounded-2xl text-slate-955 text-xs font-bold outline-none transition-all md:min-w-[190px] text-left ${
+                                !selectedProviderFilter 
+                                    ? 'bg-slate-100 border-slate-200/50 opacity-60 cursor-not-allowed' 
+                                    : 'bg-slate-50 border-slate-200 cursor-pointer hover:bg-slate-100'
+                            }`}
+                        >
+                            {selectedProviderFilter && selectedCert && (
+                                (() => {
+                                    const activeCertObj = certs.find((c: any) => String(c.id) === String(selectedCert));
+                                    const logo = getCertificateBadgeLogo(activeCertObj);
+                                    return logo ? (
+                                        <img src={logo} alt="" className="w-4.5 h-4.5 object-contain rounded shrink-0" />
+                                    ) : null;
+                                })()
+                            )}
+                            <span className="flex-1 truncate">
+                                {!selectedProviderFilter
+                                    ? "Sélectionnez un constructeur"
+                                    : !selectedCert
+                                        ? "Toutes les certifications"
+                                        : (() => {
+                                            const activeCertObj = certs.find((c: any) => String(c.id) === String(selectedCert));
+                                            return activeCertObj ? `${activeCertObj.codeExamen ? `[${activeCertObj.codeExamen}] ` : ''}${activeCertObj.nom}` : "Sélectionner";
+                                        })()
+                                }
+                            </span>
+                            <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${certFilterDropdownOpen ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {certFilterDropdownOpen && selectedProviderFilter && (
+                            <>
+                                <div className="fixed inset-0 z-40" onClick={() => setCertFilterDropdownOpen(false)} />
+                                <div className="absolute left-0 md:left-auto md:right-0 mt-1.5 z-50 w-full md:w-72 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden animate-fadeIn">
+                                    <button
+                                        type="button"
+                                        onClick={() => { setSelectedCert(''); setCertFilterDropdownOpen(false); }}
+                                        className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
+                                            !selectedCert ? 'bg-slate-100 text-slate-955' : 'text-slate-650'
+                                        }`}
+                                    >
+                                        <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                            <Award className="w-4 h-4 text-slate-500" />
+                                        </div>
+                                        <span className="truncate">Toutes les certifications</span>
+                                    </button>
+                                    <div className="border-t border-slate-100" />
+                                    <div className="max-h-48 overflow-y-auto">
+                                        {certs
+                                            .filter(c => String(c.fournisseur?.id) === String(selectedProviderFilter) || String(c.fournisseurId) === String(selectedProviderFilter) || String(c.fournisseur?.slug) === String(selectedProviderFilter))
+                                            .map((c: any) => {
+                                                const logo = getCertificateBadgeLogo(c);
+                                                return (
+                                                    <button
+                                                        key={c.id}
+                                                        type="button"
+                                                        onClick={() => { setSelectedCert(c.id); setCertFilterDropdownOpen(false); }}
+                                                        className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
+                                                            String(selectedCert) === String(c.id) ? 'bg-slate-100 text-slate-955' : 'text-slate-600'
+                                                        }`}
+                                                    >
+                                                        {logo ? (
+                                                            <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0" />
+                                                        ) : (
+                                                            <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                                                <Award className="w-4 h-4 text-slate-500" />
+                                                            </div>
+                                                        )}
+                                                        <span className="block truncate font-bold text-left flex-1">
+                                                            {c.codeExamen ? `[${c.codeExamen}] ` : ''}{c.nom}
+                                                        </span>
+                                                    </button>
+                                                );
+                                            })}
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </div>
 
                 {/* Badges de Thèmes */}
@@ -664,7 +863,7 @@ export default function CommunityPage() {
                                 onClick={() => handleOpenSujet(sujet.id)}
                                 className="bg-white border border-slate-200/80 hover:border-slate-300 rounded-3xl p-6 space-y-4 cursor-pointer transition-all shadow-sm hover:shadow-md group text-left relative"
                             >
-                                <div className="flex items-center justify-between gap-4">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                                     <div className="flex items-center gap-3">
                                         {sujet?.auteur?.avatar ? (
                                             <img
@@ -688,7 +887,7 @@ export default function CommunityPage() {
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex flex-wrap items-center gap-2">
                                         <span className={`text-[10px] font-black px-3 py-1 rounded-xl border ${getThemeColor(sujet.theme)}`}>
                                             {sujet.theme}
                                         </span>
@@ -770,15 +969,15 @@ export default function CommunityPage() {
                 {selectedSujetId && (
                     <div
                         onClick={() => { setSelectedSujetId(null); setDetailSujet(null); setReplyTarget(null); }}
-                        className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 bg-slate-950/70 overflow-y-auto"
+                        className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 bg-slate-950/70 overflow-y-auto"
                     >
                         <motion.div
                             onClick={(e) => e.stopPropagation()}
-                            initial={{ opacity: 0, y: 10 }}
+                            initial={{ opacity: 0, y: 15 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 10 }}
+                            exit={{ opacity: 0, y: 15 }}
                             transition={{ duration: 0.15 }}
-                            className="w-full max-w-3xl bg-slate-50 border border-slate-200/90 rounded-3xl shadow-2xl max-h-[90vh] flex flex-col justify-between text-left overflow-hidden relative"
+                            className="w-full max-w-3xl bg-slate-50 border-t sm:border border-slate-200/90 rounded-t-3xl sm:rounded-3xl shadow-2xl h-[92vh] sm:max-h-[90vh] flex flex-col justify-between text-left overflow-hidden relative"
                         >
                             {/* EN-TÊTE DE LA POPUP */}
                             <div className="p-5 md:p-6 bg-white border-b border-slate-200/80 flex items-center justify-between shadow-sm sticky top-0 z-20">
@@ -811,7 +1010,7 @@ export default function CommunityPage() {
                                     <div className="space-y-6">
                                         {/* SUJET PRINCIPAL EN-TÊTE DÉTAILLÉ */}
                                         <div className="bg-white border border-slate-200/90 rounded-3xl p-6 space-y-4 shadow-sm">
-                                            <div className="flex items-center justify-between gap-4">
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                                                 <div className="flex items-center gap-3">
                                                      {detailSujet?.auteur?.avatar ? (
                                                          <img
@@ -850,7 +1049,7 @@ export default function CommunityPage() {
                                                     </div>
                                                 </div>
 
-                                                <span className={`text-[10px] font-black px-3 py-1 rounded-xl border ${getThemeColor(detailSujet.theme)}`}>
+                                                <span className={`text-[10px] font-black px-3 py-1 rounded-xl border self-start sm:self-auto ${getThemeColor(detailSujet.theme)}`}>
                                                     {detailSujet.theme}
                                                 </span>
                                             </div>
@@ -1331,25 +1530,35 @@ export default function CommunityPage() {
             {/* MODAL CRÉATION DE SUJET */}
             <AnimatePresence>
                 {isNewSubjectModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70"
+                    >
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                            initial={{ scale: 0.95, y: 15 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.95, y: 15 }}
+                            transition={{ duration: 0.15, ease: "easeOut" }}
                             className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 max-w-xl w-full shadow-2xl space-y-6 text-left"
                         >
                             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                                <h3 className="text-lg font-black text-slate-950">Nouvelle Discussion</h3>
+                                <div className="flex items-center gap-2.5">
+                                    <MessageSquare className="w-5 h-5 text-blue-600 shrink-0" />
+                                    <h3 className="text-lg font-black text-slate-955">Nouvelle Discussion</h3>
+                                </div>
                                 <button
                                     onClick={() => setIsNewSubjectModalOpen(false)}
-                                    className="p-2 text-slate-400 hover:text-slate-950 rounded-xl hover:bg-slate-100 transition-colors"
+                                    className="p-2 text-slate-400 hover:text-slate-955 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
                                 >
                                     <X className="w-5 h-5" />
                                 </button>
                             </div>
 
                             <form onSubmit={handleCreateSujet} className="space-y-4">
-                                <div className="space-y-1.5">
+                                <div className="space-y-1.5 text-left">
                                     <label className="text-xs font-bold text-slate-700">Titre de la discussion *</label>
                                     <input
                                         type="text"
@@ -1357,17 +1566,17 @@ export default function CommunityPage() {
                                         placeholder="Ex: Conseils pour réussir l'examen AZ-900..."
                                         value={newTitre}
                                         onChange={(e) => setNewTitre(e.target.value)}
-                                        className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none"
+                                        className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-2xl text-slate-955 text-xs font-semibold outline-none"
                                     />
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="space-y-1.5">
+                                    <div className="space-y-1.5 text-left">
                                         <label className="text-xs font-bold text-slate-700">Thématique *</label>
                                         <select
                                             value={newTheme}
                                             onChange={(e) => setNewTheme(e.target.value)}
-                                            className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-2xl text-slate-950 text-xs font-bold outline-none cursor-pointer"
+                                            className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-2xl text-slate-955 text-xs font-bold outline-none cursor-pointer"
                                         >
                                             {THEMES.filter(t => t !== 'TOUS').map(t => (
                                                 <option key={t} value={t}>{t}</option>
@@ -1375,20 +1584,155 @@ export default function CommunityPage() {
                                         </select>
                                     </div>
 
-                                    <div className="space-y-1.5">
-                                        <label className="text-xs font-bold text-slate-700">Certification liée (Optionnel)</label>
-                                        <select
-                                            value={newCertId}
-                                            onChange={(e) => setNewCertId(e.target.value)}
-                                            className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-2xl text-slate-950 text-xs font-bold outline-none cursor-pointer"
+                                    <div className="space-y-1.5 text-left">
+                                        <label className="text-xs font-bold text-slate-700">Constructeur / Partenaire (Optionnel)</label>
+                                        <div className="relative">
+                                            <button
+                                                type="button"
+                                                onClick={() => setModalProviderDropdownOpen(!modalProviderDropdownOpen)}
+                                                className="w-full flex items-center gap-2.5 px-4 py-3.5 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-2xl text-slate-955 text-xs font-bold outline-none cursor-pointer hover:bg-slate-100 transition-all text-left"
+                                            >
+                                                {selectedProviderInModal && getProviderLogo(fournisseurs.find((f: any) => f.id === selectedProviderInModal)?.slug || '') && (
+                                                    <img src={getProviderLogo(fournisseurs.find((f: any) => f.id === selectedProviderInModal)?.slug || '')} alt="" className="w-5 h-5 object-contain rounded shrink-0" />
+                                                )}
+                                                <span className="flex-1 truncate">
+                                                    {!selectedProviderInModal ? 'Aucun constructeur' : fournisseurs.find((f: any) => f.id === selectedProviderInModal)?.nom || 'Sélectionner'}
+                                                </span>
+                                                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${modalProviderDropdownOpen ? 'rotate-180' : ''}`} />
+                                            </button>
+
+                                            {modalProviderDropdownOpen && (
+                                                <>
+                                                    <div className="fixed inset-0 z-40" onClick={() => setModalProviderDropdownOpen(false)} />
+                                                    <div className="absolute top-full left-0 mt-1.5 z-50 w-full bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => { setSelectedProviderInModal(''); setModalProviderDropdownOpen(false); }}
+                                                            className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
+                                                                !selectedProviderInModal ? 'bg-slate-100 text-slate-955' : 'text-slate-600'
+                                                            }`}
+                                                        >
+                                                            <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                                                <Award className="w-4 h-4 text-slate-500" />
+                                                            </div>
+                                                            <span className="truncate">Aucun constructeur</span>
+                                                        </button>
+                                                        <div className="border-t border-slate-100" />
+                                                        <div className="max-h-48 overflow-y-auto">
+                                                            {fournisseurs.map((f: any) => {
+                                                                const logo = getProviderLogo(f.slug || f.nom || '');
+                                                                return (
+                                                                    <button
+                                                                        key={f.id}
+                                                                        type="button"
+                                                                        onClick={() => { setSelectedProviderInModal(f.id); setModalProviderDropdownOpen(false); }}
+                                                                        className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
+                                                                            selectedProviderInModal === f.id ? 'bg-slate-100 text-slate-955' : 'text-slate-600'
+                                                                        }`}
+                                                                    >
+                                                                        {logo ? (
+                                                                            <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0" />
+                                                                        ) : (
+                                                                            <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                                                                <Award className="w-4 h-4 text-slate-500" />
+                                                                            </div>
+                                                                        )}
+                                                                        <span className="block truncate font-bold text-left flex-1">{f.nom}</span>
+                                                                    </button>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5 text-left">
+                                    <label className="text-xs font-bold text-slate-700">Certification liée (Optionnel)</label>
+                                    <div className="relative">
+                                        <button
+                                            type="button"
+                                            disabled={!selectedProviderInModal}
+                                            onClick={() => setModalCertDropdownOpen(!modalCertDropdownOpen)}
+                                            className={`w-full flex items-center gap-2.5 px-4 py-3.5 border focus:border-blue-600 rounded-2xl text-slate-955 text-xs font-bold outline-none cursor-pointer hover:bg-slate-100 transition-all text-left ${
+                                                !selectedProviderInModal 
+                                                    ? 'bg-slate-100 border-slate-200/50 opacity-60 cursor-not-allowed' 
+                                                    : 'bg-slate-50 border-slate-200'
+                                            }`}
                                         >
-                                            <option value="">Aucune certification spécifique</option>
-                                            {certs.map(c => (
-                                                <option key={c.id} value={c.id}>
-                                                    {c.codeExamen ? `[${c.codeExamen}] ${c.nom}` : c.nom}
-                                                </option>
-                                            ))}
-                                        </select>
+                                            {selectedProviderInModal && newCertId && (
+                                                (() => {
+                                                    const activeCertObj = certs.find((c: any) => c.id === newCertId);
+                                                    const logo = getCertificateBadgeLogo(activeCertObj);
+                                                    return logo ? (
+                                                        <img src={logo} alt="" className="w-5 h-5 object-contain rounded shrink-0" />
+                                                    ) : null;
+                                                })()
+                                            )}
+                                            <span className="flex-1 truncate">
+                                                {!selectedProviderInModal
+                                                    ? "Sélectionnez d'abord un constructeur"
+                                                    : !newCertId
+                                                        ? "Aucune certification"
+                                                        : (() => {
+                                                            const activeCertObj = certs.find((c: any) => c.id === newCertId);
+                                                            return activeCertObj ? `${activeCertObj.codeExamen ? `[${activeCertObj.codeExamen}] ` : ''}${activeCertObj.nom}` : "Sélectionner";
+                                                        })()
+                                                }
+                                            </span>
+                                            <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${modalCertDropdownOpen ? 'rotate-180' : ''}`} />
+                                        </button>
+
+                                        {modalCertDropdownOpen && selectedProviderInModal && (
+                                            <>
+                                                <div className="fixed inset-0 z-40" onClick={() => setModalCertDropdownOpen(false)} />
+                                                <div className="absolute top-full left-0 mt-1.5 z-50 w-full bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden animate-fadeIn">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => { setNewCertId(''); setModalCertDropdownOpen(false); }}
+                                                        className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
+                                                            !newCertId ? 'bg-slate-100 text-slate-955' : 'text-slate-600'
+                                                        }`}
+                                                    >
+                                                        <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                                            <Award className="w-4 h-4 text-slate-500" />
+                                                        </div>
+                                                        <span className="truncate">Aucune certification</span>
+                                                    </button>
+                                                    <div className="border-t border-slate-100" />
+                                                    <div className="max-h-48 overflow-y-auto">
+                                                        {certs
+                                                            .filter(c => c.fournisseur?.id === selectedProviderInModal || c.fournisseurId === Number(selectedProviderInModal) || c.fournisseur?.slug === selectedProviderInModal)
+                                                            .map((c: any) => {
+                                                                const logo = getCertificateBadgeLogo(c);
+                                                                return (
+                                                                    <button
+                                                                        key={c.id}
+                                                                        type="button"
+                                                                        onClick={() => { setNewCertId(c.id); setModalCertDropdownOpen(false); }}
+                                                                        className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
+                                                                            newCertId === c.id ? 'bg-slate-100 text-slate-955' : 'text-slate-600'
+                                                                        }`}
+                                                                    >
+                                                                        {logo ? (
+                                                                            <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0" />
+                                                                        ) : (
+                                                                            <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                                                                <Award className="w-4 h-4 text-slate-500" />
+                                                                            </div>
+                                                                        )}
+                                                                        <span className="block truncate font-bold text-left flex-1">
+                                                                            {c.codeExamen ? `[${c.codeExamen}] ` : ''}{c.nom}
+                                                                        </span>
+                                                                    </button>
+                                                                );
+                                                            })}
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
 
@@ -1400,7 +1744,7 @@ export default function CommunityPage() {
                                         placeholder="Décrivez précisément votre question ou votre retour d'expérience..."
                                         value={newContenu}
                                         onChange={(e) => setNewContenu(e.target.value)}
-                                        className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none resize-none"
+                                        className="w-full p-3.5 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-2xl text-slate-955 text-xs font-semibold outline-none resize-none"
                                     />
                                 </div>
 
@@ -1423,7 +1767,7 @@ export default function CommunityPage() {
                                 </div>
                             </form>
                         </motion.div>
-                    </div>
+                    </motion.div>
                 )}
             </AnimatePresence>
 

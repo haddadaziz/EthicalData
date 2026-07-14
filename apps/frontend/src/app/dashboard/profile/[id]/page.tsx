@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { apiFetch } from '../../../../lib/api';
 import { useToast } from '../../../../context/ToastContext';
-import { User, Calendar, Mail, MessageCircle, Reply, Heart, CheckCircle, Target, ChevronRight, ArrowLeft } from '@/components/icons';
+import { User, Calendar, MessageCircle, Reply, Heart, CheckCircle, ArrowLeft } from '@/components/icons';
 import { motion } from 'framer-motion';
 
 interface PublicUserProfile {
@@ -21,7 +21,6 @@ interface PublicUserProfile {
         commentairesCount: number;
         likesCount?: number;
     };
-    targetedCertifications: any[];
     obtainedCertifications: any[];
 }
 
@@ -106,7 +105,6 @@ export default function PublicProfilePage() {
     }
 
     // Récupérer les visibilités paramétrées par l'apprenant dans son compte
-    const showTargetedCerts = profile.preferences?.showTargetedCerts !== false;
     const showObtainedCerts = profile.preferences?.showObtainedCerts !== false;
 
     return (
@@ -261,54 +259,6 @@ export default function PublicProfilePage() {
                         ) : (
                             <div className="text-center py-4">
                                 <p className="text-xs text-slate-400 font-bold italic">Aucune certification validée pour le moment.</p>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* SECTION VISÉES */}
-                    <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs space-y-4">
-                        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                            <h3 className="text-sm font-black text-slate-900 tracking-tight flex items-center gap-2">
-                                <Target className="w-4 h-4 text-indigo-600" />
-                                <span>Certifications visées</span>
-                            </h3>
-                            <span className="px-2 py-0.5 bg-indigo-50 text-indigo-700 font-extrabold text-[9px] rounded-full">
-                                {showTargetedCerts ? profile.targetedCertifications.length : 0}
-                            </span>
-                        </div>
-
-                        {!showTargetedCerts ? (
-                            <div className="text-center py-4">
-                                <p className="text-xs text-slate-400 font-bold italic">Ces informations sont privées.</p>
-                            </div>
-                        ) : profile.targetedCertifications.length > 0 ? (
-                            <div className="space-y-3">
-                                {profile.targetedCertifications.map((cert) => {
-                                    const logo = getCertificateBadgeLogo(cert);
-                                    return (
-                                        <div key={cert.id} className="flex items-center gap-3.5 p-3.5 bg-gradient-to-r from-indigo-500/5 to-blue-500/0 border border-indigo-500/10 hover:border-indigo-500/20 shadow-2xs hover:shadow-xs rounded-2xl transition-all duration-300 group">
-                                            {logo.endsWith('.svg') || logo.endsWith('.png') ? (
-                                                <img src={logo} alt={cert.nom} className="w-10 h-10 object-contain transition-transform group-hover:scale-105" />
-                                            ) : (
-                                                <div className="w-10 h-10 rounded-xl bg-indigo-100/80 flex items-center justify-center text-indigo-700 text-xs font-black transition-transform group-hover:scale-105">
-                                                    {(cert.codeExamen || 'CERT').slice(0, 3)}
-                                                </div>
-                                            )}
-                                            <div className="flex-1 min-w-0 text-left">
-                                                <p className="text-[9px] font-black text-indigo-600 uppercase tracking-wider leading-none">
-                                                    {cert.codeExamen || 'Examen'}
-                                                </p>
-                                                <p className="text-xs font-bold text-slate-850 truncate mt-1">
-                                                    {cert.nom}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        ) : (
-                            <div className="text-center py-4">
-                                <p className="text-xs text-slate-400 font-bold italic">Aucun objectif défini.</p>
                             </div>
                         )}
                     </div>

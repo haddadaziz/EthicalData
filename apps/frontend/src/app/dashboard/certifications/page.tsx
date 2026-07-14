@@ -3,7 +3,20 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch } from '../../../lib/api';
-import { Award, BookOpen, Clock, FileText, Search, Play, ArrowRight, ArrowLeft, Users, CheckCircle2, Target, Check, X } from '@/components/icons';
+import { Award, BookOpen, Clock, FileText, Search, Play, ArrowRight, ArrowLeft, Users, CheckCircle2, Target, Check, X, ChevronDown } from '@/components/icons';
+
+const getProviderLogo = (slugOrName: string) => {
+  const name = (slugOrName || '').toLowerCase();
+  if (name.includes('microsoft')) return '/logos/microsoft.png';
+  if (name.includes('aws') || name.includes('amazon')) return '/logos/aws.png';
+  if (name.includes('gcp') || name.includes('google')) return '/logos/gcp.svg';
+  if (name.includes('cisco')) return '/logos/cisco.png';
+  if (name.includes('comptia')) return '/logos/comptia.png';
+  if (name.includes('fortinet')) return '/logos/fortinet.png';
+  if (name.includes('paloalto') || name.includes('palo alto')) return '/logos/paloalto.png';
+  if (name.includes('pecb')) return '/logos/pecb.png';
+  return '';
+};
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '../../../context/ToastContext';
 import { useMutationGuard } from '../../../hooks/useMutationGuard';
@@ -54,6 +67,7 @@ export default function LearnerCertificationsPage() {
   // États pour les filtres
   const [selectedLevel, setSelectedLevel] = useState<'TOUS' | 'DEBUTANT' | 'INTERMEDIAIRE' | 'AVANCE'>('TOUS');
   const [selectedProvider, setSelectedProvider] = useState<string>('TOUS');
+  const [providerDropdownOpen, setProviderDropdownOpen] = useState(false);
   const [onlyTargeted, setOnlyTargeted] = useState(false);
 
   // Pagination
@@ -172,7 +186,7 @@ export default function LearnerCertificationsPage() {
               className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-xl text-slate-900 placeholder-slate-400 transition-all text-sm outline-none font-semibold"
             />
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between md:justify-start gap-3 w-full md:w-auto shrink-0">
             <button
               onClick={() => setOnlyTargeted(!onlyTargeted)}
               className={`px-3.5 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer flex items-center gap-1.5 border ${
@@ -218,30 +232,63 @@ export default function LearnerCertificationsPage() {
 
           <div className="space-y-2.5 text-left">
             <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Par Partenaire / Fournisseur</span>
-            <div className="flex flex-wrap gap-2">
+            <div className="relative">
               <button
-                onClick={() => setSelectedProvider('TOUS')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  selectedProvider === 'TOUS'
-                    ? 'bg-slate-950 text-white shadow-sm'
-                    : 'bg-slate-50 border border-slate-200/80 hover:border-slate-300 text-slate-650'
-                }`}
+                type="button"
+                onClick={() => setProviderDropdownOpen(!providerDropdownOpen)}
+                className="flex items-center gap-2.5 px-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-xs font-bold outline-none cursor-pointer hover:bg-slate-100 transition-all min-w-[200px]"
               >
-                Tous
+                {selectedProvider !== 'TOUS' && getProviderLogo(fournisseurs.find((f: any) => f.id === selectedProvider)?.slug || '') && (
+                  <img src={getProviderLogo(fournisseurs.find((f: any) => f.id === selectedProvider)?.slug || '')} alt="" className="w-5 h-5 object-contain rounded shrink-0" />
+                )}
+                <span className="flex-1 text-left truncate">
+                  {selectedProvider === 'TOUS' ? 'Tous les constructeurs' : fournisseurs.find((f: any) => f.id === selectedProvider)?.nom || 'Sélectionner'}
+                </span>
+                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${providerDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
-              {fournisseurs.map((prov) => (
-                <button
-                  key={prov.id}
-                  onClick={() => setSelectedProvider(prov.id)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    selectedProvider === prov.id
-                      ? 'bg-slate-950 text-white shadow-sm'
-                      : 'bg-slate-50 border border-slate-200/80 hover:border-slate-300 text-slate-650'
-                  }`}
-                >
-                  {prov.nom}
-                </button>
-              ))}
+
+              {providerDropdownOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setProviderDropdownOpen(false)} />
+                  <div className="absolute top-full left-0 mt-1.5 z-50 w-72 bg-white border border-slate-200/80 rounded-2xl shadow-xl overflow-hidden">
+                    <button
+                      onClick={() => { setSelectedProvider('TOUS'); setProviderDropdownOpen(false); }}
+                      className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
+                        selectedProvider === 'TOUS' ? 'bg-slate-100 text-slate-950' : 'text-slate-600'
+                      }`}
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                        <Award className="w-4 h-4 text-slate-500" />
+                      </div>
+                      <span className="truncate">Tous les constructeurs</span>
+                    </button>
+                    <div className="border-t border-slate-100" />
+                    <div className="max-h-64 overflow-y-auto">
+                      {fournisseurs.map((f: any) => {
+                        const logo = getProviderLogo(f.slug || f.nom || '');
+                        return (
+                          <button
+                            key={f.id}
+                            onClick={() => { setSelectedProvider(f.id); setProviderDropdownOpen(false); }}
+                            className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
+                              selectedProvider === f.id ? 'bg-slate-100 text-slate-950' : 'text-slate-600'
+                            }`}
+                          >
+                            {logo ? (
+                              <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0" />
+                            ) : (
+                              <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                <Award className="w-4 h-4 text-slate-500" />
+                              </div>
+                            )}
+                            <span className="block truncate font-bold">{f.nom}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -260,36 +307,37 @@ export default function LearnerCertificationsPage() {
                 className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-col justify-between group transition-all duration-300 hover:shadow-lg hover:border-slate-300 text-left"
               >
                 {/* Visual Box (Landing Page Style) */}
-                <div className="relative w-full h-[240px] rounded-xl overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-300 bg-white border border-slate-100">
+                <div onClick={() => setSelectedCertModal(cert)} className="relative w-full aspect-[4/3] sm:aspect-auto sm:h-[240px] rounded-xl overflow-hidden shadow-sm transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-blue-900/30 group-hover:shadow-2xl bg-white border border-slate-100 cursor-pointer">
                   {/* Background Template */}
                   <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
 
                   {/* Examen code overlay */}
                   {cert.codeExamen && (
                     <div className="absolute top-3 left-3 z-30">
-                      <div className="bg-slate-900/80 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-700/50 shadow-sm flex items-center gap-1.5 group-hover:bg-red-600 group-hover:border-red-500 transition-colors">
-                        <span className="w-1 h-1 rounded-full bg-red-500 group-hover:bg-white animate-pulse transition-colors"></span>
+                      <div className="bg-slate-950 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-800 shadow-sm flex items-center group-hover:bg-red-600 group-hover:border-red-500 transition-colors">
                         {cert.codeExamen}
                       </div>
                     </div>
                   )}
 
                   {/* Floating Badge Logo */}
-                  <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20 w-24 flex justify-center">
-                    {cert.image ? (
-                      <img src={cert.image} alt={cert.nom} className="w-full h-auto object-contain filter drop-shadow-xl" />
-                    ) : (
-                      <div className="w-16 h-16 bg-white/95 rounded-full flex items-center justify-center border border-slate-200 shadow-sm">
-                        <Award className="w-8 h-8 text-slate-400" />
-                      </div>
-                    )}
+                  <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+                    <div className="w-32 h-32 lg:w-24 lg:h-24 flex items-center justify-center transition-transform duration-500 -translate-y-3 group-hover:-translate-y-5">
+                      {cert.image ? (
+                        <img src={cert.image} alt={cert.nom} className="max-w-full max-h-full object-contain filter drop-shadow-xl" />
+                      ) : (
+                        <div className="w-16 h-16 bg-white/95 rounded-full flex items-center justify-center border border-slate-200 shadow-sm">
+                          <Award className="w-8 h-8 text-slate-400" />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
                 {/* Title & Info & Actions */}
                 <div className="mt-4 flex-1 flex flex-col justify-between">
                   <div className="space-y-1">
-                    <h3 className="text-sm font-black text-slate-950 leading-snug line-clamp-2">
+                    <h3 onClick={() => setSelectedCertModal(cert)} className="text-sm font-black text-slate-950 leading-snug line-clamp-2 cursor-pointer hover:text-blue-600 transition-colors">
                       {cert.nom}
                     </h3>
                     <p className="text-[10px] text-slate-450 font-bold uppercase tracking-wider">
@@ -300,21 +348,22 @@ export default function LearnerCertificationsPage() {
                   <div className="pt-4 border-t border-slate-100 flex items-center gap-2 mt-4">
                     <button
                       onClick={() => setSelectedCertModal(cert)}
-                      className="flex-1 py-2 bg-slate-950 hover:bg-slate-900 text-white font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md"
+                      className="flex-1 py-2.5 bg-slate-950 hover:bg-slate-900 text-white font-black rounded-xl text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md"
                     >
                       <span>Consulter</span>
                     </button>
 
                     <button
                       onClick={() => toggleTargetCertification(cert.id.toString())}
-                      className={`p-2 rounded-xl text-xs font-black transition-all cursor-pointer border ${
+                      className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer border flex items-center justify-center gap-1.5 ${
                         targetCertIds.includes(cert.id.toString())
                           ? 'bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100'
-                          : 'bg-slate-50 text-slate-400 border-slate-200 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50'
+                          : 'bg-slate-50 text-slate-500 border-slate-200 hover:text-slate-700 hover:border-slate-300'
                       }`}
                       title={targetCertIds.includes(cert.id.toString()) ? "Retirer des objectifs" : "Ajouter aux objectifs"}
                     >
-                      {targetCertIds.includes(cert.id.toString()) ? <Check className="w-4 h-4" /> : <Target className="w-4 h-4" />}
+                      {targetCertIds.includes(cert.id.toString()) ? <Check className="w-3.5 h-3.5" /> : <Target className="w-3.5 h-3.5" />}
+                      <span>{targetCertIds.includes(cert.id.toString()) ? 'Visé' : 'Viser'}</span>
                     </button>
                   </div>
                 </div>
@@ -326,10 +375,10 @@ export default function LearnerCertificationsPage() {
           <AnimatePresence>
             {selectedCertModal && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}
-                className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/40 overflow-y-auto"
+                className="fixed inset-0 z-[60] flex items-start justify-center p-4 bg-slate-950/40 overflow-y-auto"
                 onClick={(e) => { if (e.target === e.currentTarget) setSelectedCertModal(null); }}>
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} transition={{ duration: 0.2 }}
-                  className="bg-white rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden">
+                  className="bg-white rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden my-auto">
                   <CertDetailModal cert={selectedCertModal} onClose={() => setSelectedCertModal(null)} onPractice={(c: Certification) => { setSelectedCertModal(null); router.push(`/dashboard/practice?cert=${c.slug}`); }} isTargeted={targetCertIds.includes(selectedCertModal.id.toString())} onToggleTarget={() => toggleTargetCertification(selectedCertModal.id.toString())} />
                 </motion.div>
               </motion.div>
@@ -397,8 +446,7 @@ function CertDetailModal({ cert, onClose, onPractice, isTargeted, onToggleTarget
           {/* Examen code overlay */}
           {cert.codeExamen && (
             <div className="absolute top-4 left-4 z-30">
-              <div className="bg-slate-900/80 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-700/50 shadow-sm flex items-center gap-1.5">
-                <span className="w-1 h-1 rounded-full bg-red-500 animate-pulse"></span>
+              <div className="bg-red-600 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-red-500 shadow-sm flex items-center">
                 {cert.codeExamen}
               </div>
             </div>
@@ -488,7 +536,7 @@ function CertDetailModal({ cert, onClose, onPractice, isTargeted, onToggleTarget
         </div>
 
         {/* Boutons d'action */}
-        <div className="flex flex-col sm:flex-row gap-2 pt-2">
+        <div className="flex flex-col gap-3 pt-2">
           <button onClick={() => onPractice(cert)}
             className="flex-1 py-3 bg-slate-950 hover:bg-slate-900 text-white font-black rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98]">
             <Play className="w-3.5 h-3.5 fill-white text-white" />
@@ -496,7 +544,7 @@ function CertDetailModal({ cert, onClose, onPractice, isTargeted, onToggleTarget
           </button>
           {onToggleTarget && (
             <button onClick={() => onToggleTarget()}
-              className={`px-4 py-3 border font-bold rounded-xl text-[10px] uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-[0.98] ${
+              className={`flex-1 py-3 border font-black rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-[0.98] ${
                 isTargeted
                   ? 'border-emerald-200 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:border-emerald-300'
                   : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-700 hover:border-slate-300'

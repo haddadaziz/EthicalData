@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useConfirm } from '../../../context/ConfirmContext';
-import { BookOpen, Plus, Search, Edit, Trash2, Globe, Clock, User, Users, ArrowRight } from '@/components/icons';
+import { BookOpen, Plus, Search, Edit, Trash2, Globe, Clock, User, Users, ArrowRight, ChevronDown, Award } from '@/components/icons';
 import { CourseFormModal } from '../../../components/admin/courses/CourseFormModal';
 
 interface FormateurInfo {
@@ -20,6 +20,9 @@ interface CertificationInfo {
     nom: string;
     codeExamen: string;
     fournisseur?: { nom: string } | null;
+    image?: string | null;
+    badgeLogo?: string | null;
+    logoUrl?: string | null;
 }
 
 interface CourseData {
@@ -49,6 +52,7 @@ export default function AdminCoursesPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('ALL');
     const [certFilter, setCertFilter] = useState('ALL');
+    const [certDropdownOpen, setCertDropdownOpen] = useState(false);
 
     // Edit Modal state
     const [selectedCourse, setSelectedCourse] = useState<any>(null);
@@ -179,6 +183,8 @@ export default function AdminCoursesPage() {
         return { total, published, draft };
     }, [courses]);
 
+    const selectedCert = certFilter !== 'ALL' ? certifications.find(c => c.id === certFilter) : null;
+
     const closeEditModal = useCallback(() => { if (!updateLoading) setSelectedCourse(null); }, [updateLoading]);
 
     return (
@@ -244,18 +250,71 @@ export default function AdminCoursesPage() {
                             <option value="ARCHIVE">Archivés</option>
                         </select>
 
-                        <select
-                            value={certFilter}
-                            onChange={(e) => setCertFilter(e.target.value)}
-                            className="p-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-950 text-xs font-bold outline-none cursor-pointer max-w-[200px]"
-                        >
-                            <option value="ALL">Toutes les Certifications</option>
-                            {certifications.map(c => (
-                                <option key={c.id} value={c.id}>
-                                    {c.codeExamen ? `[${c.codeExamen}] ` : ''}{c.nom}
-                                </option>
-                            ))}
-                        </select>
+                        {certifications.length > 0 && (
+                            <div className="relative">
+                                <button
+                                    type="button"
+                                    onClick={() => setCertDropdownOpen(!certDropdownOpen)}
+                                    className="flex items-center gap-2.5 px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-red-600 rounded-2xl text-slate-950 text-xs font-bold outline-none cursor-pointer hover:bg-slate-100 transition-all min-w-[200px]"
+                                >
+                                    {selectedCert && (selectedCert.image || selectedCert.badgeLogo || selectedCert.logoUrl) && (
+                                        <img src={selectedCert.image || selectedCert.badgeLogo || selectedCert.logoUrl || ''} alt="" className="w-5 h-5 object-contain rounded shrink-0" />
+                                    )}
+                                    <span className="flex-1 text-left truncate">
+                                        {certFilter === 'ALL' ? 'Toutes les Certifications' : selectedCert?.codeExamen || selectedCert?.nom || 'Sélectionner'}
+                                    </span>
+                                    <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${certDropdownOpen ? 'rotate-180' : ''}`} />
+                                </button>
+
+                                {certDropdownOpen && (
+                                    <>
+                                        <div className="fixed inset-0 z-40" onClick={() => setCertDropdownOpen(false)} />
+                                        <div className="absolute top-full left-0 mt-1.5 z-50 w-72 bg-white border border-slate-200/80 rounded-2xl shadow-xl overflow-hidden">
+                                            <button
+                                                onClick={() => { setCertFilter('ALL'); setCertDropdownOpen(false); }}
+                                                className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
+                                                    certFilter === 'ALL' ? 'bg-slate-100 text-slate-950' : 'text-slate-600'
+                                                }`}
+                                            >
+                                                <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                                    <Award className="w-4 h-4 text-slate-500" />
+                                                </div>
+                                                <span className="truncate">Toutes les Certifications</span>
+                                            </button>
+                                            <div className="border-t border-slate-100" />
+                                            <div className="max-h-64 overflow-y-auto">
+                                                {certifications.map(c => {
+                                                    const logo = c.image || c.badgeLogo || c.logoUrl || '';
+                                                    return (
+                                                        <button
+                                                            key={c.id}
+                                                            onClick={() => { setCertFilter(c.id); setCertDropdownOpen(false); }}
+                                                            className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
+                                                                certFilter === c.id ? 'bg-slate-100 text-slate-950' : 'text-slate-600'
+                                                            }`}
+                                                        >
+                                                            {logo ? (
+                                                                <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0" />
+                                                            ) : (
+                                                                <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                                                    <Award className="w-4 h-4 text-slate-500" />
+                                                                </div>
+                                                            )}
+                                                            <div className="flex-1 min-w-0">
+                                                                <span className="block truncate">{c.codeExamen || c.nom}</span>
+                                                                {c.codeExamen && c.nom && (
+                                                                    <span className="block text-[10px] text-slate-400 truncate mt-0.5">{c.nom}</span>
+                                                                )}
+                                                            </div>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

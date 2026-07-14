@@ -240,7 +240,7 @@ model Question {
   id              BigInt   @id @default(autoincrement())
   enonce          String   @db.Text
   explication     String?  @db.Text
-  reponseCorrecte String   @db.Text
+  reponseCorrecte String?  @db.Text
   grilleNotation  String?  @db.Text
   categorie       String?
   type            String   @default("QCM")
@@ -277,6 +277,7 @@ model Simulation {
   duree        Int      @default(60) // en minutes
   scoreMinimal Int      @default(700) // score pour réussir
   dateCreation DateTime @default(now())
+  statut       StatutSimulation @default(BROUILLON)
 
   // Cours associé
   coursId BigInt? @map("cours_id")
@@ -431,6 +432,11 @@ enum StatutCours {
   BROUILLON
   PUBLIE
   ARCHIVE
+}
+
+enum StatutSimulation {
+  BROUILLON
+  PUBLIE
 }
 
 enum TypeRessource {

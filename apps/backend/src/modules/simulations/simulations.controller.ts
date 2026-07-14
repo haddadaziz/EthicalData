@@ -21,6 +21,67 @@ import { Roles } from '../auth/decorators/roles.decorator';
 export class SimulationsController {
     constructor(private readonly simulationsService: SimulationsService) { }
 
+    // ─── Admin: CRUD simulations ────────────────────────────────────
+
+    @Get()
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('SUPER_ADMIN', 'ADMIN')
+    async findAll() {
+        return this.simulationsService.findAll();
+    }
+
+    @Get(':id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('SUPER_ADMIN', 'ADMIN')
+    async findOne(@Param('id', ParseIntPipe) id: number) {
+        return this.simulationsService.findOne(id);
+    }
+
+    @Post()
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('SUPER_ADMIN', 'ADMIN')
+    async create(@Body() dto: CreateSimulationDto) {
+        return this.simulationsService.create(dto);
+    }
+
+    @Patch(':id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('SUPER_ADMIN', 'ADMIN')
+    async update(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() dto: CreateSimulationDto,
+    ) {
+        return this.simulationsService.update(id, dto);
+    }
+
+    @Delete(':id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('SUPER_ADMIN', 'ADMIN')
+    async remove(@Param('id', ParseIntPipe) id: number) {
+        return this.simulationsService.remove(id);
+    }
+
+    // ─── Questions par simulation (admin) ───────────────────────────
+
+    @Get(':id/questions')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('SUPER_ADMIN', 'ADMIN')
+    async findQuestionsBySimulation(@Param('id', ParseIntPipe) id: number) {
+        return this.simulationsService.findQuestionsBySimulation(id);
+    }
+
+    @Post(':id/questions')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('SUPER_ADMIN', 'ADMIN')
+    async createSimulationQuestion(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() dto: CreateQuestionDto,
+    ) {
+        return this.simulationsService.createSimulationQuestion(id, dto);
+    }
+
+    // ─── Questions par certification ─────────────────────────────────
+
     @Get('certifications/:certId/questions')
     async findQuestionsByCertification(@Param('certId', ParseIntPipe) certId: number) {
         return this.simulationsService.findQuestionsByCertification(certId);

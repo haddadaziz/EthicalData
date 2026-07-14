@@ -78,8 +78,7 @@ export function CertificationsSection({ realCertifications, courses, setSelected
 
                 {cert.codeExamen && (
                   <div className="absolute top-4 left-4 z-30">
-                    <div className="bg-slate-900/80 backdrop-blur-md text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-700/50 shadow-sm flex items-center gap-1.5 group-hover:bg-red-600 group-hover:border-red-500 transition-colors">
-                      <span className="w-1 h-1 rounded-full bg-red-500 group-hover:bg-white animate-pulse"></span>
+                    <div className="bg-slate-900/80 backdrop-blur-md text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-700/50 shadow-sm flex items-center group-hover:bg-red-600 group-hover:border-red-500 transition-colors">
                       {cert.codeExamen}
                     </div>
                   </div>

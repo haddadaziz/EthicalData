@@ -11,6 +11,209 @@ export class SimulationsService {
         private readonly aiService: AiService,
     ) { }
 
+    // ─── Admin: CRUD Simulations ─────────────────────────────────────
+
+    async findAll() {
+        const simulations = await this.prisma.simulation.findMany({
+            include: {
+                certification: { select: { id: true, nom: true, codeExamen: true } },
+                cours: { select: { id: true, titre: true } },
+                _count: { select: { questions: true, tentatives: true } },
+            },
+            orderBy: { dateCreation: 'desc' },
+        });
+
+        return simulations.map((s) => ({
+            ...s,
+            id: s.id.toString(),
+            certificationId: s.certificationId.toString(),
+            coursId: s.coursId?.toString() || null,
+            certification: s.certification ? { ...s.certification, id: s.certification.id.toString() } : null,
+            cours: s.cours ? { ...s.cours, id: s.cours.id.toString() } : null,
+        }));
+    }
+
+    async findOne(id: number) {
+        const simulation = await this.prisma.simulation.findUnique({
+            where: { id: BigInt(id) },
+            include: {
+                certification: { select: { id: true, nom: true, codeExamen: true, slug: true } },
+                cours: { select: { id: true, titre: true } },
+                questions: {
+                    include: { options: true },
+                    orderBy: { dateCreation: 'asc' },
+                },
+                _count: { select: { tentatives: true } },
+            },
+        });
+
+        if (!simulation) throw new NotFoundException('Simulation introuvable.');
+
+        return {
+            ...simulation,
+            id: simulation.id.toString(),
+            certificationId: simulation.certificationId.toString(),
+            coursId: simulation.coursId?.toString() || null,
+            certification: simulation.certification ? { ...simulation.certification, id: simulation.certification.id.toString() } : null,
+            cours: simulation.cours ? { ...simulation.cours, id: simulation.cours.id.toString() } : null,
+            questions: simulation.questions.map((q) => ({
+                ...q,
+                id: q.id.toString(),
+                certificationId: q.certificationId.toString(),
+                simulationId: q.simulationId?.toString() || null,
+                options: q.options.map((o) => ({
+                    ...o,
+                    id: o.id.toString(),
+                    questionId: o.questionId.toString(),
+                })),
+            })),
+        };
+    }
+
+    async create(dto: CreateSimulationDto) {
+        const certification = await this.prisma.certification.findFirst({
+            where: { id: BigInt(dto.certificationId), deletedAt: null },
+        });
+        if (!certification) throw new NotFoundException("La certification demandée n'existe pas.");
+
+        if (dto.coursId) {
+            const cours = await this.prisma.cours.findFirst({
+                where: { id: BigInt(dto.coursId), deletedAt: null },
+            });
+            if (!cours) throw new NotFoundException('Cours introuvable.');
+        }
+
+        const simulation = await this.prisma.simulation.create({
+            data: {
+                titre: dto.titre,
+                description: dto.description || null,
+                duree: dto.duree ?? 60,
+                scoreMinimal: dto.scoreMinimal ?? 700,
+                statut: (dto.statut as any) || 'BROUILLON',
+                certificationId: BigInt(dto.certificationId),
+                coursId: dto.coursId ? BigInt(dto.coursId) : null,
+            },
+        });
+
+        return {
+            ...simulation,
+            id: simulation.id.toString(),
+            certificationId: simulation.certificationId.toString(),
+            coursId: simulation.coursId?.toString() || null,
+        };
+    }
+
+    async update(id: number, dto: CreateSimulationDto) {
+        const existing = await this.prisma.simulation.findUnique({
+            where: { id: BigInt(id) },
+        });
+        if (!existing) throw new NotFoundException('Simulation introuvable.');
+
+        const simulation = await this.prisma.simulation.update({
+            where: { id: BigInt(id) },
+            data: {
+                titre: dto.titre,
+                description: dto.description ?? existing.description,
+                duree: dto.duree ?? existing.duree,
+                scoreMinimal: dto.scoreMinimal ?? existing.scoreMinimal,
+                statut: dto.statut ? (dto.statut as any) : existing.statut,
+                certificationId: dto.certificationId ? BigInt(dto.certificationId) : existing.certificationId,
+                coursId: dto.coursId ? BigInt(dto.coursId) : dto.coursId === null ? null : existing.coursId,
+            },
+        });
+
+        return {
+            ...simulation,
+            id: simulation.id.toString(),
+            certificationId: simulation.certificationId.toString(),
+            coursId: simulation.coursId?.toString() || null,
+        };
+    }
+
+    async remove(id: number) {
+        const existing = await this.prisma.simulation.findUnique({
+            where: { id: BigInt(id) },
+        });
+        if (!existing) throw new NotFoundException('Simulation introuvable.');
+
+        await this.prisma.simulation.delete({
+            where: { id: BigInt(id) },
+        });
+
+        return { message: 'Simulation supprimée avec succès.' };
+    }
+
+    // ─── Questions par simulation (admin) ────────────────────────────
+
+    async findQuestionsBySimulation(simId: number) {
+        const simulation = await this.prisma.simulation.findUnique({
+            where: { id: BigInt(simId) },
+        });
+        if (!simulation) throw new NotFoundException('Simulation introuvable.');
+
+        const questions = await this.prisma.question.findMany({
+            where: { simulationId: BigInt(simId) },
+            include: { options: true },
+            orderBy: { dateCreation: 'asc' },
+        });
+
+        return questions.map((q) => ({
+            ...q,
+            id: q.id.toString(),
+            certificationId: q.certificationId.toString(),
+            simulationId: q.simulationId?.toString() || null,
+            options: q.options.map((o) => ({
+                ...o,
+                id: o.id.toString(),
+                questionId: o.questionId.toString(),
+            })),
+        }));
+    }
+
+    async createSimulationQuestion(simId: number, dto: CreateQuestionDto) {
+        const simulation = await this.prisma.simulation.findUnique({
+            where: { id: BigInt(simId) },
+        });
+        if (!simulation) throw new NotFoundException('Simulation introuvable.');
+
+        const optionsData =
+            dto.options && dto.options.length > 0
+                ? {
+                    create: dto.options.map((opt: any) => ({
+                        lettre: opt.lettre,
+                        texte: opt.texte,
+                    })),
+                }
+                : undefined;
+
+        const question = await this.prisma.question.create({
+            data: {
+                enonce: dto.enonce,
+                explication: dto.explication || null,
+                reponseCorrecte: dto.reponseCorrecte,
+                grilleNotation: dto.grilleNotation || null,
+                categorie: dto.categorie || null,
+                type: dto.type || 'QCM',
+                certificationId: simulation.certificationId,
+                simulationId: BigInt(simId),
+                options: optionsData,
+            },
+            include: { options: true },
+        });
+
+        return {
+            ...question,
+            id: question.id.toString(),
+            certificationId: question.certificationId.toString(),
+            simulationId: question.simulationId?.toString() || null,
+            options: question.options.map((o) => ({
+                ...o,
+                id: o.id.toString(),
+                questionId: o.questionId.toString(),
+            })),
+        };
+    }
+
     // 1. Obtenir toutes les questions d'une certification
     async findQuestionsByCertification(certId: number) {
         const questions = await this.prisma.question.findMany({
@@ -372,6 +575,7 @@ export class SimulationsService {
                 description: dto.description || null,
                 duree: dto.duree ?? 60,
                 scoreMinimal: dto.scoreMinimal ?? 700,
+                statut: (dto.statut as any) || 'BROUILLON',
                 certificationId: BigInt(dto.certificationId),
                 coursId: BigInt(coursId),
             },

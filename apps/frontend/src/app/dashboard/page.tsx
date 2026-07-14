@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../lib/api';
 import { 
-    Bolt, 
+    ListChecks, 
     Play, 
     Video, 
     Calendar,
@@ -237,6 +237,11 @@ export default function StudentDashboard() {
 
         return (
             <div className="space-y-8 text-slate-950 text-left font-sans pb-10">
+                {/* Message de bienvenue simple */}
+                <h2 className="text-xl md:text-2xl font-black text-slate-955 tracking-tight">
+                    Bienvenue dans votre espace formateur
+                </h2>
+
                 {/* GRILLE STATISTIQUES FORMATEUR (DESIGN PREMIUM) */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* STAT CARD 1: COURS CRÉÉS */}
@@ -332,7 +337,7 @@ export default function StudentDashboard() {
                         {/* COMPAGNON ACTIONS RAPIDES */}
                         <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs space-y-4">
                             <h3 className="text-sm font-black text-slate-955 border-b border-slate-100 pb-3 flex items-center gap-2">
-                                <Bolt className="w-4 h-4 text-blue-600" />
+                                <ListChecks className="w-4 h-4 text-blue-600" />
                                 <span>Actions rapides</span>
                             </h3>
                             <div className="space-y-2">

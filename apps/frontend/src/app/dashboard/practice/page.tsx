@@ -3,8 +3,21 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { apiFetch } from '../../../lib/api';
-import { Award, Clock, ArrowLeft, ArrowRight, Flag, HelpCircle, Check, X, RefreshCw, BookmarkCheck, Play, Users, CheckCircle2, FileText, BookOpen } from '@/components/icons';
+import { Award, Clock, ArrowLeft, ArrowRight, Flag, HelpCircle, Check, X, RefreshCw, BookmarkCheck, Play, Users, CheckCircle2, FileText, BookOpen, ChevronDown, Search } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const getProviderLogo = (slugOrName: string) => {
+  const name = (slugOrName || '').toLowerCase();
+  if (name.includes('microsoft')) return '/logos/microsoft.png';
+  if (name.includes('aws') || name.includes('amazon')) return '/logos/aws.png';
+  if (name.includes('gcp') || name.includes('google')) return '/logos/gcp.svg';
+  if (name.includes('cisco')) return '/logos/cisco.png';
+  if (name.includes('comptia')) return '/logos/comptia.png';
+  if (name.includes('fortinet')) return '/logos/fortinet.png';
+  if (name.includes('paloalto') || name.includes('palo alto')) return '/logos/paloalto.png';
+  if (name.includes('pecb')) return '/logos/pecb.png';
+  return '';
+};
 
 const getNiveauBadgeStyle = (niveau: string) => {
     switch (niveau) {
@@ -70,15 +83,23 @@ export default function PracticePage() {
     const [courseSimulation, setCourseSimulation] = useState<any | null>(null);
     const [courseFilter, setCourseFilter] = useState<'all' | 'in-progress' | 'completed'>('all');
 
+    const [fournisseurs, setFournisseurs] = useState<any[]>([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedLevel, setSelectedLevel] = useState<'TOUS' | 'DEBUTANT' | 'INTERMEDIAIRE' | 'AVANCE'>('TOUS');
+    const [selectedProvider, setSelectedProvider] = useState<string>('TOUS');
+    const [providerDropdownOpen, setProviderDropdownOpen] = useState(false);
+
     useEffect(() => {
         const fetchInitial = async () => {
             try {
-                const [certsData, inscData] = await Promise.all([
+                const [certsData, inscData, provData] = await Promise.all([
                     apiFetch('/certifications'),
                     apiFetch('/cours/mes-inscriptions').catch(() => []),
+                    apiFetch('/certifications/fournisseurs').catch(() => []),
                 ]);
                 setCerts(Array.isArray(certsData) ? certsData : []);
                 setInscriptions(Array.isArray(inscData) ? inscData : []);
+                setFournisseurs(Array.isArray(provData) ? provData : []);
             } catch (err) {
                 console.error("Erreur chargement initial:", err);
             } finally {
@@ -87,6 +108,28 @@ export default function PracticePage() {
         };
         fetchInitial();
     }, []);
+
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const filteredCerts = certs.filter((cert) => {
+        const search = searchTerm.toLowerCase().trim();
+        const matchesSearch = !search || cert.nom.toLowerCase().includes(search) || 
+                              (cert.codeExamen && cert.codeExamen.toLowerCase().includes(search));
+        const matchesLevel = selectedLevel === 'TOUS' || cert.niveau === selectedLevel;
+        const matchesProvider = selectedProvider === 'TOUS' || cert.fournisseur?.id === selectedProvider || cert.fournisseurId === Number(selectedProvider) || cert.fournisseur?.slug === selectedProvider;
+
+        return matchesSearch && matchesLevel && matchesProvider;
+    });
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, selectedLevel, selectedProvider]);
+
+    const itemsPerPage = 6;
+    const totalPages = Math.ceil(filteredCerts.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentCerts = filteredCerts.slice(indexOfFirstItem, indexOfLastItem);
 
     const loadQuestions = async (certId: string) => {
         setLoadingQuestions(true);
@@ -305,62 +348,224 @@ export default function PracticePage() {
                 </div>
 
                 {mode === 'certification' ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {certs.map((cert) => (
-                            <div
-                                key={cert.id}
-                                className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-col justify-between group transition-all duration-300 hover:shadow-lg hover:border-slate-300 text-left"
-                            >
-                                {/* Visual Box (Landing Page Style) */}
-                                <div className="relative w-full h-[240px] rounded-xl overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-300 bg-white border border-slate-100">
-                                    {/* Background Template */}
-                                    <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
-
-                                    {/* Examen code overlay */}
-                                    {cert.codeExamen && (
-                                        <div className="absolute top-3 left-3 z-30">
-                                            <div className="bg-slate-900/80 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-700/50 shadow-sm flex items-center gap-1.5 group-hover:bg-red-600 group-hover:border-red-500 transition-colors">
-                                                <span className="w-1 h-1 rounded-full bg-red-500 group-hover:bg-white animate-pulse transition-colors"></span>
-                                                {cert.codeExamen}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Floating Badge Logo */}
-                                    <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20 w-24 flex justify-center">
-                                        {getCertificateBadgeLogo(cert) ? (
-                                            <img src={getCertificateBadgeLogo(cert)} alt={cert.nom} className="w-full h-auto object-contain filter drop-shadow-xl" />
-                                        ) : (
-                                            <div className="w-16 h-16 bg-white/95 rounded-full flex items-center justify-center border border-slate-200 shadow-sm">
-                                                <Award className="w-8 h-8 text-slate-400" />
-                                            </div>
-                                        )}
-                                    </div>
+                    <div className="space-y-8">
+                        {/* Barre de Recherche et Filtres */}
+                        <div className="bg-white border border-slate-200/80 rounded-3xl p-6 space-y-6 shadow-sm">
+                            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                                <div className="relative max-w-md w-full">
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
+                                        <Search className="w-4 h-4" />
+                                    </span>
+                                    <input
+                                        type="text"
+                                        placeholder="Rechercher par nom ou code d'examen..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-xl text-slate-900 placeholder-slate-400 transition-all text-sm outline-none font-semibold"
+                                    />
                                 </div>
-
-                                {/* Title & Info & Actions */}
-                                <div className="mt-4 flex-1 flex flex-col justify-between">
-                                    <div className="space-y-1">
-                                        <h3 className="text-sm font-black text-slate-950 leading-snug line-clamp-2">
-                                            {cert.nom}
-                                        </h3>
-                                        <p className="text-[10px] text-slate-450 font-bold uppercase tracking-wider">
-                                            {cert.fournisseur?.nom || 'Officiel'} • {cert.niveau} • {cert.simulations?.[0]?.duree || 60} min
-                                        </p>
-                                    </div>
-
-                                    <div className="pt-4 flex flex-col items-stretch gap-3 text-xs mt-4">
-                                        <button
-                                            onClick={() => router.push(`/dashboard/practice?cert=${cert.slug}`)}
-                                            className="w-full py-2 bg-slate-950 hover:bg-slate-900 text-white font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
-                                        >
-                                            <Play className="w-3.5 h-3.5 fill-white text-white" />
-                                            <span>Lancer le simulateur</span>
-                                        </button>
+                                <div className="flex items-center justify-between md:justify-start gap-3 w-full md:w-auto shrink-0">
+                                    <div className="text-xs text-slate-500 font-bold shrink-0">
+                                        {filteredCerts.length} disponible{filteredCerts.length > 1 ? 's' : ''}
                                     </div>
                                 </div>
                             </div>
-                        ))}
+
+                            {/* Filtres par Niveau et Fournisseur */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-slate-100 pt-4">
+                                <div className="space-y-2.5 text-left">
+                                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Par Niveau</span>
+                                    <div className="flex flex-wrap gap-2">
+                                        {[
+                                            { val: 'TOUS', label: 'Tous' },
+                                            { val: 'DEBUTANT', label: 'Débutant' },
+                                            { val: 'INTERMEDIAIRE', label: 'Intermédiaire' },
+                                            { val: 'AVANCE', label: 'Avancé' }
+                                        ].map((niv) => (
+                                            <button
+                                                key={niv.val}
+                                                onClick={() => setSelectedLevel(niv.val as any)}
+                                                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                                                    selectedLevel === niv.val
+                                                        ? 'bg-slate-950 text-white shadow-sm'
+                                                        : 'bg-slate-50 border border-slate-200/80 hover:border-slate-300 text-slate-600'
+                                                }`}
+                                            >
+                                                {niv.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2.5 text-left">
+                                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Par Partenaire / Fournisseur</span>
+                                    <div className="relative">
+                                        <button
+                                            type="button"
+                                            onClick={() => setProviderDropdownOpen(!providerDropdownOpen)}
+                                            className="flex items-center gap-2.5 px-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-955 text-xs font-bold outline-none cursor-pointer hover:bg-slate-100 transition-all min-w-[200px]"
+                                        >
+                                            {selectedProvider !== 'TOUS' && getProviderLogo(fournisseurs.find((f: any) => f.id === selectedProvider)?.slug || '') && (
+                                                <img src={getProviderLogo(fournisseurs.find((f: any) => f.id === selectedProvider)?.slug || '')} alt="" className="w-5 h-5 object-contain rounded shrink-0" />
+                                            )}
+                                            <span className="flex-1 text-left truncate">
+                                                {selectedProvider === 'TOUS' ? 'Tous les constructeurs' : fournisseurs.find((f: any) => f.id === selectedProvider)?.nom || 'Sélectionner'}
+                                            </span>
+                                            <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${providerDropdownOpen ? 'rotate-180' : ''}`} />
+                                        </button>
+
+                                        {providerDropdownOpen && (
+                                            <>
+                                                <div className="fixed inset-0 z-40" onClick={() => setProviderDropdownOpen(false)} />
+                                                <div className="absolute top-full left-0 mt-1.5 z-50 w-72 bg-white border border-slate-200/80 rounded-2xl shadow-xl overflow-hidden">
+                                                    <button
+                                                        onClick={() => { setSelectedProvider('TOUS'); setProviderDropdownOpen(false); }}
+                                                        className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
+                                                            selectedProvider === 'TOUS' ? 'bg-slate-100 text-slate-955' : 'text-slate-600'
+                                                        }`}
+                                                    >
+                                                        <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                                            <Award className="w-4 h-4 text-slate-500" />
+                                                        </div>
+                                                        <span className="truncate">Tous les constructeurs</span>
+                                                    </button>
+                                                    <div className="border-t border-slate-100" />
+                                                    <div className="max-h-64 overflow-y-auto">
+                                                        {fournisseurs.map((f: any) => {
+                                                            const logo = getProviderLogo(f.slug || f.nom || '');
+                                                            return (
+                                                                <button
+                                                                    key={f.id}
+                                                                    onClick={() => { setSelectedProvider(f.id); setProviderDropdownOpen(false); }}
+                                                                    className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
+                                                                        selectedProvider === f.id ? 'bg-slate-100 text-slate-955' : 'text-slate-600'
+                                                                    }`}
+                                                                >
+                                                                    {logo ? (
+                                                                        <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0" />
+                                                                    ) : (
+                                                                        <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                                                            <Award className="w-4 h-4 text-slate-500" />
+                                                                        </div>
+                                                                    )}
+                                                                    <span className="block truncate font-bold text-left flex-1">{f.nom}</span>
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {filteredCerts.length === 0 ? (
+                            <div className="p-12 text-center bg-white border border-slate-200/80 rounded-3xl text-slate-500 font-semibold shadow-sm">
+                                Aucune certification ne correspond aux critères sélectionnés.
+                            </div>
+                        ) : (
+                            <div className="space-y-8">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                    {currentCerts.map((cert) => (
+                                        <div
+                                            key={cert.id}
+                                            className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-col justify-between group transition-all duration-300 hover:shadow-lg hover:border-slate-300 text-left"
+                                        >
+                                            <div onClick={() => router.push(`/dashboard/practice?cert=${cert.slug}`)} className="relative w-full aspect-[4/3] sm:aspect-auto sm:h-[240px] rounded-xl overflow-hidden shadow-sm transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-blue-900/30 group-hover:shadow-2xl bg-white border border-slate-100 cursor-pointer">
+                                                {/* Background Template */}
+                                                <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
+
+                                                {/* Examen code overlay */}
+                                                {cert.codeExamen && (
+                                                    <div className="absolute top-3 left-3 z-30">
+                                                        <div className="bg-slate-900/80 backdrop-blur-md text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-700/50 shadow-sm flex items-center group-hover:bg-red-600 group-hover:border-red-500 transition-colors">
+                                                            {cert.codeExamen}
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Floating Badge Logo */}
+                                                <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+                                                    <div className="w-32 h-32 lg:w-24 lg:h-24 flex items-center justify-center transition-transform duration-500 -translate-y-3 group-hover:-translate-y-5">
+                                                        {getCertificateBadgeLogo(cert) ? (
+                                                            <img src={getCertificateBadgeLogo(cert)} alt={cert.nom} className="max-w-full max-h-full object-contain filter drop-shadow-xl" />
+                                                        ) : (
+                                                            <div className="w-16 h-16 bg-white/95 rounded-full flex items-center justify-center border border-slate-200 shadow-sm">
+                                                                <Award className="w-8 h-8 text-slate-400" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Title & Info & Actions */}
+                                            <div className="mt-4 flex-1 flex flex-col justify-between">
+                                                <div className="space-y-1">
+                                                    <h3 onClick={() => router.push(`/dashboard/practice?cert=${cert.slug}`)} className="text-sm font-black text-slate-950 leading-snug line-clamp-2 cursor-pointer hover:text-blue-600 transition-colors">
+                                                        {cert.nom}
+                                                    </h3>
+                                                    <p className="text-[10px] text-slate-450 font-bold uppercase tracking-wider">
+                                                        {cert.fournisseur?.nom || 'Officiel'} • {cert.niveau} • {cert.simulations?.[0]?.duree || 60} min
+                                                    </p>
+                                                </div>
+
+                                                <div className="pt-4 flex flex-col items-stretch gap-3 text-xs mt-4">
+                                                    <button
+                                                        onClick={() => router.push(`/dashboard/practice?cert=${cert.slug}`)}
+                                                        className="w-full py-3 lg:py-2 bg-slate-950 hover:bg-slate-900 text-white font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98]"
+                                                    >
+                                                        <Play className="w-3.5 h-3.5 fill-white text-white" />
+                                                        <span>Lancer le simulateur</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {totalPages > 1 && (
+                                    <div className="p-6 border-t border-slate-100 flex items-center justify-between bg-white border border-slate-200/80 rounded-3xl mt-6 shadow-sm">
+                                        <button
+                                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                            disabled={currentPage === 1}
+                                            className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-955 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-slate-50 shadow-xs"
+                                        >
+                                            <ArrowLeft className="w-3.5 h-3.5" />
+                                            <span>Précédent</span>
+                                        </button>
+
+                                        <div className="flex items-center gap-1.5 overflow-x-auto mx-2 hide-scrollbar">
+                                            {Array.from({ length: totalPages }).map((_, i) => {
+                                                const pageNum = i + 1;
+                                                return (
+                                                    <button
+                                                        key={pageNum}
+                                                        onClick={() => setCurrentPage(pageNum)}
+                                                        className={`w-8 h-8 rounded-xl text-xs font-bold flex items-center justify-center transition-all cursor-pointer shrink-0 ${currentPage === pageNum
+                                                            ? 'bg-slate-950 text-white shadow-md'
+                                                            : 'bg-white text-slate-500 hover:bg-slate-100 hover:text-slate-955 border border-slate-200/50'
+                                                            }`}
+                                                    >
+                                                        {pageNum}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+
+                                        <button
+                                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                            disabled={currentPage === totalPages}
+                                            className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-655 hover:text-slate-955 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-slate-50 shadow-xs"
+                                        >
+                                            <span>Suivant</span>
+                                            <ArrowRight className="w-3.5 h-3.5" />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 ) : (
                     <div className="space-y-4">

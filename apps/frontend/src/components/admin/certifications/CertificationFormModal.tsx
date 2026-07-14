@@ -173,7 +173,7 @@ export function CertificationFormModal({
           </div>
 
           {/* Side-by-side content */}
-          <div className="flex-1 flex flex-col md:flex-row md:overflow-hidden">
+          <div className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
             
             {/* Formulaire (Gauche) */}
             <form onSubmit={handleSubmit} className="p-5 md:p-8 space-y-5 w-full md:w-1/2 md:overflow-y-auto text-left">

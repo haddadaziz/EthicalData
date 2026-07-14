@@ -62,12 +62,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 } catch (e) {}
             }
         }
-        return 'APPRENANT';
     });
+
+    const [isSwitching, setIsSwitching] = useState(false);
 
     useEffect(() => {
         const handleResize = () => {
-            const mobile = window.innerWidth < 768;
+            const mobile = window.innerWidth < 1280;
             setIsMobile(mobile);
             setSidebarOpen(!mobile);
         };
@@ -170,15 +171,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     };
 
     const handleSwitchViewMode = () => {
+        if (isSwitching) return;
+        setIsSwitching(true);
+
         const newMode = viewMode === 'FORMATEUR' ? 'APPRENANT' : 'FORMATEUR';
         setViewMode(newMode);
         localStorage.setItem('viewMode', newMode);
+        
+        // Notification toast premium indiquant le nouvel espace activé
+        showToast(
+            newMode === 'FORMATEUR'
+                ? "Passage à l'Espace Formateur réussi"
+                : "Passage à l'Espace Apprenant réussi",
+            "success"
+        );
+
         // Notifier les pages enfants du changement de mode (sans rechargement complet)
         window.dispatchEvent(new Event('viewModeChanged'));
+        
         // Si l'utilisateur n'est pas sur le dashboard, y naviguer
         if (pathname !== '/dashboard') {
             router.push('/dashboard');
         }
+
+        // Déverrouillage après 1 seconde (rate limit / cooldown)
+        setTimeout(() => {
+            setIsSwitching(false);
+        }, 1000);
     };
 
     type NavItem = {
@@ -203,6 +222,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         { name: 'Communauté', href: '/dashboard/community', icon: MessageSquare },
         { name: 'Rendez-vous & Coaching', href: '/dashboard/appointments', icon: Calendar },
         { name: 'Mon Profil', href: '/dashboard/profile', icon: User },
+        { name: 'Paramètres', href: '/dashboard/settings', icon: Settings },
     ];
 
     const trainerNavItems: NavItem[] = [
@@ -217,6 +237,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         },
         { name: 'Communauté', href: '/dashboard/community', icon: MessageSquare },
         { name: 'Mon Profil', href: '/dashboard/profile', icon: User },
+        { name: 'Paramètres', href: '/dashboard/settings', icon: Settings },
     ];
 
     const isTrainer = userRoles.includes('FORMATEUR');
@@ -235,7 +256,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const getPageTitleAndSubtitle = () => {
         if (pathname === '/dashboard') {
             return {
-                title: viewMode === 'FORMATEUR' ? `Espace Formateur, ${userFirstName}` : `Bonjour, ${userFirstName}`,
+                title: `Bonjour, ${userFirstName}`,
                 subtitle: viewMode === 'FORMATEUR' ? 'Gérez vos cours, vos apprenants et vos sessions' : 'Suivez vos entraînements et votre progression'
             };
         }
@@ -260,7 +281,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         if (pathname === '/dashboard/profile') {
             return {
                 title: viewMode === 'FORMATEUR' ? 'Mon Profil Formateur' : 'Mon Profil Apprenant',
-                subtitle: 'Gérez vos informations personnelles, votre sécurité et vos préférences'
+                subtitle: 'Gérez vos informations personnelles et votre sécurité'
+            };
+        }
+        if (pathname === '/dashboard/settings') {
+            return {
+                title: 'Paramètres',
+                subtitle: 'Notifications, visibilité du profil et préférences système'
             };
         }
         if (pathname === '/dashboard/appointments') {
@@ -420,7 +447,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             {/* Sidebar Desktop Fixe et Élégante */}
             {!isMobile && (
-                <aside className={`hidden md:flex flex-col relative z-10 shrink-0 sticky top-0 h-screen shadow-sm w-[280px] overflow-y-auto overflow-x-hidden border-r transition-all duration-300 ${
+                <aside className={`hidden xl:flex flex-col relative z-10 shrink-0 sticky top-0 h-screen shadow-sm w-[280px] overflow-y-auto overflow-x-hidden border-r transition-all duration-300 ${
                     viewMode === 'FORMATEUR'
                         ? 'bg-slate-50/90 border-indigo-100/70 shadow-indigo-100/20'
                         : 'bg-white border-slate-200/80'
@@ -548,7 +575,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => setSidebarOpen(true)}
-                            className="md:hidden p-3 bg-slate-50 border border-slate-200 hover:border-blue-600 text-slate-600 hover:text-blue-600 rounded-xl transition-all duration-200 cursor-pointer shadow-sm flex items-center justify-center"
+                            className="p-3 bg-slate-50 border border-slate-200 hover:border-blue-600 text-slate-600 hover:text-blue-600 rounded-xl transition-all duration-200 cursor-pointer shadow-sm flex items-center justify-center xl:hidden"
                             aria-label="Ouvrir le menu"
                         >
                             <Menu className="w-5 h-5" />
@@ -565,20 +592,39 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         {isTrainer && (
                             <button
                                 onClick={handleSwitchViewMode}
-                                className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-extrabold text-[10px] rounded-xl transition-all border border-indigo-200 cursor-pointer shadow-3xs"
-                                title={viewMode === 'FORMATEUR' ? "Basculer en vue Apprenant" : "Basculer en vue Formateur"}
+                                disabled={isSwitching}
+                                className={`flex items-center gap-2 px-3 py-2 rounded-2xl transition-all duration-300 relative group border shrink-0 ${
+                                    isSwitching 
+                                        ? 'opacity-50 cursor-not-allowed scale-[0.98]' 
+                                        : 'cursor-pointer hover:shadow-md'
+                                } ${
+                                    viewMode === 'FORMATEUR'
+                                        ? 'bg-gradient-to-r from-indigo-50 to-violet-50/50 border-indigo-200 hover:border-indigo-400 text-indigo-750 shadow-indigo-100/50'
+                                        : 'bg-gradient-to-r from-blue-50 to-sky-50/50 border-blue-200 hover:border-blue-400 text-blue-750 shadow-blue-100/50'
+                                }`}
+                                title={viewMode === 'FORMATEUR' ? "Basculer en Espace Apprenant" : "Basculer en Espace Formateur"}
                             >
-                                {viewMode === 'FORMATEUR' ? (
-                                    <>
-                                        <GraduationCap className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                                        <span className="hidden sm:inline">Mode Apprenant</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <ChalkboardTeacher className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                                        <span className="hidden sm:inline">Mode Formateur</span>
-                                    </>
-                                )}
+                                <div className="relative w-5 h-5 flex items-center justify-center bg-white rounded-lg shadow-3xs p-0.5 group-hover:scale-110 transition-transform duration-300">
+                                    {viewMode === 'FORMATEUR' ? (
+                                        <img src="/logos/formateur.png" alt="Formateur" className="w-full h-full object-contain" />
+                                    ) : (
+                                        <img src="/logos/apprenant.png" alt="Apprenant" className="w-full h-full object-contain" />
+                                    )}
+                                </div>
+
+                                <div className="hidden sm:flex flex-col text-left leading-none">
+                                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Espace</span>
+                                    <span className="text-[10px] font-black tracking-tight leading-none">
+                                        {viewMode === 'FORMATEUR' ? 'Formateur' : 'Apprenant'}
+                                    </span>
+                                </div>
+
+                                {/* Icône de permutation subtile sur Desktop */}
+                                <div className="hidden md:flex items-center text-slate-400 group-hover:text-slate-600 transition-colors ml-0.5">
+                                    <svg className="w-3 h-3 transform group-hover:rotate-180 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                    </svg>
+                                </div>
                             </button>
                         )}
 

@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional, IsNumber, Min, Max } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsNumber, Min, Max, IsIn } from 'class-validator';
 
 export class CreateSimulationDto {
   @IsString()
@@ -23,4 +23,13 @@ export class CreateSimulationDto {
   @IsNumber()
   @IsNotEmpty({ message: 'La certification est obligatoire.' })
   certificationId: number;
+
+  @IsNumber()
+  @IsOptional()
+  coursId?: number;
+
+  @IsString()
+  @IsOptional()
+  @IsIn(['BROUILLON', 'PUBLIE'])
+  statut?: string;
 }

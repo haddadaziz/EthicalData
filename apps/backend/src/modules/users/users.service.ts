@@ -291,21 +291,6 @@ export class UsersService {
       throw new NotFoundException('Profil apprenant non trouvé.');
     }
 
-    // Récupérer les détails des certifications visées
-    const targetCertIds = (user.preferences as any)?.targetCertifications || [];
-    const targetedCerts = targetCertIds.length > 0 
-      ? await this.prisma.certification.findMany({
-          where: { id: { in: targetCertIds.map((id: any) => BigInt(id)) } },
-          select: {
-            id: true,
-            nom: true,
-            slug: true,
-            codeExamen: true,
-            image: true,
-          }
-        })
-      : [];
-
     // Récupérer les certifications obtenues (score d'un examen blanc >= 80)
     const obtainedMap = new Map();
     user.tentatives.forEach(t => {
@@ -338,13 +323,6 @@ export class UsersService {
         commentairesCount: user._count.commentaires,
         likesCount: user._count.likesSujets,
       },
-      targetedCertifications: targetedCerts.map(c => ({
-        id: c.id.toString(),
-        nom: c.nom,
-        slug: c.slug,
-        codeExamen: c.codeExamen,
-        image: c.image,
-      })),
       obtainedCertifications: obtainedCerts,
     };
   }

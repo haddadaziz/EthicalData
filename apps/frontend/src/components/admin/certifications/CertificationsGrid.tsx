@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Users, Clock, Award, Edit, Trash2, ArrowLeft, ArrowRight } from '@/components/icons';
+import { Award, Edit, Trash2, ArrowLeft, ArrowRight } from '@/components/icons';
 
 interface CertificationsGridProps {
   filteredCerts: any[];
@@ -77,29 +77,30 @@ export function CertificationsGrid({
             className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-col justify-between group transition-all duration-300 hover:shadow-lg hover:border-slate-300"
           >
             {/* Visual Box (Landing Page Style) */}
-            <div onClick={() => onEdit(cert)} className="relative w-full h-[240px] rounded-xl overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-300 bg-white border border-slate-100 cursor-pointer">
+            <div onClick={() => onEdit(cert)} className="relative w-full aspect-[4/3] sm:aspect-auto sm:h-[240px] rounded-xl overflow-hidden shadow-sm transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-blue-900/30 group-hover:shadow-2xl bg-white border border-slate-100 cursor-pointer">
               {/* Background Template */}
               <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none" />
 
               {/* Examen code overlay */}
               {cert.codeExamen && (
                 <div className="absolute top-3 left-3 z-30 pointer-events-none">
-                  <div className="bg-slate-900/80 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-700/50 shadow-sm flex items-center gap-1.5 group-hover:bg-red-600 group-hover:border-red-500 transition-colors">
-                    <span className="w-1 h-1 rounded-full bg-red-500 group-hover:bg-white animate-pulse transition-colors"></span>
+                  <div className="bg-slate-900/80 backdrop-blur-md text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-700/50 shadow-sm flex items-center group-hover:bg-red-600 group-hover:border-red-500 transition-colors">
                     {cert.codeExamen}
                   </div>
                 </div>
               )}
 
               {/* Floating Badge Logo */}
-              <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20 w-24 flex justify-center pointer-events-none">
-                {cert.image ? (
-                  <img src={cert.image} alt={cert.nom} className="w-full h-auto object-contain filter drop-shadow-xl" />
-                ) : (
-                  <div className="w-16 h-16 bg-white/95 rounded-full flex items-center justify-center border border-slate-200 shadow-sm">
-                    <Award className="w-8 h-8 text-slate-400" />
-                  </div>
-                )}
+              <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+                <div className="w-32 h-32 lg:w-24 lg:h-24 flex items-center justify-center transition-transform duration-500 -translate-y-3 group-hover:-translate-y-5">
+                  {cert.image ? (
+                    <img src={cert.image} alt={cert.nom} className="max-w-full max-h-full object-contain filter drop-shadow-xl" />
+                  ) : (
+                    <div className="w-16 h-16 bg-white/95 rounded-full flex items-center justify-center border border-slate-200 shadow-sm">
+                      <Award className="w-8 h-8 text-slate-400" />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 

@@ -21,8 +21,6 @@ import { UpdateFournisseurDto } from './dto/update-fournisseur.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { CacheInterceptor } from '@nestjs/cache-manager';
-import { UseInterceptors } from '@nestjs/common';
 
 @Controller('certifications')
 export class CertificationsController {
@@ -69,7 +67,6 @@ export class CertificationsController {
 
     // Récupérer toutes les certifications
     @Get()
-    @UseInterceptors(CacheInterceptor)
     async findAll() {
         return this.certificationsService.findAll();
     }

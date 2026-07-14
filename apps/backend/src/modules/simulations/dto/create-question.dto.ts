@@ -26,9 +26,9 @@ export class CreateQuestionDto {
     @IsString()
     explication?: string;
 
+    @IsOptional()
     @IsString()
-    @IsNotEmpty({ message: 'La réponse correcte est obligatoire.' })
-    reponseCorrecte: string;
+    reponseCorrecte?: string;
 
     @IsOptional()
     @IsString()

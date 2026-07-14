@@ -18,7 +18,7 @@ export function EventsSection() {
 
       <div className="relative max-w-7xl mx-auto px-6">
         <h2 className="text-3xl sm:text-4xl font-bold text-white uppercase tracking-tight mb-16">
-          New Events
+          Nouveaux événements
         </h2>
 
         <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
@@ -56,7 +56,7 @@ export function EventsSection() {
                 onClick={() => window.location.href = '/register'}
                 className="px-8 py-3.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold uppercase tracking-widest rounded-full transition-all cursor-pointer shadow-[0_0_15px_rgba(220,38,38,0.3)] hover:shadow-[0_0_25px_rgba(220,38,38,0.5)] flex items-center gap-3 w-fit"
               >
-                View Event <ArrowRight className="w-4 h-4" />
+                S'inscrire <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>

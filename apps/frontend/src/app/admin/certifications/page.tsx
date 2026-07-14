@@ -2,7 +2,20 @@
 
 import React, { useState, useEffect } from 'react';
 
-import { Search, Plus } from '@/components/icons';
+import { Search, Plus, ChevronDown, Award } from '@/components/icons';
+
+const getProviderLogo = (slugOrName: string) => {
+  const name = (slugOrName || '').toLowerCase();
+  if (name.includes('microsoft')) return '/logos/microsoft.png';
+  if (name.includes('aws') || name.includes('amazon')) return '/logos/aws.png';
+  if (name.includes('gcp') || name.includes('google')) return '/logos/gcp.svg';
+  if (name.includes('cisco')) return '/logos/cisco.png';
+  if (name.includes('comptia')) return '/logos/comptia.png';
+  if (name.includes('fortinet')) return '/logos/fortinet.png';
+  if (name.includes('paloalto') || name.includes('palo alto')) return '/logos/paloalto.png';
+  if (name.includes('pecb')) return '/logos/pecb.png';
+  return '';
+};
 import { useCertifications } from '@/hooks/useCertifications';
 import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/context/ConfirmContext';
@@ -34,6 +47,7 @@ export default function AdminCertificationsPage() {
   const [editingCert, setEditingCert] = useState<any>(null);
 
   const [isFournModalOpen, setIsFournModalOpen] = useState(false);
+  const [providerDropdownOpen, setProviderDropdownOpen] = useState(false);
 
   const [isQuestionsModalOpen, setIsQuestionsModalOpen] = useState(false);
   const [selectedCertForQuestions, setSelectedCertForQuestions] = useState<any>(null);
@@ -175,18 +189,66 @@ export default function AdminCertificationsPage() {
                 <option value="AVANCE">Avancé</option>
               </select>
 
-              <select
-                value={selectedProvider}
-                onChange={(e) => setSelectedProvider(e.target.value)}
-                className="px-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-xs font-bold outline-none transition-all cursor-pointer"
-              >
-                <option value="TOUS">Tous les constructeurs</option>
-                {fournisseurs.map((f: any) => (
-                  <option key={f.id} value={f.slug}>{f.nom}</option>
-                ))}
-              </select>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setProviderDropdownOpen(!providerDropdownOpen)}
+                  className="flex items-center gap-2.5 px-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-xs font-bold outline-none cursor-pointer hover:bg-slate-100 transition-all min-w-[200px]"
+                >
+                  {selectedProvider !== 'TOUS' && getProviderLogo(selectedProvider) && (
+                    <img src={getProviderLogo(selectedProvider)} alt="" className="w-5 h-5 object-contain rounded shrink-0" />
+                  )}
+                  <span className="flex-1 text-left truncate">
+                    {selectedProvider === 'TOUS' ? 'Tous les constructeurs' : fournisseurs.find((f: any) => f.slug === selectedProvider)?.nom || 'Sélectionner'}
+                  </span>
+                  <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${providerDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
 
-              <div className="flex items-center gap-3 ml-auto shrink-0">
+                {providerDropdownOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setProviderDropdownOpen(false)} />
+                    <div className="absolute top-full left-0 mt-1.5 z-50 w-72 bg-white border border-slate-200/80 rounded-2xl shadow-xl overflow-hidden">
+                      <button
+                        onClick={() => { setSelectedProvider('TOUS'); setProviderDropdownOpen(false); }}
+                        className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
+                          selectedProvider === 'TOUS' ? 'bg-slate-100 text-slate-950' : 'text-slate-600'
+                        }`}
+                      >
+                        <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                          <Award className="w-4 h-4 text-slate-500" />
+                        </div>
+                        <span className="truncate">Tous les constructeurs</span>
+                      </button>
+                      <div className="border-t border-slate-100" />
+                      <div className="max-h-64 overflow-y-auto">
+                        {fournisseurs.map((f: any) => {
+                          const logo = getProviderLogo(f.slug || f.nom || '');
+                          return (
+                            <button
+                              key={f.id}
+                              onClick={() => { setSelectedProvider(f.slug); setProviderDropdownOpen(false); }}
+                              className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
+                                selectedProvider === f.slug ? 'bg-slate-100 text-slate-950' : 'text-slate-600'
+                              }`}
+                            >
+                              {logo ? (
+                                <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0" />
+                              ) : (
+                                <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                  <Award className="w-4 h-4 text-slate-500" />
+                                </div>
+                              )}
+                              <span className="block truncate font-bold">{f.nom}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between md:justify-start gap-3 w-full md:w-auto shrink-0 md:ml-auto">
                 <button
                   onClick={() => setIsModalOpen(true)}
                   className="flex items-center justify-center gap-2 px-5 py-2.5 bg-slate-950 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold cursor-pointer transition-all shadow-md hover:shadow-lg active:scale-95"
