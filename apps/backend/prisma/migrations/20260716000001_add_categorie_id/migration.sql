@@ -1,9 +1,15 @@
 CREATE TABLE "categories_certifications" (
     "id" BIGSERIAL NOT NULL,
     "nom" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "description" TEXT,
+    "image" TEXT,
+    "ordre" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "categories_certifications_pkey" PRIMARY KEY ("id")
 );
+
+CREATE UNIQUE INDEX "categories_certifications_slug_key" ON "categories_certifications"("slug");
 
 ALTER TABLE "certifications" ADD COLUMN "categorieId" BIGINT;
 
