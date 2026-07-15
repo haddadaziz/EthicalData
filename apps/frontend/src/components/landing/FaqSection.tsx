@@ -27,51 +27,65 @@ export function FaqSection() {
   ];
 
   return (
-    <section id="faq" className="relative z-10 max-w-4xl mx-auto px-6 py-20 border-t border-slate-200/60">
+    <section id="faq" className="relative z-10 w-full py-20 overflow-hidden bg-[#020617]">
+      
+      <div className="absolute inset-0 z-0 pointer-events-none" style={{ contentVisibility: 'auto' }}>
+        <img 
+          src="/faq_cyber_bg.png" 
+          alt="FAQ background" 
+          className="w-full h-full object-cover opacity-20 transform-gpu" 
+          loading="lazy"
+          decoding="async"
+          fetchPriority="low"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#020617] via-transparent to-[#020617]" />
+      </div>
 
-      <AnimatedSection className="text-center mb-16">
-        <span className="text-xs font-bold text-red-600 uppercase tracking-widest">Support</span>
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-950 mt-3 uppercase tracking-tight">Questions Fréquentes</h2>
-      </AnimatedSection>
+      <div className="relative z-10 max-w-4xl mx-auto px-6">
+        <AnimatedSection className="text-center mb-16">
+          <span className="text-xs font-bold text-red-500 uppercase tracking-widest">Support</span>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mt-3 uppercase tracking-tight">Questions Fréquentes</h2>
+        </AnimatedSection>
 
-      <div className="space-y-3">
-        {faqData.map((item, idx) => {
-          const isOpen = activeFaq === idx;
-          return (
-            <AnimatedSection key={idx} delay={idx * 0.08}>
-              <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden transition-all duration-300 hover:border-slate-200 shadow-sm">
-                <button
-                  onClick={() => toggleFaq(idx)}
-                  className="w-full flex items-center justify-between p-5 text-left font-bold text-xs sm:text-sm text-slate-800 outline-none cursor-pointer"
-                >
-                  <span className="pr-4 uppercase tracking-wider">{item.q}</span>
-                  <motion.div
-                    animate={{ rotate: isOpen ? 180 : 0 }}
-                    transition={{ duration: 0.25 }}
-                    className="text-slate-500 shrink-0"
+        <div className="space-y-3">
+          {faqData.map((item, idx) => {
+            const isOpen = activeFaq === idx;
+            return (
+              <AnimatedSection key={idx} delay={idx * 0.08}>
+                <div className="bg-[#0a0f1d]/85 backdrop-blur-sm border border-slate-900 rounded-2xl overflow-hidden transition-all duration-300 hover:border-slate-800 shadow-sm">
+                  <button
+                    onClick={() => toggleFaq(idx)}
+                    className="w-full flex items-center justify-between p-5 text-left font-bold text-xs sm:text-sm text-slate-200 hover:text-red-500 transition-colors outline-none cursor-pointer border-0 bg-transparent"
                   >
-                    <ChevronDown className="w-4 h-4" />
-                  </motion.div>
-                </button>
-
-                <AnimatePresence initial={false}>
-                  {isOpen && (
+                    <span className="pr-4 uppercase tracking-wider">{item.q}</span>
                     <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                      animate={{ rotate: isOpen ? 180 : 0 }}
+                      transition={{ duration: 0.25 }}
+                      className="text-slate-500 shrink-0"
                     >
-                      <div className="px-5 pb-5 text-xs text-slate-500 leading-relaxed border-t border-slate-100 pt-3">
-                        {item.a}
-                      </div>
+                      <ChevronDown className="w-4 h-4" />
                     </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </AnimatedSection>
-          );
-        })}
+                  </button>
+
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: "easeInOut" }}
+                      >
+                        <div className="px-5 pb-5 text-xs text-slate-400 leading-relaxed border-t border-slate-900/50 pt-3">
+                          {item.a}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </AnimatedSection>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

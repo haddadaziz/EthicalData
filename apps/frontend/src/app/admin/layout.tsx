@@ -86,6 +86,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     subItems?: NavItem[];
   }
 
+  const isSuperAdmin = userRoles.includes('SUPER_ADMIN');
+
   const navItems: NavItem[] = [
     { name: 'Tableau de Bord', href: '/admin', icon: LayoutDashboard },
     {
@@ -113,6 +115,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       subItems: [
         { name: 'Utilisateurs & Rôles', href: '/admin/users', icon: ShieldCheck },
         { name: 'Santé Système', href: '/admin/health', icon: Activity },
+        ...(isSuperAdmin ? [{ name: 'Configuration Système', href: '/admin/system', icon: Settings }] : []),
       ]
     },
     { name: 'Mon Profil', href: '/admin/profile', icon: User },
@@ -139,9 +142,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (pathname === '/admin/courses') {
       return { title: 'Gestion des Cours', subtitle: 'Catalogue global de cours de la plateforme' };
     }
-        if (pathname === '/admin/downloads') {
-            return { title: 'Historique des Téléchargements', subtitle: 'Suivi de tous les téléchargements effectués sur la plateforme' };
-        }
+    if (pathname === '/admin/downloads') {
+        return { title: 'Historique des Téléchargements', subtitle: 'Suivi de tous les téléchargements effectués sur la plateforme' };
+    }
     if (pathname === '/admin/resources') {
       return { title: 'Ressources', subtitle: 'Supports de cours, documentations et fichiers pédagogiques' };
     }
@@ -165,6 +168,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
     if (pathname === '/admin/settings') {
       return { title: 'Paramètres', subtitle: 'Notifications, visibilité du profil et préférences système' };
+    }
+    if (pathname === '/admin/system') {
+      return { title: 'Configuration Système', subtitle: 'Gérez les paramètres globaux, la sécurité, l\'IA et les intégrations' };
     }
     return { title: 'Administration', subtitle: 'Ethical Data' };
   };

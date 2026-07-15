@@ -15,12 +15,14 @@ import { SimulationsModule } from './modules/simulations/simulations.module';
 import { HealthModule } from './health/health.module';
 import { CoursModule } from './modules/cours/cours.module';
 import { ContactModule } from './modules/contact/contact.module';
+import { SettingsModule } from './modules/settings/settings.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    SettingsModule,
     CacheModule.register({
       isGlobal: true,
       ttl: 60000, // Caching de 60 secondes en mémoire

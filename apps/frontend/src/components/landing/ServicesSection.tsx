@@ -12,70 +12,50 @@ export function ServicesSection() {
   ];
 
   return (
-    <section id="services" className="relative z-10 w-full pt-8 pb-2 lg:pt-10 lg:pb-4 overflow-hidden border-t border-slate-900 bg-[#060B14]">
+    <section id="services" className="relative z-10 w-full py-20 overflow-hidden border-t border-slate-900 bg-[#020617]">
       
-      {/* Background Image avec léger filtre bleu */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 z-0 pointer-events-none" style={{ contentVisibility: 'auto' }}>
         <img 
-          src="/logos/services_bg.jpg" 
-          alt="" 
-          className="w-full h-full object-cover" 
+          src="/cyber_services_bg.png" 
+          alt="Services background" 
+          className="w-full h-full object-cover opacity-40 transform-gpu" 
           loading="lazy"
+          decoding="async"
+          fetchPriority="low"
         />
-        {/* Filtre bleu très léger pour adoucir (Multiply pour fusionner élégamment) */}
-        <div className="absolute inset-0 bg-[#0C1E3A]/60 mix-blend-multiply" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#060B14] via-transparent to-[#060B14] opacity-80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#020617] via-transparent to-[#020617]" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-stretch gap-12 lg:gap-16">
+      <div className="relative z-10 max-w-7xl mx-auto px-6">
         
-        {/* Côté Gauche : Professionnel invitant (Fortement décalé à gauche) */}
-        <div className="hidden lg:flex lg:w-1/3 min-h-[400px] items-end justify-start relative">
-           <img 
-            src="/logos/landing_page_guy.webp" 
-            alt="Nos Services" 
-            className="absolute -bottom-6 -left-28 h-[105%] w-auto max-w-[150%] object-contain object-bottom z-10 drop-shadow-2xl" 
-          />
-        </div>
-
-        {/* Côté Droit : Grille de services (Sans bordures) */}
-        <div className="w-full lg:w-2/3 flex flex-col space-y-16 pt-4 pb-0 relative z-20">
-          
-          {/* En-tête de section ultra moderne */}
-          <div className="text-center lg:text-left space-y-4">
-            <div className="flex items-center justify-center lg:justify-start gap-4">
-              <span className="w-10 h-[2px] bg-red-600 rounded-full" />
-              <span className="text-sm font-black text-red-500 uppercase tracking-[0.2em]">Notre Expertise</span>
-            </div>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white uppercase tracking-tighter">Nos Prestations</h2>
+        <AnimatedSection className="text-center max-w-2xl mx-auto mb-16">
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <span className="w-10 h-[2px] bg-red-600 rounded-full" />
+            <span className="text-sm font-black text-red-500 uppercase tracking-[0.2em]">Notre Expertise</span>
+            <span className="w-10 h-[2px] bg-red-600 rounded-full" />
           </div>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white uppercase tracking-tighter">Nos Prestations</h2>
+        </AnimatedSection>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-14">
-            {services.map((srv, i) => (
-              <AnimatedSection key={i} delay={i * 0.05}>
-                <div className="flex flex-col space-y-3 group cursor-default">
-                  
-                  {/* Numéro et Titre (Aucun encadrement) */}
-                  <div className="flex items-end gap-4 mb-2">
-                    <span className="text-5xl font-black text-slate-700/40 group-hover:text-red-500 transition-colors duration-500 leading-none">
-                      0{i + 1}
-                    </span>
-                    <h3 className="text-xl font-bold text-white tracking-wide group-hover:text-red-400 transition-colors duration-300 leading-tight pb-1">
-                      {srv.title}
-                    </h3>
-                  </div>
-
-                  {/* Description simple et épurée */}
-                  <p className="text-[15px] text-slate-300 leading-relaxed font-normal group-hover:text-white transition-colors duration-300">
-                    {srv.desc}
-                  </p>
-
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {services.map((srv, i) => (
+            <AnimatedSection key={i} delay={i * 0.05}>
+              <div className="group relative bg-[#0a0f1d]/60 backdrop-blur-sm border border-slate-900 hover:border-red-900/50 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1">
+                <div className="flex items-start gap-4 mb-4">
+                  <span className="text-3xl font-black text-red-500/30 group-hover:text-red-500 transition-colors duration-500 leading-none mt-1">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <h3 className="text-lg font-bold text-white group-hover:text-red-400 transition-colors duration-300 leading-tight">
+                    {srv.title}
+                  </h3>
                 </div>
-              </AnimatedSection>
-            ))}
-          </div>
+                <p className="text-sm text-slate-400 leading-relaxed font-normal group-hover:text-slate-300 transition-colors duration-300">
+                  {srv.desc}
+                </p>
+              </div>
+            </AnimatedSection>
+          ))}
         </div>
-
       </div>
     </section>
   );

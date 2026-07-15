@@ -1,5 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { SettingsService } from '../settings/settings.service';
 
 export interface ResultatEvaluation {
   score: number;
@@ -9,10 +10,13 @@ export interface ResultatEvaluation {
 
 @Injectable()
 export class AiService {
-  private readonly apiKey: string;
+  private readonly fallbackApiKey: string;
 
-  constructor(private readonly configService: ConfigService) {
-    this.apiKey = this.configService.get<string>('GEMINI_API_KEY') || '';
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly settingsService: SettingsService,
+  ) {
+    this.fallbackApiKey = this.configService.get<string>('GEMINI_API_KEY') || '';
   }
 
   async evaluerReponseOuverte(
@@ -21,12 +25,25 @@ export class AiService {
     grilleNotation: string | null,
     reponseCandidat: string,
   ): Promise<ResultatEvaluation> {
-    if (!this.apiKey || this.apiKey.includes('AIzaSy...')) {
+    const aiSettings = await this.settingsService.getSetting('ai');
+    const apiKey = aiSettings?.apiKey || this.fallbackApiKey;
+    const activeModel = aiSettings?.activeModel || 'gemini-2.5-flash';
+    const customPromptTemplate = aiSettings?.customPrompt || '';
+
+    if (!apiKey || apiKey.includes('AIzaSy...')) {
       return this.evaluationSimulee(reponseCandidat, reponseCorrecte);
     }
 
     try {
-      const prompt = `Vous êtes un examinateur officiel expert en certifications informatiques (Cloud, Cybersécurité, Réseaux, ISO 27001, etc.).
+      let prompt = '';
+      if (customPromptTemplate) {
+        prompt = customPromptTemplate
+          .replace('{{enonce}}', enonce)
+          .replace('{{reponseCorrecte}}', reponseCorrecte || '')
+          .replace('{{grilleNotation}}', grilleNotation || '')
+          .replace('{{reponseCandidat}}', reponseCandidat);
+      } else {
+        prompt = `Vous êtes un examinateur officiel expert en certifications informatiques (Cloud, Cybersécurité, Réseaux, ISO 27001, etc.).
 Évaluez de manière rigoureuse et constructive la réponse fournie par le candidat à la question ouverte ci-dessous en vous référant au corrigé type officiel.
 
 DÉTAILS DE LA QUESTION :
@@ -42,9 +59,10 @@ INSTRUCTIONS DE NOTATION :
 2. Soyez constructif. Si la réponse est très courte ou incomplète, pénalisez le score de manière proportionnelle mais juste.
 3. Rédigez une critique claire résumant ce qui est correct et ce qui manque.
 4. Rédigez des suggestions concrètes pour aider le candidat à réviser la notion si sa réponse est imparfaite.`;
+      }
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${this.apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/${activeModel}:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: {

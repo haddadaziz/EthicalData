@@ -11,16 +11,62 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
+import { SettingsService } from '../settings/settings.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private settingsService: SettingsService,
   ) {}
 
   // Crée un nouvel utilisateur
   async create(createUserDto: CreateUserDto) {
+    const generalSettings = await this.settingsService.getSetting('general');
+    if (generalSettings && generalSettings.allowRegistrations === false) {
+      const hasAdminRole = createUserDto.roles && createUserDto.roles.some(
+        (r) => r === 'ADMIN' || r === 'SUPER_ADMIN'
+      );
+      if (!hasAdminRole) {
+        throw new BadRequestException(
+          'Les inscriptions sont actuellement désactivées sur cette plateforme.'
+        );
+      }
+    }
+
+    const securitySettings = await this.settingsService.getSetting('security');
+    if (securitySettings) {
+      const {
+        passwordMinLength,
+        passwordRequireUppercase,
+        passwordRequireDigit,
+        passwordRequireSpecialChar,
+      } = securitySettings;
+      const pwd = createUserDto.motDePasse || '';
+
+      if (pwd.length < (passwordMinLength || 8)) {
+        throw new BadRequestException(
+          `Le mot de passe doit contenir au moins ${passwordMinLength || 8} caractères.`
+        );
+      }
+      if (passwordRequireUppercase && !/[A-Z]/.test(pwd)) {
+        throw new BadRequestException(
+          'Le mot de passe doit contenir au moins une lettre majuscule.'
+        );
+      }
+      if (passwordRequireDigit && !/[0-9]/.test(pwd)) {
+        throw new BadRequestException(
+          'Le mot de passe doit contenir au moins un chiffre.'
+        );
+      }
+      if (passwordRequireSpecialChar && !/[!@#$%^&*(),.?":{}|<>]/.test(pwd)) {
+        throw new BadRequestException(
+          'Le mot de passe doit contenir au moins un caractère spécial.'
+        );
+      }
+    }
+
     const existingUser = await this.prisma.utilisateur.findUnique({
       where: { email: createUserDto.email },
     });

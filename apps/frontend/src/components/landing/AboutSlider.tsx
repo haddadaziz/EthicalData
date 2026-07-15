@@ -34,7 +34,7 @@ export function AboutSlider() {
     {
       title: "Certification",
       text: "Ethical Data Security met à votre disposition plus de 500 certifications pour renforcer votre expertise et valider vos compétences aux standards les plus élevés. Reconnues et prisées par les recruteurs, nos certifications vous ouvrent les portes des opportunités professionnelles les plus exigeantes",
-      image: "/logos/certifications-scaled-434x358.webp",
+      image: "/logos/certifications-scaled-434x358.png",
       isRed: true,
       isTransparent: true
     }
@@ -60,27 +60,29 @@ export function AboutSlider() {
       {/* Le conteneur du slider */}
       <div className="w-full relative flex flex-col items-center">
         {/* L'image de fond (Technopark) */}
-        <div className="w-full h-[300px] md:h-[450px] overflow-hidden rounded-2xl md:rounded-[40px] shadow-lg relative">
+        <div className="w-full h-[300px] md:h-[450px] overflow-hidden rounded-2xl md:rounded-[40px] shadow-lg relative border border-slate-900 bg-black">
           <img 
             src="/technopark.jpeg" 
             alt="Technopark" 
-            className="w-full h-full object-cover" 
+            className="w-full h-full object-cover opacity-70" 
+            loading="lazy"
+            decoding="async"
           />
         </div>
 
-        {/* La Carte Blanche qui chevauche le bas de l'image */}
-        <div className="relative -mt-24 md:-mt-32 w-[90%] md:w-10/12 bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.12)] p-5 md:p-10 z-20 flex flex-col md:flex-row gap-6 md:gap-10 items-center min-h-[200px] transition-all duration-500">
+        {/* La Carte Sombre qui chevauche le bas de l'image */}
+        <div className="relative -mt-24 md:-mt-32 w-[90%] md:w-10/12 bg-[#080d1a] border border-slate-800 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-5 md:p-10 z-20 flex flex-col md:flex-row gap-6 md:gap-10 items-center min-h-[200px] transition-all duration-500">
           
-          {/* Flèches de navigation (Parfaitement centrées par rapport à la carte) */}
+          {/* Flèches de navigation */}
           <button 
             onClick={prevSlide}
-            className="cursor-pointer absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white border border-red-500 text-red-500 hover:bg-red-50 hover:scale-110 rounded-full flex items-center justify-center transition-all z-30 shadow-md"
+            className="cursor-pointer absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-[#080d1a] border border-red-500 text-red-500 hover:bg-red-950/30 hover:scale-110 rounded-full flex items-center justify-center transition-all z-30 shadow-md"
           >
             <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 ml-[-2px]" />
           </button>
           <button 
             onClick={nextSlide}
-            className="cursor-pointer absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white border border-red-500 text-red-500 hover:bg-red-50 hover:scale-110 rounded-full flex items-center justify-center transition-all z-30 shadow-md"
+            className="cursor-pointer absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-[#080d1a] border border-red-500 text-red-500 hover:bg-red-950/30 hover:scale-110 rounded-full flex items-center justify-center transition-all z-30 shadow-md"
           >
             <ChevronRight className="w-5 h-5 md:w-6 md:h-6 mr-[-2px]" />
           </button>
@@ -97,8 +99,8 @@ export function AboutSlider() {
                 transition={{ duration: 0.3 }}
                 className={`w-full ${
                   slides[currentSlide].isTransparent 
-                    ? "h-40 md:h-56 object-contain" 
-                    : "h-40 md:h-56 object-cover rounded-xl shadow-md"
+                    ? "h-40 md:h-56 object-contain drop-shadow-[0_0_15px_rgba(220,38,38,0.25)]" 
+                    : "h-40 md:h-56 object-cover rounded-xl shadow-md border border-slate-800"
                 }`} 
               />
             </AnimatePresence>
@@ -114,10 +116,10 @@ export function AboutSlider() {
                 transition={{ duration: 0.3 }}
                 className="space-y-3 md:space-y-4"
               >
-                <h3 className="text-lg md:text-2xl font-bold text-slate-900">
-                  {slides[currentSlide].isRed ? <span className="text-red-600">{slides[currentSlide].title}</span> : slides[currentSlide].title}
+                <h3 className="text-lg md:text-2xl font-bold text-white">
+                  {slides[currentSlide].isRed ? <span className="text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.2)]">{slides[currentSlide].title}</span> : slides[currentSlide].title}
                 </h3>
-                <p className="text-slate-600 text-xs md:text-sm leading-relaxed font-medium">
+                <p className="text-slate-300 text-xs md:text-sm leading-relaxed font-semibold">
                   {slides[currentSlide].text}
                 </p>
               </motion.div>

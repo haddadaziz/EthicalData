@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from 'react';
-import { Navbar } from '@/components/layout/Navbar';
+import React, { useEffect, useState } from 'react';
 import { Footer } from '@/components/layout/Footer';
 import { apiFetch } from '../lib/api';
 
+import { Navbar } from '@/components/landing/Navbar';
 import { HeroSection } from '@/components/landing/HeroSection';
 import { ClientsSection } from '@/components/landing/ClientsSection';
 import { AboutSection } from '@/components/landing/AboutSection';
@@ -15,7 +15,6 @@ import { EventsSection } from '@/components/landing/EventsSection';
 import { PartnersSection } from '@/components/landing/PartnersSection';
 import { FaqSection } from '@/components/landing/FaqSection';
 import { ContactSection } from '@/components/landing/ContactSection';
-
 
 const cleanTitle = (nom: string, code: string) => {
   if (!code || !nom) return nom;
@@ -72,9 +71,6 @@ export default function LandingPage() {
   const [mounted, setMounted] = useState(false);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [navVisible, setNavVisible] = useState(true);
-  const lastScrollY = useRef(0);
 
   const [realCertifications, setRealCertifications] = useState<any[]>([]);
 
@@ -90,28 +86,6 @@ export default function LandingPage() {
   }, []);
 
   useEffect(() => {
-    let ticking = false;
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const currentY = window.scrollY;
-          const isScrolled = currentY > 60;
-          const isNavVisible = currentY <= 60 || currentY < lastScrollY.current;
-
-          setScrolled(prev => prev !== isScrolled ? isScrolled : prev);
-          setNavVisible(prev => prev !== isNavVisible ? isNavVisible : prev);
-
-          lastScrollY.current = currentY;
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
     apiFetch('/certifications')
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
@@ -122,15 +96,13 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900 relative overflow-hidden font-sans selection:bg-red-600 selection:text-white">
-      {/* Grille fine d'arrière-plan claire */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000003_1px,transparent_1px),linear-gradient(to_bottom,#00000003_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none z-0" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,#dc262605_0%,transparent_70%)] pointer-events-none z-0" />
+    <main className="min-h-screen bg-[#020617] text-white relative overflow-hidden font-sans selection:bg-red-600 selection:text-white">
+      {/* Fine background grid lines */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff02_1px,transparent_1px),linear-gradient(to_bottom,#ffffff02_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,#dc262608_0%,transparent_70%)] pointer-events-none z-0" />
 
       <HeroSection isConnected={isConnected}>
         <Navbar
-          scrolled={scrolled}
-          navVisible={navVisible}
           mounted={mounted}
           isConnected={isConnected}
           isAdmin={isAdmin}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ChevronDown, Award, ArrowLeft, ArrowRight } from '@/components/icons';
 import { getProviderLogo, getCertificateBadgeLogo } from '@/lib/certification-utils';
@@ -91,9 +91,6 @@ export default function CertificationsPublicPage() {
     const [isConnected, setIsConnected] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
     const [mounted, setMounted] = useState(false);
-    const [scrolled, setScrolled] = useState(false);
-    const [navVisible, setNavVisible] = useState(true);
-    const lastScrollY = useRef(0);
 
     useEffect(() => {
         setMounted(true);
@@ -106,26 +103,6 @@ export default function CertificationsPublicPage() {
         }).catch(() => {
             setIsConnected(false);
         });
-    }, []);
-
-    useEffect(() => {
-        let ticking = false;
-        const handleScroll = () => {
-            if (!ticking) {
-                window.requestAnimationFrame(() => {
-                    const currentY = window.scrollY;
-                    const isScrolled = currentY > 60;
-                    const isNavVisible = currentY <= 60 || currentY < lastScrollY.current;
-                    setScrolled(prev => prev !== isScrolled ? isScrolled : prev);
-                    setNavVisible(prev => prev !== isNavVisible ? isNavVisible : prev);
-                    lastScrollY.current = currentY;
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        };
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
     const [certifications, setCertifications] = useState<any[]>([]);
     const [categories, setCategories] = useState<any[]>([]);
@@ -197,8 +174,6 @@ export default function CertificationsPublicPage() {
             
             {/* NAVBAR IDENTIQUE À LA LANDING PAGE (transparent en haut, blanc au scroll, disparaît en descendant) */}
             <Navbar
-                scrolled={scrolled}
-                navVisible={navVisible}
                 mounted={mounted}
                 isConnected={isConnected}
                 isAdmin={isAdmin}

@@ -575,3 +575,11 @@ model RendezVous {
   @@index([formateurId])
   @@map("rendez_vous")
 }
+
+model ConfigurationSysteme {
+  cle       String   @id
+  valeur    String   @db.Text
+  updatedAt DateTime @updatedAt
+
+  @@map("configuration_systeme")
+}
