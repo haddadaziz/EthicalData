@@ -51,7 +51,7 @@ export class AuthService {
     return {
       httpOnly: true,
       secure: isProd,
-      sameSite: 'lax' as const,
+      sameSite: isProd ? 'none' as const : 'lax' as const,
       path: '/',
       maxAge: 24 * 60 * 60, // 24h (doit correspondre à JWT_EXPIRATION)
     };
