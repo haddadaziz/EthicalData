@@ -77,7 +77,15 @@ async function bootstrap() {
   app.useGlobalInterceptors(new LoggingInterceptor());
 
   const port = process.env.PORT ?? 3000;
-  await app.listen(port);
-  console.log(`🚀 Serveur Backend Ethical Data prêt et sécurisé sur le port ${port}`);
+  try {
+    await app.listen(port, '0.0.0.0');
+    console.log(`🚀 Serveur Backend Ethical Data prêt et sécurisé sur le port ${port}`);
+  } catch (err) {
+    console.error('❌ Failed to start server:', err);
+    process.exit(1);
+  }
 }
-bootstrap();
+bootstrap().catch(err => {
+  console.error('❌ Unhandled bootstrap error:', err);
+  process.exit(1);
+});
