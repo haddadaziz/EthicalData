@@ -42,14 +42,16 @@ async function bootstrap() {
   );
 
   // Configuration dynamique et sécurisée du CORS
-  const allowedOrigins = [
+  const allowedOrigins: (string | RegExp)[] = [
     process.env.FRONTEND_URL || 'http://localhost:3001',
     'http://localhost:3000',
+    'https://ethical-data.vercel.app',
+    /^https:\/\/ethical-data-[\w-]+\.vercel\.app$/,
   ];
 
   app.enableCors({
     origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      if (!origin || allowedOrigins.some(o => typeof o === 'string' ? o === origin : o.test(origin))) {
         callback(null, true);
       } else {
         callback(new Error('Origine non autorisée'), false);
