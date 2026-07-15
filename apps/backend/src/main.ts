@@ -85,8 +85,8 @@ async function bootstrap() {
   // Activer l'intercepteur de logs HTTP de production
   app.useGlobalInterceptors(new LoggingInterceptor());
 
-  const port = process.env.PORT ?? 3000;
-  console.log(`⚡ Attempting to listen on port ${port}...`);
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+  console.log(`⚡ Attempting to listen on 0.0.0.0:${port}...`);
   try {
     await app.listen(port, '0.0.0.0');
     console.log(`🚀 Serveur Backend Ethical Data prêt et sécurisé sur le port ${port}`);
