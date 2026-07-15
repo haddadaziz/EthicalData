@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Mail, Phone, Globe, Send, RefreshCw } from '@/components/icons';
 import { useToast } from '../../context/ToastContext';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
+import { apiFetch } from '@/lib/api';
 
 export function ContactSection() {
   const { showToast } = useToast();
@@ -18,18 +19,19 @@ export function ContactSection() {
     setLoading(true);
 
     try {
-      // Simulation d'envoi du formulaire de contact
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      
+      await apiFetch('/contact', {
+        method: 'POST',
+        body: { nom, email, sujet, message },
+      });
+
       showToast("Votre message a été envoyé avec succès. Notre équipe vous recontactera très bientôt.", "success");
-      
-      // Reset form
+
       setNom('');
       setEmail('');
       setSujet('');
       setMessage('');
     } catch (err: any) {
-      showToast("Une erreur est survenue lors de l'envoi du message.", "error");
+      showToast(err.message || "Une erreur est survenue lors de l'envoi du message.", "error");
     } finally {
       setLoading(false);
     }

@@ -1,5 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+
+interface SendToGroupDto {
+    titre: string;
+    message: string;
+    target: 'FORMATEUR' | 'APPRENANT' | 'TOUS';
+    type?: string;
+    lien?: string;
+}
 
 @Injectable()
 export class NotificationsService {
@@ -51,6 +59,47 @@ export class NotificationsService {
         data: notificationsData,
       });
     }
+  }
+
+  // Envoyer une notification à un groupe d'utilisateurs
+  async sendToGroup(dto: SendToGroupDto) {
+    const roleNames: string[] = [];
+    if (dto.target === 'FORMATEUR' || dto.target === 'TOUS') {
+      roleNames.push('FORMATEUR');
+    }
+    if (dto.target === 'APPRENANT' || dto.target === 'TOUS') {
+      roleNames.push('APPRENANT');
+    }
+
+    const roles = await this.prisma.role.findMany({
+      where: { nom: { in: roleNames } },
+      include: {
+        utilisateurs: { select: { id: true } },
+      },
+    });
+
+    const userIds = new Set<string>();
+    roles.forEach((role) => {
+      role.utilisateurs.forEach((u) => userIds.add(u.id.toString()));
+    });
+
+    if (userIds.size === 0) {
+      throw new BadRequestException('Aucun utilisateur trouvé pour ce groupe.');
+    }
+
+    const notificationsData = Array.from(userIds).map((id) => ({
+      destinataireId: BigInt(id),
+      titre: dto.titre,
+      message: dto.message,
+      type: dto.type || 'SYSTEM',
+      lien: dto.lien || null,
+    }));
+
+    await this.prisma.notification.createMany({
+      data: notificationsData,
+    });
+
+    return { success: true, count: userIds.size };
   }
 
   // Récupérer les notifications d'un utilisateur

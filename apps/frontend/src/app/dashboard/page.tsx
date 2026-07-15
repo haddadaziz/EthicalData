@@ -22,7 +22,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getCertificateBadgeLogo } from '@/lib/certification-utils';
-import WelcomeSection from '@/components/dashboard/WelcomeSection';
 import RecentActivity from '@/components/dashboard/RecentActivity';
 import CertDetailModal from '@/components/dashboard/CertDetailModal';
 import QuickActions from '@/components/dashboard/QuickActions';
@@ -40,6 +39,7 @@ export default function StudentDashboard() {
     const [certDropdownOpen, setCertDropdownOpen] = useState(false);
     const [selectedCertModal, setSelectedCertModal] = useState<any>(null);
 
+    const [formateurCourses, setFormateurCourses] = useState<any[]>([]);
     const [viewMode, setViewMode] = useState<'APPRENANT' | 'FORMATEUR'>(() => {
         if (typeof window !== 'undefined') {
             const savedMode = localStorage.getItem('viewMode');
@@ -84,12 +84,14 @@ export default function StudentDashboard() {
 
         const loadDashboardData = async () => {
             try {
-                const [certsData, statsData, profileData, appointmentsData] = await Promise.all([
+                const [certsData, statsData, profileData, appointmentsData, coursesData] = await Promise.all([
                     apiFetch('/certifications').catch(() => []),
                     apiFetch('/simulations/me/stats').catch(() => null),
                     apiFetch('/users/me/profile').catch(() => null),
                     apiFetch('/appointments/mes-rdv').catch(() => []),
+                    apiFetch('/cours/mes-cours').catch(() => []),
                 ]);
+                setFormateurCourses(Array.isArray(coursesData) ? coursesData : []);
                 const listCerts = Array.isArray(certsData) ? certsData : (certsData?.data || []);
                 setCerts(listCerts);
                 if (statsData) setStats(statsData);
@@ -206,7 +208,8 @@ export default function StudentDashboard() {
     }
 
     if (viewMode === 'FORMATEUR') {
-        const trainerModulesCount = certs.reduce((acc, c) => acc + (c.modules?.length || 0), 0);
+        const trainerTotalCourses = formateurCourses.length;
+        const hasPublishedCourses = formateurCourses.some(c => c.statut === 'PUBLIE');
         const mySessions = myAppointments.filter(rdv => rdv.formateur.id.toString() === me?.id?.toString() && rdv.statut === 'CONFIRME');
 
         return (
@@ -221,8 +224,8 @@ export default function StudentDashboard() {
                     {/* STAT CARD 1: COURS CRÉÉS */}
                     <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs flex items-center justify-between gap-4">
                         <div className="space-y-1">
-                            <span className="text-2xl font-black text-slate-900 block leading-tight">{trainerModulesCount}</span>
-                            <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Cours / Modules créés</span>
+                            <span className="text-2xl font-black text-slate-900 block leading-tight">{trainerTotalCourses}</span>
+                            <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Cours créés</span>
                         </div>
                         <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
                             <BookMarked className="w-6 h-6" />
@@ -246,40 +249,60 @@ export default function StudentDashboard() {
                     
                     {/* COLONNE DE GAUCHE (8 COLS) */}
                     <div className="lg:col-span-8 flex flex-col justify-between">
-                        {trainerModulesCount === 0 ? (
-                            <WelcomeSection userName={firstName} onDismiss={() => router.push('/dashboard/courses')} />
-                        ) : (
-                            /* LISTE DES MODULES CRÉÉS */
-                            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 md:p-8 shadow-xs flex-1 space-y-6">
-                                <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                                    <div className="space-y-0.5">
-                                        <h3 className="text-base font-black text-slate-955 tracking-tight">Vos Modules de Formation</h3>
-                                        <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Synthèse des contenus pédagogiques publiés</p>
-                                    </div>
+                        {!hasPublishedCourses ? (
+                            <div className="bg-white border border-dashed border-slate-200 rounded-3xl p-8 shadow-xs flex-1 flex flex-col items-center justify-center text-center space-y-5">
+                                <BookMarked className="w-12 h-12 text-slate-200" />
+                                <div className="space-y-1.5 max-w-sm">
+                                    <p className="text-sm font-black text-slate-400">Aucun cours publié</p>
+                                    <p className="text-xs text-slate-400 font-medium">Créez et publiez votre premier cours pour le voir apparaître ici.</p>
                                 </div>
+                                <button
+                                    onClick={() => router.push('/dashboard/courses')}
+                                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-2xl transition-all cursor-pointer shadow-md shadow-blue-600/20"
+                                >
+                                    Créer mon premier cours
+                                </button>
+                            </div>
+                        ) : (
+                            /* DERNIERS COURS PUBLIÉS */
+                            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 md:p-8 shadow-xs flex-1 space-y-6">
+                                <Link
+                                    href="/dashboard/courses"
+                                    className="flex items-center justify-between border-b border-slate-100 pb-4 group"
+                                >
+                                    <div className="space-y-0.5">
+                                        <h3 className="text-base font-black text-slate-955 tracking-tight">Derniers Cours Publiés</h3>
+                                        <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Vos deux dernières formations mises en ligne</p>
+                                    </div>
+                                    <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-slate-500 transition-colors shrink-0" />
+                                </Link>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {certs
-                                        .filter(c => c.modules && c.modules.length > 0)
+                                    {formateurCourses
+                                        .filter(c => c.statut === 'PUBLIE')
+                                        .slice(0, 2)
                                         .map(c => (
                                             <div key={c.id} className="p-4 bg-slate-50 border border-slate-100 rounded-2xl space-y-3">
                                                 <div className="flex items-center gap-2">
                                                     <span className="px-2 py-0.5 bg-blue-50 text-blue-700 font-extrabold text-[8px] rounded-full uppercase tracking-wider border border-blue-100">
-                                                        {c.codeExamen || 'CERT'}
+                                                        {c.certification?.codeExamen || 'COURS'}
                                                     </span>
-                                                    <span className="text-[10px] font-extrabold text-slate-800 truncate">{c.nom}</span>
+                                                    <span className="text-[10px] font-extrabold text-slate-800 truncate">{c.titre}</span>
                                                 </div>
                                                 <div className="space-y-1.5 pl-1 border-l-2 border-slate-200">
                                                     {(c.modules || []).slice(0, 3).map((m: any) => (
                                                         <div key={m.id} className="text-xs font-bold text-slate-650 flex items-center justify-between gap-2">
                                                             <span className="truncate">• {m.titre}</span>
-                                                            <span className="text-[9px] text-slate-400 shrink-0">{m.dureeEstimee}m</span>
+                                                            <span className="text-[9px] text-slate-400 shrink-0">{m.dureeEstimee}{m.dureeEstimee ? 'm' : ''}</span>
                                                         </div>
                                                     ))}
                                                     {(c.modules || []).length > 3 && (
                                                         <span className="text-[10px] text-blue-600 font-extrabold block pt-1">
                                                             + {(c.modules || []).length - 3} autres modules...
                                                         </span>
+                                                    )}
+                                                    {(!c.modules || c.modules.length === 0) && (
+                                                        <span className="text-[10px] text-slate-400 font-semibold italic">Aucun module pour l&apos;instant</span>
                                                     )}
                                                 </div>
                                             </div>

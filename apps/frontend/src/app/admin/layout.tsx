@@ -95,6 +95,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { name: 'Certifications', href: '/admin/certifications', icon: Award },
         { name: 'Gestion des Cours', href: '/admin/courses', icon: BookOpen },
         { name: 'Ressources', href: '/admin/resources', icon: DownloadCloud },
+        { name: 'Historique Téléchargements', href: '/admin/downloads', icon: DownloadCloud },
         { name: 'Simulations', href: '/admin/simulations', icon: Activity },
       ]
     },
@@ -138,9 +139,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (pathname === '/admin/courses') {
       return { title: 'Gestion des Cours', subtitle: 'Catalogue global de cours de la plateforme' };
     }
-    if (pathname === '/admin/downloads') {
-      return { title: 'Ressources Téléchargeables', subtitle: 'Gestion des fiches et quotas' };
-    }
+        if (pathname === '/admin/downloads') {
+            return { title: 'Historique des Téléchargements', subtitle: 'Suivi de tous les téléchargements effectués sur la plateforme' };
+        }
     if (pathname === '/admin/resources') {
       return { title: 'Ressources', subtitle: 'Supports de cours, documentations et fichiers pédagogiques' };
     }

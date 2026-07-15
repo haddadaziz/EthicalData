@@ -30,13 +30,15 @@ export default function NotificationBell() {
       setNotifications(data.notifications || []);
       setUnreadCount(data.unreadCount || 0);
     } catch (err) {
-      console.error("Erreur chargement notifications:", err);
+      // Silencieux : utilisateur non connecté ou token expiré
     }
   };
 
   useEffect(() => {
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 15000);
+    let interval: ReturnType<typeof setInterval>;
+    fetchNotifications().finally(() => {
+      interval = setInterval(fetchNotifications, 30000);
+    });
     return () => clearInterval(interval);
   }, []);
 

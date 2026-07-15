@@ -10,7 +10,9 @@ import {
   Delete,
   Req,
   Query,
+  Res,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -100,7 +102,18 @@ export class UsersController {
   // POST /users/become-trainer -> Devenir Formateur
   @UseGuards(JwtAuthGuard)
   @Post('become-trainer')
-  async becomeTrainer(@Req() req: any) {
-    return this.usersService.becomeTrainer(req.user.id);
+  async becomeTrainer(@Req() req: any, @Res({ passthrough: true }) res: Response) {
+    const result = await this.usersService.becomeTrainer(req.user.id);
+
+    const isProd = process.env.NODE_ENV === 'production';
+    res.cookie('token', result.access_token, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 24 * 60 * 60,
+    });
+
+    return result;
   }
 }

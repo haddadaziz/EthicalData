@@ -13,6 +13,10 @@ import { CreateQuestionDto } from './dto/create-question.dto';
 import { CreateRessourceDto } from './dto/create-ressource.dto';
 import { AiService } from './ai.service';
 import { TypeRessource } from '@prisma/client';
+import { CreateCategorieDto } from './dto/create-categorie.dto';
+import { UpdateCategorieDto } from './dto/update-categorie.dto';
+import { CreateModuleCertificationDto } from './dto/create-module-certification.dto';
+import { UpdateModuleCertificationDto } from './dto/update-module-certification.dto';
 
 @Injectable()
 export class CertificationsService {
@@ -145,11 +149,21 @@ export class CertificationsService {
   }
 
   // Récupérer toutes les certifications non supprimées
-  async findAll() {
+  async findAll(categorieSlug?: string) {
+    const where: any = { deletedAt: null };
+    if (categorieSlug) {
+      where.categorie = { slug: categorieSlug };
+    }
     const certs = await this.prisma.certification.findMany({
-      where: { deletedAt: null },
+      where,
       include: {
         fournisseur: true,
+        categorie: true,
+        modules: {
+          where: { parentId: null },
+          include: { sousModules: { orderBy: { ordre: 'asc' } } },
+          orderBy: { ordre: 'asc' },
+        },
         ressources: { where: { deletedAt: null } },
         simulations: true,
       },
@@ -165,6 +179,39 @@ export class CertificationsService {
       where: { id: BigInt(id), deletedAt: null },
       include: {
         fournisseur: true,
+        categorie: true,
+        modules: {
+          where: { parentId: null },
+          include: { sousModules: { orderBy: { ordre: 'asc' } } },
+          orderBy: { ordre: 'asc' },
+        },
+        ressources: { where: { deletedAt: null } },
+        cours: {
+          where: { statut: 'PUBLIE', deletedAt: null },
+          include: { modules: { orderBy: { ordre: 'asc' } } },
+        },
+      },
+    });
+
+    if (!cert) {
+      throw new NotFoundException("La certification demandée n'existe pas.");
+    }
+
+    return cert;
+  }
+
+  // Récupérer une certification par son slug
+  async findBySlug(slug: string) {
+    const cert = await this.prisma.certification.findFirst({
+      where: { slug, deletedAt: null },
+      include: {
+        fournisseur: true,
+        categorie: true,
+        modules: {
+          where: { parentId: null },
+          include: { sousModules: { orderBy: { ordre: 'asc' } } },
+          orderBy: { ordre: 'asc' },
+        },
         ressources: { where: { deletedAt: null } },
         cours: {
           where: { statut: 'PUBLIE', deletedAt: null },
@@ -451,6 +498,105 @@ export class CertificationsService {
       question.grilleNotation,
       reponseCandidat || '',
     );
+  }
+
+  // ==========================================
+  // GESTION DES CATEGORIES DE CERTIFICATION
+  // ==========================================
+
+  async findAllCategories() {
+    return this.prisma.categorieCertification.findMany({
+      include: {
+        _count: { select: { certifications: { where: { deletedAt: null } } } },
+      },
+      orderBy: { ordre: 'asc' },
+    });
+  }
+
+  async findOneCategory(id: number) {
+    const cat = await this.prisma.categorieCertification.findFirst({
+      where: { id: BigInt(id) },
+      include: {
+        certifications: { where: { deletedAt: null }, include: { fournisseur: true } },
+      },
+    });
+    if (!cat) throw new NotFoundException("Catégorie introuvable.");
+    return cat;
+  }
+
+  async createCategory(dto: CreateCategorieDto) {
+    const slug = this.slugify(dto.nom);
+    const existing = await this.prisma.categorieCertification.findUnique({ where: { slug } });
+    if (existing) throw new ConflictException("Cette catégorie existe déjà.");
+    return this.prisma.categorieCertification.create({
+      data: { nom: dto.nom, slug, description: dto.description, image: dto.image, ordre: dto.ordre || 0 },
+    });
+  }
+
+  async updateCategory(id: number, dto: UpdateCategorieDto) {
+    const cat = await this.prisma.categorieCertification.findFirst({ where: { id: BigInt(id) } });
+    if (!cat) throw new NotFoundException("Catégorie introuvable.");
+    const data: any = { ...dto };
+    if (dto.nom) data.slug = this.slugify(dto.nom);
+    Object.keys(data).forEach((k) => data[k] === undefined && delete data[k]);
+    return this.prisma.categorieCertification.update({ where: { id: BigInt(id) }, data });
+  }
+
+  async removeCategory(id: number) {
+    const cat = await this.prisma.categorieCertification.findFirst({
+      where: { id: BigInt(id) },
+      include: { certifications: { where: { deletedAt: null } } },
+    });
+    if (!cat) throw new NotFoundException("Catégorie introuvable.");
+    if (cat.certifications.length > 0) {
+      throw new ConflictException("Impossible de supprimer : des certifications sont rattachées à cette catégorie.");
+    }
+    await this.prisma.categorieCertification.delete({ where: { id: BigInt(id) } });
+    return { message: "Catégorie supprimée avec succès." };
+  }
+
+  // ==========================================
+  // GESTION DES MODULES DE CERTIFICATION
+  // ==========================================
+
+  async findModules(certId: number) {
+    return this.prisma.moduleCertification.findMany({
+      where: { certificationId: BigInt(certId), parentId: null },
+      include: { sousModules: { orderBy: { ordre: 'asc' } } },
+      orderBy: { ordre: 'asc' },
+    });
+  }
+
+  async createModule(certId: number, dto: CreateModuleCertificationDto) {
+    const cert = await this.prisma.certification.findFirst({ where: { id: BigInt(certId), deletedAt: null } });
+    if (!cert) throw new NotFoundException("La certification demandée n'existe pas.");
+    return this.prisma.moduleCertification.create({
+      data: {
+        titre: dto.titre,
+        description: dto.description,
+        ordre: dto.ordre || 0,
+        icon: dto.icon,
+        certificationId: BigInt(certId),
+        parentId: dto.parentId ? BigInt(dto.parentId) : null,
+      },
+    });
+  }
+
+  async updateModule(moduleId: number, dto: UpdateModuleCertificationDto) {
+    const mod = await this.prisma.moduleCertification.findFirst({ where: { id: BigInt(moduleId) } });
+    if (!mod) throw new NotFoundException("Module introuvable.");
+    const data: any = { ...dto };
+    if (dto.parentId === null) data.parentId = null;
+    else if (dto.parentId) data.parentId = BigInt(dto.parentId);
+    Object.keys(data).forEach((k) => data[k] === undefined && delete data[k]);
+    return this.prisma.moduleCertification.update({ where: { id: BigInt(moduleId) }, data });
+  }
+
+  async removeModule(moduleId: number) {
+    const mod = await this.prisma.moduleCertification.findFirst({ where: { id: BigInt(moduleId) } });
+    if (!mod) throw new NotFoundException("Module introuvable.");
+    await this.prisma.moduleCertification.delete({ where: { id: BigInt(moduleId) } });
+    return { message: "Module supprimé avec succès." };
   }
 
   // ==========================================

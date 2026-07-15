@@ -14,6 +14,7 @@ import { ResourcesModule } from './modules/resources/resources.module';
 import { SimulationsModule } from './modules/simulations/simulations.module';
 import { HealthModule } from './health/health.module';
 import { CoursModule } from './modules/cours/cours.module';
+import { ContactModule } from './modules/contact/contact.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { CoursModule } from './modules/cours/cours.module';
     NotificationsModule,
     AppointmentsModule,
     CoursModule,
+    ContactModule,
   ],
   controllers: [],
   providers: [

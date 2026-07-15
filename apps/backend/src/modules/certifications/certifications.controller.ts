@@ -20,6 +20,10 @@ import { CreateCertificationDto } from './dto/create-certification.dto';
 import { UpdateCertificationDto } from './dto/update-certification.dto';
 import { CreateFournisseurDto } from './dto/create-fournisseur.dto';
 import { UpdateFournisseurDto } from './dto/update-fournisseur.dto';
+import { CreateCategorieDto } from './dto/create-categorie.dto';
+import { UpdateCategorieDto } from './dto/update-categorie.dto';
+import { CreateModuleCertificationDto } from './dto/create-module-certification.dto';
+import { UpdateModuleCertificationDto } from './dto/update-module-certification.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -68,10 +72,59 @@ export class CertificationsController {
         return this.certificationsService.removeFournisseur(id);
     }
 
+    // ==========================================
+    // ROUTES CATEGORIES
+    // ==========================================
+
+    @Get('categories')
+    async findAllCategories() {
+        return this.certificationsService.findAllCategories();
+    }
+
+    @Get('categories/:id')
+    async findOneCategory(@Param('id', ParseIntPipe) id: number) {
+        return this.certificationsService.findOneCategory(id);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('SUPER_ADMIN')
+    @Post('categories')
+    async createCategory(@Body() dto: CreateCategorieDto) {
+        return this.certificationsService.createCategory(dto);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('SUPER_ADMIN')
+    @Patch('categories/:id')
+    async updateCategory(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() dto: UpdateCategorieDto,
+    ) {
+        return this.certificationsService.updateCategory(id, dto);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('SUPER_ADMIN', 'ADMIN')
+    @Delete('categories/:id')
+    async removeCategory(@Param('id', ParseIntPipe) id: number) {
+        return this.certificationsService.removeCategory(id);
+    }
+
+    // ==========================================
+    // ROUTES CERTIFICATIONS
+    // ==========================================
+
     // Récupérer toutes les certifications
     @Get()
-    async findAll() {
-        return this.certificationsService.findAll();
+    async findAll(@Req() req: any) {
+        const categorieSlug = req.query?.categorie as string | undefined;
+        return this.certificationsService.findAll(categorieSlug);
+    }
+
+    // Récupérer une certification par son slug (pour le frontend public)
+    @Get('slug/:slug')
+    async findBySlug(@Param('slug') slug: string) {
+        return this.certificationsService.findBySlug(slug);
     }
 
     // Récupérer une certification par son ID
@@ -106,6 +159,46 @@ export class CertificationsController {
     async remove(@Param('id', ParseIntPipe) id: number) {
         return this.certificationsService.remove(id);
     }
+
+    // ==========================================
+    // ROUTES MODULES DE CERTIFICATION
+    // ==========================================
+
+    @Get(':id/modules')
+    async findModules(@Param('id', ParseIntPipe) id: number) {
+        return this.certificationsService.findModules(id);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('SUPER_ADMIN', 'ADMIN')
+    @Post(':id/modules')
+    async createModule(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() dto: CreateModuleCertificationDto,
+    ) {
+        return this.certificationsService.createModule(id, dto);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('SUPER_ADMIN', 'ADMIN')
+    @Patch('modules/:moduleId')
+    async updateModule(
+        @Param('moduleId', ParseIntPipe) moduleId: number,
+        @Body() dto: UpdateModuleCertificationDto,
+    ) {
+        return this.certificationsService.updateModule(moduleId, dto);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('SUPER_ADMIN', 'ADMIN')
+    @Delete('modules/:moduleId')
+    async removeModule(@Param('moduleId', ParseIntPipe) moduleId: number) {
+        return this.certificationsService.removeModule(moduleId);
+    }
+
+    // ==========================================
+    // ROUTES QUESTIONS / STATS
+    // ==========================================
 
     // Récupérer les statistiques des examens de l'utilisateur connecté
     @UseGuards(JwtAuthGuard)

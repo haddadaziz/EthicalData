@@ -15,7 +15,7 @@ import { EventsSection } from '@/components/landing/EventsSection';
 import { PartnersSection } from '@/components/landing/PartnersSection';
 import { FaqSection } from '@/components/landing/FaqSection';
 import { ContactSection } from '@/components/landing/ContactSection';
-import { CertificationModal } from '@/components/landing/CertificationModal';
+
 
 const cleanTitle = (nom: string, code: string) => {
   if (!code || !nom) return nom;
@@ -77,7 +77,6 @@ export default function LandingPage() {
   const lastScrollY = useRef(0);
 
   const [realCertifications, setRealCertifications] = useState<any[]>([]);
-  const [selectedCourse, setSelectedCourse] = useState<any>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -146,7 +145,6 @@ export default function LandingPage() {
       <CertificationsSection 
         realCertifications={realCertifications} 
         courses={courses} 
-        setSelectedCourse={setSelectedCourse} 
         cleanTitle={cleanTitle} 
       />
       
@@ -157,13 +155,6 @@ export default function LandingPage() {
       <FaqSection />
       <ContactSection />
       <Footer />
-
-      <CertificationModal 
-        selectedCourse={selectedCourse}
-        setSelectedCourse={setSelectedCourse}
-        isConnected={isConnected}
-        cleanTitle={cleanTitle}
-      />
     </main>
   );
 }

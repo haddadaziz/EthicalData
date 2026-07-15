@@ -56,6 +56,7 @@ export default function LearnerCertificationsPage() {
   const [selectedLevel, setSelectedLevel] = useState<'TOUS' | 'DEBUTANT' | 'INTERMEDIAIRE' | 'AVANCE'>('TOUS');
   const [selectedProvider, setSelectedProvider] = useState<string>('TOUS');
   const [providerDropdownOpen, setProviderDropdownOpen] = useState(false);
+  const [levelDropdownOpen, setLevelDropdownOpen] = useState(false);
   const [onlyTargeted, setOnlyTargeted] = useState(false);
 
   // Pagination
@@ -192,91 +193,124 @@ export default function LearnerCertificationsPage() {
           </div>
         </div>
 
-        {/* Filtres par Niveau et Fournisseur */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-slate-100 pt-4">
-          <div className="space-y-2.5 text-left">
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Par Niveau</span>
-            <div className="flex flex-wrap gap-2">
-              {[
-                { val: 'TOUS', label: 'Tous' },
-                { val: 'DEBUTANT', label: 'Débutant' },
-                { val: 'INTERMEDIAIRE', label: 'Intermédiaire' },
-                { val: 'AVANCE', label: 'Avancé' }
-              ].map((niv) => (
+        {/* Filtres */}
+        <div className="pt-4 border-t border-slate-100">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            {/* Niveau */}
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 shrink-0 w-[92px] text-right">Niveau :</span>
+              <div className="relative w-full sm:w-52">
                 <button
-                  key={niv.val}
-                  onClick={() => setSelectedLevel(niv.val as any)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    selectedLevel === niv.val
-                      ? 'bg-slate-950 text-white shadow-sm'
-                      : 'bg-slate-50 border border-slate-200/80 hover:border-slate-300 text-slate-600'
-                  }`}
+                  type="button"
+                  onClick={() => setLevelDropdownOpen(!levelDropdownOpen)}
+                  className="flex items-center gap-2.5 px-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-xs font-bold outline-none cursor-pointer hover:bg-slate-100 transition-all w-full"
                 >
-                  {niv.label}
+                  <span className="flex-1 text-left truncate">
+                    {selectedLevel === 'TOUS' ? 'Tous les niveaux' : selectedLevel === 'DEBUTANT' ? 'Débutant' : selectedLevel === 'INTERMEDIAIRE' ? 'Intermédiaire' : 'Avancé'}
+                  </span>
+                  <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${levelDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
-              ))}
-            </div>
-          </div>
 
-          <div className="space-y-2.5 text-left">
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Par Partenaire / Fournisseur</span>
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setProviderDropdownOpen(!providerDropdownOpen)}
-                className="flex items-center gap-2.5 px-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-xs font-bold outline-none cursor-pointer hover:bg-slate-100 transition-all min-w-[200px]"
-              >
-                {selectedProvider !== 'TOUS' && getProviderLogo(fournisseurs.find((f: any) => f.id === selectedProvider)?.slug || '') && (
-                  <img src={getProviderLogo(fournisseurs.find((f: any) => f.id === selectedProvider)?.slug || '')} alt="" className="w-5 h-5 object-contain rounded shrink-0" />
-                )}
-                <span className="flex-1 text-left truncate">
-                  {selectedProvider === 'TOUS' ? 'Tous les constructeurs' : fournisseurs.find((f: any) => f.id === selectedProvider)?.nom || 'Sélectionner'}
-                </span>
-                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${providerDropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
-
-              {providerDropdownOpen && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setProviderDropdownOpen(false)} />
-                  <div className="absolute top-full left-0 mt-1.5 z-50 w-72 bg-white border border-slate-200/80 rounded-2xl shadow-xl overflow-hidden">
-                    <button
-                      onClick={() => { setSelectedProvider('TOUS'); setProviderDropdownOpen(false); }}
-                      className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
-                        selectedProvider === 'TOUS' ? 'bg-slate-100 text-slate-950' : 'text-slate-600'
-                      }`}
-                    >
-                      <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
-                        <Award className="w-4 h-4 text-slate-500" />
-                      </div>
-                      <span className="truncate">Tous les constructeurs</span>
-                    </button>
-                    <div className="border-t border-slate-100" />
-                    <div className="max-h-64 overflow-y-auto">
-                      {fournisseurs.map((f: any) => {
-                        const logo = getProviderLogo(f.slug || f.nom || '');
-                        return (
-                          <button
-                            key={f.id}
-                            onClick={() => { setSelectedProvider(f.id); setProviderDropdownOpen(false); }}
-                            className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
-                              selectedProvider === f.id ? 'bg-slate-100 text-slate-950' : 'text-slate-600'
-                            }`}
-                          >
-                            {logo ? (
-                              <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0" />
-                            ) : (
-                              <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
-                                <Award className="w-4 h-4 text-slate-500" />
-                              </div>
-                            )}
-                            <span className="block truncate font-bold">{f.nom}</span>
-                          </button>
-                        );
-                      })}
+                {levelDropdownOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setLevelDropdownOpen(false)} />
+                    <div className="absolute top-full left-0 mt-1.5 z-50 w-full bg-white border border-slate-200/80 rounded-2xl shadow-xl overflow-hidden">
+                      {[
+                        { val: 'TOUS', label: 'Tous les niveaux' },
+                        { val: 'DEBUTANT', label: 'Débutant' },
+                        { val: 'INTERMEDIAIRE', label: 'Intermédiaire' },
+                        { val: 'AVANCE', label: 'Avancé' }
+                      ].map((niv) => (
+                        <button
+                          key={niv.val}
+                          onClick={() => { setSelectedLevel(niv.val as any); setLevelDropdownOpen(false); }}
+                          className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
+                            selectedLevel === niv.val ? 'bg-slate-100 text-slate-950' : 'text-slate-600'
+                          }`}
+                        >
+                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                            niv.val === 'TOUS' ? 'bg-slate-100' :
+                            niv.val === 'DEBUTANT' ? 'bg-emerald-50' :
+                            niv.val === 'INTERMEDIAIRE' ? 'bg-amber-50' : 'bg-rose-50'
+                          }`}>
+                            <span className={`text-[9px] font-black uppercase ${
+                              niv.val === 'TOUS' ? 'text-slate-500' :
+                              niv.val === 'DEBUTANT' ? 'text-emerald-600' :
+                              niv.val === 'INTERMEDIAIRE' ? 'text-amber-600' : 'text-rose-600'
+                            }`}>
+                              {niv.val === 'TOUS' ? 'T' : niv.val === 'DEBUTANT' ? 'D' : niv.val === 'INTERMEDIAIRE' ? 'I' : 'A'}
+                            </span>
+                          </div>
+                          <span className="truncate">{niv.label}</span>
+                        </button>
+                      ))}
                     </div>
-                  </div>
-                </>
-              )}
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Fournisseur */}
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 shrink-0 w-[92px] text-right">Fournisseur :</span>
+              <div className="relative w-full sm:w-52">
+                <button
+                  type="button"
+                  onClick={() => setProviderDropdownOpen(!providerDropdownOpen)}
+                  className="flex items-center gap-2.5 px-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-xs font-bold outline-none cursor-pointer hover:bg-slate-100 transition-all w-full"
+                >
+                  {selectedProvider !== 'TOUS' && getProviderLogo(fournisseurs.find((f: any) => f.id === selectedProvider)?.slug || '') && (
+                    <img src={getProviderLogo(fournisseurs.find((f: any) => f.id === selectedProvider)?.slug || '')} alt="" className="w-5 h-5 object-contain rounded shrink-0" />
+                  )}
+                  <span className="flex-1 text-left truncate">
+                    {selectedProvider === 'TOUS' ? 'Tous les constructeurs' : fournisseurs.find((f: any) => f.id === selectedProvider)?.nom || 'Sélectionner'}
+                  </span>
+                  <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${providerDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {providerDropdownOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setProviderDropdownOpen(false)} />
+                    <div className="absolute top-full left-0 mt-1.5 z-50 w-full bg-white border border-slate-200/80 rounded-2xl shadow-xl overflow-hidden">
+                      <button
+                        onClick={() => { setSelectedProvider('TOUS'); setProviderDropdownOpen(false); }}
+                        className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
+                          selectedProvider === 'TOUS' ? 'bg-slate-100 text-slate-950' : 'text-slate-600'
+                        }`}
+                      >
+                        <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                          <Award className="w-4 h-4 text-slate-500" />
+                        </div>
+                        <span className="truncate">Tous les constructeurs</span>
+                      </button>
+                      <div className="border-t border-slate-100" />
+                      <div className="max-h-64 overflow-y-auto">
+                        {fournisseurs.map((f: any) => {
+                          const logo = getProviderLogo(f.slug || f.nom || '');
+                          return (
+                            <button
+                              key={f.id}
+                              onClick={() => { setSelectedProvider(f.id); setProviderDropdownOpen(false); }}
+                              className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
+                                selectedProvider === f.id ? 'bg-slate-100 text-slate-950' : 'text-slate-600'
+                              }`}
+                            >
+                              {logo ? (
+                                <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0" />
+                              ) : (
+                                <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                  <Award className="w-4 h-4 text-slate-500" />
+                                </div>
+                              )}
+                              <span className="block truncate font-bold">{f.nom}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>

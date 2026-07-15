@@ -67,6 +67,37 @@ model Fournisseur {
   @@map("fournisseurs")
 }
 
+model CategorieCertification {
+  id             BigInt          @id @default(autoincrement())
+  nom            String
+  slug           String          @unique
+  description    String?         @db.Text
+  image          String?
+  ordre          Int             @default(0)
+  certifications Certification[]
+
+  @@map("categories_certifications")
+}
+
+model ModuleCertification {
+  id              BigInt               @id @default(autoincrement())
+  titre           String
+  description     String?              @db.Text
+  ordre           Int                  @default(0)
+  icon            String?
+
+  certificationId BigInt
+  certification   Certification        @relation(fields: [certificationId], references: [id], onDelete: Cascade)
+
+  parentId        BigInt?
+  parent          ModuleCertification?  @relation("SousModules", fields: [parentId], references: [id], onDelete: Cascade)
+  sousModules     ModuleCertification[] @relation("SousModules")
+
+  @@index([certificationId, ordre])
+  @@index([parentId])
+  @@map("modules_certification")
+}
+
 model Certification {
   id              BigInt    @id @default(autoincrement())
   nom             String
@@ -88,10 +119,15 @@ model Certification {
   cours         Cours[]
   simulations   Simulation[]
 
+  categorieId BigInt?
+  categorie   CategorieCertification? @relation(fields: [categorieId], references: [id], onDelete: SetNull)
+  modules     ModuleCertification[]
+
   // Relations forum
   sujets Sujet[]
 
   @@index([fournisseurId, deletedAt])
+  @@index([categorieId])
   @@map("certifications")
 }
 
@@ -470,6 +506,18 @@ enum Niveau {
   DEBUTANT
   INTERMEDIAIRE
   AVANCE
+}
+
+model ContactMessage {
+  id        BigInt   @id @default(autoincrement())
+  nom       String
+  email     String
+  sujet     String
+  message   String   @db.Text
+  lu        Boolean  @default(false)
+  dateCreation DateTime @default(now()) @map("date_creation")
+
+  @@map("contact_messages")
 }
 
 enum TypeRendezVous {

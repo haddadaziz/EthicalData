@@ -7,11 +7,10 @@ import { getCertificateBadgeLogo } from '../../lib/certification-utils';
 interface CertificationsSectionProps {
   realCertifications: any[];
   courses: any[];
-  setSelectedCourse: (course: any) => void;
   cleanTitle: (nom: string, code: string) => string;
 }
 
-export function CertificationsSection({ realCertifications, courses, setSelectedCourse, cleanTitle }: CertificationsSectionProps) {
+export function CertificationsSection({ realCertifications, courses, cleanTitle }: CertificationsSectionProps) {
   const catalogCourses = realCertifications.length > 0
     ? realCertifications.map(c => ({
         id: c.id,
@@ -52,8 +51,8 @@ export function CertificationsSection({ realCertifications, courses, setSelected
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {displayedCourses.map((cert, idx) => (
           <AnimatedSection key={idx} delay={idx * 0.08}>
-            <div 
-              onClick={() => setSelectedCourse(cert)}
+            <Link
+              href={`/certifications/${cert.slug}`}
               className="flex flex-col group cursor-pointer"
             >
               <div className="relative w-full h-[340px] rounded-xl overflow-hidden shadow-lg transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-blue-900/30 group-hover:shadow-2xl">
@@ -88,7 +87,7 @@ export function CertificationsSection({ realCertifications, courses, setSelected
                   </div>
                 </div>
               </div>
-            </div>
+            </Link>
           </AnimatedSection>
         ))}
       </div>

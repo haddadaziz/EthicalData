@@ -25,6 +25,7 @@ export default function RegisterPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [passwordError, setPasswordError] = useState<string | null>(null);
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const mouseRef = useRef({ x: 0, y: 0, active: false });
@@ -176,11 +177,29 @@ export default function RegisterPage() {
         };
     }, []);
 
+    const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d\s]).{8,}$/;
+
+    const getPasswordStrength = (pw: string): { label: string; color: string; width: string } => {
+        const checks = [/[a-z]/, /[A-Z]/, /\d/, /[^A-Za-z\d\s]/, /.{8,}/];
+        const passed = checks.filter((r) => r.test(pw)).length;
+        if (passed <= 1) return { label: 'Faible', color: 'bg-red-500', width: 'w-1/5' };
+        if (passed <= 3) return { label: 'Moyen', color: 'bg-orange-500', width: 'w-2/5' };
+        if (passed <= 4) return { label: 'Bon', color: 'bg-yellow-500', width: 'w-3/5' };
+        return { label: 'Fort', color: 'bg-green-500', width: 'w-full' };
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
         setSuccessMessage(null);
+        setPasswordError(null);
+
+        if (!PASSWORD_REGEX.test(password)) {
+            setPasswordError('8 caractères min, 1 majuscule, 1 minuscule, 1 chiffre, 1 caractère spécial');
+            setLoading(false);
+            return;
+        }
 
         try {
             const data = await apiFetch('/auth/register', {
@@ -307,6 +326,19 @@ export default function RegisterPage() {
                                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                 </button>
                             </div>
+                            {password && (
+                                <div className="mt-2 space-y-1">
+                                    <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+                                        <div className={`h-full rounded-full transition-all duration-300 ${getPasswordStrength(password).color} ${getPasswordStrength(password).width}`} />
+                                    </div>
+                                    <p className="text-[10px] font-semibold text-slate-400">
+                                        Force : <span className="text-slate-600">{getPasswordStrength(password).label}</span>
+                                    </p>
+                                </div>
+                            )}
+                            {passwordError && (
+                                <p className="mt-1 text-[10px] font-semibold text-red-500">{passwordError}</p>
+                            )}
                         </div>
 
                         <button

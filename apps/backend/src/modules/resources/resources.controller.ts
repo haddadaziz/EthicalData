@@ -8,6 +8,7 @@ import {
     ParseIntPipe,
     Patch,
     Post,
+    Query,
     Req,
     UseGuards,
 } from '@nestjs/common';
@@ -64,5 +65,30 @@ export class ResourcesController {
     @UseGuards(JwtAuthGuard)
     async getUserResourceQuotas(@Req() req: any) {
         return this.resourcesService.getUserResourceQuotas(req.user.id);
+    }
+
+    @Get('me/historique')
+    @UseGuards(JwtAuthGuard)
+    async getUserDownloadHistory(@Req() req: any) {
+        return this.resourcesService.getUserDownloadHistory(req.user.id);
+    }
+
+    @Get('admin/historique')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('SUPER_ADMIN', 'ADMIN')
+    async getAllDownloadHistory(
+        @Query('page') page: string = '1',
+        @Query('limit') limit: string = '20',
+        @Query('search') search?: string,
+        @Query('type') type?: string,
+        @Query('userId') userId?: string,
+    ) {
+        return this.resourcesService.getAllDownloadHistory({
+            page: parseInt(page),
+            limit: parseInt(limit),
+            search,
+            type,
+            userId,
+        });
     }
 }

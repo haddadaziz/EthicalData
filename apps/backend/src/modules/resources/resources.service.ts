@@ -115,7 +115,7 @@ export class ResourcesService {
         return { message: 'Ressource supprimée avec succès.' };
     }
 
-    // 5. Télécharger un document avec vérification de quota
+    // 5. Télécharger un document avec vérification de quota et règles anti-partage
     async downloadRessource(userId: number, resourceId: number, ipAddress: string) {
         const resource = await this.prisma.ressource.findFirst({
             where: { id: BigInt(resourceId), deletedAt: null },
@@ -125,6 +125,7 @@ export class ResourcesService {
             throw new NotFoundException("La ressource demandée n'existe pas.");
         }
 
+        // ─── Vérification du quota ────────────────────────────────────────
         if (!resource.public) {
             const quota = resource.quotaTelechargement ?? 10;
             const downloadCount = await this.prisma.telechargement.count({
@@ -141,6 +142,56 @@ export class ResourcesService {
             }
         }
 
+        // ─── Règles anti-partage ──────────────────────────────────────────
+
+        // 1. Rate limiting : max 15 téléchargements par heure
+        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+        const recentCount = await this.prisma.telechargement.count({
+            where: {
+                utilisateurId: BigInt(userId),
+                date: { gte: oneHourAgo },
+            },
+        });
+        if (recentCount >= 15) {
+            throw new ForbiddenException(
+                'Vous avez atteint la limite de 15 téléchargements par heure. Veuillez réessayer plus tard.',
+            );
+        }
+
+        // 2. Détection de partage de compte : plus de 3 IP différentes en 24h
+        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        const recentIps = await this.prisma.telechargement.findMany({
+            where: {
+                utilisateurId: BigInt(userId),
+                date: { gte: oneDayAgo },
+                ip: { not: null },
+            },
+            select: { ip: true },
+            distinct: ['ip'],
+        });
+        const uniqueIps = new Set(recentIps.map((d) => d.ip).filter(Boolean));
+        if (uniqueIps.size >= 3 && !uniqueIps.has(ipAddress)) {
+            throw new ForbiddenException(
+                'Tentative de téléchargement depuis un nouvel appareil détectée. ' +
+                'Pour des raisons de sécurité, veuillez vérifier votre compte ou contacter le support.',
+            );
+        }
+
+        // 3. Anti-flood : pas plus de 5 téléchargements en 1 minute
+        const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
+        const rapidCount = await this.prisma.telechargement.count({
+            where: {
+                utilisateurId: BigInt(userId),
+                date: { gte: oneMinuteAgo },
+            },
+        });
+        if (rapidCount >= 5) {
+            throw new ForbiddenException(
+                'Trop de téléchargements rapides détectés. Veuillez patienter avant de continuer.',
+            );
+        }
+
+        // ─── Enregistrement du téléchargement ─────────────────────────────
         await this.prisma.telechargement.create({
             data: {
                 ressourceId: BigInt(resourceId),
@@ -155,7 +206,159 @@ export class ResourcesService {
         };
     }
 
-    // 6. Récupérer les quotas de l'utilisateur
+    // 7. Récupérer l'historique des téléchargements de l'utilisateur connecté
+    async getUserDownloadHistory(userId: number) {
+        const history = await this.prisma.telechargement.findMany({
+            where: { utilisateurId: BigInt(userId) },
+            include: {
+                ressource: {
+                    select: {
+                        id: true,
+                        titre: true,
+                        type: true,
+                        url: true,
+                        taille: true,
+                        certification: {
+                            select: { id: true, nom: true, slug: true, codeExamen: true },
+                        },
+                        cours: {
+                            select: { id: true, titre: true },
+                        },
+                    },
+                },
+            },
+            orderBy: { date: 'desc' },
+        });
+
+        return history.map((h) => ({
+            id: h.id.toString(),
+            date: h.date,
+            ip: h.ip,
+            ressource: {
+                id: h.ressource.id.toString(),
+                titre: h.ressource.titre,
+                type: h.ressource.type,
+                url: h.ressource.url,
+                taille: h.ressource.taille,
+                certification: h.ressource.certification
+                    ? {
+                        id: h.ressource.certification.id.toString(),
+                        nom: h.ressource.certification.nom,
+                        slug: h.ressource.certification.slug,
+                        codeExamen: h.ressource.certification.codeExamen,
+                    }
+                    : null,
+                cours: h.ressource.cours
+                    ? {
+                        id: h.ressource.cours.id.toString(),
+                        titre: h.ressource.cours.titre,
+                    }
+                    : null,
+            },
+        }));
+    }
+
+    // 8. Récupérer l'historique complet des téléchargements (admin)
+    async getAllDownloadHistory(options: {
+        page: number;
+        limit: number;
+        search?: string;
+        type?: string;
+        userId?: string;
+    }) {
+        const { page, limit, search, type, userId } = options;
+        const skip = (page - 1) * limit;
+
+        const where: any = {};
+        if (search) {
+            where.ressource = {
+                titre: { contains: search },
+            };
+        }
+        if (type) {
+            where.ressource = {
+                ...where.ressource,
+                type: type as any,
+            };
+        }
+        if (userId) {
+            where.utilisateurId = BigInt(userId);
+        }
+
+        const [total, data] = await Promise.all([
+            this.prisma.telechargement.count({ where }),
+            this.prisma.telechargement.findMany({
+                where,
+                include: {
+                    ressource: {
+                        select: {
+                            id: true,
+                            titre: true,
+                            type: true,
+                            taille: true,
+                            certification: {
+                                select: { id: true, nom: true, slug: true, codeExamen: true },
+                            },
+                            cours: {
+                                select: { id: true, titre: true },
+                            },
+                        },
+                    },
+                    utilisateur: {
+                        select: {
+                            id: true,
+                            prenom: true,
+                            nom: true,
+                            email: true,
+                        },
+                    },
+                },
+                orderBy: { date: 'desc' },
+                skip,
+                take: limit,
+            }),
+        ]);
+
+        return {
+            data: data.map((h) => ({
+                id: h.id.toString(),
+                date: h.date,
+                ip: h.ip,
+                ressource: {
+                    id: h.ressource.id.toString(),
+                    titre: h.ressource.titre,
+                    type: h.ressource.type,
+                    taille: h.ressource.taille,
+                    certification: h.ressource.certification
+                        ? {
+                            id: h.ressource.certification.id.toString(),
+                            nom: h.ressource.certification.nom,
+                            slug: h.ressource.certification.slug,
+                            codeExamen: h.ressource.certification.codeExamen,
+                        }
+                        : null,
+                    cours: h.ressource.cours
+                        ? {
+                            id: h.ressource.cours.id.toString(),
+                            titre: h.ressource.cours.titre,
+                        }
+                        : null,
+                },
+                utilisateur: {
+                    id: h.utilisateur.id.toString(),
+                    prenom: h.utilisateur.prenom,
+                    nom: h.utilisateur.nom,
+                    email: h.utilisateur.email,
+                },
+            })),
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit),
+        };
+    }
+
+    // 6. Récupérer les quotas de l'utilisateur (gardé)
     async getUserResourceQuotas(userId: number) {
         const resources = await this.prisma.ressource.findMany({
             where: { deletedAt: null, public: false },

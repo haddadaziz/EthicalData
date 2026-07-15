@@ -271,8 +271,297 @@ async function main() {
         },
     });
 
-    // 7. Questions d'examen réelles (QCM, Vrai/Faux, Ouvertes & Cas Pratiques avec IA)
-    console.log('❓ Ajout des questions de simulation réelles & banque d\'évaluation IA...');
+    // 7. Categories des certifications
+    console.log('📂 Creation des categories...');
+    const categoriesData = [
+        { nom: 'Cloud Computing', slug: 'cloud-computing', description: 'CertificationsCloud (AWS, Azure, GCP)', ordre: 1 },
+        { nom: 'Cybersecurite', slug: 'cybersecurite', description: 'Certifications en securite informatique', ordre: 2 },
+        { nom: 'Data & IA', slug: 'data-ia', description: 'Certifications Data, Big Data et Intelligence Artificielle', ordre: 3 },
+        { nom: 'Reseau & Infrastructure', slug: 'reseau-infrastructure', description: 'Certifications reseau et infrastructure IT', ordre: 4 },
+        { nom: 'DevOps & Agilite', slug: 'devops-agilite', description: 'Certifications DevOps, CI/CD et methodologies agiles', ordre: 5 },
+    ];
+    const createdCategories: any[] = [];
+    for (const c of categoriesData) {
+        const cat = await prisma.categorieCertification.upsert({
+            where: { slug: c.slug },
+            update: {},
+            create: c,
+        });
+        createdCategories.push(cat);
+    }
+
+    const cloudCat = createdCategories.find(c => c.slug === 'cloud-computing');
+    const cyberCat = createdCategories.find(c => c.slug === 'cybersecurite');
+
+    // Lier les certifications aux categories
+    if (cloudCat) {
+        await prisma.certification.update({ where: { id: certAz900.id }, data: { categorieId: cloudCat.id } });
+        await prisma.certification.update({ where: { id: certAws.id }, data: { categorieId: cloudCat.id } });
+        await prisma.certification.update({ where: { id: certAwsCp.id }, data: { categorieId: cloudCat.id } });
+        await prisma.certification.update({ where: { id: certGcpDigitalLeader.id }, data: { categorieId: cloudCat.id } });
+    }
+    if (cyberCat) {
+        await prisma.certification.update({ where: { id: certSecurity.id }, data: { categorieId: cyberCat.id } });
+    }
+
+    // 8. Modules de certification (AZ-900)
+    console.log('📚 Creation des modules de certification...');
+    const modulesAz900 = [
+        {
+            titre: 'Jour 1 : Concepts fondamentaux du cloud',
+            description: 'Comprendre les bases du cloud computing et les modeles de service',
+            ordre: 1,
+            sousModules: [
+                'Introduction au cloud computing',
+                'Modeles de service : IaaS, PaaS, SaaS',
+                'Modeles de deploiement : public, prive, hybride',
+                'Avantages du cloud : scalabilite, elasticite, haute disponibilite',
+                'Le modele de responsabilite partagee',
+            ],
+        },
+        {
+            titre: 'Jour 2 : Securite dans le cloud Azure',
+            description: 'Maitriser les concepts de securite et de gouvernance Azure',
+            ordre: 2,
+            sousModules: [
+                'Azure Security Center et Microsoft Defender',
+                'Gestion des identites avec Microsoft Entra ID',
+                'Azure Policy et RBAC (controle d\'acces)',
+                'Chiffrement des donnees au repos et en transit',
+                'Azure Key Vault et gestion des secrets',
+            ],
+        },
+        {
+            titre: 'Jour 3 : Services Azure principaux',
+            description: 'Decouvrir les services de calcul, stockage, reseau et base de donnees',
+            ordre: 3,
+            sousModules: [
+                'Calcul : Machines Virtuelles, App Services, Functions',
+                'Stockage : Blob, Disk, Files, Archive',
+                'Reseau : VNet, Load Balancer, VPN Gateway',
+                'Base de donnees : Azure SQL, Cosmos DB',
+                'Azure Marketplace et solutions pre-construites',
+            ],
+        },
+        {
+            titre: 'Jour 4 : Gestion des couts et support Azure',
+            description: 'Optimiser les depenses et maitriser les outils de gestion',
+            ordre: 4,
+            sousModules: [
+                'Azure Pricing Calculator et TCO Calculator',
+                'Azure Cost Management + Billing',
+                'Reservations et Azure Hybrid Benefit',
+                'Plans de support Azure',
+                'Service Level Agreements (SLA) et disponibilite',
+            ],
+        },
+        {
+            titre: 'Jour 5 : Gouvernance et conformite',
+            description: 'Appliquer les bonnes pratiques de gouvernance Azure',
+            ordre: 5,
+            sousModules: [
+                'Azure Blueprints et initiatives',
+                'Management Groups et subscriptions',
+                'Azure Policy en profondeur',
+                'Conformite : Azure Compliance Center',
+                'Azure Monitor et alerts',
+            ],
+        },
+        {
+            titre: 'Jour 6 : Revision et examens blancs',
+            description: 'Reviser et se preparer a l\'examen officiel AZ-900',
+            ordre: 6,
+            sousModules: [
+                'Resume des concepts cles',
+                'Questions types et pieges de l\'examen',
+                'Simulation d\'examen blanc (30 questions)',
+                'Analyse des resultats et axes d\'amelioration',
+                'Conseils pour le jour de l\'examen',
+            ],
+        },
+    ];
+
+    for (const modData of modulesAz900) {
+        const parent = await prisma.moduleCertification.create({
+            data: {
+                titre: modData.titre,
+                description: modData.description,
+                ordre: modData.ordre,
+                certificationId: certAz900.id,
+            },
+        });
+        for (let i = 0; i < modData.sousModules.length; i++) {
+            await prisma.moduleCertification.create({
+                data: {
+                    titre: modData.sousModules[i],
+                    ordre: i + 1,
+                    certificationId: certAz900.id,
+                    parentId: parent.id,
+                },
+            });
+        }
+    }
+
+    // Modules AWS SAA-C03
+    const modulesAwsSaa = [
+        {
+            titre: 'Jour 1 : Fondamentaux de l\'architecture AWS',
+            description: 'Comprendre les principes de base de l\'architecture cloud AWS',
+            ordre: 1,
+            sousModules: [
+                'Le Well-Architected Framework : les 6 piliers',
+                'Regions, Zones de disponibilite et Edge Locations',
+                'AWS Global Infrastructure',
+                'Modeles de conception : microservices, monolithe, serverless',
+                'AWS Organizations et gestion multi-comptes',
+            ],
+        },
+        {
+            titre: 'Jour 2 : Calcul et mise a l\'echelle',
+            description: 'Maitriser les services de calcul AWS',
+            ordre: 2,
+            sousModules: [
+                'EC2 : types d\'instances, placement groups, dedicated hosts',
+                'Auto Scaling : policies, health checks, lifecycle hooks',
+                'Elastic Load Balancing : ALB, NLB, Gateway LB',
+                'AWS Lambda et serverless computing',
+                'Elastic Beanstalk et conteneurs (ECS, EKS, Fargate)',
+            ],
+        },
+        {
+            titre: 'Jour 3 : Stockage et bases de donnees',
+            description: 'Choisir et optimiser les solutions de stockage AWS',
+            ordre: 3,
+            sousModules: [
+                'S3 : classes de stockage, versioning, lifecycle policies',
+                'EBS : types de volumes, snapshots, encryption',
+                'EFS et FSx : stockage de fichiers partage',
+                'RDS : Multi-AZ, Read Replicas, Aurora',
+                'DynamoDB : tables globales, DAX, auto-scaling',
+            ],
+        },
+        {
+            titre: 'Jour 4 : Reseau et securite',
+            description: 'Concevoir une architecture reseau securisee sur AWS',
+            ordre: 4,
+            sousModules: [
+                'VPC : subnets, route tables, NAT Gateway, VPC Peering',
+                'Security Groups vs NACLs',
+                'AWS WAF, Shield, Network Firewall',
+                'Site-to-Site VPN et Direct Connect',
+                'AWS PrivateLink et VPC Endpoints',
+            ],
+        },
+        {
+            titre: 'Jour 5 : Optimisation des couts et performance',
+            description: 'Maitriser les strategies d\'optimisation AWS',
+            ordre: 5,
+            sousModules: [
+                'AWS Pricing Calculator et Cost Explorer',
+                'Reserved Instances et Savings Plans',
+                'Strategies de migration cloud',
+                'AWS Trusted Advisor et Well-Architected Tool',
+                'AWS CloudFormation et Infrastructure as Code',
+            ],
+        },
+    ];
+
+    for (const modData of modulesAwsSaa) {
+        const parent = await prisma.moduleCertification.create({
+            data: {
+                titre: modData.titre,
+                description: modData.description,
+                ordre: modData.ordre,
+                certificationId: certAws.id,
+            },
+        });
+        for (let i = 0; i < modData.sousModules.length; i++) {
+            await prisma.moduleCertification.create({
+                data: {
+                    titre: modData.sousModules[i],
+                    ordre: i + 1,
+                    certificationId: certAws.id,
+                    parentId: parent.id,
+                },
+            });
+        }
+    }
+
+    // Modules Security+ SY0-701
+    const modulesSecurityPlus = [
+        {
+            titre: 'Jour 1 : Menaces, attaques et vulnrabilites',
+            description: 'Identifier les principales menaces et techniques d\'attaque',
+            ordre: 1,
+            sousModules: [
+                'Types de malwares et vecteurs d\'infection',
+                'Attaques sociales : phishing, pretexting, tailgating',
+                'Attaques reseau : DDoS, MitM, DNS poisoning',
+                'Vulnerabilites des applications : injection XSS, SQLi',
+                'Indicateurs de compromission (IoC)',
+            ],
+        },
+        {
+            titre: 'Jour 2 : Architecture et conception securisees',
+            description: 'Mettre en oeuvre des architectures de securite robustes',
+            ordre: 2,
+            sousModules: [
+                'Principes de defense en profondeur',
+                'Segmentation reseau et zero trust',
+                'Securite des environnements cloud et hybrides',
+                'Embedded systems et IoT security',
+                'Securite physique et environnementale',
+            ],
+        },
+        {
+            titre: 'Jour 3 : Gestion des identites et des acces',
+            description: 'Implementer des solutions IAM completes',
+            ordre: 3,
+            sousModules: [
+                'Authentification multifacteur (MFA) et SSO',
+                'Gestion des certificats et PKI',
+                'Controle d\'acces : DAC, MAC, RBAC, ABAC',
+                'Identity Federation et LDAP',
+                'Gouvernance des identites et recertification',
+            ],
+        },
+        {
+            titre: 'Jour 4 : Reponse aux incidents et continuite',
+            description: 'Savoir reagir aux incidents et assurer la resilience',
+            ordre: 4,
+            sousModules: [
+                'Phases de la reponse aux incidents',
+                'Digital forensics et collecte de preuves',
+                'Plan de reprise d\'activite (PRA) et PCA',
+                'Sauvegardes et replication',
+                'Tests de penetration et red teaming',
+            ],
+        },
+    ];
+
+    for (const modData of modulesSecurityPlus) {
+        const parent = await prisma.moduleCertification.create({
+            data: {
+                titre: modData.titre,
+                description: modData.description,
+                ordre: modData.ordre,
+                certificationId: certSecurity.id,
+            },
+        });
+        for (let i = 0; i < modData.sousModules.length; i++) {
+            await prisma.moduleCertification.create({
+                data: {
+                    titre: modData.sousModules[i],
+                    ordre: i + 1,
+                    certificationId: certSecurity.id,
+                    parentId: parent.id,
+                },
+            });
+        }
+    }
+
+    // 9. Questions d'examen reelles (QCM, Vrai/Faux, Ouvertes & Cas Pratiques avec IA)
+    console.log('Question ajout des questions de simulation reelles & banque evaluation IA...');
 
     // --- QUESTIONS AZ-900 ---
     await prisma.question.create({
