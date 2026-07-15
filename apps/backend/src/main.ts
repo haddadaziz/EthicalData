@@ -12,8 +12,17 @@ import { json, urlencoded } from 'express';
     return this.toString();
 };
 
+process.on('uncaughtException', (err) => {
+  console.error('❌ UNCAUGHT EXCEPTION:', err);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('❌ UNHANDLED REJECTION:', reason);
+});
+
 async function bootstrap() {
+  console.log('⚡ Creating NestJS app...');
   const app = await NestFactory.create(AppModule, { bodyParser: false });
+  console.log('⚡ NestJS app created');
 
   // Augmenter la taille limite des requêtes pour accepter les images en Base64 (ex. 10mb)
   app.use(json({ limit: '10mb' }));
@@ -77,6 +86,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new LoggingInterceptor());
 
   const port = process.env.PORT ?? 3000;
+  console.log(`⚡ Attempting to listen on port ${port}...`);
   try {
     await app.listen(port, '0.0.0.0');
     console.log(`🚀 Serveur Backend Ethical Data prêt et sécurisé sur le port ${port}`);
