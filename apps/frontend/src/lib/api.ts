@@ -14,6 +14,11 @@ export async function apiFetch(endpoint: string, options: FetchOptions = {}) {
     headers.set('Content-Type', 'application/json');
   }
 
+  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
+
   const config: RequestInit = {
     ...options,
     headers,

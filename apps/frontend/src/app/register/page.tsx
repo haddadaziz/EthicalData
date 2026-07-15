@@ -207,6 +207,10 @@ export default function RegisterPage() {
                 body: { prenom, nom, email, motDePasse: password },
             });
 
+            if (data?.access_token) {
+                localStorage.setItem('access_token', data.access_token);
+            }
+
             setSuccessMessage('Compte créé avec succès ! Redirection...');
 
             setTimeout(() => {

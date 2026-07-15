@@ -1,6 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { RegisterDto } from './dto/register.dto';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
@@ -44,6 +46,19 @@ export class AuthService {
     };
     const token = this.jwtService.sign(payload);
     return { access_token: token };
+  }
+
+  async register(registerDto: RegisterDto) {
+    const createUserDto: CreateUserDto = {
+      prenom: registerDto.prenom,
+      nom: registerDto.nom,
+      email: registerDto.email,
+      motDePasse: registerDto.motDePasse,
+      roles: ['APPRENANT'],
+    };
+
+    const user = await this.usersService.create(createUserDto);
+    return this.login(user);
   }
 
   getCookieOptions() {

@@ -11,6 +11,7 @@ import { Throttle } from '@nestjs/throttler';
 import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -33,7 +34,18 @@ export class AuthController {
 
     res.cookie('token', result.access_token, this.authService.getCookieOptions());
 
-    return { message: 'Connexion réussie' };
+    return { access_token: result.access_token, message: 'Connexion réussie' };
+  }
+
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) res: Response) {
+    const result = await this.authService.register(registerDto);
+
+    res.cookie('token', result.access_token, this.authService.getCookieOptions());
+
+    return { access_token: result.access_token, message: 'Compte créé avec succès' };
   }
 
   @Post('logout')

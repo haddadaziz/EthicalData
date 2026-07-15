@@ -99,6 +99,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     const handleLogout = async () => {
         try { await apiFetch('/auth/logout', { method: 'POST' }); } catch {}
+        localStorage.removeItem('access_token');
         showToast("Déconnecté avec succès, à bientôt", "success");
         router.push('/login');
     };

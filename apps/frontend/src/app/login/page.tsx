@@ -180,10 +180,14 @@ export default function LoginPage() {
         setError(null);
 
         try {
-            await apiFetch('/auth/login', {
+            const loginRes = await apiFetch('/auth/login', {
                 method: 'POST',
                 body: { email, motDePasse: password },
             });
+
+            if (loginRes?.access_token) {
+                localStorage.setItem('access_token', loginRes.access_token);
+            }
 
             showToast("Connecté avec succès", "success");
 
