@@ -97,9 +97,9 @@ export default function LandingPage() {
 
   return (
     <main className="min-h-screen bg-[#020617] text-white relative overflow-hidden font-sans selection:bg-red-600 selection:text-white">
-      {/* Fine background grid lines */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff02_1px,transparent_1px),linear-gradient(to_bottom,#ffffff02_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none z-0" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,#dc262608_0%,transparent_70%)] pointer-events-none z-0" />
+      {/* Fine background grid lines - Fixed to viewport for performance */}
+      <div className="fixed inset-0 bg-[linear-gradient(to_right,#ffffff02_1px,transparent_1px),linear-gradient(to_bottom,#ffffff02_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none z-0" />
+      <div className="fixed inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,#dc262608_0%,transparent_70%)] pointer-events-none z-0" />
 
       <HeroSection isConnected={isConnected}>
         <Navbar

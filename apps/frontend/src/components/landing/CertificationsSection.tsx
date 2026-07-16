@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, ArrowRight } from '@/components/icons';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { getCertificateBadgeLogo } from '../../lib/certification-utils';
+import { CertificationCard } from '@/components/ui/CertificationCard';
 
 interface CertificationsSectionProps {
   realCertifications: any[];
@@ -117,36 +118,14 @@ export function CertificationsSection({ realCertifications, courses, cleanTitle 
                 style={{ transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)` }}
               >
                 {catalogCourses.map((c, i) => (
-                  <div key={i} className="w-1/4 shrink-0 px-3">
-                    <Link href={`/certifications/${c.slug}`} className="flex flex-col group cursor-pointer">
-                      <div className="relative w-full h-[340px] rounded-xl overflow-hidden shadow-lg transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-red-950/40 group-hover:shadow-2xl bg-[#0a0f1d] border border-slate-900">
-                        <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0 opacity-80 group-hover:opacity-100 transition-opacity" loading="lazy" decoding="async" />
-                        {c.codeExamen && (
-                          <div className="absolute top-4 left-4 z-30">
-                            <div className="bg-slate-900/80 backdrop-blur-md text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-700/50 shadow-sm flex items-center group-hover:bg-red-600 group-hover:border-red-500 transition-colors">
-                              {c.codeExamen}
-                            </div>
-                          </div>
-                        )}
-                        <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-20 group-hover:-translate-y-2 transition-transform duration-500 w-32 flex justify-center">
-                          {c.logo ? (
-                            <img src={c.logo} alt="Badge" className="w-full h-auto object-contain filter drop-shadow-xl" loading="lazy" decoding="async" />
-                          ) : (
-                            <div className="w-20 h-20 bg-slate-900 rounded-full flex items-center justify-center font-bold text-white border border-slate-800">Badge</div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="mt-4 flex flex-col gap-2 px-1">
-                        <div className="flex items-center justify-between gap-3">
-                          <h3 className="text-[13px] font-bold text-slate-200 group-hover:text-white leading-snug line-clamp-2 flex-1">
-                            {cleanTitle(c.nom, c.codeExamen)}
-                          </h3>
-                          <div className="px-3 py-1.5 shrink-0 bg-red-600 border border-red-600 rounded-lg flex items-center justify-center text-white transition-colors shadow-sm hover:bg-red-700 hover:border-red-700 group-hover:bg-red-700 group-hover:border-red-700 text-[10px] font-bold uppercase tracking-wider">
-                            Voir plus
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
+                  <div key={i} className="w-1/4 shrink-0 px-3 pb-8">
+                    <CertificationCard
+                      slug={c.slug}
+                      nom={c.nom}
+                      codeExamen={c.codeExamen}
+                      logo={c.logo}
+                      cleanTitle={cleanTitle}
+                    />
                   </div>
                 ))}
               </div>
@@ -161,35 +140,15 @@ export function CertificationsSection({ realCertifications, courses, cleanTitle 
                   exit={{ opacity: 0, x: -50 }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                 >
-                  <Link href={`/certifications/${cert.slug}`} className="flex flex-col group cursor-pointer">
-                    <div className="relative w-full h-[380px] rounded-xl overflow-hidden shadow-lg transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-red-950/40 group-hover:shadow-2xl bg-[#0a0f1d] border border-slate-900">
-                      <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0 opacity-80 group-hover:opacity-100 transition-opacity" loading="lazy" decoding="async" />
-                      {cert.codeExamen && (
-                        <div className="absolute top-4 left-4 z-30">
-                          <div className="bg-slate-900/80 backdrop-blur-md text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-700/50 shadow-sm flex items-center group-hover:bg-red-600 group-hover:border-red-500 transition-colors">
-                            {cert.codeExamen}
-                          </div>
-                        </div>
-                      )}
-                      <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-20 group-hover:-translate-y-2 transition-transform duration-500 w-32 flex justify-center">
-                        {cert.logo ? (
-                          <img src={cert.logo} alt="Badge" className="w-full h-auto object-contain filter drop-shadow-xl" loading="lazy" decoding="async" />
-                        ) : (
-                          <div className="w-20 h-20 bg-slate-900 rounded-full flex items-center justify-center font-bold text-white border border-slate-800">Badge</div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="mt-4 flex flex-col gap-2 px-1">
-                      <div className="flex items-center justify-between gap-3">
-                        <h3 className="text-sm font-bold text-slate-200 group-hover:text-white leading-snug line-clamp-2 flex-1">
-                          {cleanTitle(cert.nom, cert.codeExamen)}
-                        </h3>
-                        <div className="px-3 py-1.5 shrink-0 bg-red-600 border border-red-600 rounded-lg flex items-center justify-center text-white transition-colors shadow-sm hover:bg-red-700 hover:border-red-700 group-hover:bg-red-700 group-hover:border-red-700 text-[10px] font-bold uppercase tracking-wider">
-                          Voir plus
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
+                  <div className="px-4 pb-8">
+                    <CertificationCard
+                      slug={cert.slug}
+                      nom={cert.nom}
+                      codeExamen={cert.codeExamen}
+                      logo={cert.logo}
+                      cleanTitle={cleanTitle}
+                    />
+                  </div>
                 </motion.div>
               </AnimatePresence>
             </div>

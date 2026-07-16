@@ -9,22 +9,22 @@ interface HeroSectionProps {
 
 export function HeroSection({ isConnected, children }: HeroSectionProps) {
   return (
-    <section className="relative min-h-[80vh] flex flex-col justify-between overflow-hidden bg-[#020617] text-white">
+    <section className="relative min-h-[115dvh] lg:min-h-[80vh] flex flex-col justify-between overflow-hidden bg-[#020617] text-white">
       {/* Navigation container */}
       <div className="w-full z-50">
         {children}
       </div>
 
       {/* Hero content - Split Screen Grid Layout */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 flex-grow flex flex-col lg:flex-row items-center justify-center gap-12 w-full">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 lg:pt-20 pb-0 lg:pb-20 flex-grow flex flex-col lg:flex-row items-center justify-center gap-12 w-full">
         
         {/* Left Side: Headline & CTAs */}
-        <div className="w-full lg:w-7/12 flex flex-col items-start text-left space-y-6">
+        <div className="w-full lg:w-7/12 flex flex-col items-center lg:items-start text-center lg:text-left space-y-6 pt-0">
           <motion.h1
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white uppercase leading-none drop-shadow-lg"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-white uppercase leading-tight md:leading-none drop-shadow-lg"
           >
             Ethical Data Security – L&apos;essentiel en un clic !
           </motion.h1>
@@ -42,7 +42,7 @@ export function HeroSection({ isConnected, children }: HeroSectionProps) {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center gap-4 pt-4"
+            className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4 w-full sm:w-auto"
           >
             <a
               href={isConnected ? "/dashboard/practice" : "/login"}
@@ -55,16 +55,16 @@ export function HeroSection({ isConnected, children }: HeroSectionProps) {
         </div>
 
         {/* Right Side: Simple Cyber Wolf Mascot Card */}
-        <div className="w-full lg:w-5/12 flex items-center justify-center relative select-none">
+        <div className="w-full lg:w-5/12 flex items-center justify-center relative select-none mt-auto lg:mt-0 mb-0 pt-24 lg:pt-0">
           {/* Static design rings */}
-          <div className="absolute w-[280px] h-[280px] sm:w-[340px] sm:h-[340px] border border-red-500/10 rounded-full" />
-          <div className="absolute w-[240px] h-[240px] sm:w-[280px] sm:h-[280px] border border-dashed border-red-500/15 rounded-full" />
+          <div className="absolute w-[260px] h-[260px] sm:w-[340px] sm:h-[340px] border border-red-500/10 rounded-full" />
+          <div className="absolute w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] border border-dashed border-red-500/15 rounded-full" />
           
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative z-10 w-[240px] h-[240px] sm:w-[320px] sm:h-[320px] rounded-2xl overflow-hidden border border-red-500/20 bg-[#080d1a] p-4 shadow-xl shadow-red-950/20 group/card"
+            className="relative z-10 w-[220px] h-[220px] sm:w-[320px] sm:h-[320px] rounded-2xl overflow-hidden border border-red-500/20 bg-[#080d1a] p-4 shadow-xl shadow-red-950/20 group/card"
           >
             {/* Corner tech lines */}
             <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-red-500/50 rounded-tl-lg" />

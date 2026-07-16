@@ -111,7 +111,7 @@ export function TestimonialsSection() {
         </div>
 
         {/* Carousel Container */}
-        <div className="relative group flex items-center px-4 md:px-8">
+        <div className="relative group flex items-center px-12 md:px-14">
           
           {/* Flèche Gauche */}
           <button 

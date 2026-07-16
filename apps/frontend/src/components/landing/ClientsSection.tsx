@@ -17,8 +17,8 @@ export function ClientsSection() {
       </div>
       <div className="relative w-full overflow-hidden">
         {/* Floutage des bords */}
-        <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-slate-50 to-transparent z-10 pointer-events-none" />
-        <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none" />
+        <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#020617] to-transparent z-10 pointer-events-none" />
+        <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#020617] to-transparent z-10 pointer-events-none" />
         
         <div className="flex gap-12 animate-marquee-reverse whitespace-nowrap items-center">
           {[...clients, ...clients, ...clients, ...clients].map((client, idx) => (
