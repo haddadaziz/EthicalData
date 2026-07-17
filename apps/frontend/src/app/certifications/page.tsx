@@ -226,8 +226,23 @@ export default function CertificationsPublicPage() {
                 </div>
             </section>
 
-            {/* CONTENU PRINCIPAL & FILTRES */}
-            <main className="max-w-7xl mx-auto px-6 py-10 flex-1 w-full space-y-8">
+            {/* WRAPPER AVEC BACKGROUND */}
+            <div className="relative flex-1 flex flex-col w-full">
+                {/* Background image identique à la landing page */}
+                <div className="absolute inset-0 z-0 pointer-events-none" style={{ contentVisibility: 'auto' }}>
+                    <img 
+                        src="/bg/cyber_hero_bg.png" 
+                        alt="Cyber security background texture" 
+                        className="w-full h-full object-cover opacity-65 transform-gpu" 
+                        loading="lazy"
+                        decoding="async"
+                        fetchPriority="low"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#020617] via-transparent to-[#020617]" />
+                </div>
+
+                {/* CONTENU PRINCIPAL & FILTRES */}
+                <main className="relative z-10 max-w-7xl mx-auto px-6 py-10 flex-1 w-full space-y-8">
                 
                 {/* BARRE DE RECHERCHE ET FILTRES D'ÉDITEURS */}
                 <div className="bg-[#080d1a]/85 border border-slate-800 rounded-3xl p-6 shadow-sm space-y-5 text-left">
@@ -500,7 +515,8 @@ export default function CertificationsPublicPage() {
                     </>
                 )}
 
-            </main>
+                </main>
+            </div>
 
             <Footer />
         </div>
