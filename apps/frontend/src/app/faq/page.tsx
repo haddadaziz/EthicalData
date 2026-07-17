@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Search, MessageCircle, BookOpen, Award, Activity, HelpCircle } from '@/components/icons';
-import { Navbar } from '@/components/layout/Navbar';
+import { Navbar } from '@/components/landing/Navbar';
 import { Footer } from '@/components/layout/Footer';
 
 const faqData = [

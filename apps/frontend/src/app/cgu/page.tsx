@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, CheckCircle, AlertTriangle, X, BookOpen } from '@/components/icons';
-import { Navbar } from '@/components/layout/Navbar';
+import { Navbar } from '@/components/landing/Navbar';
 import { Footer } from '@/components/layout/Footer';
 
 const sections = [

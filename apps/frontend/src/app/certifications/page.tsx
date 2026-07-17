@@ -7,7 +7,7 @@ import { getProviderLogo, getCertificateBadgeLogo } from '@/lib/certification-ut
 import Link from 'next/link';
 import { apiFetch } from '../../lib/api';
 import { Footer } from '@/components/layout/Footer';
-import { Navbar } from '@/components/layout/Navbar';
+import { Navbar } from '@/components/landing/Navbar';
 
 const TriangleLogo = ({ className = "w-5 h-5" }: { className?: string }) => (
     <svg className={`${className} text-red-600`} viewBox="0 0 100 100" fill="currentColor">
