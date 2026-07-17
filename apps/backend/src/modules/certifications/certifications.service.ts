@@ -747,4 +747,100 @@ export class CertificationsService {
       };
     });
   }
+
+  async enrollUser(userId: number, certificationId: number) {
+    const cert = await this.prisma.certification.findFirst({
+      where: { id: BigInt(certificationId), deletedAt: null },
+    });
+    if (!cert) {
+      throw new NotFoundException("La certification demandée n'existe pas.");
+    }
+
+    const existing = await this.prisma.inscriptionCertification.findUnique({
+      where: {
+        apprenantId_certificationId: {
+          apprenantId: BigInt(userId),
+          certificationId: BigInt(certificationId),
+        },
+      },
+    });
+    if (existing) {
+      throw new ConflictException('Vous êtes déjà inscrit à cette certification.');
+    }
+
+    const inscription = await this.prisma.inscriptionCertification.create({
+      data: {
+        apprenantId: BigInt(userId),
+        certificationId: BigInt(certificationId),
+      },
+      include: { certification: true },
+    });
+
+    return {
+      id: inscription.id.toString(),
+      statut: inscription.statut,
+      dateInscription: inscription.dateInscription,
+      certification: {
+        id: inscription.certification.id.toString(),
+        nom: inscription.certification.nom,
+        slug: inscription.certification.slug,
+      },
+    };
+  }
+
+  async unenrollUser(userId: number, certificationId: number) {
+    const existing = await this.prisma.inscriptionCertification.findUnique({
+      where: {
+        apprenantId_certificationId: {
+          apprenantId: BigInt(userId),
+          certificationId: BigInt(certificationId),
+        },
+      },
+    });
+    if (!existing) {
+      throw new NotFoundException("Vous n'êtes pas inscrit à cette certification.");
+    }
+
+    await this.prisma.inscriptionCertification.delete({
+      where: { id: existing.id },
+    });
+
+    return { message: 'Désinscription réussie' };
+  }
+
+  async getUserEnrollments(userId: number) {
+    const inscriptions = await this.prisma.inscriptionCertification.findMany({
+      where: { apprenantId: BigInt(userId) },
+      include: {
+        certification: {
+          include: {
+            fournisseur: true,
+          },
+        },
+      },
+      orderBy: { dateInscription: 'desc' },
+    });
+
+    return inscriptions.map((i) => ({
+      id: i.id.toString(),
+      statut: i.statut,
+      progression: i.progression,
+      readinessScore: i.readinessScore,
+      dateInscription: i.dateInscription,
+      dateValidation: i.dateValidation,
+      certification: {
+        id: i.certification.id.toString(),
+        nom: i.certification.nom,
+        slug: i.certification.slug,
+        codeExamen: i.certification.codeExamen,
+        niveau: i.certification.niveau,
+        image: i.certification.image,
+        fournisseur: {
+          id: i.certification.fournisseur.id.toString(),
+          nom: i.certification.fournisseur.nom,
+          image: i.certification.fournisseur.image,
+        },
+      },
+    }));
+  }
 }

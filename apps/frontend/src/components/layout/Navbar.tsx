@@ -51,7 +51,7 @@ export function Navbar({
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2 group cursor-pointer">
           <div className="flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-            <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-10 md:h-8 w-auto object-contain" />
+            <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-12 md:h-8 w-auto object-contain" />
           </div>
         </Link>
 
@@ -78,27 +78,27 @@ export function Navbar({
         </nav>
 
         {/* Actions à droite */}
-        <div className="flex items-center gap-1.5 md:gap-3">
+        <div className="flex items-center gap-1 md:gap-3">
           {!mounted ? (
-            <div className="flex items-center gap-1.5 md:gap-3">
-              <div className="w-[60px] md:w-[80px] h-[32px] md:h-[36px]" />
-              <div className="w-[80px] md:w-[110px] h-[36px] md:h-[40px] rounded-lg md:rounded-xl bg-slate-900 animate-pulse" />
+            <div className="flex items-center gap-1 md:gap-3">
+              <div className="w-[50px] md:w-[80px] h-[28px] md:h-[36px]" />
+              <div className="w-[70px] md:w-[110px] h-[28px] md:h-[40px] rounded-lg md:rounded-xl bg-slate-900 animate-pulse" />
             </div>
           ) : isConnected ? (
             <a
               href={isAdmin ? "/admin" : "/dashboard"}
-              className="px-3 py-2 md:px-5 md:py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white text-[10px] md:text-xs font-black uppercase tracking-wider rounded-lg md:rounded-xl transition-all shadow-md shadow-red-600/30 cursor-pointer hover:scale-105 active:scale-95"
+              className="px-2.5 py-1.5 md:px-5 md:py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white text-[9px] md:text-xs font-black uppercase tracking-wider rounded-md md:rounded-xl transition-all shadow-md shadow-red-600/30 cursor-pointer hover:scale-105 active:scale-95"
             >
               Mon Espace
             </a>
           ) : (
             <>
-              <a href="/login" className={`px-2 py-2 md:px-4 text-[10px] md:text-xs font-black uppercase tracking-wider transition-colors cursor-pointer ${scrolled ? 'text-slate-300 hover:text-red-500' : 'text-white/80 hover:text-white'}`}>
+              <a href="/login" className={`px-1.5 py-1 md:px-4 text-[9px] md:text-xs font-black uppercase tracking-wider transition-colors cursor-pointer ${scrolled ? 'text-slate-300 hover:text-red-500' : 'text-white/80 hover:text-white'}`}>
                 Connexion
               </a>
               <Link
                 href="/register"
-                className="px-3 py-2 md:px-5 md:py-2.5 text-[10px] md:text-xs font-black uppercase tracking-wider rounded-lg md:rounded-xl transition-all hover:scale-105 active:scale-95 cursor-pointer bg-red-600 hover:bg-red-700 text-white shadow-md shadow-red-600/20"
+                className="px-2 py-1.5 md:px-5 md:py-2.5 text-[9px] md:text-xs font-black uppercase tracking-wider rounded-md md:rounded-xl transition-all hover:scale-105 active:scale-95 cursor-pointer bg-red-600 hover:bg-red-700 text-white shadow-md shadow-red-600/20"
               >
                 S&apos;inscrire
               </Link>
@@ -108,7 +108,7 @@ export function Navbar({
           {/* Menu Hamburger */}
           <button 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`md:hidden p-1.5 cursor-pointer rounded-lg transition-all ${scrolled ? 'text-slate-300 hover:text-white bg-slate-900/80 border border-slate-800' : 'text-white/80 hover:text-white bg-transparent border-0'}`}
+            className={`md:hidden p-1 cursor-pointer rounded-md transition-all ${scrolled ? 'text-slate-300 hover:text-white bg-slate-900/80 border border-slate-800' : 'text-white/80 hover:text-white bg-transparent border-0'}`}
             aria-label="Menu mobile"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

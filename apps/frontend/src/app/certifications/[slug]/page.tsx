@@ -57,6 +57,8 @@ export default function CertificationDetailPage() {
   const [mounted, setMounted] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [enrolled, setEnrolled] = useState(false);
+  const [enrolling, setEnrolling] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -78,6 +80,33 @@ export default function CertificationDetailPage() {
       .catch((err) => setError(err.message || 'Certification introuvable'))
       .finally(() => setLoading(false));
   }, [slug]);
+
+  useEffect(() => {
+    if (isConnected && cert) {
+      apiFetch('/certifications/mes-inscriptions').then((inscriptions) => {
+        const found = inscriptions?.find((i: any) => i.certification.slug === cert.slug);
+        if (found) setEnrolled(true);
+      }).catch(() => {});
+    }
+  }, [isConnected, cert]);
+
+  const handleEnroll = async () => {
+    if (!isConnected) { router.push('/login'); return; }
+    setEnrolling(true);
+    try {
+      if (enrolled) {
+        await apiFetch(`/certifications/${cert.id}/inscrire`, { method: 'DELETE' });
+        setEnrolled(false);
+      } else {
+        await apiFetch(`/certifications/${cert.id}/inscrire`, { method: 'POST' });
+        setEnrolled(true);
+      }
+    } catch (err: any) {
+      console.error(err);
+    } finally {
+      setEnrolling(false);
+    }
+  };
 
   const toggleModule = (id: number) => {
     setExpandedModules((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -249,6 +278,15 @@ export default function CertificationDetailPage() {
             </div>
 
             <div className="flex flex-wrap gap-3 mt-6">
+              <button
+                type="button"
+                onClick={() => handleEnroll()}
+                disabled={enrolling}
+                className={`px-6 py-3 font-black rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2 text-sm cursor-pointer ${enrolled ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white'}`}
+              >
+                <Award className="w-4 h-4" />
+                {enrolled ? 'Inscrit' : "S'inscrire"}
+              </button>
               <button
                 type="button"
                 onClick={() => isConnected ? router.push('/dashboard/practice?cert=' + cert.slug) : router.push('/login')}

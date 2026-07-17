@@ -314,6 +314,33 @@ export class CertificationsController {
         return this.certificationsService.getUserResourceQuotas(req.user.id);
     }
 
+    // S'inscrire à une certification
+    @UseGuards(JwtAuthGuard)
+    @Post(':id/inscrire')
+    async enrollCertification(
+        @Param('id', ParseIntPipe) id: number,
+        @Req() req: any,
+    ) {
+        return this.certificationsService.enrollUser(req.user.id, id);
+    }
+
+    // Désinscrire d'une certification
+    @UseGuards(JwtAuthGuard)
+    @Delete(':id/inscrire')
+    async unenrollCertification(
+        @Param('id', ParseIntPipe) id: number,
+        @Req() req: any,
+    ) {
+        return this.certificationsService.unenrollUser(req.user.id, id);
+    }
+
+    // Récupérer les inscriptions de l'utilisateur connecté
+    @UseGuards(JwtAuthGuard)
+    @Get('mes-inscriptions')
+    async getMyEnrollments(@Req() req: any) {
+        return this.certificationsService.getUserEnrollments(req.user.id);
+    }
+
     // Demande de téléchargement sécurisée pour un document
     @UseGuards(JwtAuthGuard)
     @Post('ressources/:resourceId/telecharger')

@@ -43,6 +43,7 @@ model Utilisateur {
   signalementsCommentaires SignalementCommentaire[]
   notifications            Notification[]
   inscriptionsCours        InscriptionCours[]       @relation("ApprenantInscriptions")
+  inscriptionsCertifications InscriptionCertification[] @relation("ApprenantInscriptionsCertifications")
 
   @@map("utilisateurs")
 }
@@ -122,6 +123,7 @@ model Certification {
   categorieId BigInt?
   categorie   CategorieCertification? @relation(fields: [categorieId], references: [id], onDelete: SetNull)
   modules     ModuleCertification[]
+  inscriptions InscriptionCertification[]
 
   // Relations forum
   sujets Sujet[]
@@ -182,6 +184,30 @@ model InscriptionCours {
 
   @@unique([coursId, apprenantId])
   @@map("inscriptions_cours")
+}
+
+model InscriptionCertification {
+  id              BigInt             @id @default(autoincrement())
+  statut          StatutInscription  @default(INSCRIT)
+  progression     Int                @default(0)
+  readinessScore  Int?               @map("readiness_score")
+  dateInscription DateTime           @default(now()) @map("date_inscription")
+  dateValidation  DateTime?          @map("date_validation")
+
+  apprenantId     BigInt        @map("apprenant_id")
+  certificationId BigInt        @map("certification_id")
+  apprenant       Utilisateur   @relation("ApprenantInscriptionsCertifications", fields: [apprenantId], references: [id], onDelete: Cascade)
+  certification   Certification @relation(fields: [certificationId], references: [id], onDelete: Cascade)
+
+  @@unique([apprenantId, certificationId])
+  @@map("inscriptions_certifications")
+}
+
+enum StatutInscription {
+  INSCRIT
+  EN_COURS
+  VALIDE
+  ABANDON
 }
 
 model ProgressionModule {
