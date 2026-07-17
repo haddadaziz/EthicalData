@@ -92,6 +92,7 @@ export default function CertificationDetailPage() {
 
   const handleEnroll = async () => {
     if (!isConnected) { router.push('/login'); return; }
+    if (!cert) return;
     setEnrolling(true);
     try {
       if (enrolled) {
