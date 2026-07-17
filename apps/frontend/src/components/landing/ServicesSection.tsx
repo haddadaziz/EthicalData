@@ -16,7 +16,7 @@ export function ServicesSection() {
       
       <div className="absolute inset-0 z-0 pointer-events-none" style={{ contentVisibility: 'auto' }}>
         <img 
-          src="/cyber_services_bg.png" 
+          src="/bg/cyber_services_bg.png" 
           alt="Services background" 
           className="w-full h-full object-cover opacity-40 transform-gpu" 
           loading="lazy"

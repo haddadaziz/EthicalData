@@ -31,7 +31,7 @@ export function FaqSection() {
       
       <div className="absolute inset-0 z-0 pointer-events-none" style={{ contentVisibility: 'auto' }}>
         <img 
-          src="/faq_cyber_bg.png" 
+          src="/bg/faq_cyber_bg.png" 
           alt="FAQ background" 
           className="w-full h-full object-cover opacity-20 transform-gpu" 
           loading="lazy"

@@ -331,7 +331,7 @@ export default function LearnerCertificationsPage() {
                 {/* Visual Box (Landing Page Style) */}
                 <div onClick={() => setSelectedCertModal(cert)} className="relative w-full aspect-[4/3] sm:aspect-auto sm:h-[240px] rounded-xl overflow-hidden shadow-sm transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-blue-900/30 group-hover:shadow-2xl bg-white border border-slate-100 cursor-pointer">
                   {/* Background Template */}
-                  <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
+                  <img src="/images/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
 
                   {/* Examen code overlay */}
                   {cert.codeExamen && (
@@ -463,7 +463,7 @@ function CertDetailModal({ cert, onClose, onPractice, isTargeted, onToggleTarget
       <div className="w-full md:w-[340px] p-5 flex flex-col items-center justify-center bg-slate-50 border-b md:border-b-0 md:border-l border-slate-200/80 shrink-0">
         <div className="relative w-full max-w-[280px] h-[340px] rounded-2xl overflow-hidden shadow-lg border border-slate-200 bg-white">
           {/* Background Template */}
-          <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
+          <img src="/images/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
 
           {/* Examen code overlay */}
           {cert.codeExamen && (

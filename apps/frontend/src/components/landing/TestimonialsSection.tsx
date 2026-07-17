@@ -80,7 +80,7 @@ export function TestimonialsSection() {
       {/* Background cyber network image - Stretching 100% edge-to-edge */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <img 
-          src="/testimonials_cyber_bg.png" 
+          src="/bg/testimonials_cyber_bg.png" 
           alt="Testimonials background" 
           className="w-full h-full object-cover opacity-20 transform-gpu" 
           loading="lazy"

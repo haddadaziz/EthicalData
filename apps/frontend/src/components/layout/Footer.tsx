@@ -7,7 +7,7 @@ export function Footer() {
       {/* Background cyber network image - Stretching 100% edge-to-edge */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <img 
-          src="/footer_cyber_bg.png" 
+          src="/bg/footer_cyber_bg.png" 
           alt="Footer background" 
           className="w-full h-full object-cover opacity-15 transform-gpu" 
           loading="lazy"
@@ -20,7 +20,7 @@ export function Footer() {
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between gap-12">
         
         <div className="max-w-xl space-y-4 text-left">
-          <img src="/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-10 w-auto object-contain" />
+          <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-10 w-auto object-contain" />
           <p className="text-sm leading-relaxed text-slate-400">
             Dynamisme, réactivité et innovation sont au cœur de nos engagements. Nos solutions,<br className="hidden md:block" />
             conçues par des experts, visent à surpasser vos attentes.

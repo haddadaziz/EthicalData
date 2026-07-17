@@ -75,7 +75,7 @@ export function CertificationsSection({ realCertifications, courses, cleanTitle 
       
       <div className="absolute inset-0 z-0 pointer-events-none" style={{ contentVisibility: 'auto' }}>
         <img 
-          src="/cyber_hero_bg.png" 
+          src="/bg/cyber_hero_bg.png" 
           alt="Cyber security background texture" 
           className="w-full h-full object-cover opacity-65 transform-gpu" 
           loading="lazy"

@@ -43,7 +43,7 @@ export function ContactSection() {
       {/* Background cyber network image - Stretching 100% edge-to-edge */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <img 
-          src="/contact_cyber_bg.png" 
+          src="/bg/contact_cyber_bg.png" 
           alt="Contact background" 
           className="w-full h-full object-cover opacity-20 transform-gpu" 
           loading="lazy"

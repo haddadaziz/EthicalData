@@ -204,7 +204,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <div className="h-20 flex items-center justify-between px-6 border-b border-slate-200/80">
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center">
-                    <img src="/ethicaldata_main_logo.png" alt="Ethical Data Security" className="h-8 w-auto object-contain" />
+                    <img src="/logos/ethicaldata_main_logo.png" alt="Ethical Data Security" className="h-8 w-auto object-contain" />
                   </div>
                 </div>
                 <button
@@ -337,7 +337,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="h-20 flex items-center px-6 border-b border-slate-200/80">
             <Link href="/" className="flex items-center group cursor-pointer">
               <div className="flex items-center justify-center group-hover:scale-105 transition-transform">
-                <img src="/ethicaldata_main_logo.png" alt="Ethical Data Security" className="h-9 w-auto object-contain" />
+                <img src="/logos/ethicaldata_main_logo.png" alt="Ethical Data Security" className="h-9 w-auto object-contain" />
               </div>
             </Link>
           </div>

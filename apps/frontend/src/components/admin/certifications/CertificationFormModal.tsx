@@ -362,7 +362,7 @@ export function CertificationFormModal({
                 <div className="w-full max-w-xs flex flex-col group relative">
                   <div className="relative w-full h-[340px] rounded-xl overflow-hidden shadow-lg border border-slate-200 bg-white">
                     {/* Background Template */}
-                    <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
+                    <img src="/images/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
 
                     {/* Examen code overlay */}
                     {codeExamen && (

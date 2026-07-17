@@ -401,7 +401,7 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                         <div className="w-full max-w-xs space-y-5 relative z-10">
                             <div className="w-full max-w-xs flex flex-col group relative">
                                 <div className="relative w-full h-[340px] rounded-xl overflow-hidden shadow-lg border border-slate-200 bg-white">
-                                    <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
+                                    <img src="/images/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
 
                                     <div className="absolute top-4 left-4 z-30 flex flex-col gap-1">
                                         {selectedCert?.codeExamen && (

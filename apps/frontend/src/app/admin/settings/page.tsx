@@ -142,8 +142,8 @@ export default function AdminSettingsPage() {
                             <label className="text-xs font-bold text-slate-700">Destinataires</label>
                             <div className="flex flex-wrap gap-2">
                                 {[
-                                    { val: 'APPRENANT', label: 'Apprenants', img: '/logos/apprenant.png' },
-                                    { val: 'FORMATEUR', label: 'Formateurs', img: '/logos/formateur.png' },
+                                    { val: 'APPRENANT', label: 'Apprenants', img: '/images/apprenant.png' },
+                                    { val: 'FORMATEUR', label: 'Formateurs', img: '/images/formateur.png' },
                                     { val: 'TOUS', label: 'Tout le monde', icon: true },
                                 ].map((opt: any) => (
                                     <button key={opt.val} type="button" onClick={() => setNotifTarget(opt.val as any)}

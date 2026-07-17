@@ -10,31 +10,31 @@ export function AboutSlider() {
     {
       title: "Qui sommes-nous ?",
       text: "Ethical Data Security est un centre de formation de référence en cybersécurité et cloud computing, situé au cœur du Technopark de Casablanca.",
-      image: "/cyber_hand.png",
+      image: "/images/cyber_hand.png",
       isRed: true
     },
     {
       title: "Solution IT",
       text: "Nous vous offrons des opportunités en développant des solutions spécialisées et nous vous proposons plusieurs produits qui accélèrent la transformation numérique sur n'importe quelle application, n'importe quel cloud et n'importe quel appareil pour réduire les dépenses informatiques......",
-      image: "/logos/expertises-integrations-scaled-434x358.webp",
+      image: "/images/expertises-integrations-scaled-434x358.webp",
       isRed: true
     },
     {
       title: "Notre priorité",
       text: "Notre missions est de vous accompagner tout au long du cycle de vie de votre infrastructure réseau et sécurité. Nos domaines d'intervention couvrent la conception, la mise en oeuvre, la gestion et le support de solutions réseau, cloud et sécurité",
-      image: "/logos/avantages-1-434x358.webp",
+      image: "/images/avantages-1-434x358.webp",
       isRed: true
     },
     {
       title: "Une expérience d'une décennie",
       text: "Une équipe enthousiaste, composée de consultants en cybersécurité et infrasctructure, reconnus sur le marché local et international à travers leur participation réussie à des projets de grande envergure (ISP,gouvernemental,finance...). Chacun d'entre nous apporte le meilleur de son expertise pour assurer le succès et la fiabilité de vos projets.",
-      image: "/logos/experiences-scaled-434x358.webp",
+      image: "/images/experiences-scaled-434x358.webp",
       isRed: true
     },
     {
       title: "Certification",
       text: "Ethical Data Security met à votre disposition plus de 500 certifications pour renforcer votre expertise et valider vos compétences aux standards les plus élevés. Reconnues et prisées par les recruteurs, nos certifications vous ouvrent les portes des opportunités professionnelles les plus exigeantes",
-      image: "/logos/certifications-scaled-434x358.png",
+      image: "/images/certifications-scaled-434x358.png",
       isRed: true,
       isTransparent: true
     }
@@ -62,7 +62,7 @@ export function AboutSlider() {
         {/* L'image de fond (Technopark) */}
         <div className="w-full h-[300px] md:h-[450px] overflow-hidden rounded-2xl md:rounded-[40px] shadow-lg relative border border-slate-900 bg-black">
           <img 
-            src="/technopark.jpeg" 
+            src="/images/technopark.jpeg" 
             alt="Technopark" 
             className="w-full h-full object-cover opacity-70" 
             loading="lazy"

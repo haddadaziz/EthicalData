@@ -74,7 +74,7 @@ export function HeroSection({ isConnected, children }: HeroSectionProps) {
 
             <div className="relative w-full h-full rounded-xl overflow-hidden bg-slate-950 flex items-center justify-center">
               <img
-                src="/wolf_mascot.png"
+                src="/images/wolf_mascot.png"
                 alt="Cyber Wolf Mascot"
                 className="w-[85%] h-[85%] object-contain drop-shadow-[0_0_20px_rgba(220,38,38,0.3)] transition-transform duration-500 ease-out hover:scale-105 cursor-pointer transform-gpu"
               />
@@ -87,7 +87,7 @@ export function HeroSection({ isConnected, children }: HeroSectionProps) {
       {/* Background image */}
       <div className="absolute inset-0 z-0">
         <img 
-          src="/landing_page_logo_ethicaldata.jpeg" 
+          src="/logos/landing_page_logo_ethicaldata.jpeg" 
           alt="Ethical Data Background Logo" 
           className="w-full h-full object-cover opacity-80" 
           decoding="async"

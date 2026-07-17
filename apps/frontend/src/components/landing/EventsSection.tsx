@@ -8,7 +8,7 @@ export function EventsSection() {
       {/* Background Image avec filtre sombre */}
       <div className="absolute inset-0">
         <img 
-          src="/logos/events_bg_2.webp" 
+          src="/bg/events_bg_2.webp" 
           alt="Events background" 
           className="w-full h-full object-cover" 
           loading="lazy"

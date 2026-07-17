@@ -79,7 +79,7 @@ export function CertificationsGrid({
             {/* Visual Box (Landing Page Style) */}
             <div onClick={() => onEdit(cert)} className="relative w-full aspect-[4/3] sm:aspect-auto sm:h-[240px] rounded-xl overflow-hidden shadow-sm transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-blue-900/30 group-hover:shadow-2xl bg-white border border-slate-100 cursor-pointer">
               {/* Background Template */}
-              <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none" />
+              <img src="/images/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none" />
 
               {/* Examen code overlay */}
               {cert.codeExamen && (

@@ -264,7 +264,7 @@ export default function AdminSimulationsPage() {
                             {currentSimulations.map((sim) => (
                                 <div key={sim.id} className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-col group transition-all duration-300 hover:shadow-lg hover:border-slate-300">
                                     <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-300 bg-white border border-slate-100">
-                                        <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none" />
+                                        <img src="/images/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none" />
 
                                         <div className="absolute top-3 left-3 z-30 flex flex-col gap-1 pointer-events-none">
                                             {sim.certification?.codeExamen && (

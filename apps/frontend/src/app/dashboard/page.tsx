@@ -858,7 +858,7 @@ export default function StudentDashboard() {
                                         className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-2xs transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-md bg-white border border-slate-100 cursor-pointer shrink-0"
                                     >
                                         {/* Background Template */}
-                                        <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
+                                        <img src="/images/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
 
                                         {/* Examen code overlay */}
                                         {cert.codeExamen && (

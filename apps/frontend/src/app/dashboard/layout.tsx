@@ -275,7 +275,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             <div className="h-20 flex items-center justify-between px-6 border-b border-slate-200/80">
                                 <div className="flex items-center gap-3">
                                     <div className="flex items-center justify-center">
-                                        <img src="/ethicaldata_main_logo.png" alt="Ethical Data Security" className="h-8 w-auto object-contain" />
+                                        <img src="/logos/ethicaldata_main_logo.png" alt="Ethical Data Security" className="h-8 w-auto object-contain" />
                                     </div>
                                 </div>
                                 <button onClick={() => setSidebarOpen(false)} className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-650 cursor-pointer">
@@ -390,7 +390,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <div className="h-20 flex items-center px-6 border-b border-slate-200/80">
                         <Link href="/" className="flex items-center group cursor-pointer">
                             <div className="flex items-center justify-center group-hover:scale-105 transition-transform">
-                                <img src="/ethicaldata_main_logo.png" alt="Ethical Data Security" className="h-9 w-auto object-contain" />
+                                <img src="/logos/ethicaldata_main_logo.png" alt="Ethical Data Security" className="h-9 w-auto object-contain" />
                             </div>
                         </Link>
                     </div>
@@ -540,9 +540,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             >
                                 <div className="relative w-5 h-5 flex items-center justify-center bg-white rounded-lg shadow-3xs p-0.5 group-hover:scale-110 transition-transform duration-300">
                                     {viewMode === 'FORMATEUR' ? (
-                                        <img src="/logos/formateur.png" alt="Formateur" className="w-full h-full object-contain" />
+                                        <img src="/images/formateur.png" alt="Formateur" className="w-full h-full object-contain" />
                                     ) : (
-                                        <img src="/logos/apprenant.png" alt="Apprenant" className="w-full h-full object-contain" />
+                                        <img src="/images/apprenant.png" alt="Apprenant" className="w-full h-full object-contain" />
                                     )}
                                 </div>
 

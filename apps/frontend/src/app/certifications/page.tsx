@@ -185,7 +185,7 @@ export default function CertificationsPublicPage() {
             <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden border-b border-slate-200/60">
                 {/* Background image */}
                 <div className="absolute inset-0">
-                    <img src="/landing_page_logo_ethicaldata.jpeg" alt=""
+                    <img src="/logos/landing_page_logo_ethicaldata.jpeg" alt=""
                         className="w-full h-full object-cover opacity-80" />
                     <div className="absolute inset-0 bg-gradient-to-b from-slate-900/50 via-slate-900/30 to-slate-900/70" />
                 </div>
@@ -404,7 +404,7 @@ export default function CertificationsPublicPage() {
                             <Link key={cert.id} href={`/certifications/${slug}`} scroll={false}
                                 className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-col group transition-all duration-300 hover:shadow-lg hover:border-slate-300 text-left">
                                 <div className="relative w-full aspect-[4/3] sm:aspect-auto sm:h-[220px] rounded-xl overflow-hidden shadow-sm transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-blue-900/30 group-hover:shadow-2xl bg-white border border-slate-100">
-                                    <img src="/logos/cadre_certif.png" alt="" className="absolute inset-0 w-full h-full object-cover z-0" />
+                                    <img src="/images/cadre_certif.png" alt="" className="absolute inset-0 w-full h-full object-cover z-0" />
                                     {cert.codeExamen && (
                                         <div className="absolute top-3 left-3 z-30">
                                             <div className="bg-slate-950 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-800 shadow-sm flex items-center group-hover:bg-red-600 group-hover:border-red-500 transition-colors">

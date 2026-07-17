@@ -9,7 +9,7 @@ export function AboutSection() {
       
       <div className="absolute inset-0 z-0 pointer-events-none" style={{ contentVisibility: 'auto' }}>
         <img 
-          src="/about_cyber_bg.png" 
+          src="/bg/about_cyber_bg.png" 
           alt="Cyber network background" 
           className="w-full h-full object-cover opacity-25 transform-gpu" 
           loading="lazy"

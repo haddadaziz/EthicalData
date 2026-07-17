@@ -17,7 +17,7 @@ export default function CertDetailModal({ cert, onClose, onPractice, isTargeted,
         <div className="flex flex-col md:flex-row-reverse bg-white overflow-hidden rounded-2xl">
             <div className="w-full md:w-[340px] p-5 flex flex-col items-center justify-center bg-slate-50 border-b md:border-b-0 md:border-l border-slate-200/80 shrink-0">
                 <div className="relative w-full max-w-[280px] h-[340px] rounded-2xl overflow-hidden shadow-lg border border-slate-200 bg-white">
-                    <img src="/logos/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
+                    <img src="/images/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
 
                     {cert.codeExamen && (
                         <div className="absolute top-4 left-4 z-30">

@@ -55,7 +55,7 @@ export const CertificationCard = ({
           {/* Background Image / Frame */}
           <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
             <img
-              src="/logos/cadre_certif.png"
+              src="/images/cadre_certif.png"
               alt="Template"
               className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105"
               loading="lazy"
