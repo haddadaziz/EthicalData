@@ -119,7 +119,7 @@ export function Navbar({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden border-t border-slate-900 bg-[#020617]/95 backdrop-blur-xl overflow-hidden"
+            className="md:hidden border-t border-slate-900 bg-[#020617]/95 overflow-hidden"
           >
             <nav className="flex flex-col p-4 gap-1 text-xs font-black uppercase tracking-widest">
               <Link href="/" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">Accueil</Link>

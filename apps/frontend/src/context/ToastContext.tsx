@@ -53,7 +53,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -50, scale: 0.95 }}
                 transition={{ duration: 0.3, ease: [0.21, 1.02, 0.43, 1.01] }}
-                className={`pointer-events-auto flex items-center justify-between p-4 rounded-2xl shadow-2xl border backdrop-blur-md text-sm font-bold ${
+                className={`pointer-events-auto flex items-center justify-between p-4 rounded-2xl shadow-2xl border text-sm font-bold ${
                   isSuccess
                     ? 'bg-emerald-950/90 text-emerald-100 border-emerald-600/60 shadow-emerald-950/30'
                     : isError

@@ -161,7 +161,7 @@ export default function SystemSettingsPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Barre d'onglets premium style capsule */}
-      <div className="flex bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/50 backdrop-blur-md overflow-x-auto gap-1">
+      <div className="flex bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/50 overflow-x-auto gap-1">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;

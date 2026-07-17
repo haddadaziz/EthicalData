@@ -459,7 +459,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="flex-1 flex flex-col h-screen overflow-y-auto relative z-10">
 
         {/* Header Premium */}
-        <header className="py-5 md:py-6 border-b border-slate-200/50 bg-white/80 backdrop-blur-xl flex items-center justify-between px-8 md:px-12 sticky top-0 z-40 transition-all duration-300">
+        <header className="py-5 md:py-6 border-b border-slate-200/50 bg-white/80 flex items-center justify-between px-8 md:px-12 sticky top-0 z-40 transition-all duration-300">
 
           {/* Gauche : Titre Dynamique (Bouton Hamburger uniquement sur Mobile) */}
           <div className="flex items-center gap-4">

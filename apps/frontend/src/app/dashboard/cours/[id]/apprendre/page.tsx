@@ -308,7 +308,7 @@ export default function ApprendrePage() {
                     {activeModule ? (
                         <>
                             {/* En-tête du module */}
-                            <div className="sticky top-0 z-10 bg-white/90 backdrop-blur-sm border-b border-slate-200/80 px-6 py-4 flex items-center justify-between gap-4">
+                            <div className="sticky top-0 z-10 bg-white/90 border-b border-slate-200/80 px-6 py-4 flex items-center justify-between gap-4">
                                 <div className="min-w-0">
                                     <div className="flex items-center gap-2">
                                         <span className="w-6 h-6 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-[10px] font-black">
@@ -501,7 +501,7 @@ export default function ApprendrePage() {
                                         </p>
                                         <div className="flex flex-wrap items-center justify-center gap-3">
                                             <button onClick={() => router.push('/dashboard/cours')}
-                                                className="px-6 py-2.5 bg-white/20 hover:bg-white/30 text-white text-sm font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-2 shadow-md backdrop-blur-sm">
+                                                className="px-6 py-2.5 bg-white/20 hover:bg-white/30 text-white text-sm font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-2 shadow-md">
                                                 <BookOpen className="w-4 h-4" /> Voir mes cours
                                             </button>
                                             {courseSimulation && (

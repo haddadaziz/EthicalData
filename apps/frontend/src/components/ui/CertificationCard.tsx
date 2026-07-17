@@ -68,7 +68,7 @@ export const CertificationCard = ({
           {/* Code Examen Badge */}
           {codeExamen && (
             <div className="absolute top-5 left-5 z-30">
-              <div className="bg-slate-900/80 backdrop-blur-md text-white font-bold uppercase text-[10px] tracking-widest px-3 py-1.5 rounded-md border border-slate-700/50 shadow-lg flex items-center group-hover:bg-red-600 group-hover:border-red-500 transition-colors duration-300">
+              <div className="bg-slate-900/80 text-white font-bold uppercase text-[10px] tracking-widest px-3 py-1.5 rounded-md border border-slate-700/50 shadow-lg flex items-center group-hover:bg-red-600 group-hover:border-red-500 transition-colors duration-300">
                 {codeExamen}
               </div>
             </div>
@@ -99,7 +99,7 @@ export const CertificationCard = ({
               <h3 className="text-sm md:text-base font-bold text-slate-200 group-hover:text-white leading-snug line-clamp-2 transition-colors duration-300">
                 {cleanTitle(nom, codeExamen || "")}
               </h3>
-              <div className="w-fit px-4 py-2 bg-red-600/10 border border-red-600/30 rounded-lg flex items-center justify-center text-red-400 group-hover:bg-red-600 group-hover:text-white group-hover:border-red-600 transition-all duration-300 text-[11px] font-black uppercase tracking-widest backdrop-blur-sm shadow-lg">
+              <div className="w-fit px-4 py-2 bg-red-600/10 border border-red-600/30 rounded-lg flex items-center justify-center text-red-400 group-hover:bg-red-600 group-hover:text-white group-hover:border-red-600 transition-all duration-300 text-[11px] font-black uppercase tracking-widest shadow-lg">
                 Explorer
               </div>
             </div>

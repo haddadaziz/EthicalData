@@ -499,7 +499,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="flex-1 flex flex-col h-screen overflow-y-auto relative z-10">
 
                 {/* Header Premium (Sans bouton Hamburger sur PC) */}
-                <header className={`py-5 md:py-6 border-b bg-white/80 backdrop-blur-xl flex items-center justify-between px-8 md:px-12 sticky top-0 z-40 transition-all duration-300 ${
+                <header className={`py-5 md:py-6 border-b bg-white/80 flex items-center justify-between px-8 md:px-12 sticky top-0 z-40 transition-all duration-300 ${
                     viewMode === 'FORMATEUR'
                         ? 'border-indigo-100/40 shadow-xs shadow-indigo-100/5'
                         : 'border-slate-200/50'

@@ -117,7 +117,7 @@ export default function CertificationDetailPage() {
     <div className="min-h-screen bg-[#020617] text-white flex flex-col font-sans selection:bg-blue-600 selection:text-white">
 
       {/* BARRE DE NAVIGATION CAPSULE GLASSMORPHIC */}
-      <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-[#020617]/85 backdrop-blur-xl transition-all">
+      <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-[#020617]/85 transition-all">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group cursor-pointer">
             <div className="flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
@@ -127,7 +127,7 @@ export default function CertificationDetailPage() {
               Ethical Data Security
             </span>
           </Link>
-          <nav className="hidden md:flex items-center gap-1 bg-white/[0.04] border border-slate-800 rounded-full px-3 py-1.5 shadow-sm backdrop-blur-xl">
+          <nav className="hidden md:flex items-center gap-1 bg-white/[0.04] border border-slate-800 rounded-full px-3 py-1.5 shadow-sm">
             <Link href="/#about" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-300 hover:text-white hover:bg-[#080d1a] rounded-full transition-all duration-200 hover:shadow-xs">
               Qui Sommes-Nous
             </Link>
@@ -186,7 +186,7 @@ export default function CertificationDetailPage() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="md:hidden border-t border-slate-800 bg-[#020617]/95 backdrop-blur-xl overflow-hidden"
+              className="md:hidden border-t border-slate-800 bg-[#020617]/95 overflow-hidden"
             >
               <nav className="flex flex-col p-4 gap-1 text-xs font-black uppercase tracking-widest">
                 <Link href="/#about" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-400 hover:text-white hover:bg-[#080d1a] rounded-xl">Qui Sommes-Nous</Link>
@@ -224,7 +224,7 @@ export default function CertificationDetailPage() {
           <span className="text-slate-300">{cert.codeExamen || cert.nom}</span>
         </nav>
 
-        <div className="bg-[#080d1a]/85 backdrop-blur-sm rounded-3xl shadow-sm border border-slate-800 overflow-hidden">
+        <div className="bg-[#080d1a]/85 rounded-3xl shadow-sm border border-slate-800 overflow-hidden">
           <div className="p-6 sm:p-8 md:p-10">
             <div className="flex flex-wrap items-center gap-2 mb-4">
               {cert.categorie && (
@@ -311,7 +311,7 @@ export default function CertificationDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
           <div className="lg:col-span-2 space-y-6">
             {cert.objectifs && cert.objectifs.length > 0 && (
-              <div className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-3xl shadow-sm p-6 sm:p-8">
+              <div className="bg-[#080d1a]/85 border border-slate-800 rounded-3xl shadow-sm p-6 sm:p-8">
                 <h2 className="text-lg font-black text-white mb-4 flex items-center gap-2">
                   <Target className="w-5 h-5 text-blue-500" />
                   Objectifs
@@ -328,7 +328,7 @@ export default function CertificationDetailPage() {
             )}
 
             {cert.prerequis && cert.prerequis.length > 0 && (
-              <div className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-3xl shadow-sm p-6 sm:p-8">
+              <div className="bg-[#080d1a]/85 border border-slate-800 rounded-3xl shadow-sm p-6 sm:p-8">
                 <h2 className="text-lg font-black text-white mb-4 flex items-center gap-2">
                   <Award className="w-5 h-5 text-amber-500" />
                   Prerequis
@@ -345,7 +345,7 @@ export default function CertificationDetailPage() {
             )}
 
             {cert.modules && cert.modules.length > 0 && (
-              <div className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-3xl shadow-sm p-6 sm:p-8">
+              <div className="bg-[#080d1a]/85 border border-slate-800 rounded-3xl shadow-sm p-6 sm:p-8">
                 <h2 className="text-lg font-black text-white mb-6 flex items-center gap-2">
                   <BookOpen className="w-5 h-5 text-blue-500" />
                   Programme de la certification
@@ -403,7 +403,7 @@ export default function CertificationDetailPage() {
           </div>
 
           <div className="space-y-6">
-            <div className="bg-[#080d1a]/85 backdrop-blur-sm rounded-3xl shadow-sm border border-slate-800 p-6">
+            <div className="bg-[#080d1a]/85 rounded-3xl shadow-sm border border-slate-800 p-6">
               <h3 className="text-sm font-black text-white mb-3">Certification</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">

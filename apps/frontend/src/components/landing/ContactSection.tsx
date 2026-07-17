@@ -66,7 +66,7 @@ export function ContactSection() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mt-8">
           {/* Infos de contact */}
           <AnimatedSection className="lg:col-span-5 space-y-8">
-            <div className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-900 rounded-3xl p-8 space-y-6">
+            <div className="bg-[#080d1a]/85 border border-slate-900 rounded-3xl p-8 space-y-6">
               <h3 className="text-xl font-black text-white tracking-tight leading-none mb-2">
                 Coordonnées
               </h3>
@@ -110,7 +110,7 @@ export function ContactSection() {
 
           {/* Formulaire de contact */}
           <AnimatedSection className="lg:col-span-7">
-            <form onSubmit={handleSubmit} className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-900 rounded-3xl p-8 space-y-5">
+            <form onSubmit={handleSubmit} className="bg-[#080d1a]/85 border border-slate-900 rounded-3xl p-8 space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-400">Nom Complet *</label>

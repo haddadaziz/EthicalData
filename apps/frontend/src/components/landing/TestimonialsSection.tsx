@@ -133,7 +133,7 @@ export function TestimonialsSection() {
                   <div 
                     key={idx} 
                     style={{ flex: `0 0 calc(${100 / itemsPerView}% - ${(itemsPerView - 1) * 24 / itemsPerView}px)` }} 
-                    className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-900 hover:border-red-500/20 rounded-2xl p-4 sm:p-6 text-left flex flex-col space-y-4 hover:-translate-y-1 hover:shadow-lg hover:shadow-red-950/5 transition-all duration-300 group cursor-default h-full"
+                    className="bg-[#080d1a]/85 border border-slate-900 hover:border-red-500/20 rounded-2xl p-4 sm:p-6 text-left flex flex-col space-y-4 hover:-translate-y-1 hover:shadow-lg hover:shadow-red-950/5 transition-all duration-300 group cursor-default h-full"
                   >
                     {/* Header de l'avis */}
                     <div className="flex items-start justify-between">

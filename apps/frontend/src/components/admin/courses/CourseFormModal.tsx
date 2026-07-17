@@ -449,13 +449,13 @@ export const CourseFormModal = React.memo(function CourseFormModal({
                           <BookOpen className="w-12 h-12 text-slate-300" />
                         </div>
                       )}
-                      <span className={`absolute top-3 left-3 px-2 py-0.5 rounded-md font-extrabold text-[8px] uppercase tracking-wider backdrop-blur-sm ${
+                      <span className={`absolute top-3 left-3 px-2 py-0.5 rounded-md font-extrabold text-[8px] uppercase tracking-wider ${
                         statut === 'PUBLIE' ? 'bg-emerald-500 text-white' : statut === 'ARCHIVE' ? 'bg-slate-500 text-white' : 'bg-amber-500 text-white'
                       }`}>
                         {statut}
                       </span>
                       {selectedCert && (
-                        <span className="absolute bottom-3 left-3 px-2 py-0.5 bg-slate-900/70 text-white text-[8px] font-extrabold rounded-md uppercase tracking-wider backdrop-blur-sm">
+                        <span className="absolute bottom-3 left-3 px-2 py-0.5 bg-slate-900/70 text-white text-[8px] font-extrabold rounded-md uppercase tracking-wider">
                           {selectedCert.codeExamen || selectedCert.nom}
                         </span>
                       )}

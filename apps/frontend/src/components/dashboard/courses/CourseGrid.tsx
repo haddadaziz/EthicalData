@@ -48,7 +48,7 @@ export function CourseGrid({
               </div>
             )}
             {/* Badge statut */}
-            <span className={`absolute top-3 right-3 px-2.5 py-0.5 text-[9px] font-extrabold rounded-full uppercase tracking-wider border shadow-sm backdrop-blur-sm ${c.statut === 'PUBLIE'
+            <span className={`absolute top-3 right-3 px-2.5 py-0.5 text-[9px] font-extrabold rounded-full uppercase tracking-wider border shadow-sm ${c.statut === 'PUBLIE'
                 ? 'bg-emerald-500/90 text-white border-emerald-400/50'
                 : 'bg-amber-500/90 text-white border-amber-400/50'
               }`}>
@@ -56,7 +56,7 @@ export function CourseGrid({
             </span>
             {/* Certification badge */}
             {c.certification && (
-              <span className="absolute bottom-3 left-3 px-2 py-0.5 bg-slate-900/70 text-white text-[8px] font-extrabold rounded-md uppercase tracking-wider backdrop-blur-sm">
+              <span className="absolute bottom-3 left-3 px-2 py-0.5 bg-slate-900/70 text-white text-[8px] font-extrabold rounded-md uppercase tracking-wider">
                 {c.certification.codeExamen && !c.certification.nom.includes(c.certification.codeExamen) ? c.certification.codeExamen : c.certification.nom}
               </span>
             )}

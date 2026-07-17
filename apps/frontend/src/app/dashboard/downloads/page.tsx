@@ -449,7 +449,7 @@ export default function DownloadsPage() {
                                                     <BookOpen className="w-10 h-10 text-slate-300" />
                                                 </div>
                                             )}
-                                            <span className="absolute bottom-3 left-3 px-2 py-0.5 bg-slate-900/70 text-white text-[8px] font-extrabold rounded-md uppercase tracking-wider backdrop-blur-sm">
+                                            <span className="absolute bottom-3 left-3 px-2 py-0.5 bg-slate-900/70 text-white text-[8px] font-extrabold rounded-md uppercase tracking-wider">
                                                 {c.certification?.codeExamen || c.certification?.nom || 'Certification'}
                                             </span>
                                         </div>

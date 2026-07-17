@@ -52,7 +52,7 @@ export function FaqSection() {
             const isOpen = activeFaq === idx;
             return (
               <AnimatedSection key={idx} delay={idx * 0.08}>
-                <div className="bg-[#0a0f1d]/85 backdrop-blur-sm border border-slate-900 rounded-2xl overflow-hidden transition-all duration-300 hover:border-slate-800 shadow-sm">
+                <div className="bg-[#0a0f1d]/85 border border-slate-900 rounded-2xl overflow-hidden transition-all duration-300 hover:border-slate-800 shadow-sm">
                   <button
                     onClick={() => toggleFaq(idx)}
                     className="w-full flex items-center justify-between p-5 text-left font-bold text-xs sm:text-sm text-slate-200 hover:text-red-500 transition-colors outline-none cursor-pointer border-0 bg-transparent"

@@ -14,7 +14,7 @@ import { TestimonialsSection } from '@/components/landing/TestimonialsSection';
 import { EventsSection } from '@/components/landing/EventsSection';
 import { PartnersSection } from '@/components/landing/PartnersSection';
 import { FaqSection } from '@/components/landing/FaqSection';
-import { ContactSection } from '@/components/landing/ContactSection';
+
 
 const cleanTitle = (nom: string, code: string) => {
   if (!code || !nom) return nom;
@@ -119,7 +119,7 @@ export default function LandingPage() {
       <EventsSection />
       <PartnersSection />
       <FaqSection />
-      <ContactSection />
+
       <Footer />
     </main>
   );

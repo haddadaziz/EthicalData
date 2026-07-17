@@ -30,7 +30,6 @@ export const AnimatedSection = ({ children, className = "", delay = 0 }: any) =>
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? 'translateY(0) translateZ(0)' : 'translateY(30px) translateZ(0)',
         transition: `opacity 0.8s ease-out ${delay}s, transform 0.8s ease-out ${delay}s`,
-        willChange: 'opacity, transform',
       }}
     >
       {children}

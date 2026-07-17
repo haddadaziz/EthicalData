@@ -96,7 +96,7 @@ export default function CGUPage() {
 
                     <div className="space-y-6">
                         {sections.map((s, i) => (
-                            <MotionDiv key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-3xl p-6 md:p-8 shadow-sm space-y-4 hover:border-slate-700 transition-colors">
+                            <MotionDiv key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="bg-[#080d1a]/85 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-sm space-y-4 hover:border-slate-700 transition-colors">
                                 <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
                                     <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500 shrink-0">
                                         <s.icon className="w-5 h-5" />

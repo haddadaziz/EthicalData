@@ -83,7 +83,7 @@ export default function FaqPage() {
                                 <p className="text-center text-slate-400 font-medium py-10">Aucun résultat trouvé pour "{search}"</p>
                             ) : (
                                 filtered.map((item, i) => (
-                                    <div key={i} className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:border-slate-700 transition-colors">
+                                    <div key={i} className="bg-[#080d1a]/85 border border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:border-slate-700 transition-colors">
                                         <button onClick={() => setOpenIndex(openIndex === i ? null : i)} className="w-full flex items-center justify-between p-5 text-left cursor-pointer hover:bg-[#0a1224] transition-colors">
                                             <span className="text-sm font-bold text-slate-100 pr-4">{item.q}</span>
                                             <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${openIndex === i ? 'rotate-180' : ''}`} />
@@ -110,7 +110,7 @@ export default function FaqPage() {
                                 </div>
                                 <div className="space-y-2">
                                     {cat.questions.map((item, qi) => (
-                                        <div key={qi} className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:border-slate-700 transition-colors">
+                                        <div key={qi} className="bg-[#080d1a]/85 border border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:border-slate-700 transition-colors">
                                             <button onClick={() => setOpenIndex(openIndex === ci * 100 + qi ? null : ci * 100 + qi)} className="w-full flex items-center justify-between p-5 text-left cursor-pointer hover:bg-[#0a1224] transition-colors">
                                                 <span className="text-sm font-bold text-slate-100 pr-4">{item.q}</span>
                                                 <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${openIndex === ci * 100 + qi ? 'rotate-180' : ''}`} />

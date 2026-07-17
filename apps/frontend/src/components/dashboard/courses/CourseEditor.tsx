@@ -1198,7 +1198,7 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
 
             {/* Confirmation de sortie avec modifications non sauvegardées */}
             {exitAction === 'prompt' && (
-                <div className="absolute inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm"
+                <div className="absolute inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/60"
                     onClick={(e) => { if (e.target === e.currentTarget) setExitAction(null); }}>
                     <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl space-y-6 text-left relative overflow-hidden">
                         <div className="flex items-start gap-3">

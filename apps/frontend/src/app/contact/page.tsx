@@ -1,105 +1,199 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Mail, Phone, Compass, Send, Clock } from '@/components/icons';
+import { Mail, Phone, Globe, Send, RefreshCw } from '@/components/icons';
 import { Navbar } from '@/components/landing/Navbar';
 import { Footer } from '@/components/layout/Footer';
-import { apiFetch } from '../../lib/api';
-import { useToast } from '../../context/ToastContext';
+import { apiFetch } from '@/lib/api';
+import { useToast } from '@/context/ToastContext';
+import { AnimatedSection } from '@/components/ui/AnimatedSection';
 
 export default function ContactPage() {
-    const { showToast } = useToast();
-    const [formData, setFormData] = useState({ nom: '', email: '', sujet: '', message: '' });
-    const [sending, setSending] = useState(false);
+  const { showToast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [nom, setNom] = useState('');
+  const [email, setEmail] = useState('');
+  const [sujet, setSujet] = useState('');
+  const [message, setMessage] = useState('');
 
-    useEffect(() => {
-        document.title = "Contact - Ethical Data Security";
-    }, []);
+  useEffect(() => {
+    document.title = "Contact - Ethical Data Security";
+  }, []);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setSending(true);
-        try {
-            await apiFetch('/contact', {
-                method: 'POST',
-                body: formData,
-            });
-            showToast('Votre message a été envoyé avec succès.', 'success');
-            setFormData({ nom: '', email: '', sujet: '', message: '' });
-        } catch (err: any) {
-            showToast(err.message || 'Erreur lors de l\'envoi.', 'error');
-        } finally {
-            setSending(false);
-        }
-    };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
 
-    return (
-        <main className="min-h-screen bg-[#020617] text-white selection:bg-blue-600 selection:text-white relative overflow-hidden">
-            <Navbar />
+    try {
+      await apiFetch('/contact', {
+        method: 'POST',
+        body: { nom, email, sujet, message },
+      });
 
-            <div className="pt-32 pb-20 px-4 md:px-6">
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-6xl mx-auto space-y-12">
-                    <div className="text-center space-y-4">
-                        <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">Contactez-nous</h1>
-                        <p className="text-slate-400 font-medium max-w-2xl mx-auto">
-                            Une question, un projet, une demande de partenariat ? Notre équipe est à votre écoute.
-                        </p>
+      showToast("Votre message a été envoyé avec succès. Notre équipe vous recontactera très bientôt.", "success");
+
+      setNom('');
+      setEmail('');
+      setSujet('');
+      setMessage('');
+    } catch (err: any) {
+      showToast(err.message || "Une erreur est survenue lors de l'envoi du message.", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <main className="min-h-screen bg-[#020617] text-white selection:bg-red-600 selection:text-white relative flex flex-col">
+      <Navbar />
+
+      <div className="flex-1 relative w-full pt-32 pb-20 md:pb-24 overflow-hidden flex items-center justify-center">
+        {/* Background cyber network image - Stretching 100% edge-to-edge */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <img 
+            src="/bg/contact_cyber_bg.png" 
+            alt="Contact background" 
+            className="w-full h-full object-cover opacity-20 transform-gpu" 
+            loading="lazy"
+            decoding="async"
+          />
+          {/* Soft gradient fading perfectly to top/bottom sections to ensure smooth seamless flow */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#020617] via-transparent to-[#020617]" />
+        </div>
+
+        <div className="max-w-6xl mx-auto px-6 relative z-10 w-full">
+          <AnimatedSection className="text-center space-y-4 mb-16">
+            <h1 className="text-4xl md:text-5xl font-black text-white uppercase leading-tight tracking-tight drop-shadow-lg">
+              NOUS CONTACTER
+            </h1>
+            <p className="text-slate-400 text-sm md:text-base leading-relaxed font-semibold max-w-2xl mx-auto">
+              Une question sur nos formations, nos certifications ou nos prestations ? Écrivez-nous et nos experts vous répondront dans les plus brefs délais.
+            </p>
+          </AnimatedSection>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mt-8">
+            {/* Infos de contact */}
+            <AnimatedSection className="lg:col-span-5 space-y-8">
+              <div className="bg-[#080d1a]/85 border border-slate-900 rounded-3xl p-8 space-y-6">
+                <h3 className="text-xl font-black text-white tracking-tight leading-none mb-2">
+                  Coordonnées
+                </h3>
+                <p className="text-xs text-red-500 font-extrabold uppercase tracking-wider">
+                  Ethical Data Security
+                </p>
+
+                <div className="space-y-4 pt-2">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-red-950/30 border border-red-900/20 flex items-center justify-center text-red-500 shrink-0 shadow-[0_0_10px_rgba(220,38,38,0.15)]">
+                      <Mail className="w-5 h-5" />
                     </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div className="lg:col-span-2">
-                            <form onSubmit={handleSubmit} className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-3xl p-8 shadow-sm space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <div className="space-y-1.5">
-                                        <label className="text-xs font-bold text-slate-300">Nom complet *</label>
-                                        <input type="text" required value={formData.nom} onChange={(e) => setFormData({ ...formData, nom: e.target.value })} placeholder="Votre nom" className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 focus:bg-[#020617] text-white placeholder-slate-500 rounded-xl text-xs font-semibold outline-none transition-all" />
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-xs font-bold text-slate-300">Email *</label>
-                                        <input type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="vous@exemple.com" className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 focus:bg-[#020617] text-white placeholder-slate-500 rounded-xl text-xs font-semibold outline-none transition-all" />
-                                    </div>
-                                </div>
-                                <div className="space-y-1.5">
-                                    <label className="text-xs font-bold text-slate-300">Sujet *</label>
-                                    <input type="text" required value={formData.sujet} onChange={(e) => setFormData({ ...formData, sujet: e.target.value })} placeholder="Objet de votre message" className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 focus:bg-[#020617] text-white placeholder-slate-500 rounded-xl text-xs font-semibold outline-none transition-all" />
-                                </div>
-                                <div className="space-y-1.5">
-                                    <label className="text-xs font-bold text-slate-300">Message *</label>
-                                    <textarea rows={6} required value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} placeholder="Décrivez votre demande en détail..." className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 focus:bg-[#020617] text-white placeholder-slate-500 rounded-xl text-xs font-semibold outline-none transition-all resize-none" />
-                                </div>
-                                <button type="submit" disabled={sending} className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer disabled:opacity-50 flex items-center gap-2 shadow-md">
-                                    {sending ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Send className="w-4 h-4" />}
-                                    <span>Envoyer le message</span>
-                                </button>
-                            </form>
-                        </div>
-
-                        <div className="space-y-5">
-                            {[
-                                { icon: Mail, label: 'Email', value: 'contact@ethicaldatasecurity.ma', href: 'mailto:contact@ethicaldatasecurity.ma' },
-                                { icon: Phone, label: 'Téléphone', value: '+212 664 244 343', href: 'tel:+212664244343' },
-                                { icon: Compass, label: 'Adresse', value: 'Bureau 305, Technopark Casablanca' },
-                                { icon: Clock, label: 'Horaires', value: 'Lun-Ven : 9h00 - 18h00' },
-                            ].map((item, i) => (
-                                <div key={i} className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-2xl p-5 shadow-sm space-y-2">
-                                    <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500">
-                                        <item.icon className="w-5 h-5" />
-                                    </div>
-                                    <h3 className="text-xs font-black text-white uppercase tracking-wider">{item.label}</h3>
-                                    {item.href ? (
-                                        <a href={item.href} className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">{item.value}</a>
-                                    ) : (
-                                        <p className="text-sm font-semibold text-slate-300">{item.value}</p>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">E-mail</h4>
+                      <p className="text-sm font-bold text-slate-200">contact@ethicaldata.ma</p>
                     </div>
-                </motion.div>
-            </div>
+                  </div>
 
-            <Footer />
-        </main>
-    );
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-red-950/30 border border-red-900/20 flex items-center justify-center text-red-500 shrink-0 shadow-[0_0_10px_rgba(220,38,38,0.15)]">
+                      <Phone className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Téléphone</h4>
+                      <p className="text-sm font-bold text-slate-200">+212 (0) 5 22 22 22 22</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-red-950/30 border border-red-900/20 flex items-center justify-center text-red-500 shrink-0 shadow-[0_0_10px_rgba(220,38,38,0.15)]">
+                      <Globe className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Adresse</h4>
+                      <p className="text-sm font-bold text-slate-200">Technopark Casablanca, Maroc</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </AnimatedSection>
+
+            {/* Formulaire de contact */}
+            <AnimatedSection className="lg:col-span-7">
+              <form onSubmit={handleSubmit} className="bg-[#080d1a]/85 border border-slate-900 rounded-3xl p-8 space-y-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-400">Nom Complet *</label>
+                    <input
+                      type="text"
+                      required
+                      value={nom}
+                      onChange={(e) => setNom(e.target.value)}
+                      placeholder="Votre nom et prénom"
+                      className="w-full p-3.5 bg-[#030712] border border-slate-900 focus:border-red-600 rounded-2xl text-white text-xs font-semibold outline-none transition-colors placeholder-slate-600"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-400">Adresse E-mail *</label>
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="nom@exemple.com"
+                      className="w-full p-3.5 bg-[#030712] border border-slate-900 focus:border-red-600 rounded-2xl text-white text-xs font-semibold outline-none transition-colors placeholder-slate-600"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-400">Sujet *</label>
+                  <input
+                    type="text"
+                    required
+                    value={sujet}
+                    onChange={(e) => setSujet(e.target.value)}
+                    placeholder="De quoi s'agit-il ?"
+                    className="w-full p-3.5 bg-[#030712] border border-slate-900 focus:border-red-600 rounded-2xl text-white text-xs font-semibold outline-none transition-colors placeholder-slate-600"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-400">Message *</label>
+                  <textarea
+                    required
+                    rows={4}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Décrivez votre demande en détail..."
+                    className="w-full p-3.5 bg-[#030712] border border-slate-900 focus:border-red-600 rounded-2xl text-white text-xs font-semibold outline-none transition-colors resize-none placeholder-slate-600"
+                  />
+                </div>
+
+                <div className="flex justify-end pt-3">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl text-xs flex items-center gap-2 transition-all shadow-md shadow-red-600/20 cursor-pointer disabled:opacity-50"
+                  >
+                    {loading ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span>Envoi en cours...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        <span>Envoyer le Message</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </AnimatedSection>
+          </div>
+        </div>
+      </div>
+
+      <Footer />
+    </main>
+  );
 }

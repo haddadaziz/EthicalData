@@ -230,7 +230,7 @@ export default function CertificationsPublicPage() {
             <main className="max-w-7xl mx-auto px-6 py-10 flex-1 w-full space-y-8">
                 
                 {/* BARRE DE RECHERCHE ET FILTRES D'ÉDITEURS */}
-                <div className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-3xl p-6 shadow-sm space-y-5 text-left">
+                <div className="bg-[#080d1a]/85 border border-slate-800 rounded-3xl p-6 shadow-sm space-y-5 text-left">
                     <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
                         
                         {/* Champ de recherche */}
@@ -419,7 +419,7 @@ export default function CertificationsPublicPage() {
                             const slug = cert.slug || `${cert.codeExamen?.toLowerCase() || cert.id}`;
                             return (
                             <Link key={cert.id} href={`/certifications/${slug}`} scroll={false}
-                                className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-2xl p-4 flex flex-col group transition-all duration-300 hover:shadow-lg hover:border-slate-600 text-left">
+                                className="bg-[#080d1a]/85 border border-slate-800 rounded-2xl p-4 flex flex-col group transition-all duration-300 hover:shadow-lg hover:border-slate-600 text-left">
                                 <div className="relative w-full aspect-[4/3] sm:aspect-auto sm:h-[220px] rounded-xl overflow-hidden shadow-sm transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-blue-900/30 group-hover:shadow-2xl bg-white border border-slate-100">
                                     <img src="/images/cadre_certif.png" alt="" className="absolute inset-0 w-full h-full object-cover z-0" />
                                     {cert.codeExamen && (
@@ -457,7 +457,7 @@ export default function CertificationsPublicPage() {
                     </div>
 
                     {totalPages > 1 && (
-                        <div className="flex items-center justify-between mt-8 p-6 bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-3xl shadow-sm">
+                        <div className="flex items-center justify-between mt-8 p-6 bg-[#080d1a]/85 border border-slate-800 rounded-3xl shadow-sm">
                             <button
                                 onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                                 disabled={currentPage === 1}
