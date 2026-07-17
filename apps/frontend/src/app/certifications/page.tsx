@@ -182,12 +182,11 @@ export default function CertificationsPublicPage() {
             />
 
             {/* HEADER HERO SECTION */}
-            <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden border-b border-slate-200/60">
-                {/* Background image */}
+            <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden border-b border-slate-800">
+                {/* Background effects */}
                 <div className="absolute inset-0">
-                    <img src="/logos/landing_page_logo_ethicaldata.jpeg" alt=""
-                        className="w-full h-full object-cover opacity-80" />
-                    <div className="absolute inset-0 bg-gradient-to-b from-slate-900/50 via-slate-900/30 to-slate-900/70" />
+                    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
+                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
                 </div>
 
                 {/* Hero content */}
