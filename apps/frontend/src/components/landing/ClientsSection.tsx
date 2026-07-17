@@ -22,7 +22,7 @@ export function ClientsSection() {
         
         <div className="flex gap-12 animate-marquee-reverse whitespace-nowrap items-center">
           {[...clients, ...clients, ...clients, ...clients].map((client, idx) => (
-            <div key={idx} className="inline-flex items-center justify-center bg-white border border-slate-100 rounded-xl px-4 py-1.5 shrink-0 shadow-sm" style={{ backgroundColor: 'white' }}>
+            <div key={idx} className="inline-flex items-center justify-center bg-white border border-slate-100 rounded-xl px-4 py-1.5 shrink-0 shadow-sm" style={{ backgroundColor: 'rgba(255, 255, 255, 0.99)', colorScheme: 'light' }}>
               <img 
                 src={client.logo} 
                 alt={client.name} 

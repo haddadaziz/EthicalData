@@ -24,7 +24,7 @@ export function PartnersSection() {
         
         <div className="flex gap-12 animate-marquee whitespace-nowrap items-center">
           {[...partnerLogos, ...partnerLogos, ...partnerLogos, ...partnerLogos].map((partner, idx) => (
-            <div key={idx} className="inline-flex items-center justify-center bg-white border border-slate-100 rounded-xl px-4 py-1.5 shrink-0 shadow-sm" style={{ backgroundColor: 'white' }}>
+            <div key={idx} className="inline-flex items-center justify-center bg-white border border-slate-100 rounded-xl px-4 py-1.5 shrink-0 shadow-sm" style={{ backgroundColor: 'rgba(255, 255, 255, 0.99)', colorScheme: 'light' }}>
               <img 
                 src={partner.path} 
                 alt={partner.name} 
