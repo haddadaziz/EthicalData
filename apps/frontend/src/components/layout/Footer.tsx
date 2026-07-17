@@ -27,12 +27,31 @@ export function Footer() {
           </p>
         </div>
 
-        <div className="text-left space-y-4 md:min-w-[400px]">
-          <h4 className="text-base font-bold text-white uppercase tracking-wider">Contact</h4>
-          <div className="text-sm space-y-3">
-            <p><span className="font-bold text-[#E5E5E5]">Email :</span> contact@ethicaldatasecurity.ma</p>
-            <p><span className="font-bold text-[#E5E5E5]">Tél :</span> +212 664 244 343 // +212 520 572 631</p>
-            <p><span className="font-bold text-[#E5E5E5]">Adresse :</span> Bureau 305, Technopark Casablanca</p>
+        <div className="flex flex-col md:flex-row gap-8 md:gap-12 text-left">
+          <div className="space-y-4">
+            <h4 className="text-base font-bold text-white uppercase tracking-wider">Liens</h4>
+            <div className="text-sm space-y-2.5">
+              <a href="/about" className="block text-slate-400 hover:text-white transition-colors">À propos</a>
+              <a href="/certifications" className="block text-slate-400 hover:text-white transition-colors">Certifications</a>
+              <a href="/faq" className="block text-slate-400 hover:text-white transition-colors">FAQ</a>
+              <a href="/contact" className="block text-slate-400 hover:text-white transition-colors">Contact</a>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <h4 className="text-base font-bold text-white uppercase tracking-wider">Légal</h4>
+            <div className="text-sm space-y-2.5">
+              <a href="/legal" className="block text-slate-400 hover:text-white transition-colors">Mentions Légales</a>
+              <a href="/cgu" className="block text-slate-400 hover:text-white transition-colors">CGU</a>
+              <a href="/legal#cookies" className="block text-slate-400 hover:text-white transition-colors">Cookies</a>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <h4 className="text-base font-bold text-white uppercase tracking-wider">Contact</h4>
+            <div className="text-sm space-y-3">
+              <p><span className="font-bold text-[#E5E5E5]">Email :</span> contact@ethicaldatasecurity.ma</p>
+              <p><span className="font-bold text-[#E5E5E5]">Tél :</span> +212 664 244 343 // +212 520 572 631</p>
+              <p><span className="font-bold text-[#E5E5E5]">Adresse :</span> Bureau 305, Technopark Casablanca</p>
+            </div>
           </div>
         </div>
         

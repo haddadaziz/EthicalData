@@ -57,24 +57,21 @@ export function Navbar({
 
         {/* Navigation PC : Capsule Pill Flottante Ultra Stylée */}
         <nav className={`hidden md:flex items-center gap-1 rounded-full px-3 py-1.5 transition-all duration-300 ${scrolled ? 'bg-slate-950/60 border border-slate-900' : 'bg-transparent border-0'}`}>
-          <a href="#about" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-red-500 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
-            Qui Sommes-Nous
-          </a>
+          <Link href="/" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-red-500 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
+            Accueil
+          </Link>
+          <Link href="/about" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-red-500 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
+            À propos
+          </Link>
           <Link href="/certifications" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-red-500 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
             Certifications
           </Link>
-          <a href="#services" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-red-500 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
-            Nos Services
-          </a>
-          <a href="#testimonials" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-red-500 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
-            Avis
-          </a>
-          <a href="#faq" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-red-500 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
+          <Link href="/faq" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-red-500 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
             FAQ
-          </a>
-          <a href="#contact" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-red-500 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
+          </Link>
+          <Link href="/contact" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-red-500 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
             Contact
-          </a>
+          </Link>
         </nav>
 
         {/* Actions à droite */}
@@ -125,12 +122,11 @@ export function Navbar({
             className="md:hidden border-t border-slate-900 bg-[#020617]/95 backdrop-blur-xl overflow-hidden"
           >
             <nav className="flex flex-col p-4 gap-1 text-xs font-black uppercase tracking-widest">
-              <a href="#about" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">Qui Sommes-Nous</a>
+              <Link href="/" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">Accueil</Link>
+              <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">À propos</Link>
               <Link href="/certifications" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">Certifications</Link>
-              <a href="#services" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">Nos Services</a>
-              <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">Avis</a>
-              <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">FAQ</a>
-              <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">Contact</a>
+              <Link href="/faq" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">FAQ</Link>
+              <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">Contact</Link>
               
               {!isConnected && (
                 <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-slate-800">

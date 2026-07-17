@@ -560,6 +560,24 @@ async function main() {
         }
     }
 
+    // 8b. Simulations officielles
+    console.log('🎯 Création des simulations...');
+    const simuAz900 = await prisma.simulation.create({
+        data: { titre: 'Simulation AZ-900 - Examen Blanc', description: 'Examen blanc officiel Microsoft Azure Fundamentals', duree: 45, scoreMinimal: 700, statut: 'PUBLIE', certificationId: certAz900.id },
+    });
+    const simuAws = await prisma.simulation.create({
+        data: { titre: 'Simulation AWS SAA-C03 - Examen Blanc', description: 'Examen blanc officiel AWS Certified Solutions Architect', duree: 60, scoreMinimal: 720, statut: 'PUBLIE', certificationId: certAws.id },
+    });
+    const simuSecurity = await prisma.simulation.create({
+        data: { titre: 'Simulation CompTIA Security+ - Examen Blanc', description: 'Examen blanc officiel CompTIA Security+ SY0-701', duree: 90, scoreMinimal: 750, statut: 'PUBLIE', certificationId: certSecurity.id },
+    });
+    const simuGcp = await prisma.simulation.create({
+        data: { titre: 'Simulation GCP Digital Leader - Examen Blanc', description: 'Examen blanc officiel Google Cloud Digital Leader', duree: 45, scoreMinimal: 700, statut: 'PUBLIE', certificationId: certGcpDigitalLeader.id },
+    });
+    const simuAwsCp = await prisma.simulation.create({
+        data: { titre: 'Simulation AWS Cloud Practitioner - Examen Blanc', description: 'Examen blanc officiel AWS Cloud Practitioner CLF-C02', duree: 45, scoreMinimal: 700, statut: 'PUBLIE', certificationId: certAwsCp.id },
+    });
+
     // 9. Questions d'examen reelles (QCM, Vrai/Faux, Ouvertes & Cas Pratiques avec IA)
     console.log('Question ajout des questions de simulation reelles & banque evaluation IA...');
 
@@ -678,7 +696,1856 @@ async function main() {
         },
     });
 
-    // 8. Ressources Téléchargeables
+    // t
+
+    // --- QUESTIONS AZ-900 (Batch 2) ---
+    await prisma.question.create({
+        data: {
+            enonce: "Quel est le principal avantage d'utiliser des Zones de DisponibilitÃ© (Availability Zones) dans Azure ?",
+            explication: "Les Zones de DisponibilitÃ© protÃ¨gent les applications contre les pannes de centre de donnÃ©es en les rÃ©partissant sur des emplacements physiquement sÃ©parÃ©s au sein d'une mÃªme rÃ©gion.",
+            reponseCorrecte: "C",
+            categorie: "Haute DisponibilitÃ©",
+            type: "QCM",
+            certificationId: certAz900.id,
+            simulationId: simuAz900.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "RÃ©duire la latence rÃ©seau entre les utilisateurs" },
+                    { lettre: "B", texte: "Augmenter la puissance de calcul disponible" },
+                    { lettre: "C", texte: "ProtÃ©ger contre les pannes d'un centre de donnÃ©es entier" },
+                    { lettre: "D", texte: "Simplifier la gestion des identitÃ©s" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service Azure permet d'exÃ©cuter du code sans avoir Ã  gÃ©rer l'infrastructure serveur sous-jacente ?",
+            explication: "Azure Functions est un service serverless qui exÃ©cute du code en rÃ©ponse Ã  des Ã©vÃ©nements, sans gestion de serveurs.",
+            reponseCorrecte: "A",
+            categorie: "Calcul Serverless",
+            type: "QCM",
+            certificationId: certAz900.id,
+            simulationId: simuAz900.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Azure Functions" },
+                    { lettre: "B", texte: "Azure Virtual Machines" },
+                    { lettre: "C", texte: "Azure App Service" },
+                    { lettre: "D", texte: "Azure Kubernetes Service" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel outil Microsoft permet d'estimer le coÃ»t des services Azure avant leur dÃ©ploiement ?",
+            explication: "Le Azure Pricing Calculator est un outil web gratuit qui permet de configurer et d'estimer le coÃ»t des services Azure.",
+            reponseCorrecte: "D",
+            categorie: "Gestion des CoÃ»ts",
+            type: "QCM",
+            certificationId: certAz900.id,
+            simulationId: simuAz900.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Azure Cost Management" },
+                    { lettre: "B", texte: "Azure TCO Calculator" },
+                    { lettre: "C", texte: "Azure Migrate" },
+                    { lettre: "D", texte: "Azure Pricing Calculator" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service Azure offre une solution de base de donnÃ©es relationnelle entiÃ¨rement gÃ©rÃ©e avec une haute disponibilitÃ© intÃ©grÃ©e ?",
+            explication: "Azure SQL Database est un service PaaS de base de donnÃ©es relationnelle qui assure automatiquement la haute disponibilitÃ©, les sauvegardes et les mises Ã  jour.",
+            reponseCorrecte: "B",
+            categorie: "Bases de DonnÃ©es",
+            type: "QCM",
+            certificationId: certAz900.id,
+            simulationId: simuAz900.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Azure Cosmos DB" },
+                    { lettre: "B", texte: "Azure SQL Database" },
+                    { lettre: "C", texte: "Azure Database pour MySQL" },
+                    { lettre: "D", texte: "Azure Cache for Redis" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Qu'est-ce qu'un abonnement (subscription) Azure ?",
+            explication: "Un abonnement Azure est un conteneur logique qui regroupe les ressources Azure et dÃ©finit les limites de facturation, d'accÃ¨s et de gestion.",
+            reponseCorrecte: "C",
+            categorie: "Gouvernance",
+            type: "QCM",
+            certificationId: certAz900.id,
+            simulationId: simuAz900.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Un contrat de support technique Azure" },
+                    { lettre: "B", texte: "Un groupe de ressources contenant des machines virtuelles" },
+                    { lettre: "C", texte: "Un conteneur logique qui regroupe des ressources et dÃ©finit les limites de facturation" },
+                    { lettre: "D", texte: "Un niveau de performance pour Azure SQL Database" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel modÃ¨le de service cloud Azure fournit une plateforme de dÃ©veloppement dÃ©diÃ©e avec un environnement d'exÃ©cution gÃ©rÃ©, sans gestion de l'OS ?",
+            explication: "Le PaaS (Platform as a Service) fournit une plateforme gÃ©rÃ©e incluant le runtime, la base de donnÃ©es et les outils de dÃ©veloppement. Azure App Service est un exemple de PaaS.",
+            reponseCorrecte: "B",
+            categorie: "Concepts Cloud",
+            type: "QCM",
+            certificationId: certAz900.id,
+            simulationId: simuAz900.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "IaaS (Infrastructure as a Service)" },
+                    { lettre: "B", texte: "PaaS (Platform as a Service)" },
+                    { lettre: "C", texte: "SaaS (Software as a Service)" },
+                    { lettre: "D", texte: "FaaS (Function as a Service)" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Dans le cadre du modÃ¨le de responsabilitÃ© partagÃ©e Azure, Microsoft est responsable de la sÃ©curitÃ© physique des centres de donnÃ©es.",
+            explication: "Vrai. Microsoft est responsable de la sÃ©curitÃ© physique, du rÃ©seau physique et de l'infrastructure des centres de donnÃ©es dans le cadre du modÃ¨le de responsabilitÃ© partagÃ©e.",
+            reponseCorrecte: "A",
+            categorie: "SÃ©curitÃ© & ConformitÃ©",
+            type: "VRAI_FAUX",
+            certificationId: certAz900.id,
+            simulationId: simuAz900.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Vrai" },
+                    { lettre: "B", texte: "Faux" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Azure Marketplace permet uniquement d'acheter des licences Microsoft et ne propose pas de solutions tierces.",
+            explication: "Faux. Azure Marketplace propose des milliers de solutions tierces certifiÃ©es, y compris des VM prÃ©-configurÃ©es, des conteneurs, et des services SaaS provenant d'Ã©diteurs partenaires.",
+            reponseCorrecte: "B",
+            categorie: "Services Azure",
+            type: "VRAI_FAUX",
+            certificationId: certAz900.id,
+            simulationId: simuAz900.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Vrai" },
+                    { lettre: "B", texte: "Faux" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Comparez les trois modÃ¨les de cloud computing (public, privÃ©, hybride). Pour chaque modÃ¨le, donnez un cas d'usage concret et expliquez pourquoi Azure est particuliÃ¨rement adaptÃ© au modÃ¨le hybride.",
+            explication: "Le cloud public (Azure) offre des ressources partagÃ©es via Internet. Le cloud privÃ© (Azure Stack) est dÃ©diÃ© Ã  une organisation. Le cloud hybride combine les deux. Azure est idÃ©al pour l'hybride grÃ¢ce Ã  Azure Arc, Azure Stack et VPN Gateway.",
+            reponseCorrecte: "Cloud public : ressources partagÃ©es sur Internet, idÃ©al pour les startups (ex: hÃ©bergement d'un site Web). Cloud privÃ© : infrastructure dÃ©diÃ©e, adaptÃ© aux banques (ex: donnÃ©es rÃ©glementÃ©es). Cloud hybride : combinaison des deux, idÃ©al pour les entreprises avec des donnÃ©es sensibles en local (ex: banque avec App Web sur Azure + donnÃ©es clients en local). Azure se distingue par Azure Stack (cloud privÃ© sur site), Azure Arc (gestion unifiÃ©e) et une connectivitÃ© hybride native via VPN/ExpressRoute.",
+            grilleNotation: "100 pts: DÃ©finition prÃ©cise des 3 modÃ¨les + 1 cas d'usage par modÃ¨le + Explication spÃ©cifique des outils hybrides Azure (Azure Stack, Arc, VPN).",
+            categorie: "Concepts Cloud",
+            type: "OUVERTE",
+            certificationId: certAz900.id,
+            simulationId: simuAz900.id,
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Une startup de e-commerce souhaite migrer son application Web monolithique vers Azure. Elle prÃ©voit 10 000 utilisateurs simultanÃ©s en pÃ©riode de soldes. Proposez une architecture Azure robuste en utilisant des services PaaS et IaaS, avec une estimation des coÃ»ts et des recommandations de scalabilitÃ©.",
+            explication: "Utiliser Azure App Service (PaaS) pour l'application Web avec un plan de scaling automatique, Azure SQL Database pour la base de donnÃ©es avec un niveau premium, Azure Front Door pour le routage global, Azure Redis Cache pour les sessions et le cache, et Azure CDN pour les assets statiques. Activer le scaling automatique basÃ© sur le CPU et la mÃ©moire.",
+            reponseCorrecte: "Architecture proposÃ©e : 1. Azure Front Door pour la terminaison SSL et le routage global 2. Azure App Service (PaaS) avec plan Premium V3 pour l'application Web, Auto-Scaling de 1 Ã  20 instances basÃ© sur CPU > 70% 3. Azure Redis Cache Premium pour le cache de session et les donnÃ©es temporaires 4. Azure SQL Database (niveau Business Critical, 2 replicas) 5. Azure CDN pour les images et assets statiques 6. Azure Key Vault pour les secrets Estimation : environ 2500-3000 â‚¬/mois en pointe. ScalabilitÃ© : Auto-Scaling App Service + Read Replicas SQL + caching Redis.",
+            grilleNotation: "100 pts: Utilisation d'Azure App Service avec Auto-Scaling + Azure SQL Database + Cache (Redis) + Front Door ou CDN + Estimation cohÃ©rente des coÃ»ts.",
+            categorie: "Architecture & ScalabilitÃ©",
+            type: "CAS_PRATIQUE",
+            certificationId: certAz900.id,
+            simulationId: simuAz900.id,
+        },
+    });
+
+    // --- QUESTIONS AWS SAA-C03 (Batch 2) ---
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service AWS permet de crÃ©er et de gÃ©rer des conteneurs Docker de maniÃ¨re orchestrÃ©e et scalable ?",
+            explication: "Amazon ECS (Elastic Container Service) est un service d'orchestration de conteneurs entiÃ¨rement gÃ©rÃ©, prenant en charge Docker.",
+            reponseCorrecte: "A",
+            categorie: "Conteneurs & Orchestration",
+            type: "QCM",
+            certificationId: certAws.id,
+            simulationId: simuAws.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Amazon ECS" },
+                    { lettre: "B", texte: "Amazon EC2" },
+                    { lettre: "C", texte: "AWS Lambda" },
+                    { lettre: "D", texte: "AWS Batch" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service AWS fournit un pare-feu distribuÃ© pour protÃ©ger les applications Web contre les attaques courantes comme SQL injection et XSS ?",
+            explication: "AWS WAF (Web Application Firewall) protÃ¨ge les applications Web en filtrant et surveillant le trafic HTTP/HTTPS.",
+            reponseCorrecte: "B",
+            categorie: "SÃ©curitÃ© Applicative",
+            type: "QCM",
+            certificationId: certAws.id,
+            simulationId: simuAws.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "AWS Shield" },
+                    { lettre: "B", texte: "AWS WAF" },
+                    { lettre: "C", texte: "AWS Network Firewall" },
+                    { lettre: "D", texte: "AWS GuardDuty" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quelle solution AWS permet d'Ã©tablir une connexion rÃ©seau privÃ©e et dÃ©diÃ©e entre un centre de donnÃ©es sur site et AWS ?",
+            explication: "AWS Direct Connect Ã©tablit une connexion rÃ©seau privÃ©e dÃ©diÃ©e entre votreæ•°æ®ä¸­å¿ƒ et AWS, contournant Internet pour offrir une bande passante constante et une latence rÃ©duite.",
+            reponseCorrecte: "C",
+            categorie: "RÃ©seau & ConnectivitÃ©",
+            type: "QCM",
+            certificationId: certAws.id,
+            simulationId: simuAws.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "AWS Site-to-Site VPN" },
+                    { lettre: "B", texte: "AWS Client VPN" },
+                    { lettre: "C", texte: "AWS Direct Connect" },
+                    { lettre: "D", texte: "AWS Transit Gateway" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service de base de donnÃ©es AWS est conÃ§u pour les charges de travail NoSQL haute performance Ã  l'Ã©chelle mondiale avec une latence en millisecondes ?",
+            explication: "Amazon DynamoDB est une base de donnÃ©es NoSQL clÃ©-valeur et document qui offre des performances <10ms Ã  n'importe quelle Ã©chelle, avec des tables globales pour le dÃ©ploiement multi-rÃ©gion.",
+            reponseCorrecte: "D",
+            categorie: "Bases de DonnÃ©es NoSQL",
+            type: "QCM",
+            certificationId: certAws.id,
+            simulationId: simuAws.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Amazon RDS" },
+                    { lettre: "B", texte: "Amazon Aurora" },
+                    { lettre: "C", texte: "Amazon Redshift" },
+                    { lettre: "D", texte: "Amazon DynamoDB" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service AWS permet de surveiller les performances, de collecter des mÃ©triques et de configurer des alertes pour les ressources AWS ?",
+            explication: "Amazon CloudWatch est le service central de surveillance et d'observabilitÃ© d'AWS. Il collecte des mÃ©triques, des logs et permet de dÃ©clencher des alertes basÃ©es sur des seuils.",
+            reponseCorrecte: "A",
+            categorie: "Surveillance & ObservabilitÃ©",
+            type: "QCM",
+            certificationId: certAws.id,
+            simulationId: simuAws.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Amazon CloudWatch" },
+                    { lettre: "B", texte: "AWS CloudTrail" },
+                    { lettre: "C", texte: "AWS Config" },
+                    { lettre: "D", texte: "AWS Trusted Advisor" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quelle stratÃ©gie de migration AWS consiste Ã  dÃ©placer une application existante vers le cloud sans modification de son code ?",
+            explication: "Le Lift-and-Shift (ou Rehost) consiste Ã  migrer l'application existante vers AWS sans aucune modification, souvent via la crÃ©ation d'images VM (AMI) ou l'utilisation de AWS MGN.",
+            reponseCorrecte: "B",
+            categorie: "Migration Cloud",
+            type: "QCM",
+            certificationId: certAws.id,
+            simulationId: simuAws.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Replatform (Lift, Tinker and Shift)" },
+                    { lettre: "B", texte: "Rehost (Lift and Shift)" },
+                    { lettre: "C", texte: "Refactor (Re-architect)" },
+                    { lettre: "D", texte: "Retire" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Les Security Groups AWS sont stateful, ce qui signifie que le trafic de retour est automatiquement autorisÃ© quelle que soit la rÃ¨gle de sortie.",
+            explication: "Vrai. Les Security Groups sont stateful : si une rÃ¨gle d'entrÃ©e autorise le trafic entrant, le trafic de rÃ©ponse sortant est automatiquement autorisÃ©, mÃªme sans rÃ¨gle de sortie explicite.",
+            reponseCorrecte: "A",
+            categorie: "SÃ©curitÃ© RÃ©seau",
+            type: "VRAI_FAUX",
+            certificationId: certAws.id,
+            simulationId: simuAws.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Vrai" },
+                    { lettre: "B", texte: "Faux" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Amazon S3 offre une cohÃ©rence forte (strong consistency) pour toutes les opÃ©rations de lecture, Ã©criture et listage depuis 2020.",
+            explication: "Vrai. Depuis dÃ©cembre 2020, Amazon S3 offre une cohÃ©rence forte pour toutes les requÃªtes GET, PUT, LIST et DELETE, y compris pour les objets crÃ©Ã©s par des opÃ©rations simultanÃ©es.",
+            reponseCorrecte: "A",
+            categorie: "Stockage & CohÃ©rence",
+            type: "VRAI_FAUX",
+            certificationId: certAws.id,
+            simulationId: simuAws.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Vrai" },
+                    { lettre: "B", texte: "Faux" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Expliquez en dÃ©tail les 6 piliers du AWS Well-Architected Framework. Pour chaque pilier, donnez un exemple concret de service AWS qui permet de le mettre en Å“uvre.",
+            explication: "1. Excellence opÃ©rationnelle (AWS Systems Manager, CloudFormation) 2. SÃ©curitÃ© (IAM, KMS, WAF) 3. FiabilitÃ© (RDS Multi-AZ, Route 53) 4. EfficacitÃ© des performances (Auto Scaling, CloudFront) 5. Optimisation des coÃ»ts (Cost Explorer, Savings Plans) 6. DurabilitÃ© (S3 Intelligent-Tiering, rÃ©gions desservies par de l'Ã©nergie verte)",
+            reponseCorrecte: "1. Excellence opÃ©rationnelle : automatiser les opÃ©rations avec CloudFormation et Systems Manager. 2. SÃ©curitÃ© : protÃ©ger les donnÃ©es avec IAM, KMS, AWS WAF. 3. FiabilitÃ© : RDS Multi-AZ, Route 53 health checks, Auto Scaling. 4. EfficacitÃ© des performances : Auto Scaling ELB, CloudFront, selection du bon type de stockage. 5. Optimisation des coÃ»ts : AWS Cost Explorer, Savings Plans, instances spot. 6. DurabilitÃ© : S3 Intelligent-Tiering, infrastructure Ã©co-responsable.",
+            grilleNotation: "100 pts: 6 piliers nommÃ©s correctement + 1 service AWS pertinent par pilier + explication brÃ¨ve de l'application.",
+            categorie: "Architecture & Bonnes Pratiques",
+            type: "OUVERTE",
+            certificationId: certAws.id,
+            simulationId: simuAws.id,
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Une entreprise financiÃ¨re doit dÃ©ployer une application web rÃ©glementÃ©e (PCI-DSS) sur AWS avec les exigences suivantes : (1) Haute disponibilitÃ© sur 3 AZs, (2) Chiffrement des donnÃ©es au repos et en transit, (3) Isolation rÃ©seau stricte, (4) Journalisation complÃ¨te des accÃ¨s. Proposez une architecture dÃ©taillÃ©e avec les services AWS Ã  utiliser.",
+            explication: "Utiliser un VPC avec 3 subnets publics/privÃ©s sur 3 AZs. ALB public, Auto Scaling EC2 (instances privÃ©es), RDS Multi-AZ (dans subnets privÃ©s), KMS pour le chiffrement, CloudTrail + CloudWatch Logs pour l'audit, Security Groups restrictifs, AWS WAF, AWS Config pour la conformitÃ©.",
+            reponseCorrecte: "Architecture : 1. VPC avec 3 AZs, subnets publics (ALB, NAT Gateway) et privÃ©s (EC2, RDS) 2. ALB public avec WAF en protection des applications Web 3. Auto Scaling Group EC2 (instances dans subnets privÃ©s) avec AMI chiffrÃ©e via KMS 4. RDS PostgreSQL Multi-AZ avec chiffrement KMS et TLS pour les connexions 5. AWS CloudTrail + CloudWatch Logs pour la journalisation 6. Amazon GuardDuty + AWS Config rules PCI-DSS 7. Security Groups permettant uniquement le trafic nÃ©cessaire 8. VPC Flow Logs activÃ©s pour l'analyse rÃ©seau",
+            grilleNotation: "100 pts: VPC multi-AZ avec subnets privÃ©s/publics + ALB + Auto Scaling + RDS Multi-AZ avec chiffrement KMS + CloudTrail pour audit + Security Groups + mention GuardDuty/Config.",
+            categorie: "Architecture SÃ©curisÃ©e",
+            type: "CAS_PRATIQUE",
+            certificationId: certAws.id,
+            simulationId: simuAws.id,
+        },
+    });
+
+    // --- QUESTIONS CompTIA Security+ SY0-701 (Batch 2) ---
+    await prisma.question.create({
+        data: {
+            enonce: "Quel type d'attaque consiste Ã  envoyer des requÃªtes DNS falsifiÃ©es pour rediriger les utilisateurs vers un site malveillant ?",
+            explication: "L'empoisonnement du cache DNS (DNS cache poisoning ou DNS spoofing) corrompt le cache d'un serveur DNS avec des informations fausses, redirigeant le trafic vers des sites malveillants.",
+            reponseCorrecte: "C",
+            categorie: "Menaces RÃ©seau",
+            type: "QCM",
+            certificationId: certSecurity.id,
+            simulationId: simuSecurity.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "DNS tunneling" },
+                    { lettre: "B", texte: "DNS amplification" },
+                    { lettre: "C", texte: "DNS cache poisoning" },
+                    { lettre: "D", texte: "DNS zone transfer" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel est l'objectif principal d'un plan de reprise d'activitÃ© (PRA / Disaster Recovery Plan) ?",
+            explication: "Le PRA dÃ©finit les procÃ©dures pour restaurer les systÃ¨mes informatiques critiques aprÃ¨s une interruption majeure, avec des objectifs de temps de restauration (RTO) et de perte de donnÃ©es acceptable (RPO).",
+            reponseCorrecte: "B",
+            categorie: "ContinuitÃ© d'ActivitÃ©",
+            type: "QCM",
+            certificationId: certSecurity.id,
+            simulationId: simuSecurity.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "PrÃ©venir toutes les cyberattaques possibles" },
+                    { lettre: "B", texte: "Restaurer les systÃ¨mes critiques dans un dÃ©lai dÃ©fini aprÃ¨s un sinistre" },
+                    { lettre: "C", texte: "Assurer la conformitÃ© aux normes ISO 27001" },
+                    { lettre: "D", texte: "Former les employÃ©s Ã  la cybersÃ©curitÃ©" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quelle technologie d'authentification utilise un facteur supplÃ©mentaire basÃ© sur quelque chose que l'utilisateur possÃ¨de physiquement ?",
+            explication: "L'authentification multifacteur (MFA) basÃ©e sur un token matÃ©riel ou une clÃ© de sÃ©curitÃ© (FIDO2/WebAuthn) utilise quelque chose que l'utilisateur possÃ¨de (possession) en plus de quelque chose qu'il connaÃ®t (mot de passe).",
+            reponseCorrecte: "B",
+            categorie: "Authentification & IAM",
+            type: "QCM",
+            certificationId: certSecurity.id,
+            simulationId: simuSecurity.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Authentification par certificat logiciel" },
+                    { lettre: "B", texte: "Token matÃ©riel ou clÃ© de sÃ©curitÃ© FIDO2" },
+                    { lettre: "C", texte: "Code OTP envoyÃ© par SMS" },
+                    { lettre: "D", texte: "Question de sÃ©curitÃ© personnalisÃ©e" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel concept de sÃ©curitÃ© consiste Ã  segmenter le rÃ©seau en zones distinctes avec des contrÃ´les d'accÃ¨s diffÃ©rents ?",
+            explication: "La segmentation rÃ©seau (network segmentation) divise le rÃ©seau en zones distinctes (DMZ, interne, administration) avec des contrÃ´les d'accÃ¨s spÃ©cifiques pour limiter la propagation des menaces.",
+            reponseCorrecte: "D",
+            categorie: "SÃ©curitÃ© RÃ©seau",
+            type: "QCM",
+            certificationId: certSecurity.id,
+            simulationId: simuSecurity.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Micro-segmentation Zero Trust" },
+                    { lettre: "B", texte: "DÃ©fense en profondeur" },
+                    { lettre: "C", texte: "PÃ©rimÃ¨tre de sÃ©curitÃ©" },
+                    { lettre: "D", texte: "Segmentation rÃ©seau" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel type de malware chiffre les fichiers d'un systÃ¨me et exige une ranÃ§on pour les dÃ©chiffrer ?",
+            explication: "Le ransomware est un logiciel malveillant qui chiffre les donnÃ©es de la victime et demande un paiement (ranÃ§on) en Ã©change de la clÃ© de dÃ©chiffrement.",
+            reponseCorrecte: "A",
+            categorie: "Malware & Menaces",
+            type: "QCM",
+            certificationId: certSecurity.id,
+            simulationId: simuSecurity.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Ransomware" },
+                    { lettre: "B", texte: "Spyware" },
+                    { lettre: "C", texte: "Rootkit" },
+                    { lettre: "D", texte: "Adware" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quelle norme de sÃ©curitÃ© est spÃ©cifiquement dÃ©diÃ©e Ã  la protection des donnÃ©es bancaires et des informations de carte de crÃ©dit ?",
+            explication: "PCI DSS (Payment Card Industry Data Security Standard) est la norme de sÃ©curitÃ© qui s'applique Ã  toutes les organisations qui traitent, stockent ou transmettent des donnÃ©es de cartes de crÃ©dit.",
+            reponseCorrecte: "C",
+            categorie: "ConformitÃ© & RÃ©glementation",
+            type: "QCM",
+            certificationId: certSecurity.id,
+            simulationId: simuSecurity.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "ISO 27001" },
+                    { lettre: "B", texte: "GDPR (RGPD)" },
+                    { lettre: "C", texte: "PCI DSS" },
+                    { lettre: "D", texte: "HIPAA" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Le chiffrement symÃ©trique utilise une seule clÃ© pour le chiffrement et le dÃ©chiffrement, ce qui le rend plus rapide que le chiffrement asymÃ©trique.",
+            explication: "Vrai. Le chiffrement symÃ©trique (AES, DES) utilise la mÃªme clÃ© pour chiffrer et dÃ©chiffrer. Il est beaucoup plus rapide que le chiffrement asymÃ©trique (RSA, ECC) qui utilise une paire de clÃ©s publique/privÃ©e.",
+            reponseCorrecte: "A",
+            categorie: "Cryptographie",
+            type: "VRAI_FAUX",
+            certificationId: certSecurity.id,
+            simulationId: simuSecurity.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Vrai" },
+                    { lettre: "B", texte: "Faux" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Le RPO (Recovery Point Objective) dÃ©finit le temps maximum acceptable pour restaurer un service aprÃ¨s une interruption.",
+            explication: "Faux. Le RPO (Recovery Point Objective) dÃ©finit la perte de donnÃ©es maximale acceptable (en temps), pas le temps de restauration. Le RTO (Recovery Time Objective) dÃ©finit le temps de restauration acceptable.",
+            reponseCorrecte: "B",
+            categorie: "ContinuitÃ© d'ActivitÃ©",
+            type: "VRAI_FAUX",
+            certificationId: certSecurity.id,
+            simulationId: simuSecurity.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Vrai" },
+                    { lettre: "B", texte: "Faux" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "DÃ©crivez les 6 phases du processus de rÃ©ponse aux incidents (Incident Response Process) selon le NIST. Pour chaque phase, donnez une action concrÃ¨te Ã  rÃ©aliser.",
+            explication: "Les 6 phases NIST sont : 1. Preparation 2. Detection & Analysis 3. Containment, Eradication & Recovery 4. Post-Incident Activity. (Le framework NIST SP 800-61 en dÃ©finit 4 principales). La version Ã©tendue ajoute Identification et Lessons Learned.",
+            reponseCorrecte: "1. Preparation : Former l'Ã©quipe, dÃ©ployer des outils de dÃ©tection (SIEM, EDR). 2. Identification (Detection) : Analyser les alertes, confirmer l'incident via les logs. 3. Containment : Isoler les systÃ¨mes compromis du rÃ©seau. 4. Eradication : Supprimer le malware et corriger la vulnÃ©rabilitÃ©. 5. Recovery : Restaurer les systÃ¨mes Ã  partir de sauvegardes saines. 6. Lessons Learned : RÃ©aliser un post-mortem et mettre Ã  jour les procÃ©dures.",
+            grilleNotation: "100 pts: 6 phases nommÃ©es + 1 action concrÃ¨te par phase + mention du framework NIST.",
+            categorie: "RÃ©ponse aux Incidents",
+            type: "OUVERTE",
+            certificationId: certSecurity.id,
+            simulationId: simuSecurity.id,
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Une PME de 200 employÃ©s souhaite mettre en place une stratÃ©gie de cybersÃ©curitÃ© complÃ¨te avec un budget limitÃ©. Elle utilise Microsoft 365, a un site e-commerce et des employÃ©s en tÃ©lÃ©travail. Proposez un plan de sÃ©curisation incluant : la protection des endpoints, la sÃ©curisation des accÃ¨s distants, la protection des donnÃ©es, et un plan de rÃ©ponse aux incidents.",
+            explication: "Mettre en place MFA pour tous les utilisateurs, EDR (Microsoft Defender for Business), VPN/WPA3-Enterprise pour le tÃ©lÃ©travail, DLP Microsoft 365, sauvegardes automatisÃ©es avec versioning, politique de mots de passe robuste, formation des employÃ©s, et un plan de rÃ©ponse aux incidents documentÃ©.",
+            reponseCorrecte: "Plan de sÃ©curisation : 1. AccÃ¨s distant : MFA obligatoire + VPN avec accÃ¨s conditionnel basÃ© sur la conformitÃ© de l'appareil. 2. Endpoints : DÃ©ploiement de Microsoft Defender for Business (EDR) sur tous les postes. 3. E-mail : Anti-phishing, DKIM/SPF/DMARC, filtrage avancÃ©. 4. Site e-commerce : WAF + certificat TLS + scan de vulnÃ©rabilitÃ©s mensuel. 5. DonnÃ©es : DLP Microsoft 365 + chiffrement BitLocker + sauvegardes 3-2-1. 6. Sensibilisation : Formation trimestelle + simulations de phishing. 7. Incident Response : Playbook documentÃ© avec contacts, procÃ©dures d'escalade et sauvegardes hors ligne.",
+            grilleNotation: "100 pts: MFA + EDR + VPN/acces conditionnel + DLP/chiffrement + sauvegardes 3-2-1 + plan de rÃ©ponse + mention de la formation.",
+            categorie: "StratÃ©gie de SÃ©curitÃ©",
+            type: "CAS_PRATIQUE",
+            certificationId: certSecurity.id,
+            simulationId: simuSecurity.id,
+        },
+    });
+
+    // --- QUESTIONS GCP Digital Leader ---
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service Google Cloud permet d'exÃ©cuter des machines virtuelles avec des charges de travail gÃ©nÃ©ralistes ?",
+            explication: "Google Compute Engine est le service IaaS de GCP qui permet de crÃ©er et gÃ©rer des machines virtuelles (VM) sur l'infrastructure Google.",
+            reponseCorrecte: "A",
+            categorie: "Calcul IaaS",
+            type: "QCM",
+            certificationId: certGcpDigitalLeader.id,
+            simulationId: simuGcp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Google Compute Engine" },
+                    { lettre: "B", texte: "Google Kubernetes Engine" },
+                    { lettre: "C", texte: "Google App Engine" },
+                    { lettre: "D", texte: "Google Cloud Functions" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service GCP est utilisÃ© pour l'entreposage de donnÃ©es (data warehousing) et l'analyse de gros volumes de donnÃ©es avec SQL ?",
+            explication: "BigQuery est le service d'entreposage de donnÃ©es serverless et hautement scalable de Google Cloud, permettant d'exÃ©cuter des requÃªtes SQL sur des pÃ©taoctets de donnÃ©es.",
+            reponseCorrecte: "D",
+            categorie: "Data & Analytics",
+            type: "QCM",
+            certificationId: certGcpDigitalLeader.id,
+            simulationId: simuGcp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Cloud SQL" },
+                    { lettre: "B", texte: "Cloud Spanner" },
+                    { lettre: "C", texte: "Firestore" },
+                    { lettre: "D", texte: "BigQuery" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service Google Cloud offre un rÃ©seau de diffusion de contenu (CDN) mondial pour accÃ©lÃ©rer la livraison de contenu ?",
+            explication: "Cloud CDN utilise le rÃ©seau global de Google (le mÃªme rÃ©seau qui alimente YouTube et Google Search) pour mettre en cache et diffuser le contenu Ã  proximitÃ© des utilisateurs.",
+            reponseCorrecte: "B",
+            categorie: "RÃ©seau & Distribution",
+            type: "QCM",
+            certificationId: certGcpDigitalLeader.id,
+            simulationId: simuGcp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Cloud Load Balancing" },
+                    { lettre: "B", texte: "Cloud CDN" },
+                    { lettre: "C", texte: "Cloud Armor" },
+                    { lettre: "D", texte: "Cloud NAT" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel produit Google Cloud fournit une base de donnÃ©es relationnelle distribuÃ©e Ã  l'Ã©chelle mondiale avec une cohÃ©rence forte et une disponibilitÃ© de 99,999 % ?",
+            explication: "Cloud Spanner est la base de donnÃ©es relationnelle distribuÃ©e de Google qui offre une cohÃ©rence forte, une scalabilitÃ© horizontale et une disponibilitÃ© de 99,999% pour les applications critiques.",
+            reponseCorrecte: "C",
+            categorie: "Bases de DonnÃ©es",
+            type: "QCM",
+            certificationId: certGcpDigitalLeader.id,
+            simulationId: simuGcp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Cloud SQL" },
+                    { lettre: "B", texte: "Bigtable" },
+                    { lettre: "C", texte: "Cloud Spanner" },
+                    { lettre: "D", texte: "Firestore" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service Google Cloud permet de dÃ©ployer et gÃ©rer des applications conteneurisÃ©es avec Kubernetes sans gÃ©rer le plan de contrÃ´le ?",
+            explication: "Google Kubernetes Engine (GKE) gÃ¨re automatiquement le plan de contrÃ´le Kubernetes, les mises Ã  jour et la rÃ©paration. La version Autopilot va encore plus loin en gÃ©rant aussi les nÅ“uds.",
+            reponseCorrecte: "A",
+            categorie: "Conteneurs & Orchestration",
+            type: "QCM",
+            certificationId: certGcpDigitalLeader.id,
+            simulationId: simuGcp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Google Kubernetes Engine (GKE)" },
+                    { lettre: "B", texte: "Google Compute Engine" },
+                    { lettre: "C", texte: "Cloud Run" },
+                    { lettre: "D", texte: "App Engine Flexible Environment" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quelle est la principale fonction de Google Cloud IAM ?",
+            explication: "Cloud IAM (Identity and Access Management) permet de gÃ©rer de maniÃ¨re centralisÃ©e les autorisations d'accÃ¨s aux ressources GCP en dÃ©finissant qui (utilisateur) a quel accÃ¨s (rÃ´le) sur quelle ressource.",
+            reponseCorrecte: "B",
+            categorie: "Gestion des AccÃ¨s",
+            type: "QCM",
+            certificationId: certGcpDigitalLeader.id,
+            simulationId: simuGcp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Surveiller les coÃ»ts et la consommation des ressources" },
+                    { lettre: "B", texte: "GÃ©rer les autorisations d'accÃ¨s aux ressources GCP" },
+                    { lettre: "C", texte: "Fournir un stockage d'objets scalable" },
+                    { lettre: "D", texte: "Analyser les logs en temps rÃ©el" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Google Cloud Storage (Cloud Storage) offre une cohÃ©rence forte pour les opÃ©rations de lecture aprÃ¨s Ã©criture.",
+            explication: "Vrai. Cloud Storage offre une cohÃ©rence forte (strong consistency) pour toutes les opÃ©rations : une fois qu'une Ã©criture est confirmÃ©e, toutes les lectures ultÃ©rieures retournent la valeur Ã©crite.",
+            reponseCorrecte: "A",
+            categorie: "Stockage",
+            type: "VRAI_FAUX",
+            certificationId: certGcpDigitalLeader.id,
+            simulationId: simuGcp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Vrai" },
+                    { lettre: "B", texte: "Faux" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Les rÃ©seaux VPC (Virtual Private Cloud) sur Google Cloud sont limitÃ©s Ã  une seule rÃ©gion et ne peuvent pas s'Ã©tendre globalement.",
+            explication: "Faux. Les VPC networks sur Google Cloud sont globaux. Un seul VPC peut s'Ã©tendre Ã  toutes les rÃ©gions du monde sans avoir besoin de peering ou de VPN inter-rÃ©gion.",
+            reponseCorrecte: "B",
+            categorie: "RÃ©seau",
+            type: "VRAI_FAUX",
+            certificationId: certGcpDigitalLeader.id,
+            simulationId: simuGcp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Vrai" },
+                    { lettre: "B", texte: "Faux" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Expliquez comment Google Cloud accompagne la transformation digitale des entreprises Ã  travers les donnÃ©es et l'intelligence artificielle. Citez au moins 3 services GCP spÃ©cifiques et leur cas d'usage.",
+            explication: "Google Cloud propose BigQuery pour l'analyse de donnÃ©es, Vertex AI pour le ML, Looker pour la BI, Pub/Sub pour les flux de donnÃ©es en temps rÃ©el, et Dataflow pour le traitement de flux. Les entreprises peuvent ainsi bÃ¢tir une stratÃ©gie data-driven complÃ¨te.",
+            reponseCorrecte: "Google Cloud transforme les entreprises via : 1. BigQuery (data warehouse serverless) pour analyser les donnÃ©es clients en temps rÃ©el, 2. Vertex AI pour crÃ©er et dÃ©ployer des modÃ¨les ML sans expertise approfondie, 3. Looker pour la visualisation et la BI en self-service, 4. Pub/Sub + Dataflow pour les pipelines de donnÃ©es temps rÃ©el. Ces services permettent aux entreprises de passer d'une approche rÃ©active Ã  une approche prÃ©dictive, d'optimiser les coÃ»ts, de personnaliser l'expÃ©rience client et de crÃ©er de nouveaux revenus grÃ¢ce aux donnÃ©es.",
+            grilleNotation: "100 pts: Au moins 3 services GCP nommÃ©s (BigQuery, Vertex AI, Looker, Pub/Sub, Dataflow) + cas d'usage mÃ©tier concret par service + mention de la transformation data-driven.",
+            categorie: "Transformation Digitale & Data",
+            type: "OUVERTE",
+            certificationId: certGcpDigitalLeader.id,
+            simulationId: simuGcp.id,
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Une chaÃ®ne de magasins de 500 points de vente souhaite moderniser son infrastructure IT. Actuellement, chaque magasin a un serveur local qui tombe frÃ©quemment en panne. Les donnÃ©es de vente sont consolidÃ©es manuellement chaque soir. Objectifs : (1) Centraliser les donnÃ©es en temps rÃ©el, (2) Analyser les tendances de vente, (3) DÃ©ployer une application de gestion des stocks en cloud. Proposez une architecture GCP complÃ¨te.",
+            explication: "DÃ©ployer Cloud VPN ou Private Google Access pour connecter chaque magasin. Utiliser Cloud Pub/Sub pour collecter les Ã©vÃ©nements de vente en temps rÃ©el. Dataflow pour le traitement des flux. BigQuery pour l'analyse. App Engine ou Cloud Run pour l'application de gestion des stocks. Looker pour les tableaux de bord.",
+            reponseCorrecte: "Architecture proposÃ©e : 1. ConnectivitÃ© : Cloud VPN ou SD-WAN avec Cloud Interconnect pour relier les magasins Ã  GCP. 2. Collecte des donnÃ©es : Les PDV envoient les transactions via Cloud Pub/Sub (ingestion temps rÃ©el). 3. Traitement : Dataflow ou Dataproc pour transformer et nettoyer les donnÃ©es. 4. Stockage et analyse : BigQuery pour le data warehouse avec des tables partitionnÃ©es par date. 5. Application : Cloud Run (serverless) pour l'application de gestion des stocks, avec Cloud SQL comme base de donnÃ©es. 6. Dashboard : Looker pour les analyses et reporting aux dirigeants. 7. SÃ©curitÃ© : Cloud Armor + IAM + Cloud KMS pour le chiffrement. Avantages : donnÃ©es en temps rÃ©el, scalabilitÃ© automatique, coÃ»ts rÃ©duits de maintenance.",
+            grilleNotation: "100 pts: Cloud Pub/Sub pour ingestion temps rÃ©el + BigQuery pour analyse + Cloud Run/App Engine pour app + Looker pour BI + ConnectivitÃ© (VPN/Interconnect) + Mention de la scalabilitÃ©.",
+            categorie: "Architecture Data & Applications",
+            type: "CAS_PRATIQUE",
+            certificationId: certGcpDigitalLeader.id,
+            simulationId: simuGcp.id,
+        },
+    });
+
+    // --- QUESTIONS AWS Cloud Practitioner (CLF-C02) ---
+    await prisma.question.create({
+        data: {
+            enonce: "Quel est le principal avantage financier d'utiliser AWS plutÃ´t qu'une infrastructure sur site traditionnelle ?",
+            explication: "AWS permet de remplacer des dÃ©penses d'investissement (CAPEX) par des dÃ©penses variables (OPEX), en payant uniquement pour ce que vous utilisez, sans engagement initial.",
+            reponseCorrecte: "B",
+            categorie: "ModÃ¨le de CoÃ»ts Cloud",
+            type: "QCM",
+            certificationId: certAwsCp.id,
+            simulationId: simuAwsCp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "AWS offre une licence Ã  vie pour tous ses services" },
+                    { lettre: "B", texte: "Paiement Ã  l'utilisation (Pay-as-you-go) sans coÃ»ts fixes initiaux" },
+                    { lettre: "C", texte: "AWS rembourse les coÃ»ts de migration" },
+                    { lettre: "D", texte: "Le cloud public est toujours moins cher que le cloud privÃ©" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service AWS permet de distribuer du trafic entrant sur plusieurs cibles (EC2, Lambda, conteneurs) de maniÃ¨re hautement disponible ?",
+            explication: "Elastic Load Balancing (ELB) rÃ©partit automatiquement le trafic des applications entrantes sur plusieurs cibles et plusieurs Zones de DisponibilitÃ©.",
+            reponseCorrecte: "D",
+            categorie: "Haute DisponibilitÃ© & RÃ©partition",
+            type: "QCM",
+            certificationId: certAwsCp.id,
+            simulationId: simuAwsCp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Amazon Route 53" },
+                    { lettre: "B", texte: "AWS Global Accelerator" },
+                    { lettre: "C", texte: "Amazon CloudFront" },
+                    { lettre: "D", texte: "Elastic Load Balancing (ELB)" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel est l'objectif du pilier 'FiabilitÃ©' (Reliability) dans le AWS Well-Architected Framework ?",
+            explication: "Le pilier FiabilitÃ© vise Ã  garantir qu'une charge de travail fonctionne de maniÃ¨re correcte et cohÃ©rente tout au long de son cycle de vie, avec une rÃ©cupÃ©ration rapide aprÃ¨s les interruptions.",
+            reponseCorrecte: "B",
+            categorie: "Well-Architected Framework",
+            type: "QCM",
+            certificationId: certAwsCp.id,
+            simulationId: simuAwsCp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Minimiser les coÃ»ts d'infrastructure" },
+                    { lettre: "B", texte: "Garantir la continuitÃ© et la rÃ©cupÃ©ration rapide aprÃ¨s un incident" },
+                    { lettre: "C", texte: "SÃ©curiser les accÃ¨s et les donnÃ©es" },
+                    { lettre: "D", texte: "Optimiser les performances des ressources" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quelle est la principale diffÃ©rence entre une RÃ©gion AWS et une Zone de DisponibilitÃ© (Availability Zone) ?",
+            explication: "Une RÃ©gion AWS est une zone gÃ©ographique distincte composÃ©e de plusieurs AZs isolÃ©es (gÃ©nÃ©ralement 3). Une AZ est un ou plusieurs centres de donnÃ©es distincts au sein d'une rÃ©gion, avec une alimentation et un rÃ©seau indÃ©pendants.",
+            reponseCorrecte: "A",
+            categorie: "Infrastructure Globale",
+            type: "QCM",
+            certificationId: certAwsCp.id,
+            simulationId: simuAwsCp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Une RÃ©gion contient plusieurs AZs isolÃ©es ; une AZ est un centre de donnÃ©es distinct" },
+                    { lettre: "B", texte: "Une AZ contient plusieurs RÃ©gions ; une RÃ©gion est un centre de donnÃ©es" },
+                    { lettre: "C", texte: "Il n'y a pas de diffÃ©rence, les termes sont interchangeables" },
+                    { lettre: "D", texte: "Les AZs sont privÃ©es, les RÃ©gions sont publiques" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service AWS permet de suivre et de visualiser les coÃ»ts et l'utilisation des services AWS ?",
+            explication: "AWS Cost Explorer est un outil de visualisation qui permet de comprendre, analyser et gÃ©rer vos coÃ»ts AWS avec des rapports personnalisables.",
+            reponseCorrecte: "C",
+            categorie: "Gestion des CoÃ»ts",
+            type: "QCM",
+            certificationId: certAwsCp.id,
+            simulationId: simuAwsCp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "AWS Budgets" },
+                    { lettre: "B", texte: "AWS Pricing Calculator" },
+                    { lettre: "C", texte: "AWS Cost Explorer" },
+                    { lettre: "D", texte: "AWS Trusted Advisor" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel modÃ¨le de dÃ©ploiement cloud AWS combine l'utilisation d'une infrastructure sur site avec les services cloud AWS ?",
+            explication: "Le dÃ©ploiement hybride (Hybrid Cloud) permet de connecter l'infrastructure sur site au cloud AWS via AWS Direct Connect ou VPN, offrant une flexibilitÃ© maximale.",
+            reponseCorrecte: "A",
+            categorie: "ModÃ¨les de DÃ©ploiement",
+            type: "QCM",
+            certificationId: certAwsCp.id,
+            simulationId: simuAwsCp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Cloud hybride" },
+                    { lettre: "B", texte: "Cloud public uniquement" },
+                    { lettre: "C", texte: "Cloud privÃ© uniquement" },
+                    { lettre: "D", texte: "Multicloud" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Dans le modÃ¨le de responsabilitÃ© partagÃ©e AWS, le client est responsable de la sÃ©curitÃ© physique des centres de donnÃ©es AWS.",
+            explication: "Faux. AWS est responsable de la sÃ©curitÃ© du cloud (sÃ©curitÃ© physique des centres de donnÃ©es, matÃ©riel, rÃ©seau). Le client est responsable de la sÃ©curitÃ© dans le cloud (donnÃ©es, configuration, IAM, OS).",
+            reponseCorrecte: "B",
+            categorie: "ModÃ¨le de ResponsabilitÃ© PartagÃ©e",
+            type: "VRAI_FAUX",
+            certificationId: certAwsCp.id,
+            simulationId: simuAwsCp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Vrai" },
+                    { lettre: "B", texte: "Faux" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Amazon CloudFront est un service de base de donnÃ©es en mÃ©moire entiÃ¨rement gÃ©rÃ©, permettant de rÃ©duire la latence des applications.",
+            explication: "Faux. Amazon CloudFront est un service CDN (Content Delivery Network) qui accÃ©lÃ¨re la distribution de contenu statique et dynamique via un rÃ©seau mondial de points de prÃ©sence (Edge Locations).",
+            reponseCorrecte: "B",
+            categorie: "Services AWS Principaux",
+            type: "VRAI_FAUX",
+            certificationId: certAwsCp.id,
+            simulationId: simuAwsCp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Vrai" },
+                    { lettre: "B", texte: "Faux" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Expliquez le modÃ¨le de responsabilitÃ© partagÃ©e (Shared Responsibility Model) d'AWS. Donnez 3 exemples de responsabilitÃ©s qui incombent Ã  AWS et 3 exemples de responsabilitÃ©s qui incombent au client.",
+            explication: "AWS est responsable de la sÃ©curitÃ© DU cloud (matÃ©riel, rÃ©seau, centres de donnÃ©es). Le client est responsable de la sÃ©curitÃ© DANS le cloud (donnÃ©es, IAM, OS, pare-feu applicatif).",
+            reponseCorrecte: "AWS est responsable de : 1. La sÃ©curitÃ© physique des centres de donnÃ©es (contrÃ´le d'accÃ¨s, climatisation, alimentation). 2. L'infrastructure matÃ©rielle et virtualisÃ©e (hÃ´tes, hyperviseur, rÃ©seau physique). 3. Les services gÃ©rÃ©s (RDS, S3, DynamoDB) pour la couche sous-jacente. Le client est responsable de : 1. La sÃ©curitÃ© de ses donnÃ©es client (chiffrement, classification). 2. La configuration des services (Security Groups, IAM roles, buckets S3 publics/privÃ©s). 3. Les correctifs de sÃ©curitÃ© du systÃ¨me d'exploitation (pour EC2) et la gestion des identitÃ©s.",
+            grilleNotation: "100 pts: Distinction claire sÃ©curitÃ© DU cloud vs DANS le cloud + 3 responsabilitÃ©s AWS (physique, matÃ©riel, services gÃ©rÃ©s) + 3 responsabilitÃ©s client (donnÃ©es, configuration, OS/IAM).",
+            categorie: "SÃ©curitÃ© & ConformitÃ©",
+            type: "OUVERTE",
+            certificationId: certAwsCp.id,
+            simulationId: simuAwsCp.id,
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Une PME de 50 employÃ©s souhaite migrer son infrastructure sur site vers AWS. Elle exÃ©cute actuellement : un serveur de fichiers (2 To), un serveur de base de donnÃ©es MySQL (500 Go), un serveur Web Apache (PHP), et un serveur de messagerie Exchange. Proposez une stratÃ©gie de migration complÃ¨te pour chaque composant avec les services AWS adaptÃ©s et une estimation des Ã©conomies potentielles.",
+            explication: "Migrer le serveur de fichiers vers Amazon EFS ou S3 avec Storage Gateway, la base de donnÃ©es vers Amazon RDS for MySQL, le serveur Web vers Elastic Beanstalk ou EC2 + ALB, la messagerie vers Amazon WorkMail ou M365. Estimer les Ã©conomies via AWS TCO Calculator.",
+            reponseCorrecte: "StratÃ©gie de migration : 1. Serveur de fichiers : AWS Storage Gateway (File Gateway) pour le cache local + Amazon S3 pour le stockage principal. 2. Base de donnÃ©es MySQL : AWS Database Migration Service (DMS) vers Amazon RDS for MySQL Multi-AZ. 3. Serveur Web : AWS Elastic Beanstalk ou EC2 Auto Scaling avec ALB pour la haute disponibilitÃ©. 4. Messagerie : Migrer vers Amazon WorkMail ou Microsoft 365 (option SaaS). Estimation des Ã©conomies : Ã‰limination des coÃ»ts matÃ©riels (serveurs, climatisation, Ã©lectricitÃ©) = environ 40% d'Ã©conomies sur 3 ans d'aprÃ¨s AWS TCO Calculator. Avantages supplÃ©mentaires : ScalabilitÃ©, sauvegardes automatiques, haute disponibilitÃ© intÃ©grÃ©e.",
+            grilleNotation: "100 pts: Storage Gateway/S3 pour fichiers + RDS pour MySQL + Elastic Beanstalk/EC2+ALB pour Web + Solution de messagerie + Mention des Ã©conomies (TCO) et de la scalabilitÃ©.",
+            categorie: "Migration & Architecture",
+            type: "CAS_PRATIQUE",
+            certificationId: certAwsCp.id,
+            simulationId: simuAwsCp.id,
+        },
+    });
+```
+
+That's the complete code block to insert. Let me make sure the counts are right:
+
+**AZ-900**: 6 QCM + 2 VRAI_FAUX + 1 OUVERTE + 1 CAS_PRATIQUE = 10 âœ“
+**AWS SAA-C03**: 6 QCM + 2 VRAI_FAUX + 1 OUVERTE + 1 CAS_PRATIQUE = 10 âœ“  
+**CompTIA Security+**: 6 QCM + 2 VRAI_FAUX + 1 OUVERTE + 1 CAS_PRATIQUE = 10 âœ“
+**GCP Digital Leader**: 6 QCM + 2 VRAI_FAUX + 1 OUVERTE + 1 CAS_PRATIQUE = 10 âœ“
+**AWS Cloud Practitioner**: 6 QCM + 2 VRAI_FAUX + 1 OUVERTE + 1 CAS_PRATIQUE = 10 âœ“
+Total: 50 questions âœ“
+
+All required types are present for each set. Each question has: enonce, explication, reponseCorrecte, categorie, type, certificationId, simulationId. QCM has options with texte. VRAI_FAUX has A=Vrai, B=Faux. OUVERTE and CAS_PRATIQUE have enonce, reponseCorrecte, grilleNotation, explication, categorie.
+
+The variables used (certAz900, simuAz900, certAws, simuAws, certSecurity, simuSecurity, certGcpDigitalLeader, simuGcp, certAwsCp, simuAwsCp) all already exist in the seed file.Here is the exact code to insert after line 697 (before `// 8. Ressources TÃ©lÃ©chargeables` at line 699):
+
+```typescript
+
+    // --- QUESTIONS AZ-900 (Batch 2) ---
+    await prisma.question.create({
+        data: {
+            enonce: "Quel est le principal avantage d'utiliser des Zones de DisponibilitÃ© (Availability Zones) dans Azure ?",
+            explication: "Les Zones de DisponibilitÃ© protÃ¨gent les applications contre les pannes de centre de donnÃ©es en les rÃ©partissant sur des emplacements physiquement sÃ©parÃ©s au sein d'une mÃªme rÃ©gion.",
+            reponseCorrecte: "C",
+            categorie: "Haute DisponibilitÃ©",
+            type: "QCM",
+            certificationId: certAz900.id,
+            simulationId: simuAz900.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "RÃ©duire la latence rÃ©seau entre les utilisateurs" },
+                    { lettre: "B", texte: "Augmenter la puissance de calcul disponible" },
+                    { lettre: "C", texte: "ProtÃ©ger contre les pannes d'un centre de donnÃ©es entier" },
+                    { lettre: "D", texte: "Simplifier la gestion des identitÃ©s" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service Azure permet d'exÃ©cuter du code sans avoir Ã  gÃ©rer l'infrastructure serveur sous-jacente ?",
+            explication: "Azure Functions est un service serverless qui exÃ©cute du code en rÃ©ponse Ã  des Ã©vÃ©nements, sans gestion de serveurs.",
+            reponseCorrecte: "A",
+            categorie: "Calcul Serverless",
+            type: "QCM",
+            certificationId: certAz900.id,
+            simulationId: simuAz900.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Azure Functions" },
+                    { lettre: "B", texte: "Azure Virtual Machines" },
+                    { lettre: "C", texte: "Azure App Service" },
+                    { lettre: "D", texte: "Azure Kubernetes Service" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel outil Microsoft permet d'estimer le coÃ»t des services Azure avant leur dÃ©ploiement ?",
+            explication: "Le Azure Pricing Calculator est un outil web gratuit qui permet de configurer et d'estimer le coÃ»t des services Azure.",
+            reponseCorrecte: "D",
+            categorie: "Gestion des CoÃ»ts",
+            type: "QCM",
+            certificationId: certAz900.id,
+            simulationId: simuAz900.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Azure Cost Management" },
+                    { lettre: "B", texte: "Azure TCO Calculator" },
+                    { lettre: "C", texte: "Azure Migrate" },
+                    { lettre: "D", texte: "Azure Pricing Calculator" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service Azure offre une solution de base de donnÃ©es relationnelle entiÃ¨rement gÃ©rÃ©e avec une haute disponibilitÃ© intÃ©grÃ©e ?",
+            explication: "Azure SQL Database est un service PaaS de base de donnÃ©es relationnelle qui assure automatiquement la haute disponibilitÃ©, les sauvegardes et les mises Ã  jour.",
+            reponseCorrecte: "B",
+            categorie: "Bases de DonnÃ©es",
+            type: "QCM",
+            certificationId: certAz900.id,
+            simulationId: simuAz900.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Azure Cosmos DB" },
+                    { lettre: "B", texte: "Azure SQL Database" },
+                    { lettre: "C", texte: "Azure Database pour MySQL" },
+                    { lettre: "D", texte: "Azure Cache for Redis" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Qu'est-ce qu'un abonnement (subscription) Azure ?",
+            explication: "Un abonnement Azure est un conteneur logique qui regroupe les ressources Azure et dÃ©finit les limites de facturation, d'accÃ¨s et de gestion.",
+            reponseCorrecte: "C",
+            categorie: "Gouvernance",
+            type: "QCM",
+            certificationId: certAz900.id,
+            simulationId: simuAz900.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Un contrat de support technique Azure" },
+                    { lettre: "B", texte: "Un groupe de ressources contenant des machines virtuelles" },
+                    { lettre: "C", texte: "Un conteneur logique qui regroupe des ressources et dÃ©finit les limites de facturation" },
+                    { lettre: "D", texte: "Un niveau de performance pour Azure SQL Database" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel modÃ¨le de service cloud Azure fournit une plateforme de dÃ©veloppement dÃ©diÃ©e avec un environnement d'exÃ©cution gÃ©rÃ©, sans gestion de l'OS ?",
+            explication: "Le PaaS (Platform as a Service) fournit une plateforme gÃ©rÃ©e incluant le runtime, la base de donnÃ©es et les outils de dÃ©veloppement. Azure App Service est un exemple de PaaS.",
+            reponseCorrecte: "B",
+            categorie: "Concepts Cloud",
+            type: "QCM",
+            certificationId: certAz900.id,
+            simulationId: simuAz900.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "IaaS (Infrastructure as a Service)" },
+                    { lettre: "B", texte: "PaaS (Platform as a Service)" },
+                    { lettre: "C", texte: "SaaS (Software as a Service)" },
+                    { lettre: "D", texte: "FaaS (Function as a Service)" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Dans le cadre du modÃ¨le de responsabilitÃ© partagÃ©e Azure, Microsoft est responsable de la sÃ©curitÃ© physique des centres de donnÃ©es.",
+            explication: "Vrai. Microsoft est responsable de la sÃ©curitÃ© physique, du rÃ©seau physique et de l'infrastructure des centres de donnÃ©es dans le cadre du modÃ¨le de responsabilitÃ© partagÃ©e.",
+            reponseCorrecte: "A",
+            categorie: "SÃ©curitÃ© & ConformitÃ©",
+            type: "VRAI_FAUX",
+            certificationId: certAz900.id,
+            simulationId: simuAz900.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Vrai" },
+                    { lettre: "B", texte: "Faux" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Azure Marketplace permet uniquement d'acheter des licences Microsoft et ne propose pas de solutions tierces.",
+            explication: "Faux. Azure Marketplace propose des milliers de solutions tierces certifiÃ©es, y compris des VM prÃ©-configurÃ©es, des conteneurs, et des services SaaS provenant d'Ã©diteurs partenaires.",
+            reponseCorrecte: "B",
+            categorie: "Services Azure",
+            type: "VRAI_FAUX",
+            certificationId: certAz900.id,
+            simulationId: simuAz900.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Vrai" },
+                    { lettre: "B", texte: "Faux" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Comparez les trois modÃ¨les de cloud computing (public, privÃ©, hybride). Pour chaque modÃ¨le, donnez un cas d'usage concret et expliquez pourquoi Azure est particuliÃ¨rement adaptÃ© au modÃ¨le hybride.",
+            explication: "Le cloud public (Azure) offre des ressources partagÃ©es via Internet. Le cloud privÃ© (Azure Stack) est dÃ©diÃ© Ã  une organisation. Le cloud hybride combine les deux. Azure est idÃ©al pour l'hybride grÃ¢ce Ã  Azure Arc, Azure Stack et VPN Gateway.",
+            reponseCorrecte: "Cloud public : ressources partagÃ©es sur Internet, idÃ©al pour les startups (ex: hÃ©bergement d'un site Web). Cloud privÃ© : infrastructure dÃ©diÃ©e, adaptÃ© aux banques (ex: donnÃ©es rÃ©glementÃ©es). Cloud hybride : combinaison des deux, idÃ©al pour les entreprises avec des donnÃ©es sensibles en local (ex: banque avec App Web sur Azure + donnÃ©es clients en local). Azure se distingue par Azure Stack (cloud privÃ© sur site), Azure Arc (gestion unifiÃ©e) et une connectivitÃ© hybride native via VPN/ExpressRoute.",
+            grilleNotation: "100 pts: DÃ©finition prÃ©cise des 3 modÃ¨les + 1 cas d'usage par modÃ¨le + Explication spÃ©cifique des outils hybrides Azure (Azure Stack, Arc, VPN).",
+            categorie: "Concepts Cloud",
+            type: "OUVERTE",
+            certificationId: certAz900.id,
+            simulationId: simuAz900.id,
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Une startup de e-commerce souhaite migrer son application Web monolithique vers Azure. Elle prÃ©voit 10 000 utilisateurs simultanÃ©s en pÃ©riode de soldes. Proposez une architecture Azure robuste en utilisant des services PaaS et IaaS, avec une estimation des coÃ»ts et des recommandations de scalabilitÃ©.",
+            explication: "Utiliser Azure App Service (PaaS) pour l'application Web avec un plan de scaling automatique, Azure SQL Database pour la base de donnÃ©es avec un niveau premium, Azure Front Door pour le routage global, Azure Redis Cache pour les sessions et le cache, et Azure CDN pour les assets statiques. Activer le scaling automatique basÃ© sur le CPU et la mÃ©moire.",
+            reponseCorrecte: "Architecture proposÃ©e : 1. Azure Front Door pour la terminaison SSL et le routage global 2. Azure App Service (PaaS) avec plan Premium V3 pour l'application Web, Auto-Scaling de 1 Ã  20 instances basÃ© sur CPU > 70% 3. Azure Redis Cache Premium pour le cache de session et les donnÃ©es temporaires 4. Azure SQL Database (niveau Business Critical, 2 replicas) 5. Azure CDN pour les images et assets statiques 6. Azure Key Vault pour les secrets Estimation : environ 2500-3000 â‚¬/mois en pointe. ScalabilitÃ© : Auto-Scaling App Service + Read Replicas SQL + caching Redis.",
+            grilleNotation: "100 pts: Utilisation d'Azure App Service avec Auto-Scaling + Azure SQL Database + Cache (Redis) + Front Door ou CDN + Estimation cohÃ©rente des coÃ»ts.",
+            categorie: "Architecture & ScalabilitÃ©",
+            type: "CAS_PRATIQUE",
+            certificationId: certAz900.id,
+            simulationId: simuAz900.id,
+        },
+    });
+
+    // --- QUESTIONS AWS SAA-C03 (Batch 2) ---
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service AWS permet de crÃ©er et de gÃ©rer des conteneurs Docker de maniÃ¨re orchestrÃ©e et scalable ?",
+            explication: "Amazon ECS (Elastic Container Service) est un service d'orchestration de conteneurs entiÃ¨rement gÃ©rÃ©, prenant en charge Docker.",
+            reponseCorrecte: "A",
+            categorie: "Conteneurs & Orchestration",
+            type: "QCM",
+            certificationId: certAws.id,
+            simulationId: simuAws.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Amazon ECS" },
+                    { lettre: "B", texte: "Amazon EC2" },
+                    { lettre: "C", texte: "AWS Lambda" },
+                    { lettre: "D", texte: "AWS Batch" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service AWS fournit un pare-feu distribuÃ© pour protÃ©ger les applications Web contre les attaques courantes comme SQL injection et XSS ?",
+            explication: "AWS WAF (Web Application Firewall) protÃ¨ge les applications Web en filtrant et surveillant le trafic HTTP/HTTPS.",
+            reponseCorrecte: "B",
+            categorie: "SÃ©curitÃ© Applicative",
+            type: "QCM",
+            certificationId: certAws.id,
+            simulationId: simuAws.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "AWS Shield" },
+                    { lettre: "B", texte: "AWS WAF" },
+                    { lettre: "C", texte: "AWS Network Firewall" },
+                    { lettre: "D", texte: "AWS GuardDuty" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quelle solution AWS permet d'Ã©tablir une connexion rÃ©seau privÃ©e et dÃ©diÃ©e entre un centre de donnÃ©es sur site et AWS ?",
+            explication: "AWS Direct Connect Ã©tablit une connexion rÃ©seau privÃ©e dÃ©diÃ©e entre votre datacenter et AWS, contournant Internet pour offrir une bande passante constante et une latence rÃ©duite.",
+            reponseCorrecte: "C",
+            categorie: "RÃ©seau & ConnectivitÃ©",
+            type: "QCM",
+            certificationId: certAws.id,
+            simulationId: simuAws.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "AWS Site-to-Site VPN" },
+                    { lettre: "B", texte: "AWS Client VPN" },
+                    { lettre: "C", texte: "AWS Direct Connect" },
+                    { lettre: "D", texte: "AWS Transit Gateway" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service de base de donnÃ©es AWS est conÃ§u pour les charges de travail NoSQL haute performance Ã  l'Ã©chelle mondiale avec une latence en millisecondes ?",
+            explication: "Amazon DynamoDB est une base de donnÃ©es NoSQL clÃ©-valeur et document qui offre des performances <10ms Ã  n'importe quelle Ã©chelle, avec des tables globales pour le dÃ©ploiement multi-rÃ©gion.",
+            reponseCorrecte: "D",
+            categorie: "Bases de DonnÃ©es NoSQL",
+            type: "QCM",
+            certificationId: certAws.id,
+            simulationId: simuAws.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Amazon RDS" },
+                    { lettre: "B", texte: "Amazon Aurora" },
+                    { lettre: "C", texte: "Amazon Redshift" },
+                    { lettre: "D", texte: "Amazon DynamoDB" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service AWS permet de surveiller les performances, de collecter des mÃ©triques et de configurer des alertes pour les ressources AWS ?",
+            explication: "Amazon CloudWatch est le service central de surveillance et d'observabilitÃ© d'AWS. Il collecte des mÃ©triques, des logs et permet de dÃ©clencher des alertes basÃ©es sur des seuils.",
+            reponseCorrecte: "A",
+            categorie: "Surveillance & ObservabilitÃ©",
+            type: "QCM",
+            certificationId: certAws.id,
+            simulationId: simuAws.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Amazon CloudWatch" },
+                    { lettre: "B", texte: "AWS CloudTrail" },
+                    { lettre: "C", texte: "AWS Config" },
+                    { lettre: "D", texte: "AWS Trusted Advisor" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quelle stratÃ©gie de migration AWS consiste Ã  dÃ©placer une application existante vers le cloud sans modification de son code ?",
+            explication: "Le Lift-and-Shift (ou Rehost) consiste Ã  migrer l'application existante vers AWS sans aucune modification, souvent via la crÃ©ation d'images VM (AMI) ou l'utilisation de AWS MGN.",
+            reponseCorrecte: "B",
+            categorie: "Migration Cloud",
+            type: "QCM",
+            certificationId: certAws.id,
+            simulationId: simuAws.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Replatform (Lift, Tinker and Shift)" },
+                    { lettre: "B", texte: "Rehost (Lift and Shift)" },
+                    { lettre: "C", texte: "Refactor (Re-architect)" },
+                    { lettre: "D", texte: "Retire" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Les Security Groups AWS sont stateful, ce qui signifie que le trafic de retour est automatiquement autorisÃ© quelle que soit la rÃ¨gle de sortie.",
+            explication: "Vrai. Les Security Groups sont stateful : si une rÃ¨gle d'entrÃ©e autorise le trafic entrant, le trafic de rÃ©ponse sortant est automatiquement autorisÃ©, mÃªme sans rÃ¨gle de sortie explicite.",
+            reponseCorrecte: "A",
+            categorie: "SÃ©curitÃ© RÃ©seau",
+            type: "VRAI_FAUX",
+            certificationId: certAws.id,
+            simulationId: simuAws.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Vrai" },
+                    { lettre: "B", texte: "Faux" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Amazon S3 offre une cohÃ©rence forte (strong consistency) pour toutes les opÃ©rations de lecture, Ã©criture et listage depuis 2020.",
+            explication: "Vrai. Depuis dÃ©cembre 2020, Amazon S3 offre une cohÃ©rence forte pour toutes les requÃªtes GET, PUT, LIST et DELETE, y compris pour les objets crÃ©Ã©s par des opÃ©rations simultanÃ©es.",
+            reponseCorrecte: "A",
+            categorie: "Stockage & CohÃ©rence",
+            type: "VRAI_FAUX",
+            certificationId: certAws.id,
+            simulationId: simuAws.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Vrai" },
+                    { lettre: "B", texte: "Faux" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Expliquez en dÃ©tail les 6 piliers du AWS Well-Architected Framework. Pour chaque pilier, donnez un exemple concret de service AWS qui permet de le mettre en Å“uvre.",
+            explication: "1. Excellence opÃ©rationnelle (AWS Systems Manager, CloudFormation) 2. SÃ©curitÃ© (IAM, KMS, WAF) 3. FiabilitÃ© (RDS Multi-AZ, Route 53) 4. EfficacitÃ© des performances (Auto Scaling, CloudFront) 5. Optimisation des coÃ»ts (Cost Explorer, Savings Plans) 6. DurabilitÃ© (S3 Intelligent-Tiering, rÃ©gions desservies par de l'Ã©nergie verte)",
+            reponseCorrecte: "1. Excellence opÃ©rationnelle : automatiser les opÃ©rations avec CloudFormation et Systems Manager. 2. SÃ©curitÃ© : protÃ©ger les donnÃ©es avec IAM, KMS, AWS WAF. 3. FiabilitÃ© : RDS Multi-AZ, Route 53 health checks, Auto Scaling. 4. EfficacitÃ© des performances : Auto Scaling ELB, CloudFront, selection du bon type de stockage. 5. Optimisation des coÃ»ts : AWS Cost Explorer, Savings Plans, instances spot. 6. DurabilitÃ© : S3 Intelligent-Tiering, infrastructure Ã©co-responsable.",
+            grilleNotation: "100 pts: 6 piliers nommÃ©s correctement + 1 service AWS pertinent par pilier + explication brÃ¨ve de l'application.",
+            categorie: "Architecture & Bonnes Pratiques",
+            type: "OUVERTE",
+            certificationId: certAws.id,
+            simulationId: simuAws.id,
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Une entreprise financiÃ¨re doit dÃ©ployer une application web rÃ©glementÃ©e (PCI-DSS) sur AWS avec les exigences suivantes : (1) Haute disponibilitÃ© sur 3 AZs, (2) Chiffrement des donnÃ©es au repos et en transit, (3) Isolation rÃ©seau stricte, (4) Journalisation complÃ¨te des accÃ¨s. Proposez une architecture dÃ©taillÃ©e avec les services AWS Ã  utiliser.",
+            explication: "Utiliser un VPC avec 3 subnets publics/privÃ©s sur 3 AZs. ALB public, Auto Scaling EC2 (instances privÃ©es), RDS Multi-AZ (dans subnets privÃ©s), KMS pour le chiffrement, CloudTrail + CloudWatch Logs pour l'audit, Security Groups restrictifs, AWS WAF, AWS Config pour la conformitÃ©.",
+            reponseCorrecte: "Architecture : 1. VPC avec 3 AZs, subnets publics (ALB, NAT Gateway) et privÃ©s (EC2, RDS) 2. ALB public avec WAF en protection des applications Web 3. Auto Scaling Group EC2 (instances dans subnets privÃ©s) avec AMI chiffrÃ©e via KMS 4. RDS PostgreSQL Multi-AZ avec chiffrement KMS et TLS pour les connexions 5. AWS CloudTrail + CloudWatch Logs pour la journalisation 6. Amazon GuardDuty + AWS Config rules PCI-DSS 7. Security Groups permettant uniquement le trafic nÃ©cessaire 8. VPC Flow Logs activÃ©s pour l'analyse rÃ©seau",
+            grilleNotation: "100 pts: VPC multi-AZ avec subnets privÃ©s/publics + ALB + Auto Scaling + RDS Multi-AZ avec chiffrement KMS + CloudTrail pour audit + Security Groups + mention GuardDuty/Config.",
+            categorie: "Architecture SÃ©curisÃ©e",
+            type: "CAS_PRATIQUE",
+            certificationId: certAws.id,
+            simulationId: simuAws.id,
+        },
+    });
+
+    // --- QUESTIONS CompTIA Security+ SY0-701 (Batch 2) ---
+    await prisma.question.create({
+        data: {
+            enonce: "Quel type d'attaque consiste Ã  envoyer des requÃªtes DNS falsifiÃ©es pour rediriger les utilisateurs vers un site malveillant ?",
+            explication: "L'empoisonnement du cache DNS (DNS cache poisoning ou DNS spoofing) corrompt le cache d'un serveur DNS avec des informations fausses, redirigeant le trafic vers des sites malveillants.",
+            reponseCorrecte: "C",
+            categorie: "Menaces RÃ©seau",
+            type: "QCM",
+            certificationId: certSecurity.id,
+            simulationId: simuSecurity.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "DNS tunneling" },
+                    { lettre: "B", texte: "DNS amplification" },
+                    { lettre: "C", texte: "DNS cache poisoning" },
+                    { lettre: "D", texte: "DNS zone transfer" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel est l'objectif principal d'un plan de reprise d'activitÃ© (PRA / Disaster Recovery Plan) ?",
+            explication: "Le PRA dÃ©finit les procÃ©dures pour restaurer les systÃ¨mes informatiques critiques aprÃ¨s une interruption majeure, avec des objectifs de temps de restauration (RTO) et de perte de donnÃ©es acceptable (RPO).",
+            reponseCorrecte: "B",
+            categorie: "ContinuitÃ© d'ActivitÃ©",
+            type: "QCM",
+            certificationId: certSecurity.id,
+            simulationId: simuSecurity.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "PrÃ©venir toutes les cyberattaques possibles" },
+                    { lettre: "B", texte: "Restaurer les systÃ¨mes critiques dans un dÃ©lai dÃ©fini aprÃ¨s un sinistre" },
+                    { lettre: "C", texte: "Assurer la conformitÃ© aux normes ISO 27001" },
+                    { lettre: "D", texte: "Former les employÃ©s Ã  la cybersÃ©curitÃ©" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quelle technologie d'authentification utilise un facteur supplÃ©mentaire basÃ© sur quelque chose que l'utilisateur possÃ¨de physiquement ?",
+            explication: "L'authentification multifacteur (MFA) basÃ©e sur un token matÃ©riel ou une clÃ© de sÃ©curitÃ© (FIDO2/WebAuthn) utilise quelque chose que l'utilisateur possÃ¨de (possession) en plus de quelque chose qu'il connaÃ®t (mot de passe).",
+            reponseCorrecte: "B",
+            categorie: "Authentification & IAM",
+            type: "QCM",
+            certificationId: certSecurity.id,
+            simulationId: simuSecurity.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Authentification par certificat logiciel" },
+                    { lettre: "B", texte: "Token matÃ©riel ou clÃ© de sÃ©curitÃ© FIDO2" },
+                    { lettre: "C", texte: "Code OTP envoyÃ© par SMS" },
+                    { lettre: "D", texte: "Question de sÃ©curitÃ© personnalisÃ©e" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel concept de sÃ©curitÃ© consiste Ã  segmenter le rÃ©seau en zones distinctes avec des contrÃ´les d'accÃ¨s diffÃ©rents ?",
+            explication: "La segmentation rÃ©seau (network segmentation) divise le rÃ©seau en zones distinctes (DMZ, interne, administration) avec des contrÃ´les d'accÃ¨s spÃ©cifiques pour limiter la propagation des menaces.",
+            reponseCorrecte: "D",
+            categorie: "SÃ©curitÃ© RÃ©seau",
+            type: "QCM",
+            certificationId: certSecurity.id,
+            simulationId: simuSecurity.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Micro-segmentation Zero Trust" },
+                    { lettre: "B", texte: "DÃ©fense en profondeur" },
+                    { lettre: "C", texte: "PÃ©rimÃ¨tre de sÃ©curitÃ©" },
+                    { lettre: "D", texte: "Segmentation rÃ©seau" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel type de malware chiffre les fichiers d'un systÃ¨me et exige une ranÃ§on pour les dÃ©chiffrer ?",
+            explication: "Le ransomware est un logiciel malveillant qui chiffre les donnÃ©es de la victime et demande un paiement (ranÃ§on) en Ã©change de la clÃ© de dÃ©chiffrement.",
+            reponseCorrecte: "A",
+            categorie: "Malware & Menaces",
+            type: "QCM",
+            certificationId: certSecurity.id,
+            simulationId: simuSecurity.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Ransomware" },
+                    { lettre: "B", texte: "Spyware" },
+                    { lettre: "C", texte: "Rootkit" },
+                    { lettre: "D", texte: "Adware" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quelle norme de sÃ©curitÃ© est spÃ©cifiquement dÃ©diÃ©e Ã  la protection des donnÃ©es bancaires et des informations de carte de crÃ©dit ?",
+            explication: "PCI DSS (Payment Card Industry Data Security Standard) est la norme de sÃ©curitÃ© qui s'applique Ã  toutes les organisations qui traitent, stockent ou transmettent des donnÃ©es de cartes de crÃ©dit.",
+            reponseCorrecte: "C",
+            categorie: "ConformitÃ© & RÃ©glementation",
+            type: "QCM",
+            certificationId: certSecurity.id,
+            simulationId: simuSecurity.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "ISO 27001" },
+                    { lettre: "B", texte: "GDPR (RGPD)" },
+                    { lettre: "C", texte: "PCI DSS" },
+                    { lettre: "D", texte: "HIPAA" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Le chiffrement symÃ©trique utilise une seule clÃ© pour le chiffrement et le dÃ©chiffrement, ce qui le rend plus rapide que le chiffrement asymÃ©trique.",
+            explication: "Vrai. Le chiffrement symÃ©trique (AES, DES) utilise la mÃªme clÃ© pour chiffrer et dÃ©chiffrer. Il est beaucoup plus rapide que le chiffrement asymÃ©trique (RSA, ECC) qui utilise une paire de clÃ©s publique/privÃ©e.",
+            reponseCorrecte: "A",
+            categorie: "Cryptographie",
+            type: "VRAI_FAUX",
+            certificationId: certSecurity.id,
+            simulationId: simuSecurity.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Vrai" },
+                    { lettre: "B", texte: "Faux" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Le RPO (Recovery Point Objective) dÃ©finit le temps maximum acceptable pour restaurer un service aprÃ¨s une interruption.",
+            explication: "Faux. Le RPO (Recovery Point Objective) dÃ©finit la perte de donnÃ©es maximale acceptable (en temps), pas le temps de restauration. Le RTO (Recovery Time Objective) dÃ©finit le temps de restauration acceptable.",
+            reponseCorrecte: "B",
+            categorie: "ContinuitÃ© d'ActivitÃ©",
+            type: "VRAI_FAUX",
+            certificationId: certSecurity.id,
+            simulationId: simuSecurity.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Vrai" },
+                    { lettre: "B", texte: "Faux" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "DÃ©crivez les 6 phases du processus de rÃ©ponse aux incidents (Incident Response Process) selon le NIST. Pour chaque phase, donnez une action concrÃ¨te Ã  rÃ©aliser.",
+            explication: "Les phases NIST sont : 1. Preparation 2. Detection & Analysis 3. Containment, Eradication & Recovery 4. Post-Incident Activity. La version Ã©tendue ajoute Identification et Lessons Learned.",
+            reponseCorrecte: "1. Preparation : Former l'Ã©quipe, dÃ©ployer des outils de dÃ©tection (SIEM, EDR). 2. Identification (Detection) : Analyser les alertes, confirmer l'incident via les logs. 3. Containment : Isoler les systÃ¨mes compromis du rÃ©seau. 4. Eradication : Supprimer le malware et corriger la vulnÃ©rabilitÃ©. 5. Recovery : Restaurer les systÃ¨mes Ã  partir de sauvegardes saines. 6. Lessons Learned : RÃ©aliser un post-mortem et mettre Ã  jour les procÃ©dures.",
+            grilleNotation: "100 pts: 6 phases nommÃ©es + 1 action concrÃ¨te par phase + mention du framework NIST.",
+            categorie: "RÃ©ponse aux Incidents",
+            type: "OUVERTE",
+            certificationId: certSecurity.id,
+            simulationId: simuSecurity.id,
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Une PME de 200 employÃ©s souhaite mettre en place une stratÃ©gie de cybersÃ©curitÃ© complÃ¨te avec un budget limitÃ©. Elle utilise Microsoft 365, a un site e-commerce et des employÃ©s en tÃ©lÃ©travail. Proposez un plan de sÃ©curisation incluant : la protection des endpoints, la sÃ©curisation des accÃ¨s distants, la protection des donnÃ©es, et un plan de rÃ©ponse aux incidents.",
+            explication: "Mettre en place MFA pour tous les utilisateurs, EDR (Microsoft Defender for Business), VPN/WPA3-Enterprise pour le tÃ©lÃ©travail, DLP Microsoft 365, sauvegardes automatisÃ©es avec versioning, politique de mots de passe robuste, formation des employÃ©s, et un plan de rÃ©ponse aux incidents documentÃ©.",
+            reponseCorrecte: "Plan de sÃ©curisation : 1. AccÃ¨s distant : MFA obligatoire + VPN avec accÃ¨s conditionnel basÃ© sur la conformitÃ© de l'appareil. 2. Endpoints : DÃ©ploiement de Microsoft Defender for Business (EDR) sur tous les postes. 3. E-mail : Anti-phishing, DKIM/SPF/DMARC, filtrage avancÃ©. 4. Site e-commerce : WAF + certificat TLS + scan de vulnÃ©rabilitÃ©s mensuel. 5. DonnÃ©es : DLP Microsoft 365 + chiffrement BitLocker + sauvegardes 3-2-1. 6. Sensibilisation : Formation trimestrelle + simulations de phishing. 7. Incident Response : Playbook documentÃ© avec contacts, procÃ©dures d'escalade et sauvegardes hors ligne.",
+            grilleNotation: "100 pts: MFA + EDR + VPN/acces conditionnel + DLP/chiffrement + sauvegardes 3-2-1 + plan de rÃ©ponse + mention de la formation.",
+            categorie: "StratÃ©gie de SÃ©curitÃ©",
+            type: "CAS_PRATIQUE",
+            certificationId: certSecurity.id,
+            simulationId: simuSecurity.id,
+        },
+    });
+
+    // --- QUESTIONS GCP Digital Leader ---
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service Google Cloud permet d'exÃ©cuter des machines virtuelles avec des charges de travail gÃ©nÃ©ralistes ?",
+            explication: "Google Compute Engine est le service IaaS de GCP qui permet de crÃ©er et gÃ©rer des machines virtuelles (VM) sur l'infrastructure Google.",
+            reponseCorrecte: "A",
+            categorie: "Calcul IaaS",
+            type: "QCM",
+            certificationId: certGcpDigitalLeader.id,
+            simulationId: simuGcp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Google Compute Engine" },
+                    { lettre: "B", texte: "Google Kubernetes Engine" },
+                    { lettre: "C", texte: "Google App Engine" },
+                    { lettre: "D", texte: "Google Cloud Functions" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service GCP est utilisÃ© pour l'entreposage de donnÃ©es (data warehousing) et l'analyse de gros volumes de donnÃ©es avec SQL ?",
+            explication: "BigQuery est le service d'entreposage de donnÃ©es serverless et hautement scalable de Google Cloud, permettant d'exÃ©cuter des requÃªtes SQL sur des pÃ©taoctets de donnÃ©es.",
+            reponseCorrecte: "D",
+            categorie: "Data & Analytics",
+            type: "QCM",
+            certificationId: certGcpDigitalLeader.id,
+            simulationId: simuGcp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Cloud SQL" },
+                    { lettre: "B", texte: "Cloud Spanner" },
+                    { lettre: "C", texte: "Firestore" },
+                    { lettre: "D", texte: "BigQuery" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service Google Cloud offre un rÃ©seau de diffusion de contenu (CDN) mondial pour accÃ©lÃ©rer la livraison de contenu ?",
+            explication: "Cloud CDN utilise le rÃ©seau global de Google (le mÃªme rÃ©seau qui alimente YouTube et Google Search) pour mettre en cache et diffuser le contenu Ã  proximitÃ© des utilisateurs.",
+            reponseCorrecte: "B",
+            categorie: "RÃ©seau & Distribution",
+            type: "QCM",
+            certificationId: certGcpDigitalLeader.id,
+            simulationId: simuGcp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Cloud Load Balancing" },
+                    { lettre: "B", texte: "Cloud CDN" },
+                    { lettre: "C", texte: "Cloud Armor" },
+                    { lettre: "D", texte: "Cloud NAT" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel produit Google Cloud fournit une base de donnÃ©es relationnelle distribuÃ©e Ã  l'Ã©chelle mondiale avec une cohÃ©rence forte et une disponibilitÃ© de 99,999 % ?",
+            explication: "Cloud Spanner est la base de donnÃ©es relationnelle distribuÃ©e de Google qui offre une cohÃ©rence forte, une scalabilitÃ© horizontale et une disponibilitÃ© de 99,999% pour les applications critiques.",
+            reponseCorrecte: "C",
+            categorie: "Bases de DonnÃ©es",
+            type: "QCM",
+            certificationId: certGcpDigitalLeader.id,
+            simulationId: simuGcp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Cloud SQL" },
+                    { lettre: "B", texte: "Bigtable" },
+                    { lettre: "C", texte: "Cloud Spanner" },
+                    { lettre: "D", texte: "Firestore" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service Google Cloud permet de dÃ©ployer et gÃ©rer des applications conteneurisÃ©es avec Kubernetes sans gÃ©rer le plan de contrÃ´le ?",
+            explication: "Google Kubernetes Engine (GKE) gÃ¨re automatiquement le plan de contrÃ´le Kubernetes, les mises Ã  jour et la rÃ©paration. La version Autopilot va encore plus loin en gÃ©rant aussi les nÅ“uds.",
+            reponseCorrecte: "A",
+            categorie: "Conteneurs & Orchestration",
+            type: "QCM",
+            certificationId: certGcpDigitalLeader.id,
+            simulationId: simuGcp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Google Kubernetes Engine (GKE)" },
+                    { lettre: "B", texte: "Google Compute Engine" },
+                    { lettre: "C", texte: "Cloud Run" },
+                    { lettre: "D", texte: "App Engine Flexible Environment" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quelle est la principale fonction de Google Cloud IAM ?",
+            explication: "Cloud IAM (Identity and Access Management) permet de gÃ©rer de maniÃ¨re centralisÃ©e les autorisations d'accÃ¨s aux ressources GCP en dÃ©finissant qui (utilisateur) a quel accÃ¨s (rÃ´le) sur quelle ressource.",
+            reponseCorrecte: "B",
+            categorie: "Gestion des AccÃ¨s",
+            type: "QCM",
+            certificationId: certGcpDigitalLeader.id,
+            simulationId: simuGcp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Surveiller les coÃ»ts et la consommation des ressources" },
+                    { lettre: "B", texte: "GÃ©rer les autorisations d'accÃ¨s aux ressources GCP" },
+                    { lettre: "C", texte: "Fournir un stockage d'objets scalable" },
+                    { lettre: "D", texte: "Analyser les logs en temps rÃ©el" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Google Cloud Storage (Cloud Storage) offre une cohÃ©rence forte pour les opÃ©rations de lecture aprÃ¨s Ã©criture.",
+            explication: "Vrai. Cloud Storage offre une cohÃ©rence forte (strong consistency) pour toutes les opÃ©rations : une fois qu'une Ã©criture est confirmÃ©e, toutes les lectures ultÃ©rieures retournent la valeur Ã©crite.",
+            reponseCorrecte: "A",
+            categorie: "Stockage",
+            type: "VRAI_FAUX",
+            certificationId: certGcpDigitalLeader.id,
+            simulationId: simuGcp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Vrai" },
+                    { lettre: "B", texte: "Faux" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Les rÃ©seaux VPC (Virtual Private Cloud) sur Google Cloud sont limitÃ©s Ã  une seule rÃ©gion et ne peuvent pas s'Ã©tendre globalement.",
+            explication: "Faux. Les VPC networks sur Google Cloud sont globaux. Un seul VPC peut s'Ã©tendre Ã  toutes les rÃ©gions du monde sans avoir besoin de peering ou de VPN inter-rÃ©gion.",
+            reponseCorrecte: "B",
+            categorie: "RÃ©seau",
+            type: "VRAI_FAUX",
+            certificationId: certGcpDigitalLeader.id,
+            simulationId: simuGcp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Vrai" },
+                    { lettre: "B", texte: "Faux" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Expliquez comment Google Cloud accompagne la transformation digitale des entreprises Ã  travers les donnÃ©es et l'intelligence artificielle. Citez au moins 3 services GCP spÃ©cifiques et leur cas d'usage.",
+            explication: "Google Cloud propose BigQuery pour l'analyse de donnÃ©es, Vertex AI pour le ML, Looker pour la BI, Pub/Sub pour les flux de donnÃ©es en temps rÃ©el, et Dataflow pour le traitement de flux. Les entreprises peuvent ainsi bÃ¢tir une stratÃ©gie data-driven complÃ¨te.",
+            reponseCorrecte: "Google Cloud transforme les entreprises via : 1. BigQuery (data warehouse serverless) pour analyser les donnÃ©es clients en temps rÃ©el, 2. Vertex AI pour crÃ©er et dÃ©ployer des modÃ¨les ML sans expertise approfondie, 3. Looker pour la visualisation et la BI en self-service, 4. Pub/Sub + Dataflow pour les pipelines de donnÃ©es temps rÃ©el. Ces services permettent aux entreprises de passer d'une approche rÃ©active Ã  une approche prÃ©dictive, d'optimiser les coÃ»ts, de personnaliser l'expÃ©rience client et de crÃ©er de nouveaux revenus grÃ¢ce aux donnÃ©es.",
+            grilleNotation: "100 pts: Au moins 3 services GCP nommÃ©s (BigQuery, Vertex AI, Looker, Pub/Sub, Dataflow) + cas d'usage mÃ©tier concret par service + mention de la transformation data-driven.",
+            categorie: "Transformation Digitale & Data",
+            type: "OUVERTE",
+            certificationId: certGcpDigitalLeader.id,
+            simulationId: simuGcp.id,
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Une chaÃ®ne de magasins de 500 points de vente souhaite moderniser son infrastructure IT. Actuellement, chaque magasin a un serveur local qui tombe frÃ©quemment en panne. Les donnÃ©es de vente sont consolidÃ©es manuellement chaque soir. Objectifs : (1) Centraliser les donnÃ©es en temps rÃ©el, (2) Analyser les tendances de vente, (3) DÃ©ployer une application de gestion des stocks en cloud. Proposez une architecture GCP complÃ¨te.",
+            explication: "DÃ©ployer Cloud VPN ou Private Google Access pour connecter chaque magasin. Utiliser Cloud Pub/Sub pour collecter les Ã©vÃ©nements de vente en temps rÃ©el. Dataflow pour le traitement des flux. BigQuery pour l'analyse. App Engine ou Cloud Run pour l'application de gestion des stocks. Looker pour les tableaux de bord.",
+            reponseCorrecte: "Architecture proposÃ©e : 1. ConnectivitÃ© : Cloud VPN ou SD-WAN avec Cloud Interconnect pour relier les magasins Ã  GCP. 2. Collecte des donnÃ©es : Les PDV envoient les transactions via Cloud Pub/Sub (ingestion temps rÃ©el). 3. Traitement : Dataflow ou Dataproc pour transformer et nettoyer les donnÃ©es. 4. Stockage et analyse : BigQuery pour le data warehouse avec des tables partitionnÃ©es par date. 5. Application : Cloud Run (serverless) pour l'application de gestion des stocks, avec Cloud SQL comme base de donnÃ©es. 6. Dashboard : Looker pour les analyses et reporting aux dirigeants. 7. SÃ©curitÃ© : Cloud Armor + IAM + Cloud KMS pour le chiffrement. Avantages : donnÃ©es en temps rÃ©el, scalabilitÃ© automatique, coÃ»ts rÃ©duits de maintenance.",
+            grilleNotation: "100 pts: Cloud Pub/Sub pour ingestion temps rÃ©el + BigQuery pour analyse + Cloud Run/App Engine pour app + Looker pour BI + ConnectivitÃ© (VPN/Interconnect) + Mention de la scalabilitÃ©.",
+            categorie: "Architecture Data & Applications",
+            type: "CAS_PRATIQUE",
+            certificationId: certGcpDigitalLeader.id,
+            simulationId: simuGcp.id,
+        },
+    });
+
+    // --- QUESTIONS AWS Cloud Practitioner (CLF-C02) ---
+    await prisma.question.create({
+        data: {
+            enonce: "Quel est le principal avantage financier d'utiliser AWS plutÃ´t qu'une infrastructure sur site traditionnelle ?",
+            explication: "AWS permet de remplacer des dÃ©penses d'investissement (CAPEX) par des dÃ©penses variables (OPEX), en payant uniquement pour ce que vous utilisez, sans engagement initial.",
+            reponseCorrecte: "B",
+            categorie: "ModÃ¨le de CoÃ»ts Cloud",
+            type: "QCM",
+            certificationId: certAwsCp.id,
+            simulationId: simuAwsCp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "AWS offre une licence Ã  vie pour tous ses services" },
+                    { lettre: "B", texte: "Paiement Ã  l'utilisation (Pay-as-you-go) sans coÃ»ts fixes initiaux" },
+                    { lettre: "C", texte: "AWS rembourse les coÃ»ts de migration" },
+                    { lettre: "D", texte: "Le cloud public est toujours moins cher que le cloud privÃ©" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service AWS permet de distribuer du trafic entrant sur plusieurs cibles (EC2, Lambda, conteneurs) de maniÃ¨re hautement disponible ?",
+            explication: "Elastic Load Balancing (ELB) rÃ©partit automatiquement le trafic des applications entrantes sur plusieurs cibles et plusieurs Zones de DisponibilitÃ©.",
+            reponseCorrecte: "D",
+            categorie: "Haute DisponibilitÃ© & RÃ©partition",
+            type: "QCM",
+            certificationId: certAwsCp.id,
+            simulationId: simuAwsCp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Amazon Route 53" },
+                    { lettre: "B", texte: "AWS Global Accelerator" },
+                    { lettre: "C", texte: "Amazon CloudFront" },
+                    { lettre: "D", texte: "Elastic Load Balancing (ELB)" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel est l'objectif du pilier 'FiabilitÃ©' (Reliability) dans le AWS Well-Architected Framework ?",
+            explication: "Le pilier FiabilitÃ© vise Ã  garantir qu'une charge de travail fonctionne de maniÃ¨re correcte et cohÃ©rente tout au long de son cycle de vie, avec une rÃ©cupÃ©ration rapide aprÃ¨s les interruptions.",
+            reponseCorrecte: "B",
+            categorie: "Well-Architected Framework",
+            type: "QCM",
+            certificationId: certAwsCp.id,
+            simulationId: simuAwsCp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Minimiser les coÃ»ts d'infrastructure" },
+                    { lettre: "B", texte: "Garantir la continuitÃ© et la rÃ©cupÃ©ration rapide aprÃ¨s un incident" },
+                    { lettre: "C", texte: "SÃ©curiser les accÃ¨s et les donnÃ©es" },
+                    { lettre: "D", texte: "Optimiser les performances des ressources" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quelle est la principale diffÃ©rence entre une RÃ©gion AWS et une Zone de DisponibilitÃ© (Availability Zone) ?",
+            explication: "Une RÃ©gion AWS est une zone gÃ©ographique distincte composÃ©e de plusieurs AZs isolÃ©es (gÃ©nÃ©ralement 3). Une AZ est un ou plusieurs centres de donnÃ©es distincts au sein d'une rÃ©gion, avec une alimentation et un rÃ©seau indÃ©pendants.",
+            reponseCorrecte: "A",
+            categorie: "Infrastructure Globale",
+            type: "QCM",
+            certificationId: certAwsCp.id,
+            simulationId: simuAwsCp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Une RÃ©gion contient plusieurs AZs isolÃ©es ; une AZ est un centre de donnÃ©es distinct" },
+                    { lettre: "B", texte: "Une AZ contient plusieurs RÃ©gions ; une RÃ©gion est un centre de donnÃ©es" },
+                    { lettre: "C", texte: "Il n'y a pas de diffÃ©rence, les termes sont interchangeables" },
+                    { lettre: "D", texte: "Les AZs sont privÃ©es, les RÃ©gions sont publiques" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel service AWS permet de suivre et de visualiser les coÃ»ts et l'utilisation des services AWS ?",
+            explication: "AWS Cost Explorer est un outil de visualisation qui permet de comprendre, analyser et gÃ©rer vos coÃ»ts AWS avec des rapports personnalisables.",
+            reponseCorrecte: "C",
+            categorie: "Gestion des CoÃ»ts",
+            type: "QCM",
+            certificationId: certAwsCp.id,
+            simulationId: simuAwsCp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "AWS Budgets" },
+                    { lettre: "B", texte: "AWS Pricing Calculator" },
+                    { lettre: "C", texte: "AWS Cost Explorer" },
+                    { lettre: "D", texte: "AWS Trusted Advisor" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Quel modÃ¨le de dÃ©ploiement cloud AWS combine l'utilisation d'une infrastructure sur site avec les services cloud AWS ?",
+            explication: "Le dÃ©ploiement hybride (Hybrid Cloud) permet de connecter l'infrastructure sur site au cloud AWS via AWS Direct Connect ou VPN, offrant une flexibilitÃ© maximale.",
+            reponseCorrecte: "A",
+            categorie: "ModÃ¨les de DÃ©ploiement",
+            type: "QCM",
+            certificationId: certAwsCp.id,
+            simulationId: simuAwsCp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Cloud hybride" },
+                    { lettre: "B", texte: "Cloud public uniquement" },
+                    { lettre: "C", texte: "Cloud privÃ© uniquement" },
+                    { lettre: "D", texte: "Multicloud" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Dans le modÃ¨le de responsabilitÃ© partagÃ©e AWS, le client est responsable de la sÃ©curitÃ© physique des centres de donnÃ©es AWS.",
+            explication: "Faux. AWS est responsable de la sÃ©curitÃ© du cloud (sÃ©curitÃ© physique des centres de donnÃ©es, matÃ©riel, rÃ©seau). Le client est responsable de la sÃ©curitÃ© dans le cloud (donnÃ©es, configuration, IAM, OS).",
+            reponseCorrecte: "B",
+            categorie: "ModÃ¨le de ResponsabilitÃ© PartagÃ©e",
+            type: "VRAI_FAUX",
+            certificationId: certAwsCp.id,
+            simulationId: simuAwsCp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Vrai" },
+                    { lettre: "B", texte: "Faux" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Amazon CloudFront est un service de base de donnÃ©es en mÃ©moire entiÃ¨rement gÃ©rÃ©, permettant de rÃ©duire la latence des applications.",
+            explication: "Faux. Amazon CloudFront est un service CDN (Content Delivery Network) qui accÃ©lÃ¨re la distribution de contenu statique et dynamique via un rÃ©seau mondial de points de prÃ©sence (Edge Locations).",
+            reponseCorrecte: "B",
+            categorie: "Services AWS Principaux",
+            type: "VRAI_FAUX",
+            certificationId: certAwsCp.id,
+            simulationId: simuAwsCp.id,
+            options: {
+                create: [
+                    { lettre: "A", texte: "Vrai" },
+                    { lettre: "B", texte: "Faux" },
+                ],
+            },
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Expliquez le modÃ¨le de responsabilitÃ© partagÃ©e (Shared Responsibility Model) d'AWS. Donnez 3 exemples de responsabilitÃ©s qui incombent Ã  AWS et 3 exemples de responsabilitÃ©s qui incombent au client.",
+            explication: "AWS est responsable de la sÃ©curitÃ© DU cloud (matÃ©riel, rÃ©seau, centres de donnÃ©es). Le client est responsable de la sÃ©curitÃ© DANS le cloud (donnÃ©es, IAM, OS, pare-feu applicatif).",
+            reponseCorrecte: "AWS est responsable de : 1. La sÃ©curitÃ© physique des centres de donnÃ©es (contrÃ´le d'accÃ¨s, climatisation, alimentation). 2. L'infrastructure matÃ©rielle et virtualisÃ©e (hÃ´tes, hyperviseur, rÃ©seau physique). 3. Les services gÃ©rÃ©s (RDS, S3, DynamoDB) pour la couche sous-jacente. Le client est responsable de : 1. La sÃ©curitÃ© de ses donnÃ©es client (chiffrement, classification). 2. La configuration des services (Security Groups, IAM roles, buckets S3 publics/privÃ©s). 3. Les correctifs de sÃ©curitÃ© du systÃ¨me d'exploitation (pour EC2) et la gestion des identitÃ©s.",
+            grilleNotation: "100 pts: Distinction claire sÃ©curitÃ© DU cloud vs DANS le cloud + 3 responsabilitÃ©s AWS (physique, matÃ©riel, services gÃ©rÃ©s) + 3 responsabilitÃ©s client (donnÃ©es, configuration, OS/IAM).",
+            categorie: "SÃ©curitÃ© & ConformitÃ©",
+            type: "OUVERTE",
+            certificationId: certAwsCp.id,
+            simulationId: simuAwsCp.id,
+        },
+    });
+
+    await prisma.question.create({
+        data: {
+            enonce: "Une PME de 50 employÃ©s souhaite migrer son infrastructure sur site vers AWS. Elle exÃ©cute actuellement : un serveur de fichiers (2 To), un serveur de base de donnÃ©es MySQL (500 Go), un serveur Web Apache (PHP), et un serveur de messagerie Exchange. Proposez une stratÃ©gie de migration complÃ¨te pour chaque composant avec les services AWS adaptÃ©s et une estimation des Ã©conomies potentielles.",
+            explication: "Migrer le serveur de fichiers vers Amazon EFS ou S3 avec Storage Gateway, la base de donnÃ©es vers Amazon RDS for MySQL, le serveur Web vers Elastic Beanstalk ou EC2 + ALB, la messagerie vers Amazon WorkMail ou M365. Estimer les Ã©conomies via AWS TCO Calculator.",
+            reponseCorrecte: "StratÃ©gie de migration : 1. Serveur de fichiers : AWS Storage Gateway (File Gateway) pour le cache local + Amazon S3 pour le stockage principal. 2. Base de donnÃ©es MySQL : AWS Database Migration Service (DMS) vers Amazon RDS for MySQL Multi-AZ. 3. Serveur Web : AWS Elastic Beanstalk ou EC2 Auto Scaling avec ALB pour la haute disponibilitÃ©. 4. Messagerie : Migrer vers Amazon WorkMail ou Microsoft 365 (option SaaS). Estimation des Ã©conomies : Ã‰limination des coÃ»ts matÃ©riels (serveurs, climatisation, Ã©lectricitÃ©) = environ 40% d'Ã©conomies sur 3 ans d'aprÃ¨s AWS TCO Calculator. Avantages supplÃ©mentaires : ScalabilitÃ©, sauvegardes automatiques, haute disponibilitÃ© intÃ©grÃ©e.",
+            grilleNotation: "100 pts: Storage Gateway/S3 pour fichiers + RDS pour MySQL + Elastic Beanstalk/EC2+ALB pour Web + Solution de messagerie + Mention des Ã©conomies (TCO) et de la scalabilitÃ©.",
+            categorie: "Migration & Architecture",
+            type: "CAS_PRATIQUE",
+            certificationId: certAwsCp.id,
+            simulationId: simuAwsCp.id,
+        },
+    });
+
+
+    8. Ressources Téléchargeables
     console.log('📁 Ajout des ressources et fiches téléchargeables...');
     await prisma.ressource.create({
         data: {

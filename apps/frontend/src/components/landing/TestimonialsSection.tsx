@@ -111,12 +111,12 @@ export function TestimonialsSection() {
         </div>
 
         {/* Carousel Container */}
-        <div className="relative group flex items-center px-12 md:px-14">
+        <div className="relative group flex items-center px-8 sm:px-12 md:px-14">
           
           {/* Flèche Gauche */}
           <button 
             onClick={() => setReviewIndex(prev => Math.max(0, prev - 1))} 
-            className={`absolute left-0 z-20 w-10 h-10 bg-[#080d1a]/95 border border-slate-900 text-slate-400 hover:text-white hover:bg-slate-950/80 rounded-full flex items-center justify-center transition-all ${reviewIndex === 0 ? 'opacity-30 cursor-not-allowed' : 'opacity-100 cursor-pointer hover:scale-105 active:scale-95'}`}
+            className={`absolute left-0 sm:left-2 z-20 w-8 h-8 sm:w-10 sm:h-10 bg-[#080d1a]/95 border border-slate-900 text-slate-400 hover:text-white hover:bg-slate-950/80 rounded-full flex items-center justify-center transition-all ${reviewIndex === 0 ? 'opacity-30 cursor-not-allowed' : 'opacity-100 cursor-pointer hover:scale-105 active:scale-95'}`}
             disabled={reviewIndex === 0}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"></path></svg>
@@ -133,7 +133,7 @@ export function TestimonialsSection() {
                   <div 
                     key={idx} 
                     style={{ flex: `0 0 calc(${100 / itemsPerView}% - ${(itemsPerView - 1) * 24 / itemsPerView}px)` }} 
-                    className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-900 hover:border-red-500/20 rounded-2xl p-6 text-left flex flex-col space-y-4 hover:-translate-y-1 hover:shadow-lg hover:shadow-red-950/5 transition-all duration-300 group cursor-default"
+                    className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-900 hover:border-red-500/20 rounded-2xl p-4 sm:p-6 text-left flex flex-col space-y-4 hover:-translate-y-1 hover:shadow-lg hover:shadow-red-950/5 transition-all duration-300 group cursor-default h-full"
                   >
                     {/* Header de l'avis */}
                     <div className="flex items-start justify-between">
@@ -187,7 +187,7 @@ export function TestimonialsSection() {
           {/* Flèche Droite */}
           <button 
             onClick={() => setReviewIndex(prev => Math.max(0, Math.min(googleReviews.length - itemsPerView, prev + 1)))} 
-            className={`absolute right-0 z-20 w-10 h-10 bg-[#080d1a]/95 border border-slate-900 text-slate-400 hover:text-white hover:bg-slate-950/80 rounded-full flex items-center justify-center transition-all ${reviewIndex >= googleReviews.length - itemsPerView ? 'opacity-30 cursor-not-allowed' : 'opacity-100 cursor-pointer hover:scale-105 active:scale-95'}`}
+            className={`absolute right-0 sm:right-2 z-20 w-8 h-8 sm:w-10 sm:h-10 bg-[#080d1a]/95 border border-slate-900 text-slate-400 hover:text-white hover:bg-slate-950/80 rounded-full flex items-center justify-center transition-all ${reviewIndex >= googleReviews.length - itemsPerView ? 'opacity-30 cursor-not-allowed' : 'opacity-100 cursor-pointer hover:scale-105 active:scale-95'}`}
             disabled={reviewIndex >= googleReviews.length - itemsPerView}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"></path></svg>
