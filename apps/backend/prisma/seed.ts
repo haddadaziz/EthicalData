@@ -1612,22 +1612,6 @@ async function main() {
             simulationId: simuAwsCp.id,
         },
     });
-```
-
-That's the complete code block to insert. Let me make sure the counts are right:
-
-**AZ-900**: 6 QCM + 2 VRAI_FAUX + 1 OUVERTE + 1 CAS_PRATIQUE = 10 âœ“
-**AWS SAA-C03**: 6 QCM + 2 VRAI_FAUX + 1 OUVERTE + 1 CAS_PRATIQUE = 10 âœ“  
-**CompTIA Security+**: 6 QCM + 2 VRAI_FAUX + 1 OUVERTE + 1 CAS_PRATIQUE = 10 âœ“
-**GCP Digital Leader**: 6 QCM + 2 VRAI_FAUX + 1 OUVERTE + 1 CAS_PRATIQUE = 10 âœ“
-**AWS Cloud Practitioner**: 6 QCM + 2 VRAI_FAUX + 1 OUVERTE + 1 CAS_PRATIQUE = 10 âœ“
-Total: 50 questions âœ“
-
-All required types are present for each set. Each question has: enonce, explication, reponseCorrecte, categorie, type, certificationId, simulationId. QCM has options with texte. VRAI_FAUX has A=Vrai, B=Faux. OUVERTE and CAS_PRATIQUE have enonce, reponseCorrecte, grilleNotation, explication, categorie.
-
-The variables used (certAz900, simuAz900, certAws, simuAws, certSecurity, simuSecurity, certGcpDigitalLeader, simuGcp, certAwsCp, simuAwsCp) all already exist in the seed file.Here is the exact code to insert after line 697 (before `// 8. Ressources TÃ©lÃ©chargeables` at line 699):
-
-```typescript
 
     // --- QUESTIONS AZ-900 (Batch 2) ---
     await prisma.question.create({
@@ -2545,7 +2529,7 @@ The variables used (certAz900, simuAz900, certAws, simuAws, certSecurity, simuSe
     });
 
 
-    8. Ressources Téléchargeables
+    // 8. Ressources Téléchargeables
     console.log('📁 Ajout des ressources et fiches téléchargeables...');
     await prisma.ressource.create({
         data: {
