@@ -253,9 +253,13 @@ export class CertificationsService {
         dureeIndicative: dto.dureeIndicative || null,
         image: dto.image || null,
         fournisseurId: BigInt(dto.fournisseurId),
+        categorieId: dto.categorieId ? BigInt(dto.categorieId) : undefined,
+        objectifs: dto.objectifs || [],
+        prerequis: dto.prerequis || [],
       },
       include: {
         fournisseur: true,
+        categorie: true,
       },
     });
 
@@ -288,6 +292,9 @@ export class CertificationsService {
       dureeIndicative: dto.dureeIndicative,
       image: dto.image,
       fournisseurId: dto.fournisseurId ? BigInt(dto.fournisseurId) : undefined,
+      categorieId: dto.categorieId !== undefined ? BigInt(dto.categorieId) : undefined,
+      objectifs: dto.objectifs,
+      prerequis: dto.prerequis,
     };
 
     if (dto.nom) {

@@ -9,7 +9,7 @@ interface HeroSectionProps {
 
 export function HeroSection({ isConnected, children }: HeroSectionProps) {
   return (
-    <section className="relative min-h-[115dvh] lg:min-h-[80vh] flex flex-col justify-between overflow-hidden bg-[#020617] text-white">
+    <section className="relative min-h-[115vh] lg:min-h-[80vh] flex flex-col justify-between overflow-hidden bg-[#020617] text-white">
       {/* Navigation container */}
       <div className="w-full z-50">
         {children}

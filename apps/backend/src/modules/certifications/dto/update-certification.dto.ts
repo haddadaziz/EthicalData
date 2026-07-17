@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsEnum, IsNumber } from 'class-validator';
+import { IsOptional, IsString, IsEnum, IsNumber, IsArray } from 'class-validator';
 import { Niveau } from '@prisma/client';
 
 export class UpdateCertificationDto {
@@ -25,6 +25,20 @@ export class UpdateCertificationDto {
   @IsNumber()
   @IsOptional()
   fournisseurId?: number;
+
+  @IsNumber()
+  @IsOptional()
+  categorieId?: number;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  objectifs?: string[];
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  prerequis?: string[];
 
   @IsString()
   @IsOptional()

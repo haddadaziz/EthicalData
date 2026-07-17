@@ -398,7 +398,7 @@ export default function CertificationDetailPage() {
                 Teste tes connaissances avec nos QCM et simulations.
               </p>
               <button
-                onClick={() => router.push('/login')}
+                onClick={() => isConnected ? router.push('/dashboard/practice?cert=' + cert.slug) : router.push('/login')}
                 className="w-full py-2.5 bg-white text-blue-700 font-black rounded-xl text-xs hover:bg-blue-50 transition-colors cursor-pointer"
               >
                 Commencer
