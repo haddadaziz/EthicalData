@@ -19,14 +19,14 @@ export const CertificationCard = ({
   logo,
   cleanTitle,
 }: CertificationCardProps) => {
-  const ref = useRef<HTMLAnchorElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const spotlightX = useSpring(mouseX, { stiffness: 400, damping: 30 });
   const spotlightY = useSpring(mouseY, { stiffness: 400, damping: 30 });
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     mouseX.set(e.clientX - rect.left);
@@ -38,7 +38,7 @@ export const CertificationCard = ({
   return (
     <Link href={`/certifications/${slug}`} className="block w-full">
       <motion.div
-        ref={ref as any}
+        ref={ref}
         onMouseMove={handleMouseMove}
         className="relative block w-full group cursor-pointer select-none transition-all duration-500 ease-out hover:scale-[1.03] hover:-translate-y-2"
       >
