@@ -49,6 +49,7 @@ export default function StudentDashboard() {
     });
     const [myAppointments, setMyAppointments] = useState<any[]>([]);
     const [me, setMe] = useState<any>(null);
+    const [enrolledCerts, setEnrolledCerts] = useState<any[]>([]);
 
     useEffect(() => {
         const handleOutsideClick = (e: MouseEvent) => {
@@ -84,13 +85,16 @@ export default function StudentDashboard() {
 
         const loadDashboardData = async () => {
             try {
-                const [certsData, statsData, profileData, appointmentsData, coursesData] = await Promise.all([
+                const [certsData, statsData, profileData, appointmentsData, coursesData, enrollmentsData] = await Promise.all([
                     apiFetch('/certifications').catch(() => []),
                     apiFetch('/simulations/me/stats').catch(() => null),
                     apiFetch('/users/me/profile').catch(() => null),
                     apiFetch('/appointments/mes-rdv').catch(() => []),
                     apiFetch('/cours/mes-cours').catch(() => []),
+                    apiFetch('/certifications/mes-inscriptions').catch(() => []),
                 ]);
+                const enrolled = Array.isArray(enrollmentsData) ? enrollmentsData : [];
+                setEnrolledCerts(enrolled);
                 setFormateurCourses(Array.isArray(coursesData) ? coursesData : []);
                 const listCerts = Array.isArray(certsData) ? certsData : (certsData?.data || []);
                 setCerts(listCerts);
@@ -106,11 +110,15 @@ export default function StudentDashboard() {
                 if (targeted.length > 0) {
                     const firstCert = targeted[0];
                     setSelectedCert(firstCert);
-                    try {
-                        const readData = await apiFetch(`/simulations/certifications/${firstCert.id}/readiness`);
-                        setReadinessData(readData);
-                    } catch (e) {
-                        console.error(e);
+                    for (let attempt = 0; attempt < 3; attempt++) {
+                        try {
+                            const readData = await apiFetch(`/simulations/certifications/${firstCert.id}/readiness`);
+                            setReadinessData(readData);
+                            break;
+                        } catch (e) {
+                            if (attempt < 2) await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+                            else console.error(e);
+                        }
                     }
                 }
             } catch (err) {
@@ -126,11 +134,15 @@ export default function StudentDashboard() {
     // Gérer le changement de certification analysée
     const handleSelectCert = async (cert: any) => {
         setSelectedCert(cert);
-        try {
-            const readData = await apiFetch(`/simulations/certifications/${cert.id}/readiness`);
-            setReadinessData(readData);
-        } catch (e) {
-            console.error(e);
+        for (let attempt = 0; attempt < 3; attempt++) {
+            try {
+                const readData = await apiFetch(`/simulations/certifications/${cert.id}/readiness`);
+                setReadinessData(readData);
+                return;
+            } catch (e) {
+                if (attempt < 2) await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+                else console.error(e);
+            }
         }
     };
 
@@ -171,7 +183,7 @@ export default function StudentDashboard() {
                 ctaHref: "/dashboard/downloads",
                 color: "text-emerald-600 bg-emerald-50 border-emerald-100",
                 btnColor: "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/20",
-                estTime: "45 min"
+                estTime: 45
             };
         }
         if (text.includes("cours") || text.includes("vidéo") || text.includes("module") || text.includes("révisez")) {
@@ -183,7 +195,7 @@ export default function StudentDashboard() {
                 ctaHref: "/dashboard/downloads",
                 color: "text-blue-600 bg-blue-50 border-blue-100",
                 btnColor: "bg-blue-600 hover:bg-blue-700 shadow-blue-600/20",
-                estTime: "2h00"
+                estTime: 120
             };
         }
         return {
@@ -194,8 +206,22 @@ export default function StudentDashboard() {
             ctaHref: `/dashboard/practice${selectedCert?.slug ? `?cert=${selectedCert.slug}` : ''}`,
             color: "text-purple-600 bg-purple-50 border-purple-100",
             btnColor: "bg-purple-600 hover:bg-purple-700 shadow-purple-600/20",
-            estTime: "1h15"
+            estTime: 75
         };
+    };
+
+    const getTotalEstTime = (steps: string[]) => {
+        let total = 0;
+        for (const s of steps) {
+            const meta = getStepMetadata(s);
+            total += meta.estTime;
+        }
+        if (total < 60) return `${total} min`;
+        const h = Math.floor(total / 60);
+        const m = total % 60;
+        if (m === 0) return `${h}h`;
+        if (m <= 30) return `${h}h30`;
+        return `${h}h${m}`;
     };
 
     if (loading) {
@@ -646,7 +672,7 @@ export default function StudentDashboard() {
                         </p>
                     </div>
                     <span className="text-xs font-extrabold text-slate-500 bg-slate-50 border border-slate-200/80 px-3 py-1.5 rounded-xl shrink-0 self-start sm:self-center">
-                        Estimé : <strong className="text-slate-900">4h de travail</strong>
+                        Estimé : <strong className="text-slate-900">{getTotalEstTime(readinessData?.planRevision || ["Révisez le Module 4 : Gestion des Coûts & Tarification Cloud.", "Consultez les fiches mémo et supports PDF de révision rapide.", "Effectuez une simulation ciblée de 20 questions chrono pour valider vos acquis."])} de travail</strong>
                     </span>
                 </div>
 
