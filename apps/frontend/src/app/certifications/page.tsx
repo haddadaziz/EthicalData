@@ -176,7 +176,7 @@ export default function CertificationsPublicPage() {
             <Navbar />
 
             {/* HEADER HERO SECTION */}
-            <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden border-b border-slate-800">
+            <section className="relative min-h-[115vh] lg:min-h-[80vh] flex items-center justify-center overflow-hidden border-b border-slate-800">
                 {/* Background image */}
                 <div className="absolute inset-0 z-0">
                     <img 
@@ -190,7 +190,7 @@ export default function CertificationsPublicPage() {
                     <style dangerouslySetInnerHTML={{__html: `
                         @keyframes scan-laser {
                             0% { transform: translate3d(0, 0vh, 0); }
-                            50% { transform: translate3d(0, 70vh, 0); }
+                            50% { transform: translate3d(0, 80vh, 0); }
                             100% { transform: translate3d(0, 0vh, 0); }
                         }
                         .animate-scan-laser {
