@@ -35,7 +35,11 @@ export class AiService {
 
     if (!apiKey || apiKey.includes('AIzaSy...')) {
       console.log('[AiService] No valid API key, using simulated evaluation');
-      return this.evaluationSimulee(reponseCandidat, reponseCorrecte);
+      return {
+        score: 0,
+        critique: `IA non configurée : clé API ${apiKey ? 'invalide (contient AIzaSy...)' : 'manquante'}. Allez dans Admin → Paramètres Système → Configuration IA pour définir une clé Gemini valide.`,
+        suggestions: 'Configurez une clé API Gemini valide dans les paramètres administrateur.',
+      };
     }
 
     try {
