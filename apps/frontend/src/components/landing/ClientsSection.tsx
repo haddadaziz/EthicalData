@@ -11,14 +11,14 @@ export function ClientsSection() {
   ];
 
   return (
-    <section className="relative z-10 w-full border-y border-slate-200/60 py-5 overflow-hidden">
+    <section className="relative z-10 w-full bg-white border-y border-slate-200/60 py-5 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 mb-3 text-left">
         <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Ils nous font confiance :</span>
       </div>
       <div className="relative w-full overflow-hidden">
         {/* Floutage des bords */}
-        <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#020617] to-transparent z-10 pointer-events-none" />
-        <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#020617] to-transparent z-10 pointer-events-none" />
+        <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+        <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
         
         <div className="flex gap-12 animate-marquee-reverse whitespace-nowrap items-center">
           {[...clients, ...clients, ...clients, ...clients].map((client, idx) => (

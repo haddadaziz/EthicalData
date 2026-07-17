@@ -14,13 +14,13 @@ const partnerLogos = [
 
 export function PartnersSection() {
   return (
-    <section className="relative z-10 w-full border-t border-slate-200/60 py-16 overflow-hidden">
+    <section className="relative z-10 w-full bg-white border-t border-slate-200/60 py-16 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 mb-10 text-left">
         <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">Nos Partenaires Certifications</h3>
       </div>
       <div className="relative w-full overflow-hidden">
-        <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-slate-50 to-transparent z-10 pointer-events-none" />
-        <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none" />
+        <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+        <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
         
         <div className="flex gap-12 animate-marquee whitespace-nowrap items-center">
           {[...partnerLogos, ...partnerLogos, ...partnerLogos, ...partnerLogos].map((partner, idx) => (
