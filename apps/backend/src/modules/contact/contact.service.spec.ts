@@ -34,7 +34,8 @@ describe('ContactService', () => {
       nom: 'Jean Dupont',
       email: 'jean@example.com',
       sujet: 'Question sur AZ-900',
-      message: 'Bonjour, je voudrais des informations sur la certification AZ-900.',
+      message:
+        'Bonjour, je voudrais des informations sur la certification AZ-900.',
     };
 
     it('should create a contact message successfully', async () => {

@@ -23,7 +23,7 @@ export class CertificationsService {
   constructor(
     private prisma: PrismaService,
     private aiService: AiService,
-  ) { }
+  ) {}
 
   private slugify(text: string): string {
     return text
@@ -292,7 +292,8 @@ export class CertificationsService {
       dureeIndicative: dto.dureeIndicative,
       image: dto.image,
       fournisseurId: dto.fournisseurId ? BigInt(dto.fournisseurId) : undefined,
-      categorieId: dto.categorieId !== undefined ? BigInt(dto.categorieId) : undefined,
+      categorieId:
+        dto.categorieId !== undefined ? BigInt(dto.categorieId) : undefined,
       objectifs: dto.objectifs,
       prerequis: dto.prerequis,
     };
@@ -355,11 +356,11 @@ export class CertificationsService {
     const optionsData =
       dto.options && dto.options.length > 0
         ? {
-          create: dto.options.map((opt: any) => ({
-            lettre: opt.lettre,
-            texte: opt.texte,
-          })),
-        }
+            create: dto.options.map((opt: any) => ({
+              lettre: opt.lettre,
+              texte: opt.texte,
+            })),
+          }
         : undefined;
 
     const question = await this.prisma.question.create({
@@ -393,7 +394,9 @@ export class CertificationsService {
     });
 
     if (!simulation) {
-      throw new NotFoundException('Aucune simulation disponible pour cette certification.');
+      throw new NotFoundException(
+        'Aucune simulation disponible pour cette certification.',
+      );
     }
 
     const tentative = await this.prisma.tentative.create({
@@ -418,8 +421,8 @@ export class CertificationsService {
     const avgScore =
       total > 0
         ? Math.round(
-          tentatives.reduce((acc, curr) => acc + curr.score, 0) / total,
-        )
+            tentatives.reduce((acc, curr) => acc + curr.score, 0) / total,
+          )
         : 0;
 
     return {
@@ -456,11 +459,11 @@ export class CertificationsService {
     const optionsData =
       dto.options && dto.options.length > 0
         ? {
-          create: dto.options.map((opt: any) => ({
-            lettre: opt.lettre,
-            texte: opt.texte,
-          })),
-        }
+            create: dto.options.map((opt: any) => ({
+              lettre: opt.lettre,
+              texte: opt.texte,
+            })),
+          }
         : undefined;
 
     const updated = await this.prisma.question.update({
@@ -485,8 +488,8 @@ export class CertificationsService {
     if (!qId || isNaN(qId)) {
       return {
         score: 0,
-        critique: "ID de question invalide.",
-        suggestions: "Veuillez vérifier la question sélectionnée.",
+        critique: 'ID de question invalide.',
+        suggestions: 'Veuillez vérifier la question sélectionnée.',
       };
     }
     const question = await this.prisma.question.findUnique({
@@ -496,7 +499,7 @@ export class CertificationsService {
       return {
         score: 0,
         critique: "La question demandée n'existe pas.",
-        suggestions: "Veuillez recharger la banque de questions.",
+        suggestions: 'Veuillez recharger la banque de questions.',
       };
     }
     return this.aiService.evaluerReponseOuverte(
@@ -524,29 +527,45 @@ export class CertificationsService {
     const cat = await this.prisma.categorieCertification.findFirst({
       where: { id: BigInt(id) },
       include: {
-        certifications: { where: { deletedAt: null }, include: { fournisseur: true } },
+        certifications: {
+          where: { deletedAt: null },
+          include: { fournisseur: true },
+        },
       },
     });
-    if (!cat) throw new NotFoundException("Catégorie introuvable.");
+    if (!cat) throw new NotFoundException('Catégorie introuvable.');
     return cat;
   }
 
   async createCategory(dto: CreateCategorieDto) {
     const slug = this.slugify(dto.nom);
-    const existing = await this.prisma.categorieCertification.findUnique({ where: { slug } });
-    if (existing) throw new ConflictException("Cette catégorie existe déjà.");
+    const existing = await this.prisma.categorieCertification.findUnique({
+      where: { slug },
+    });
+    if (existing) throw new ConflictException('Cette catégorie existe déjà.');
     return this.prisma.categorieCertification.create({
-      data: { nom: dto.nom, slug, description: dto.description, image: dto.image, ordre: dto.ordre || 0 },
+      data: {
+        nom: dto.nom,
+        slug,
+        description: dto.description,
+        image: dto.image,
+        ordre: dto.ordre || 0,
+      },
     });
   }
 
   async updateCategory(id: number, dto: UpdateCategorieDto) {
-    const cat = await this.prisma.categorieCertification.findFirst({ where: { id: BigInt(id) } });
-    if (!cat) throw new NotFoundException("Catégorie introuvable.");
+    const cat = await this.prisma.categorieCertification.findFirst({
+      where: { id: BigInt(id) },
+    });
+    if (!cat) throw new NotFoundException('Catégorie introuvable.');
     const data: any = { ...dto };
     if (dto.nom) data.slug = this.slugify(dto.nom);
     Object.keys(data).forEach((k) => data[k] === undefined && delete data[k]);
-    return this.prisma.categorieCertification.update({ where: { id: BigInt(id) }, data });
+    return this.prisma.categorieCertification.update({
+      where: { id: BigInt(id) },
+      data,
+    });
   }
 
   async removeCategory(id: number) {
@@ -554,12 +573,16 @@ export class CertificationsService {
       where: { id: BigInt(id) },
       include: { certifications: { where: { deletedAt: null } } },
     });
-    if (!cat) throw new NotFoundException("Catégorie introuvable.");
+    if (!cat) throw new NotFoundException('Catégorie introuvable.');
     if (cat.certifications.length > 0) {
-      throw new ConflictException("Impossible de supprimer : des certifications sont rattachées à cette catégorie.");
+      throw new ConflictException(
+        'Impossible de supprimer : des certifications sont rattachées à cette catégorie.',
+      );
     }
-    await this.prisma.categorieCertification.delete({ where: { id: BigInt(id) } });
-    return { message: "Catégorie supprimée avec succès." };
+    await this.prisma.categorieCertification.delete({
+      where: { id: BigInt(id) },
+    });
+    return { message: 'Catégorie supprimée avec succès.' };
   }
 
   // ==========================================
@@ -575,8 +598,11 @@ export class CertificationsService {
   }
 
   async createModule(certId: number, dto: CreateModuleCertificationDto) {
-    const cert = await this.prisma.certification.findFirst({ where: { id: BigInt(certId), deletedAt: null } });
-    if (!cert) throw new NotFoundException("La certification demandée n'existe pas.");
+    const cert = await this.prisma.certification.findFirst({
+      where: { id: BigInt(certId), deletedAt: null },
+    });
+    if (!cert)
+      throw new NotFoundException("La certification demandée n'existe pas.");
     return this.prisma.moduleCertification.create({
       data: {
         titre: dto.titre,
@@ -590,20 +616,29 @@ export class CertificationsService {
   }
 
   async updateModule(moduleId: number, dto: UpdateModuleCertificationDto) {
-    const mod = await this.prisma.moduleCertification.findFirst({ where: { id: BigInt(moduleId) } });
-    if (!mod) throw new NotFoundException("Module introuvable.");
+    const mod = await this.prisma.moduleCertification.findFirst({
+      where: { id: BigInt(moduleId) },
+    });
+    if (!mod) throw new NotFoundException('Module introuvable.');
     const data: any = { ...dto };
     if (dto.parentId === null) data.parentId = null;
     else if (dto.parentId) data.parentId = BigInt(dto.parentId);
     Object.keys(data).forEach((k) => data[k] === undefined && delete data[k]);
-    return this.prisma.moduleCertification.update({ where: { id: BigInt(moduleId) }, data });
+    return this.prisma.moduleCertification.update({
+      where: { id: BigInt(moduleId) },
+      data,
+    });
   }
 
   async removeModule(moduleId: number) {
-    const mod = await this.prisma.moduleCertification.findFirst({ where: { id: BigInt(moduleId) } });
-    if (!mod) throw new NotFoundException("Module introuvable.");
-    await this.prisma.moduleCertification.delete({ where: { id: BigInt(moduleId) } });
-    return { message: "Module supprimé avec succès." };
+    const mod = await this.prisma.moduleCertification.findFirst({
+      where: { id: BigInt(moduleId) },
+    });
+    if (!mod) throw new NotFoundException('Module introuvable.');
+    await this.prisma.moduleCertification.delete({
+      where: { id: BigInt(moduleId) },
+    });
+    return { message: 'Module supprimé avec succès.' };
   }
 
   // ==========================================
@@ -619,9 +654,12 @@ export class CertificationsService {
         url: dto.url,
         taille: dto.taille || null,
         version: dto.version || '1.0.0',
-        quotaTelechargement: dto.quotaTelechargement !== undefined ? dto.quotaTelechargement : 10,
+        quotaTelechargement:
+          dto.quotaTelechargement !== undefined ? dto.quotaTelechargement : 10,
         public: dto.public !== undefined ? dto.public : false,
-        certificationId: dto.certificationId ? BigInt(dto.certificationId) : null,
+        certificationId: dto.certificationId
+          ? BigInt(dto.certificationId)
+          : null,
         coursId: dto.coursId ? BigInt(dto.coursId) : null,
       },
     });
@@ -651,8 +689,15 @@ export class CertificationsService {
         version: dto.version,
         quotaTelechargement: dto.quotaTelechargement,
         public: dto.public,
-        certificationId: dto.certificationId ? BigInt(dto.certificationId) : null,
-        coursId: dto.coursId !== undefined ? (dto.coursId ? BigInt(dto.coursId) : null) : undefined,
+        certificationId: dto.certificationId
+          ? BigInt(dto.certificationId)
+          : null,
+        coursId:
+          dto.coursId !== undefined
+            ? dto.coursId
+              ? BigInt(dto.coursId)
+              : null
+            : undefined,
       },
     });
     return updated;
@@ -675,16 +720,20 @@ export class CertificationsService {
   async findAllRessources() {
     const resources = await this.prisma.ressource.findMany({
       where: { deletedAt: null },
-      include: { 
+      include: {
         certification: true,
-        cours: { select: { id: true, titre: true } }
+        cours: { select: { id: true, titre: true } },
       },
       orderBy: { dateCreation: 'desc' },
     });
     return resources;
   }
   // Enregistrer et autoriser le téléchargement d'un document (avec contrôle de quota)
-  async downloadRessource(userId: number, resourceId: number, ipAddress: string) {
+  async downloadRessource(
+    userId: number,
+    resourceId: number,
+    ipAddress: string,
+  ) {
     const resource = await this.prisma.ressource.findFirst({
       where: { id: BigInt(resourceId), deletedAt: null },
     });
@@ -706,7 +755,7 @@ export class CertificationsService {
 
       if (downloadCount >= quota) {
         throw new ForbiddenException(
-          `Vous avez atteint votre quota maximum de ${quota} téléchargements pour cette ressource.`
+          `Vous avez atteint votre quota maximum de ${quota} téléchargements pour cette ressource.`,
         );
       }
     }
@@ -736,8 +785,10 @@ export class CertificationsService {
       where: { utilisateurId: BigInt(userId) },
     });
 
-    return resources.map(r => {
-      const userDownloads = downloads.filter(d => d.ressourceId === r.id).length;
+    return resources.map((r) => {
+      const userDownloads = downloads.filter(
+        (d) => d.ressourceId === r.id,
+      ).length;
       const quotaMax = r.quotaTelechargement ?? 10;
       return {
         resourceId: r.id,
@@ -765,7 +816,9 @@ export class CertificationsService {
       },
     });
     if (existing) {
-      throw new ConflictException('Vous êtes déjà inscrit à cette certification.');
+      throw new ConflictException(
+        'Vous êtes déjà inscrit à cette certification.',
+      );
     }
 
     const inscription = await this.prisma.inscriptionCertification.create({
@@ -798,7 +851,9 @@ export class CertificationsService {
       },
     });
     if (!existing) {
-      throw new NotFoundException("Vous n'êtes pas inscrit à cette certification.");
+      throw new NotFoundException(
+        "Vous n'êtes pas inscrit à cette certification.",
+      );
     }
 
     await this.prisma.inscriptionCertification.delete({

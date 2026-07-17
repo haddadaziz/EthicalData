@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 
 import { Search, Plus, ChevronDown, Award } from '@/components/icons';
 import { getProviderLogo } from '@/lib/certification-utils';
@@ -8,9 +9,19 @@ import { useCertifications } from '@/hooks/useCertifications';
 import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/context/ConfirmContext';
 import { CertificationsGrid } from '@/components/admin/certifications/CertificationsGrid';
-import { CertificationFormModal } from '@/components/admin/certifications/CertificationFormModal';
-import { QuestionsManagerModal } from '@/components/admin/certifications/QuestionsManagerModal';
-import { FournisseurModal } from '@/components/admin/certifications/FournisseurModal';
+
+const CertificationFormModal = dynamic(
+  () => import('@/components/admin/certifications/CertificationFormModal').then(mod => mod.CertificationFormModal),
+  { ssr: false }
+);
+const QuestionsManagerModal = dynamic(
+  () => import('@/components/admin/certifications/QuestionsManagerModal').then(mod => mod.QuestionsManagerModal),
+  { ssr: false }
+);
+const FournisseurModal = dynamic(
+  () => import('@/components/admin/certifications/FournisseurModal').then(mod => mod.FournisseurModal),
+  { ssr: false }
+);
 
 export default function AdminCertificationsPage() {
   const {

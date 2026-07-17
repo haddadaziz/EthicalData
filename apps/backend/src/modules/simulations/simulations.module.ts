@@ -5,9 +5,9 @@ import { AiService } from '../certifications/ai.service';
 import { SettingsModule } from '../settings/settings.module';
 
 @Module({
-    imports: [SettingsModule],
-    controllers: [SimulationsController],
-    providers: [SimulationsService, AiService],
-    exports: [SimulationsService],
+  imports: [SettingsModule],
+  controllers: [SimulationsController],
+  providers: [SimulationsService, AiService],
+  exports: [SimulationsService],
 })
-export class SimulationsModule { }
+export class SimulationsModule {}

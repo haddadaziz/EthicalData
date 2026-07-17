@@ -22,7 +22,10 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @Throttle({ default: { limit: 5, ttl: 60000 } })
-  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const user = await this.authService.validateUser(
       loginDto.email,
       loginDto.motDePasse,
@@ -34,7 +37,11 @@ export class AuthController {
 
     const result = await this.authService.login(user);
 
-    res.cookie('token', result.access_token, this.authService.getCookieOptions());
+    res.cookie(
+      'token',
+      result.access_token,
+      this.authService.getCookieOptions(),
+    );
 
     return { access_token: result.access_token, message: 'Connexion réussie' };
   }
@@ -42,12 +49,22 @@ export class AuthController {
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   @Throttle({ default: { limit: 3, ttl: 60000 } })
-  async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) res: Response) {
+  async register(
+    @Body() registerDto: RegisterDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const result = await this.authService.register(registerDto);
 
-    res.cookie('token', result.access_token, this.authService.getCookieOptions());
+    res.cookie(
+      'token',
+      result.access_token,
+      this.authService.getCookieOptions(),
+    );
 
-    return { access_token: result.access_token, message: 'Compte créé avec succès' };
+    return {
+      access_token: result.access_token,
+      message: 'Compte créé avec succès',
+    };
   }
 
   @Post('forgot-password')

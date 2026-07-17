@@ -7,7 +7,12 @@ import { useConfirm } from '@/context/ConfirmContext';
 import { BookMarked, Globe, FilePen, Plus } from '@/components/icons';
 import { useCourses } from '@/hooks/useCourses';
 import { CourseGrid } from '@/components/dashboard/courses/CourseGrid';
-import { CourseEditor } from '@/components/dashboard/courses/CourseEditor';
+import dynamic from 'next/dynamic';
+
+const CourseEditor = dynamic(
+  () => import('@/components/dashboard/courses/CourseEditor').then((mod) => mod.CourseEditor),
+  { ssr: false, loading: () => <div className="p-8 text-center text-slate-400">Chargement de l'éditeur...</div> }
+);
 
 export default function CoursesPage() {
     const { showToast } = useToast();

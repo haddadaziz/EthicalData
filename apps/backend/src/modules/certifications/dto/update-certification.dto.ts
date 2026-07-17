@@ -1,4 +1,10 @@
-import { IsOptional, IsString, IsEnum, IsNumber, IsArray } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsEnum,
+  IsNumber,
+  IsArray,
+} from 'class-validator';
 import { Niveau } from '@prisma/client';
 
 export class UpdateCertificationDto {

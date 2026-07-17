@@ -25,12 +25,12 @@ export class UsersService {
   async create(createUserDto: CreateUserDto) {
     const generalSettings = await this.settingsService.getSetting('general');
     if (generalSettings && generalSettings.allowRegistrations === false) {
-      const hasAdminRole = createUserDto.roles && createUserDto.roles.some(
-        (r) => r === 'ADMIN' || r === 'SUPER_ADMIN'
-      );
+      const hasAdminRole =
+        createUserDto.roles &&
+        createUserDto.roles.some((r) => r === 'ADMIN' || r === 'SUPER_ADMIN');
       if (!hasAdminRole) {
         throw new BadRequestException(
-          'Les inscriptions sont actuellement désactivées sur cette plateforme.'
+          'Les inscriptions sont actuellement désactivées sur cette plateforme.',
         );
       }
     }
@@ -47,22 +47,22 @@ export class UsersService {
 
       if (pwd.length < (passwordMinLength || 8)) {
         throw new BadRequestException(
-          `Le mot de passe doit contenir au moins ${passwordMinLength || 8} caractères.`
+          `Le mot de passe doit contenir au moins ${passwordMinLength || 8} caractères.`,
         );
       }
       if (passwordRequireUppercase && !/[A-Z]/.test(pwd)) {
         throw new BadRequestException(
-          'Le mot de passe doit contenir au moins une lettre majuscule.'
+          'Le mot de passe doit contenir au moins une lettre majuscule.',
         );
       }
       if (passwordRequireDigit && !/[0-9]/.test(pwd)) {
         throw new BadRequestException(
-          'Le mot de passe doit contenir au moins un chiffre.'
+          'Le mot de passe doit contenir au moins un chiffre.',
         );
       }
       if (passwordRequireSpecialChar && !/[!@#$%^&*(),.?":{}|<>]/.test(pwd)) {
         throw new BadRequestException(
-          'Le mot de passe doit contenir au moins un caractère spécial.'
+          'Le mot de passe doit contenir au moins un caractère spécial.',
         );
       }
     }
@@ -166,11 +166,11 @@ export class UsersService {
                     slug: true,
                     codeExamen: true,
                     image: true,
-                  }
-                }
-              }
-            }
-          }
+                  },
+                },
+              },
+            },
+          },
         },
         _count: {
           select: {
@@ -188,7 +188,7 @@ export class UsersService {
 
     // Récupérer les certifications obtenues (score d'un examen blanc >= 80)
     const obtainedMap = new Map();
-    user.tentatives.forEach(t => {
+    user.tentatives.forEach((t) => {
       const cert = t.simulation?.certification;
       if (t.score >= 80 && cert) {
         const key = cert.id.toString();
@@ -279,9 +279,14 @@ export class UsersService {
       throw new NotFoundException('Utilisateur non trouvé.');
     }
 
-    const isPasswordValid = await bcrypt.compare(dto.oldPassword, user.motDePasse);
+    const isPasswordValid = await bcrypt.compare(
+      dto.oldPassword,
+      user.motDePasse,
+    );
     if (!isPasswordValid) {
-      throw new BadRequestException('L\'ancien mot de passe saisi est incorrect.');
+      throw new BadRequestException(
+        "L'ancien mot de passe saisi est incorrect.",
+      );
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -320,11 +325,11 @@ export class UsersService {
                     slug: true,
                     codeExamen: true,
                     image: true,
-                  }
-                }
-              }
-            }
-          }
+                  },
+                },
+              },
+            },
+          },
         },
         _count: {
           select: {
@@ -342,7 +347,7 @@ export class UsersService {
 
     // Récupérer les certifications obtenues (score d'un examen blanc >= 80)
     const obtainedMap = new Map();
-    user.tentatives.forEach(t => {
+    user.tentatives.forEach((t) => {
       const cert = t.simulation?.certification;
       if (t.score >= 80 && cert) {
         const key = cert.id.toString();

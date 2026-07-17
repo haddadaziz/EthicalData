@@ -1,12 +1,16 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
 interface SendToGroupDto {
-    titre: string;
-    message: string;
-    target: 'FORMATEUR' | 'APPRENANT' | 'TOUS';
-    type?: string;
-    lien?: string;
+  titre: string;
+  message: string;
+  target: 'FORMATEUR' | 'APPRENANT' | 'TOUS';
+  type?: string;
+  lien?: string;
 }
 
 @Injectable()
@@ -33,7 +37,12 @@ export class NotificationsService {
   }
 
   // Notifier tous les administrateurs (ex: pour un signalement)
-  async notifyAdmins(titre: string, message: string, type: string, lien?: string) {
+  async notifyAdmins(
+    titre: string,
+    message: string,
+    type: string,
+    lien?: string,
+  ) {
     const adminRoles = await this.prisma.role.findMany({
       where: { nom: { in: ['SUPER_ADMIN', 'ADMIN'] } },
       include: {

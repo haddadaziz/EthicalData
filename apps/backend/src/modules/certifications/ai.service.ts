@@ -16,7 +16,8 @@ export class AiService {
     private readonly configService: ConfigService,
     private readonly settingsService: SettingsService,
   ) {
-    this.fallbackApiKey = this.configService.get<string>('GEMINI_API_KEY') || '';
+    this.fallbackApiKey =
+      this.configService.get<string>('GEMINI_API_KEY') || '';
   }
 
   async evaluerReponseOuverte(
@@ -105,11 +106,14 @@ INSTRUCTIONS DE NOTATION :
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Erreur API Gemini:', errorText);
-        throw new Error(`API Gemini a répondu avec le statut ${response.status}`);
+        throw new Error(
+          `API Gemini a répondu avec le statut ${response.status}`,
+        );
       }
 
       const responseData = await response.json();
-      const textResponse = responseData.candidates?.[0]?.content?.parts?.[0]?.text;
+      const textResponse =
+        responseData.candidates?.[0]?.content?.parts?.[0]?.text;
 
       if (!textResponse) {
         throw new Error('Réponse vide reçue de Gemini');
@@ -127,7 +131,10 @@ INSTRUCTIONS DE NOTATION :
   /**
    * Méthode de secours simulant l'évaluation si l'API est indisponible ou non configurée.
    */
-  private evaluationSimulee(reponseCandidat: string, reponseCorrecte: string | null): ResultatEvaluation {
+  private evaluationSimulee(
+    reponseCandidat: string,
+    reponseCorrecte: string | null,
+  ): ResultatEvaluation {
     const cleanCand = reponseCandidat.trim().toLowerCase();
     const cleanCorr = (reponseCorrecte || '').trim().toLowerCase();
 
@@ -135,14 +142,15 @@ INSTRUCTIONS DE NOTATION :
       return {
         score: 0,
         critique: "Aucune réponse n'a été fournie par le candidat.",
-        suggestions: "Vous devez rédiger une explication structurée pour cette question.",
+        suggestions:
+          'Vous devez rédiger une explication structurée pour cette question.',
       };
     }
 
     // Calcul rapide de similarité de mots pour la démo hors-ligne
     const motsCandidat = cleanCand.split(/\s+/);
     const motsCorrects = cleanCorr.split(/\s+/);
-    
+
     let correspondances = 0;
     motsCandidat.forEach((mot) => {
       if (mot.length > 3 && cleanCorr.includes(mot)) {
@@ -156,20 +164,26 @@ INSTRUCTIONS DE NOTATION :
     if (scoreSimule > 70) {
       return {
         score: scoreSimule,
-        critique: "Votre réponse couvre plusieurs mots-clés essentiels attendus dans le corrigé officiel.",
-        suggestions: "Excellent travail. Pour optimiser votre score, veillez à utiliser les termes techniques précis du référentiel.",
+        critique:
+          'Votre réponse couvre plusieurs mots-clés essentiels attendus dans le corrigé officiel.',
+        suggestions:
+          'Excellent travail. Pour optimiser votre score, veillez à utiliser les termes techniques précis du référentiel.',
       };
     } else if (scoreSimule > 30) {
       return {
         score: scoreSimule,
-        critique: "Réponse partiellement correcte mais trop superficielle. Certains mots-clés importants sont présents, mais l'explication manque de profondeur technique.",
-        suggestions: "Révisez le cours associé à cette notion pour structurer plus rigoureusement votre raisonnement.",
+        critique:
+          "Réponse partiellement correcte mais trop superficielle. Certains mots-clés importants sont présents, mais l'explication manque de profondeur technique.",
+        suggestions:
+          'Révisez le cours associé à cette notion pour structurer plus rigoureusement votre raisonnement.',
       };
     } else {
       return {
         score: Math.max(scoreSimule, 15),
-        critique: "La réponse fournie est trop éloignée du corrigé attendu ou trop succincte.",
-        suggestions: "Relisez attentivement la correction officielle et apprenez les définitions fondamentales de ce chapitre.",
+        critique:
+          'La réponse fournie est trop éloignée du corrigé attendu ou trop succincte.',
+        suggestions:
+          'Relisez attentivement la correction officielle et apprenez les définitions fondamentales de ce chapitre.',
       };
     }
   }

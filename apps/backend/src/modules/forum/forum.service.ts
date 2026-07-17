@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateSujetDto } from './dto/create-sujet.dto';
 import { CreateCommentaireDto } from './dto/create-commentaire.dto';
@@ -9,10 +13,16 @@ export class ForumService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationsService: NotificationsService,
-  ) { }
+  ) {}
 
   // 1. Récupérer les discussions paginées
-  async findAllSujets(filters?: { theme?: string; certificationId?: number; page?: number; limit?: number; userId?: number }) {
+  async findAllSujets(filters?: {
+    theme?: string;
+    certificationId?: number;
+    page?: number;
+    limit?: number;
+    userId?: number;
+  }) {
     const page = Number(filters?.page) || 1;
     const limit = Number(filters?.limit) || 10;
     const skip = (page - 1) * limit;
@@ -87,7 +97,9 @@ export class ForumService {
         contenu: dto.contenu,
         theme: dto.theme,
         auteurId: BigInt(userId),
-        certificationId: dto.certificationId ? BigInt(dto.certificationId) : null,
+        certificationId: dto.certificationId
+          ? BigInt(dto.certificationId)
+          : null,
       },
     });
 
@@ -176,7 +188,9 @@ export class ForumService {
 
   // 4. Liker ou Unliker une publication (+ NOTIFICATION)
   async toggleLikeSujet(userId: number, sujetId: number) {
-    const sujet = await this.prisma.sujet.findUnique({ where: { id: BigInt(sujetId) } });
+    const sujet = await this.prisma.sujet.findUnique({
+      where: { id: BigInt(sujetId) },
+    });
     if (!sujet) throw new NotFoundException('Publication non trouvée.');
 
     const existingLike = await this.prisma.likeSujet.findUnique({
@@ -208,16 +222,18 @@ export class ForumService {
 
       if (sujet.auteurId !== BigInt(userId)) {
         try {
-          const liker = await this.prisma.utilisateur.findUnique({ where: { id: BigInt(userId) } });
+          const liker = await this.prisma.utilisateur.findUnique({
+            where: { id: BigInt(userId) },
+          });
           await this.notificationsService.createNotification(
             sujet.auteurId.toString(),
             "Nouveau J'aime",
             `${liker?.prenom || 'Un utilisateur'} ${liker?.nom || ''} a aimé votre publication "${sujet.titre}"`,
-            "FORUM_LIKE",
-            "/dashboard/community",
+            'FORUM_LIKE',
+            '/dashboard/community',
           );
         } catch (e) {
-          console.warn("Erreur lors de la notification du Like sujet:", e);
+          console.warn('Erreur lors de la notification du Like sujet:', e);
         }
       }
 
@@ -227,11 +243,15 @@ export class ForumService {
 
   // 5. Signaler un sujet à la modération (+ NOTIFICATION ADMINS)
   async reportSujet(userId: number, sujetId: number, motif?: string) {
-    const sujet = await this.prisma.sujet.findUnique({ where: { id: BigInt(sujetId) } });
+    const sujet = await this.prisma.sujet.findUnique({
+      where: { id: BigInt(sujetId) },
+    });
     if (!sujet) throw new NotFoundException('Publication non trouvée.');
 
     if (sujet.auteurId === BigInt(userId)) {
-      throw new ForbiddenException('Vous ne pouvez pas signaler votre propre publication.');
+      throw new ForbiddenException(
+        'Vous ne pouvez pas signaler votre propre publication.',
+      );
     }
 
     const existingReport = await this.prisma.signalementSujet.findUnique({
@@ -255,12 +275,14 @@ export class ForumService {
       },
     });
 
-    const reporter = await this.prisma.utilisateur.findUnique({ where: { id: BigInt(userId) } });
+    const reporter = await this.prisma.utilisateur.findUnique({
+      where: { id: BigInt(userId) },
+    });
     await this.notificationsService.notifyAdmins(
-      "Nouveau Signalement",
+      'Nouveau Signalement',
       `${reporter?.prenom} ${reporter?.nom} a signalé la publication "${sujet.titre}". Motif: ${motif || 'Non précisé'}`,
-      "FORUM_REPORT",
-      "/admin/community",
+      'FORUM_REPORT',
+      '/admin/community',
     );
 
     return { message: 'Signalement envoyé à la modération.' };
@@ -270,12 +292,14 @@ export class ForumService {
   async reportCommentaire(userId: number, commentId: number, motif?: string) {
     const comment = await this.prisma.commentaire.findUnique({
       where: { id: BigInt(commentId) },
-      include: { sujet: true }
+      include: { sujet: true },
     });
     if (!comment) throw new NotFoundException('Commentaire non trouvé.');
 
     if (comment.auteurId === BigInt(userId)) {
-      throw new ForbiddenException('Vous ne pouvez pas signaler votre propre commentaire.');
+      throw new ForbiddenException(
+        'Vous ne pouvez pas signaler votre propre commentaire.',
+      );
     }
 
     const existingReport = await this.prisma.signalementCommentaire.findUnique({
@@ -299,12 +323,14 @@ export class ForumService {
       },
     });
 
-    const reporter = await this.prisma.utilisateur.findUnique({ where: { id: BigInt(userId) } });
+    const reporter = await this.prisma.utilisateur.findUnique({
+      where: { id: BigInt(userId) },
+    });
     await this.notificationsService.notifyAdmins(
-      "Nouveau Signalement",
+      'Nouveau Signalement',
       `${reporter?.prenom} ${reporter?.nom} a signalé un commentaire dans la publication "${comment.sujet.titre}". Motif: ${motif || 'Non précisé'}`,
-      "FORUM_REPORT",
-      "/admin/community",
+      'FORUM_REPORT',
+      '/admin/community',
     );
 
     return { message: 'Signalement de commentaire envoyé à la modération.' };
@@ -312,14 +338,19 @@ export class ForumService {
 
   // 6. Supprimer un sujet (Auteur ou Admin)
   async deleteSujet(userId: number, userRoles: string[], sujetId: number) {
-    const sujet = await this.prisma.sujet.findUnique({ where: { id: BigInt(sujetId) } });
+    const sujet = await this.prisma.sujet.findUnique({
+      where: { id: BigInt(sujetId) },
+    });
     if (!sujet) throw new NotFoundException('Publication non trouvée.');
 
-    const isAdmin = userRoles.includes('SUPER_ADMIN') || userRoles.includes('ADMIN');
+    const isAdmin =
+      userRoles.includes('SUPER_ADMIN') || userRoles.includes('ADMIN');
     const isOwner = sujet.auteurId === BigInt(userId);
 
     if (!isAdmin && !isOwner) {
-      throw new ForbiddenException('Vous ne pouvez pas supprimer cette publication.');
+      throw new ForbiddenException(
+        'Vous ne pouvez pas supprimer cette publication.',
+      );
     }
 
     await this.prisma.sujet.update({
@@ -330,10 +361,10 @@ export class ForumService {
     if (isAdmin && !isOwner) {
       await this.notificationsService.createNotification(
         sujet.auteurId.toString(),
-        "Publication supprimée",
+        'Publication supprimée',
         `Votre publication "${sujet.titre}" a été retirée par la modération.`,
-        "SYSTEM",
-        "/dashboard/community",
+        'SYSTEM',
+        '/dashboard/community',
       );
     }
 
@@ -341,18 +372,28 @@ export class ForumService {
   }
 
   // 7. Ajouter un commentaire (+ NOTIFICATIONS)
-  async createCommentaire(userId: number, sujetId: number, dto: CreateCommentaireDto) {
-    const sujet = await this.prisma.sujet.findUnique({ where: { id: BigInt(sujetId) } });
+  async createCommentaire(
+    userId: number,
+    sujetId: number,
+    dto: CreateCommentaireDto,
+  ) {
+    const sujet = await this.prisma.sujet.findUnique({
+      where: { id: BigInt(sujetId) },
+    });
     if (!sujet) throw new NotFoundException('Publication non trouvée.');
 
-    const commAuthor = await this.prisma.utilisateur.findUnique({ where: { id: BigInt(userId) } });
+    const commAuthor = await this.prisma.utilisateur.findUnique({
+      where: { id: BigInt(userId) },
+    });
 
     const commentaire = await this.prisma.commentaire.create({
       data: {
         contenu: dto.contenu,
         sujetId: BigInt(sujetId),
         auteurId: BigInt(userId),
-        parentCommentaireId: dto.parentCommentaireId ? BigInt(dto.parentCommentaireId) : null,
+        parentCommentaireId: dto.parentCommentaireId
+          ? BigInt(dto.parentCommentaireId)
+          : null,
         mentionUserId: dto.mentionUserId ? BigInt(dto.mentionUserId) : null,
       },
       include: {
@@ -378,9 +419,9 @@ export class ForumService {
     if (sujet.auteurId !== BigInt(userId)) {
       await this.notificationsService.createNotification(
         sujet.auteurId.toString(),
-        "Nouveau commentaire",
+        'Nouveau commentaire',
         `${commAuthor?.prenom} ${commAuthor?.nom} a commenté votre publication "${sujet.titre}"`,
-        "FORUM_REPLY",
+        'FORUM_REPLY',
         `/dashboard/community?sujetId=${sujetId}&commentId=${commentaire.id}`,
       );
     }
@@ -390,17 +431,23 @@ export class ForumService {
         where: { id: BigInt(dto.parentCommentaireId) },
       });
       if (parentComm && parentComm.auteurId !== BigInt(userId)) {
-        const snippet = dto.contenu.length > 50 ? `${dto.contenu.substring(0, 50)}...` : dto.contenu;
+        const snippet =
+          dto.contenu.length > 50
+            ? `${dto.contenu.substring(0, 50)}...`
+            : dto.contenu;
         try {
           await this.notificationsService.createNotification(
             parentComm.auteurId.toString(),
-            "Réponse à votre commentaire",
+            'Réponse à votre commentaire',
             `${commAuthor?.prenom || 'Un utilisateur'} ${commAuthor?.nom || ''} a répondu à votre commentaire : "${snippet}"`,
-            "FORUM_REPLY",
+            'FORUM_REPLY',
             `/dashboard/community?sujetId=${sujetId}&commentId=${commentaire.id}`,
           );
         } catch (e) {
-          console.warn("Erreur lors de la notification de réponse au commentaire:", e);
+          console.warn(
+            'Erreur lors de la notification de réponse au commentaire:',
+            e,
+          );
         }
       }
 
@@ -409,17 +456,20 @@ export class ForumService {
         const mentionId = BigInt(dto.mentionUserId);
         const alreadyNotified = parentComm && parentComm.auteurId === mentionId;
         if (!alreadyNotified && mentionId !== BigInt(userId)) {
-          const snippet = dto.contenu.length > 50 ? `${dto.contenu.substring(0, 50)}...` : dto.contenu;
+          const snippet =
+            dto.contenu.length > 50
+              ? `${dto.contenu.substring(0, 50)}...`
+              : dto.contenu;
           try {
             await this.notificationsService.createNotification(
               mentionId.toString(),
-              "Réponse à votre commentaire",
+              'Réponse à votre commentaire',
               `${commAuthor?.prenom || 'Un utilisateur'} ${commAuthor?.nom || ''} a répondu à votre commentaire : "${snippet}"`,
-              "FORUM_REPLY",
+              'FORUM_REPLY',
               `/dashboard/community?sujetId=${sujetId}&commentId=${commentaire.id}`,
             );
           } catch (e) {
-            console.warn("Erreur lors de la notification de mention:", e);
+            console.warn('Erreur lors de la notification de mention:', e);
           }
         }
       }
@@ -437,15 +487,24 @@ export class ForumService {
   }
 
   // 8. Supprimer un commentaire
-  async deleteCommentaire(userId: number, userRoles: string[], commentId: number) {
-    const commentaire = await this.prisma.commentaire.findUnique({ where: { id: BigInt(commentId) } });
+  async deleteCommentaire(
+    userId: number,
+    userRoles: string[],
+    commentId: number,
+  ) {
+    const commentaire = await this.prisma.commentaire.findUnique({
+      where: { id: BigInt(commentId) },
+    });
     if (!commentaire) throw new NotFoundException('Commentaire non trouvé.');
 
-    const isAdmin = userRoles.includes('SUPER_ADMIN') || userRoles.includes('ADMIN');
+    const isAdmin =
+      userRoles.includes('SUPER_ADMIN') || userRoles.includes('ADMIN');
     const isOwner = commentaire.auteurId === BigInt(userId);
 
     if (!isAdmin && !isOwner) {
-      throw new ForbiddenException('Vous ne pouvez pas supprimer ce commentaire.');
+      throw new ForbiddenException(
+        'Vous ne pouvez pas supprimer ce commentaire.',
+      );
     }
 
     await this.prisma.commentaire.update({
@@ -457,7 +516,13 @@ export class ForumService {
 
   // 9. Stats Admin
   async getAdminStats() {
-    const [totalSujets, totalCommentaires, totalLikes, sujetSigPending, commentSigPending] = await Promise.all([
+    const [
+      totalSujets,
+      totalCommentaires,
+      totalLikes,
+      sujetSigPending,
+      commentSigPending,
+    ] = await Promise.all([
       this.prisma.sujet.count(),
       this.prisma.commentaire.count(),
       this.prisma.likeSujet.count(),
@@ -485,7 +550,9 @@ export class ForumService {
           },
           sujet: {
             include: {
-              auteur: { select: { id: true, prenom: true, nom: true, email: true } },
+              auteur: {
+                select: { id: true, prenom: true, nom: true, email: true },
+              },
               _count: { select: { commentaires: true, likes: true } },
             },
           },
@@ -500,17 +567,21 @@ export class ForumService {
           },
           commentaire: {
             include: {
-              auteur: { select: { id: true, prenom: true, nom: true, email: true } },
+              auteur: {
+                select: { id: true, prenom: true, nom: true, email: true },
+              },
               sujet: {
                 include: {
-                  auteur: { select: { id: true, prenom: true, nom: true, email: true } },
+                  auteur: {
+                    select: { id: true, prenom: true, nom: true, email: true },
+                  },
                   _count: { select: { commentaires: true, likes: true } },
-                }
-              }
-            }
-          }
-        }
-      })
+                },
+              },
+            },
+          },
+        },
+      }),
     ]);
 
     const formattedSujets = sujetsReports.map((sig: any) => ({
@@ -546,7 +617,8 @@ export class ForumService {
     }));
 
     return [...formattedSujets, ...formattedComments].sort(
-      (a, b) => new Date(b.dateCreation).getTime() - new Date(a.dateCreation).getTime()
+      (a, b) =>
+        new Date(b.dateCreation).getTime() - new Date(a.dateCreation).getTime(),
     );
   }
 
@@ -610,12 +682,14 @@ export class ForumService {
 
       if (comment.auteurId !== BigInt(userId)) {
         try {
-          const liker = await this.prisma.utilisateur.findUnique({ where: { id: BigInt(userId) } });
+          const liker = await this.prisma.utilisateur.findUnique({
+            where: { id: BigInt(userId) },
+          });
           if (liker) {
             await this.prisma.notification.deleteMany({
               where: {
                 destinataireId: comment.auteurId,
-                type: "FORUM_LIKE_COMMENT",
+                type: 'FORUM_LIKE_COMMENT',
                 message: {
                   contains: `${liker.prenom} ${liker.nom}`,
                 },
@@ -623,7 +697,10 @@ export class ForumService {
             });
           }
         } catch (e) {
-          console.warn("Erreur lors du retrait de la notification du Like commentaire:", e);
+          console.warn(
+            'Erreur lors du retrait de la notification du Like commentaire:',
+            e,
+          );
         }
       }
 
@@ -638,16 +715,21 @@ export class ForumService {
 
       if (comment.auteurId !== BigInt(userId)) {
         try {
-          const liker = await this.prisma.utilisateur.findUnique({ where: { id: BigInt(userId) } });
+          const liker = await this.prisma.utilisateur.findUnique({
+            where: { id: BigInt(userId) },
+          });
           await this.notificationsService.createNotification(
             comment.auteurId.toString(),
             "Nouveau J'aime sur votre commentaire",
             `${liker?.prenom || 'Un utilisateur'} ${liker?.nom || ''} a aimé votre commentaire.`,
-            "FORUM_LIKE_COMMENT",
-            "/dashboard/community",
+            'FORUM_LIKE_COMMENT',
+            '/dashboard/community',
           );
         } catch (e) {
-          console.warn("Erreur lors de la notification du Like commentaire:", e);
+          console.warn(
+            'Erreur lors de la notification du Like commentaire:',
+            e,
+          );
         }
       }
 

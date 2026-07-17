@@ -26,7 +26,7 @@ import { SettingsModule } from './modules/settings/settings.module';
     CacheModule.register({
       isGlobal: true,
       ttl: 60000, // Caching de 60 secondes en mémoire
-      max: 100,   // Maximum 100 éléments en mémoire
+      max: 100, // Maximum 100 éléments en mémoire
     }),
     ThrottlerModule.forRoot([
       {

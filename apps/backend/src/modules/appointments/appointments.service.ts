@@ -15,7 +15,7 @@ export class AppointmentsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationsService: NotificationsService,
-  ) { }
+  ) {}
 
   // 1. Créer un créneau de disponibilité (Formateur / Admin)
   async createCreneau(formateurId: number, dto: CreateCreneauDto) {
@@ -23,7 +23,9 @@ export class AppointmentsService {
     const fin = new Date(dto.dateFin);
 
     if (debut >= fin) {
-      throw new BadRequestException('La date de début doit être antérieure à la date de fin.');
+      throw new BadRequestException(
+        'La date de début doit être antérieure à la date de fin.',
+      );
     }
 
     const creneau = await this.prisma.creneauDisponibilite.create({
@@ -61,7 +63,13 @@ export class AppointmentsService {
       orderBy: { dateDebut: 'asc' },
       include: {
         formateur: {
-          select: { id: true, prenom: true, nom: true, avatar: true, email: true },
+          select: {
+            id: true,
+            prenom: true,
+            nom: true,
+            avatar: true,
+            email: true,
+          },
         },
       },
     });
@@ -94,7 +102,9 @@ export class AppointmentsService {
       }
 
       if (creneau.estReserve) {
-        throw new ConflictException('Ce créneau a déjà été réservé par un autre candidat.');
+        throw new ConflictException(
+          'Ce créneau a déjà été réservé par un autre candidat.',
+        );
       }
 
       const claimed = await tx.creneauDisponibilite.updateMany({
@@ -122,8 +132,12 @@ export class AppointmentsService {
             statut: 'CONFIRME',
           },
           include: {
-            candidat: { select: { id: true, prenom: true, nom: true, email: true } },
-            formateur: { select: { id: true, prenom: true, nom: true, email: true } },
+            candidat: {
+              select: { id: true, prenom: true, nom: true, email: true },
+            },
+            formateur: {
+              select: { id: true, prenom: true, nom: true, email: true },
+            },
             creneau: true,
           },
         });
@@ -138,8 +152,12 @@ export class AppointmentsService {
             statut: 'CONFIRME',
           },
           include: {
-            candidat: { select: { id: true, prenom: true, nom: true, email: true } },
-            formateur: { select: { id: true, prenom: true, nom: true, email: true } },
+            candidat: {
+              select: { id: true, prenom: true, nom: true, email: true },
+            },
+            formateur: {
+              select: { id: true, prenom: true, nom: true, email: true },
+            },
             creneau: true,
           },
         });
@@ -148,28 +166,31 @@ export class AppointmentsService {
       return { rdv, creneau };
     });
 
-    const dateFormatted = new Date(result.creneau.dateDebut).toLocaleDateString('fr-FR', {
-      day: 'numeric',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    const dateFormatted = new Date(result.creneau.dateDebut).toLocaleDateString(
+      'fr-FR',
+      {
+        day: 'numeric',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+      },
+    );
 
     await this.notificationsService.createNotification(
       candidatId.toString(),
-      "Rendez-vous confirmé",
+      'Rendez-vous confirmé',
       `Votre séance de coaching (${dto.type}) avec ${result.creneau.formateur.prenom} ${result.creneau.formateur.nom} est confirmée pour le ${dateFormatted}.`,
-      "SYSTEM",
-      "/dashboard/appointments",
+      'SYSTEM',
+      '/dashboard/appointments',
     );
 
     if (candidatId.toString() !== result.creneau.formateurId.toString()) {
       await this.notificationsService.createNotification(
         result.creneau.formateurId.toString(),
-        "Nouveau RDV Réservé",
+        'Nouveau RDV Réservé',
         `L'apprenant ${candidat?.prenom} ${candidat?.nom} a réservé le créneau du ${dateFormatted} (${dto.type}).`,
-        "SYSTEM",
-        "/dashboard/appointments",
+        'SYSTEM',
+        '/dashboard/appointments',
       );
     }
 
@@ -182,7 +203,11 @@ export class AppointmentsService {
       creneauId: rdv.creneauId.toString(),
       candidat: { ...rdv.candidat, id: rdv.candidat.id.toString() },
       formateur: { ...rdv.formateur, id: rdv.formateur.id.toString() },
-      creneau: { ...rdv.creneau, id: rdv.creneau.id.toString(), formateurId: rdv.creneau.formateurId.toString() },
+      creneau: {
+        ...rdv.creneau,
+        id: rdv.creneau.id.toString(),
+        formateurId: rdv.creneau.formateurId.toString(),
+      },
     };
   }
 
@@ -190,15 +215,28 @@ export class AppointmentsService {
   async getMyAppointments(userId: number) {
     const rdvList = await this.prisma.rendezVous.findMany({
       where: {
-        OR: [
-          { candidatId: BigInt(userId) },
-          { formateurId: BigInt(userId) },
-        ],
+        OR: [{ candidatId: BigInt(userId) }, { formateurId: BigInt(userId) }],
       },
       orderBy: { creneau: { dateDebut: 'asc' } },
       include: {
-        candidat: { select: { id: true, prenom: true, nom: true, avatar: true, email: true } },
-        formateur: { select: { id: true, prenom: true, nom: true, avatar: true, email: true } },
+        candidat: {
+          select: {
+            id: true,
+            prenom: true,
+            nom: true,
+            avatar: true,
+            email: true,
+          },
+        },
+        formateur: {
+          select: {
+            id: true,
+            prenom: true,
+            nom: true,
+            avatar: true,
+            email: true,
+          },
+        },
         creneau: true,
       },
     });
@@ -211,7 +249,11 @@ export class AppointmentsService {
       creneauId: rdv.creneauId.toString(),
       candidat: { ...rdv.candidat, id: rdv.candidat.id.toString() },
       formateur: { ...rdv.formateur, id: rdv.formateur.id.toString() },
-      creneau: { ...rdv.creneau, id: rdv.creneau.id.toString(), formateurId: rdv.creneau.formateurId.toString() },
+      creneau: {
+        ...rdv.creneau,
+        id: rdv.creneau.id.toString(),
+        formateurId: rdv.creneau.formateurId.toString(),
+      },
     }));
   }
 
@@ -220,8 +262,24 @@ export class AppointmentsService {
     const rdvList = await this.prisma.rendezVous.findMany({
       orderBy: { creneau: { dateDebut: 'desc' } },
       include: {
-        candidat: { select: { id: true, prenom: true, nom: true, avatar: true, email: true } },
-        formateur: { select: { id: true, prenom: true, nom: true, avatar: true, email: true } },
+        candidat: {
+          select: {
+            id: true,
+            prenom: true,
+            nom: true,
+            avatar: true,
+            email: true,
+          },
+        },
+        formateur: {
+          select: {
+            id: true,
+            prenom: true,
+            nom: true,
+            avatar: true,
+            email: true,
+          },
+        },
         creneau: true,
       },
     });
@@ -234,7 +292,11 @@ export class AppointmentsService {
       creneauId: rdv.creneauId.toString(),
       candidat: { ...rdv.candidat, id: rdv.candidat.id.toString() },
       formateur: { ...rdv.formateur, id: rdv.formateur.id.toString() },
-      creneau: { ...rdv.creneau, id: rdv.creneau.id.toString(), formateurId: rdv.creneau.formateurId.toString() },
+      creneau: {
+        ...rdv.creneau,
+        id: rdv.creneau.id.toString(),
+        formateurId: rdv.creneau.formateurId.toString(),
+      },
     }));
   }
 
@@ -247,12 +309,15 @@ export class AppointmentsService {
 
     if (!rdv) throw new NotFoundException('Rendez-vous introuvable.');
 
-    const isAdmin = userRoles.includes('SUPER_ADMIN') || userRoles.includes('ADMIN');
+    const isAdmin =
+      userRoles.includes('SUPER_ADMIN') || userRoles.includes('ADMIN');
     const isCandidat = rdv.candidatId === BigInt(userId);
     const isFormateur = rdv.formateurId === BigInt(userId);
 
     if (!isAdmin && !isCandidat && !isFormateur) {
-      throw new ForbiddenException('Vous ne pouvez pas annuler ce rendez-vous.');
+      throw new ForbiddenException(
+        'Vous ne pouvez pas annuler ce rendez-vous.',
+      );
     }
 
     await this.prisma.rendezVous.update({
@@ -265,38 +330,41 @@ export class AppointmentsService {
       data: { estReserve: false },
     });
 
-    const dateFormatted = new Date(rdv.creneau.dateDebut).toLocaleDateString('fr-FR', {
-      day: 'numeric',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    const dateFormatted = new Date(rdv.creneau.dateDebut).toLocaleDateString(
+      'fr-FR',
+      {
+        day: 'numeric',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+      },
+    );
 
     const isActorFormateur = BigInt(userId) === rdv.formateurId;
 
     if (isActorFormateur) {
       await this.notificationsService.createNotification(
         rdv.candidatId.toString(),
-        "Rendez-vous Annulé par le Formateur",
+        'Rendez-vous Annulé par le Formateur',
         `Votre formateur ${rdv.formateur.prenom} ${rdv.formateur.nom} a annulé la séance de coaching du ${dateFormatted}.`,
-        "SYSTEM",
-        "/dashboard/appointments",
+        'SYSTEM',
+        '/dashboard/appointments',
       );
     } else {
       await this.notificationsService.createNotification(
         rdv.formateurId.toString(),
         "Rendez-vous Annulé par l'Apprenant",
         `L'apprenant ${rdv.candidat.prenom} ${rdv.candidat.nom} a annulé la séance de coaching du ${dateFormatted}.`,
-        "SYSTEM",
-        "/dashboard/appointments",
+        'SYSTEM',
+        '/dashboard/appointments',
       );
 
       await this.notificationsService.createNotification(
         rdv.candidatId.toString(),
-        "Rendez-vous Annulé",
+        'Rendez-vous Annulé',
         `Votre rendez-vous du ${dateFormatted} avec ${rdv.formateur.prenom} ${rdv.formateur.nom} a bien été annulé.`,
-        "SYSTEM",
-        "/dashboard/appointments",
+        'SYSTEM',
+        '/dashboard/appointments',
       );
     }
 
@@ -314,28 +382,40 @@ export class AppointmentsService {
       throw new NotFoundException("Le créneau demandé n'existe pas.");
     }
 
-    const isAdmin = userRoles.includes('SUPER_ADMIN') || userRoles.includes('ADMIN');
+    const isAdmin =
+      userRoles.includes('SUPER_ADMIN') || userRoles.includes('ADMIN');
     if (!isAdmin && creneau.formateurId !== BigInt(userId)) {
-      throw new ForbiddenException("Vous ne pouvez pas supprimer un créneau qui ne vous appartient pas.");
+      throw new ForbiddenException(
+        'Vous ne pouvez pas supprimer un créneau qui ne vous appartient pas.',
+      );
     }
 
     if (creneau.estReserve) {
-      throw new BadRequestException("Vous ne pouvez pas supprimer un créneau déjà réservé. Veuillez annuler le rendez-vous associé.");
+      throw new BadRequestException(
+        'Vous ne pouvez pas supprimer un créneau déjà réservé. Veuillez annuler le rendez-vous associé.',
+      );
     }
 
     if (creneau.rendezVous) {
-      await this.prisma.rendezVous.delete({ where: { id: creneau.rendezVous.id } });
+      await this.prisma.rendezVous.delete({
+        where: { id: creneau.rendezVous.id },
+      });
     }
 
     await this.prisma.creneauDisponibilite.delete({
       where: { id: BigInt(creneauId) },
     });
 
-    return { message: "Créneau supprimé avec succès." };
+    return { message: 'Créneau supprimé avec succès.' };
   }
 
   // 7. Mettre à jour un créneau libre (Admin / Formateur propriétaire)
-  async updateCreneau(userId: number, userRoles: string[], creneauId: number, dto: CreateCreneauDto) {
+  async updateCreneau(
+    userId: number,
+    userRoles: string[],
+    creneauId: number,
+    dto: CreateCreneauDto,
+  ) {
     const creneau = await this.prisma.creneauDisponibilite.findUnique({
       where: { id: BigInt(creneauId) },
     });
@@ -344,20 +424,27 @@ export class AppointmentsService {
       throw new NotFoundException("Le créneau demandé n'existe pas.");
     }
 
-    const isAdmin = userRoles.includes('SUPER_ADMIN') || userRoles.includes('ADMIN');
+    const isAdmin =
+      userRoles.includes('SUPER_ADMIN') || userRoles.includes('ADMIN');
     if (!isAdmin && creneau.formateurId !== BigInt(userId)) {
-      throw new ForbiddenException("Vous ne pouvez pas modifier un créneau qui ne vous appartient pas.");
+      throw new ForbiddenException(
+        'Vous ne pouvez pas modifier un créneau qui ne vous appartient pas.',
+      );
     }
 
     if (creneau.estReserve) {
-      throw new BadRequestException("Vous ne pouvez pas modifier un créneau déjà réservé.");
+      throw new BadRequestException(
+        'Vous ne pouvez pas modifier un créneau déjà réservé.',
+      );
     }
 
     const debut = new Date(dto.dateDebut);
     const fin = new Date(dto.dateFin);
 
     if (debut >= fin) {
-      throw new BadRequestException('La date de début doit être antérieure à la date de fin.');
+      throw new BadRequestException(
+        'La date de début doit être antérieure à la date de fin.',
+      );
     }
 
     const updated = await this.prisma.creneauDisponibilite.update({

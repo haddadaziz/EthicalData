@@ -65,7 +65,6 @@ export class CoursService {
     };
   }
 
-
   private validatePublishable(data: {
     titre?: string;
     description?: string | null;
@@ -87,19 +86,31 @@ export class CoursService {
     if (!data.certificationId) {
       errors.push('Une certification doit être associée au cours.');
     }
-    if (!data.objectifs || (data.objectifs as string[]).filter((o) => o.trim()).length === 0) {
+    if (
+      !data.objectifs ||
+      data.objectifs.filter((o) => o.trim()).length === 0
+    ) {
       errors.push('Au moins un objectif d’apprentissage est requis.');
     }
-    if (!data.prerequis || (data.prerequis as string[]).filter((p) => p.trim()).length === 0) {
+    if (
+      !data.prerequis ||
+      data.prerequis.filter((p) => p.trim()).length === 0
+    ) {
       errors.push('Au moins un prérequis est requis.');
     }
-    if (!data.publicCible || (data.publicCible as string[]).filter((p) => p.trim()).length === 0) {
+    if (
+      !data.publicCible ||
+      data.publicCible.filter((p) => p.trim()).length === 0
+    ) {
       errors.push('Au moins un public cible est requis.');
     }
     if (!data.dureeEstimee || data.dureeEstimee <= 0) {
       errors.push('La durée estimée du cours est obligatoire.');
     }
-    if (data.modules !== undefined && (!data.modules || data.modules.length === 0)) {
+    if (
+      data.modules !== undefined &&
+      (!data.modules || data.modules.length === 0)
+    ) {
       errors.push('Le cours doit contenir au moins un module.');
     }
 
@@ -115,7 +126,9 @@ export class CoursService {
       where: { formateurId: BigInt(formateurId), deletedAt: null },
       include: {
         certification: { include: { fournisseur: true } },
-        formateur: { select: { id: true, prenom: true, nom: true, avatar: true } },
+        formateur: {
+          select: { id: true, prenom: true, nom: true, avatar: true },
+        },
         modules: {
           orderBy: { ordre: 'asc' },
           include: { ressources: true },
@@ -132,7 +145,9 @@ export class CoursService {
       where: { deletedAt: null },
       include: {
         certification: { include: { fournisseur: true } },
-        formateur: { select: { id: true, prenom: true, nom: true, avatar: true } },
+        formateur: {
+          select: { id: true, prenom: true, nom: true, avatar: true },
+        },
         modules: {
           orderBy: { ordre: 'asc' },
           include: { ressources: true },
@@ -166,7 +181,9 @@ export class CoursService {
       where: { id: BigInt(id), deletedAt: null },
       include: {
         certification: { include: { fournisseur: true } },
-        formateur: { select: { id: true, prenom: true, nom: true, avatar: true } },
+        formateur: {
+          select: { id: true, prenom: true, nom: true, avatar: true },
+        },
         modules: {
           orderBy: { ordre: 'asc' },
           include: { ressources: { orderBy: { ordre: 'asc' } } },
@@ -181,7 +198,7 @@ export class CoursService {
   async create(formateurId: number, dto: CreateCoursDto) {
     const statut = dto.statut || 'BROUILLON';
 
-    if (statut === 'PUBLIE') {
+    if ((statut as string) === 'PUBLIE') {
       const errors = this.validatePublishable({
         titre: dto.titre,
         description: dto.description,
@@ -214,7 +231,9 @@ export class CoursService {
         dureeEstimee: dto.dureeEstimee || null,
         statut,
         formateurId: BigInt(formateurId),
-        certificationId: dto.certificationId ? BigInt(dto.certificationId) : undefined,
+        certificationId: dto.certificationId
+          ? BigInt(dto.certificationId)
+          : undefined,
       },
       include: {
         certification: { include: { fournisseur: true } },
@@ -224,27 +243,36 @@ export class CoursService {
     return this.serializeCours(cours);
   }
 
-  async update(formateurId: number, coursId: number, dto: Partial<CreateCoursDto>, userRoles?: string[]) {
+  async update(
+    formateurId: number,
+    coursId: number,
+    dto: Partial<CreateCoursDto>,
+    userRoles?: string[],
+  ) {
     const cours = await this.prisma.cours.findFirst({
       where: { id: BigInt(coursId), deletedAt: null },
       include: { modules: true },
     });
     if (!cours) throw new NotFoundException('Cours introuvable.');
 
-    const isAdmin = userRoles && (userRoles.includes('ADMIN') || userRoles.includes('SUPER_ADMIN'));
+    const isAdmin =
+      userRoles &&
+      (userRoles.includes('ADMIN') || userRoles.includes('SUPER_ADMIN'));
     if (cours.formateurId.toString() !== formateurId.toString() && !isAdmin) {
-      throw new ForbiddenException('Vous ne pouvez modifier que vos propres cours.');
+      throw new ForbiddenException(
+        'Vous ne pouvez modifier que vos propres cours.',
+      );
     }
 
     const newStatut = dto.statut ?? cours.statut;
-    if (newStatut === 'PUBLIE') {
+    if ((newStatut as string) === 'PUBLIE') {
       const errors = this.validatePublishable({
         titre: dto.titre ?? cours.titre,
         description: dto.description ?? cours.description,
         certificationId: dto.certificationId ?? cours.certificationId,
-        objectifs: dto.objectifs ?? (cours.objectifs as string[]),
-        prerequis: dto.prerequis ?? (cours.prerequis as string[]),
-        publicCible: dto.publicCible ?? (cours.publicCible as string[]),
+        objectifs: dto.objectifs ?? cours.objectifs,
+        prerequis: dto.prerequis ?? cours.prerequis,
+        publicCible: dto.publicCible ?? cours.publicCible,
         dureeEstimee: dto.dureeEstimee ?? cours.dureeEstimee,
         modules: cours.modules,
       });
@@ -265,10 +293,11 @@ export class CoursService {
     if (dto.prerequis !== undefined) data.prerequis = dto.prerequis;
     if (dto.publicCible !== undefined) data.publicCible = dto.publicCible;
     if (dto.dureeEstimee !== undefined) data.dureeEstimee = dto.dureeEstimee;
-    if (dto.certificationId !== undefined) data.certificationId = BigInt(dto.certificationId);
+    if (dto.certificationId !== undefined)
+      data.certificationId = BigInt(dto.certificationId);
     if (dto.statut !== undefined) {
       data.statut = dto.statut;
-      if (dto.statut === 'PUBLIE') data.datePublication = new Date();
+      if ((dto.statut as string) === 'PUBLIE') data.datePublication = new Date();
     }
 
     const updated = await this.prisma.cours.update({
@@ -290,18 +319,22 @@ export class CoursService {
 
     if (!cours) throw new NotFoundException('Cours introuvable.');
 
-    const isAdmin = userRoles && (userRoles.includes('ADMIN') || userRoles.includes('SUPER_ADMIN'));
+    const isAdmin =
+      userRoles &&
+      (userRoles.includes('ADMIN') || userRoles.includes('SUPER_ADMIN'));
     if (cours.formateurId.toString() !== formateurId.toString() && !isAdmin) {
-      throw new ForbiddenException('Vous ne pouvez publier que vos propres cours.');
+      throw new ForbiddenException(
+        'Vous ne pouvez publier que vos propres cours.',
+      );
     }
 
     const errors = this.validatePublishable({
       titre: cours.titre,
       description: cours.description,
       certificationId: cours.certificationId,
-      objectifs: cours.objectifs as string[],
-      prerequis: cours.prerequis as string[],
-      publicCible: cours.publicCible as string[],
+      objectifs: cours.objectifs,
+      prerequis: cours.prerequis,
+      publicCible: cours.publicCible,
       dureeEstimee: cours.dureeEstimee,
       modules: cours.modules,
     });
@@ -310,7 +343,12 @@ export class CoursService {
       throw new BadRequestException(errors);
     }
 
-    return this.update(formateurId, coursId, { statut: 'PUBLIE' } as any, userRoles);
+    return this.update(
+      formateurId,
+      coursId,
+      { statut: 'PUBLIE' } as any,
+      userRoles,
+    );
   }
 
   async remove(formateurId: number, coursId: number, userRoles?: string[]) {
@@ -319,9 +357,13 @@ export class CoursService {
     });
     if (!cours) throw new NotFoundException('Cours introuvable.');
 
-    const isAdmin = userRoles && (userRoles.includes('ADMIN') || userRoles.includes('SUPER_ADMIN'));
+    const isAdmin =
+      userRoles &&
+      (userRoles.includes('ADMIN') || userRoles.includes('SUPER_ADMIN'));
     if (cours.formateurId.toString() !== formateurId.toString() && !isAdmin) {
-      throw new ForbiddenException('Vous ne pouvez supprimer que vos propres cours.');
+      throw new ForbiddenException(
+        'Vous ne pouvez supprimer que vos propres cours.',
+      );
     }
     await this.prisma.cours.update({
       where: { id: BigInt(coursId) },
@@ -334,8 +376,6 @@ export class CoursService {
   // INSCRIPTIONS APPRENANTS
   // ─────────────────────────────────────────
 
-
-
   async findDisponibles(userId: number) {
     const cours = await this.prisma.cours.findMany({
       where: {
@@ -345,7 +385,9 @@ export class CoursService {
       },
       include: {
         certification: { include: { fournisseur: true } },
-        formateur: { select: { id: true, prenom: true, nom: true, avatar: true } },
+        formateur: {
+          select: { id: true, prenom: true, nom: true, avatar: true },
+        },
         modules: { orderBy: { ordre: 'asc' } },
         _count: { select: { modules: true, inscriptions: true } },
       },
@@ -361,9 +403,15 @@ export class CoursService {
     if (!cours) throw new NotFoundException('Cours introuvable ou non publié.');
 
     const existing = await this.prisma.inscriptionCours.findUnique({
-      where: { coursId_apprenantId: { coursId: BigInt(coursId), apprenantId: BigInt(userId) } },
+      where: {
+        coursId_apprenantId: {
+          coursId: BigInt(coursId),
+          apprenantId: BigInt(userId),
+        },
+      },
     });
-    if (existing) throw new BadRequestException('Vous êtes déjà inscrit à ce cours.');
+    if (existing)
+      throw new BadRequestException('Vous êtes déjà inscrit à ce cours.');
 
     const inscription = await this.prisma.inscriptionCours.create({
       data: {
@@ -374,7 +422,9 @@ export class CoursService {
         cours: {
           include: {
             certification: { include: { fournisseur: true } },
-            formateur: { select: { id: true, prenom: true, nom: true, avatar: true } },
+            formateur: {
+              select: { id: true, prenom: true, nom: true, avatar: true },
+            },
             modules: { orderBy: { ordre: 'asc' } },
           },
         },
@@ -391,8 +441,13 @@ export class CoursService {
         cours: {
           include: {
             certification: { include: { fournisseur: true } },
-            formateur: { select: { id: true, prenom: true, nom: true, avatar: true } },
-            modules: { orderBy: { ordre: 'asc' }, include: { ressources: { orderBy: { ordre: 'asc' } } } },
+            formateur: {
+              select: { id: true, prenom: true, nom: true, avatar: true },
+            },
+            modules: {
+              orderBy: { ordre: 'asc' },
+              include: { ressources: { orderBy: { ordre: 'asc' } } },
+            },
             _count: { select: { modules: true } },
           },
         },
@@ -415,35 +470,46 @@ export class CoursService {
         inscriptionCoursId: p.inscriptionCoursId.toString(),
         moduleId: p.moduleId.toString(),
       })),
-      cours: insc.cours ? {
-        ...insc.cours,
-        id: insc.cours.id.toString(),
-        formateurId: insc.cours.formateurId.toString(),
-        certificationId: insc.cours.certificationId ? insc.cours.certificationId.toString() : null,
-        formateur: insc.cours.formateur
-          ? { ...insc.cours.formateur, id: insc.cours.formateur.id.toString() }
-          : undefined,
-        certification: insc.cours.certification
-          ? {
-              ...insc.cours.certification,
-              id: insc.cours.certification.id.toString(),
-              fournisseurId: insc.cours.certification.fournisseurId?.toString(),
-              fournisseur: insc.cours.certification.fournisseur
-                ? { ...insc.cours.certification.fournisseur, id: insc.cours.certification.fournisseur.id.toString() }
-                : undefined,
-            }
-          : null,
-        modules: (insc.cours.modules || []).map((m: any) => ({
-          ...m,
-          id: m.id.toString(),
-          coursId: m.coursId.toString(),
-          ressources: (m.ressources || []).map((r: any) => ({
-            ...r,
-            id: r.id.toString(),
-            moduleId: r.moduleId?.toString() || null,
-          })),
-        })),
-      } : null,
+      cours: insc.cours
+        ? {
+            ...insc.cours,
+            id: insc.cours.id.toString(),
+            formateurId: insc.cours.formateurId.toString(),
+            certificationId: insc.cours.certificationId
+              ? insc.cours.certificationId.toString()
+              : null,
+            formateur: insc.cours.formateur
+              ? {
+                  ...insc.cours.formateur,
+                  id: insc.cours.formateur.id.toString(),
+                }
+              : undefined,
+            certification: insc.cours.certification
+              ? {
+                  ...insc.cours.certification,
+                  id: insc.cours.certification.id.toString(),
+                  fournisseurId:
+                    insc.cours.certification.fournisseurId?.toString(),
+                  fournisseur: insc.cours.certification.fournisseur
+                    ? {
+                        ...insc.cours.certification.fournisseur,
+                        id: insc.cours.certification.fournisseur.id.toString(),
+                      }
+                    : undefined,
+                }
+              : null,
+            modules: (insc.cours.modules || []).map((m: any) => ({
+              ...m,
+              id: m.id.toString(),
+              coursId: m.coursId.toString(),
+              ressources: (m.ressources || []).map((r: any) => ({
+                ...r,
+                id: r.id.toString(),
+                moduleId: r.moduleId?.toString() || null,
+              })),
+            })),
+          }
+        : null,
     };
   }
 
@@ -488,7 +554,11 @@ export class CoursService {
     };
   }
 
-  async updateModule(formateurId: number, moduleId: number, dto: Partial<CreateModuleDto>) {
+  async updateModule(
+    formateurId: number,
+    moduleId: number,
+    dto: Partial<CreateModuleDto>,
+  ) {
     const module = await this.prisma.module.findFirst({
       where: { id: BigInt(moduleId) },
       include: { cours: true },
@@ -524,7 +594,12 @@ export class CoursService {
 
   async getProgressionModules(userId: number, coursId: number) {
     const inscription = await this.prisma.inscriptionCours.findUnique({
-      where: { coursId_apprenantId: { coursId: BigInt(coursId), apprenantId: BigInt(userId) } },
+      where: {
+        coursId_apprenantId: {
+          coursId: BigInt(coursId),
+          apprenantId: BigInt(userId),
+        },
+      },
       include: { progressions: true },
     });
     if (!inscription) throw new NotFoundException('Inscription introuvable.');
@@ -535,7 +610,9 @@ export class CoursService {
     });
 
     return modules.map((m) => {
-      const prog = inscription.progressions.find((p) => p.moduleId.toString() === m.id.toString());
+      const prog = inscription.progressions.find(
+        (p) => p.moduleId.toString() === m.id.toString(),
+      );
       return {
         moduleId: m.id.toString(),
         titre: m.titre,
@@ -547,17 +624,28 @@ export class CoursService {
 
   async completeModule(userId: number, coursId: number, moduleId: number) {
     const inscription = await this.prisma.inscriptionCours.findUnique({
-      where: { coursId_apprenantId: { coursId: BigInt(coursId), apprenantId: BigInt(userId) } },
+      where: {
+        coursId_apprenantId: {
+          coursId: BigInt(coursId),
+          apprenantId: BigInt(userId),
+        },
+      },
     });
     if (!inscription) throw new NotFoundException('Inscription introuvable.');
 
     const module = await this.prisma.module.findFirst({
       where: { id: BigInt(moduleId), coursId: BigInt(coursId) },
     });
-    if (!module) throw new NotFoundException('Module introuvable dans ce cours.');
+    if (!module)
+      throw new NotFoundException('Module introuvable dans ce cours.');
 
     const existing = await this.prisma.progressionModule.findUnique({
-      where: { inscriptionCoursId_moduleId: { inscriptionCoursId: inscription.id, moduleId: BigInt(moduleId) } },
+      where: {
+        inscriptionCoursId_moduleId: {
+          inscriptionCoursId: inscription.id,
+          moduleId: BigInt(moduleId),
+        },
+      },
     });
 
     if (existing?.completed) {
@@ -565,17 +653,30 @@ export class CoursService {
     }
 
     await this.prisma.progressionModule.upsert({
-      where: { inscriptionCoursId_moduleId: { inscriptionCoursId: inscription.id, moduleId: BigInt(moduleId) } },
+      where: {
+        inscriptionCoursId_moduleId: {
+          inscriptionCoursId: inscription.id,
+          moduleId: BigInt(moduleId),
+        },
+      },
       update: { completed: true, dateCompletion: new Date() },
-      create: { inscriptionCoursId: inscription.id, moduleId: BigInt(moduleId), completed: true, dateCompletion: new Date() },
+      create: {
+        inscriptionCoursId: inscription.id,
+        moduleId: BigInt(moduleId),
+        completed: true,
+        dateCompletion: new Date(),
+      },
     });
 
     // Recalculer la progression globale
-    const totalModules = await this.prisma.module.count({ where: { coursId: BigInt(coursId) } });
+    const totalModules = await this.prisma.module.count({
+      where: { coursId: BigInt(coursId) },
+    });
     const completedCount = await this.prisma.progressionModule.count({
       where: { inscriptionCoursId: inscription.id, completed: true },
     });
-    const progression = totalModules > 0 ? Math.round((completedCount / totalModules) * 100) : 0;
+    const progression =
+      totalModules > 0 ? Math.round((completedCount / totalModules) * 100) : 0;
 
     await this.prisma.inscriptionCours.update({
       where: { id: inscription.id },
@@ -592,7 +693,12 @@ export class CoursService {
 
   async desinscrire(userId: number, coursId: number) {
     const inscription = await this.prisma.inscriptionCours.findUnique({
-      where: { coursId_apprenantId: { coursId: BigInt(coursId), apprenantId: BigInt(userId) } },
+      where: {
+        coursId_apprenantId: {
+          coursId: BigInt(coursId),
+          apprenantId: BigInt(userId),
+        },
+      },
     });
     if (!inscription) throw new NotFoundException('Inscription introuvable.');
 
@@ -625,7 +731,11 @@ export class CoursService {
   // RESSOURCES DE MODULE
   // ─────────────────────────────────────────
 
-  async addRessource(formateurId: number, moduleId: number, dto: CreateModuleRessourceDto) {
+  async addRessource(
+    formateurId: number,
+    moduleId: number,
+    dto: CreateModuleRessourceDto,
+  ) {
     const module = await this.prisma.module.findFirst({
       where: { id: BigInt(moduleId) },
       include: { cours: true },
@@ -649,12 +759,12 @@ export class CoursService {
         certificationId: module.cours.certificationId,
       },
     });
-    return { 
-      ...ressource, 
-      id: ressource.id.toString(), 
+    return {
+      ...ressource,
+      id: ressource.id.toString(),
       moduleId: ressource.moduleId?.toString(),
       coursId: ressource.coursId?.toString(),
-      certificationId: ressource.certificationId?.toString() 
+      certificationId: ressource.certificationId?.toString(),
     };
   }
 
@@ -664,7 +774,9 @@ export class CoursService {
       include: { module: { include: { cours: true } } },
     });
     if (!ressource) throw new NotFoundException('Ressource introuvable.');
-    if (ressource.module?.cours.formateurId.toString() !== formateurId.toString()) {
+    if (
+      ressource.module?.cours.formateurId.toString() !== formateurId.toString()
+    ) {
       throw new ForbiddenException('Accès refusé.');
     }
     await this.prisma.ressource.delete({ where: { id: BigInt(ressourceId) } });
@@ -678,13 +790,20 @@ export class CoursService {
     });
 
     if (!inscription) {
-      return { inscrit: false, progression: 0, completed: false, totalModules: 0 };
+      return {
+        inscrit: false,
+        progression: 0,
+        completed: false,
+        totalModules: 0,
+      };
     }
 
     const totalModules = await this.prisma.module.count({
       where: { coursId: BigInt(coursId) },
     });
-    const completedCount = inscription.progressions.filter((p) => p.completed).length;
+    const completedCount = inscription.progressions.filter(
+      (p) => p.completed,
+    ).length;
     const allCompleted = totalModules > 0 && completedCount >= totalModules;
 
     return {

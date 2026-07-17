@@ -170,7 +170,7 @@ export default function CertificationsPublicPage() {
     useEffect(() => { setCurrentPage(1); }, [searchQuery, selectedProvider, selectedLevel, selectedCategory]);
 
     return (
-        <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+        <div className="min-h-screen bg-[#020617] text-white flex flex-col font-sans selection:bg-blue-600 selection:text-white relative overflow-hidden">
             
             {/* NAVBAR IDENTIQUE À LA LANDING PAGE (transparent en haut, blanc au scroll, disparaît en descendant) */}
             <Navbar
@@ -215,7 +215,7 @@ export default function CertificationsPublicPage() {
             <main className="max-w-7xl mx-auto px-6 py-10 flex-1 w-full space-y-8">
                 
                 {/* BARRE DE RECHERCHE ET FILTRES D'ÉDITEURS */}
-                <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-5 text-left">
+                <div className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-3xl p-6 shadow-sm space-y-5 text-left">
                     <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
                         
                         {/* Champ de recherche */}
@@ -226,7 +226,7 @@ export default function CertificationsPublicPage() {
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Rechercher par nom, code (AZ-900, ISO-27001...)"
-                                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/5 rounded-xl text-xs font-semibold text-slate-900 placeholder-slate-400 outline-none transition-all"
+                                className="w-full pl-10 pr-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 focus:bg-[#020617] text-white placeholder-slate-500 rounded-xl text-xs font-semibold outline-none transition-all shadow-sm"
                             />
                         </div>
 
@@ -237,7 +237,7 @@ export default function CertificationsPublicPage() {
                                 <button
                                     type="button"
                                     onClick={() => setLevelDropdownOpen(!levelDropdownOpen)}
-                                    className="flex items-center gap-2.5 px-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-xs font-bold outline-none cursor-pointer hover:bg-slate-100 transition-all w-full"
+                                    className="flex items-center gap-2.5 px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 rounded-xl text-white text-xs font-bold outline-none cursor-pointer hover:bg-[#0a1224] transition-all w-full shadow-sm"
                                 >
                                     <span className="flex-1 text-left truncate">
                                         {selectedLevel === 'TOUS' ? 'Tous les niveaux' : selectedLevel.charAt(0) + selectedLevel.slice(1).toLowerCase()}
@@ -248,13 +248,13 @@ export default function CertificationsPublicPage() {
                                 {levelDropdownOpen && (
                                     <>
                                         <div className="fixed inset-0 z-40" onClick={() => setLevelDropdownOpen(false)} />
-                                        <div className="absolute top-full left-0 mt-1.5 z-50 w-full bg-white border border-slate-200/80 rounded-2xl shadow-xl overflow-hidden">
+                                        <div className="absolute top-full left-0 mt-1.5 z-50 w-full bg-[#080d1a] border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
                                             {['TOUS', 'DEBUTANT', 'INTERMEDIAIRE', 'AVANCE'].map((level) => (
                                                 <button
                                                     key={level}
                                                     onClick={() => { setSelectedLevel(level); setLevelDropdownOpen(false); }}
-                                                    className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
-                                                        selectedLevel === level ? 'bg-slate-100 text-slate-950' : 'text-slate-600'
+                                                    className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-[#020617] cursor-pointer ${
+                                                        selectedLevel === level ? 'bg-[#020617] text-white' : 'text-slate-400'
                                                     }`}
                                                 >
                                                     {level === 'TOUS' ? 'Tous les niveaux' : level.charAt(0) + level.slice(1).toLowerCase()}
@@ -277,7 +277,7 @@ export default function CertificationsPublicPage() {
                                     <button
                                         type="button"
                                         onClick={() => setCategoryDropdownOpen(!categoryDropdownOpen)}
-                                        className="flex items-center gap-2.5 px-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-xs font-bold outline-none cursor-pointer hover:bg-slate-100 transition-all w-full"
+                                        className="flex items-center gap-2.5 px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 rounded-xl text-white text-xs font-bold outline-none cursor-pointer hover:bg-[#0a1224] transition-all w-full shadow-sm"
                                     >
                                         <span className="flex-1 text-left truncate">
                                             {selectedCategory === 'TOUS' ? 'Toutes les catégories' : categories.find(c => c.slug === selectedCategory)?.nom || 'Sélectionner'}
@@ -288,22 +288,22 @@ export default function CertificationsPublicPage() {
                                     {categoryDropdownOpen && (
                                         <>
                                             <div className="fixed inset-0 z-40" onClick={() => setCategoryDropdownOpen(false)} />
-                                            <div className="absolute top-full left-0 mt-1.5 z-50 w-full bg-white border border-slate-200/80 rounded-2xl shadow-xl overflow-hidden">
+                                            <div className="absolute top-full left-0 mt-1.5 z-50 w-full bg-[#080d1a] border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
                                                 <button
                                                     onClick={() => { setSelectedCategory('TOUS'); setCategoryDropdownOpen(false); }}
-                                                    className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
-                                                        selectedCategory === 'TOUS' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600'
+                                                    className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-[#020617] cursor-pointer ${
+                                                        selectedCategory === 'TOUS' ? 'bg-[#020617] text-white' : 'text-slate-400'
                                                     }`}
                                                 >
                                                     Toutes les catégories
                                                 </button>
-                                                <div className="border-t border-slate-100" />
+                                                <div className="border-t border-slate-800" />
                                                 {categories.map((cat) => (
                                                     <button
                                                         key={cat.slug}
                                                         onClick={() => { setSelectedCategory(cat.slug); setCategoryDropdownOpen(false); }}
-                                                        className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
-                                                            selectedCategory === cat.slug ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600'
+                                                        className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-[#020617] cursor-pointer ${
+                                                            selectedCategory === cat.slug ? 'bg-[#020617] text-white' : 'text-slate-400'
                                                         }`}
                                                     >
                                                         {cat.nom}
@@ -322,7 +322,7 @@ export default function CertificationsPublicPage() {
                                     <button
                                         type="button"
                                         onClick={() => setProviderDropdownOpen(!providerDropdownOpen)}
-                                        className="flex items-center gap-2.5 px-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-xs font-bold outline-none cursor-pointer hover:bg-slate-100 transition-all w-full"
+                                        className="flex items-center gap-2.5 px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 rounded-xl text-white text-xs font-bold outline-none cursor-pointer hover:bg-[#0a1224] transition-all w-full shadow-sm"
                                     >
                                         {selectedProvider !== 'TOUS' && getProviderLogo(selectedProvider) && (
                                             <img src={getProviderLogo(selectedProvider)} alt="" className="w-5 h-5 object-contain rounded shrink-0" />
@@ -336,34 +336,36 @@ export default function CertificationsPublicPage() {
                                     {providerDropdownOpen && (
                                         <>
                                             <div className="fixed inset-0 z-40" onClick={() => setProviderDropdownOpen(false)} />
-                                            <div className="absolute top-full left-0 mt-1.5 z-50 w-full bg-white border border-slate-200/80 rounded-2xl shadow-xl overflow-hidden">
+                                            <div className="absolute top-full left-0 mt-1.5 z-50 w-full bg-[#080d1a] border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
                                                 <button
                                                     onClick={() => { setSelectedProvider('TOUS'); setProviderDropdownOpen(false); }}
-                                                    className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
-                                                        selectedProvider === 'TOUS' ? 'bg-slate-100 text-slate-950' : 'text-slate-600'
+                                                    className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-[#020617] cursor-pointer ${
+                                                        selectedProvider === 'TOUS' ? 'bg-[#020617] text-white' : 'text-slate-400'
                                                     }`}
                                                 >
-                                                    <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
-                                                        <Award className="w-4 h-4 text-slate-500" />
+                                                    <div className="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
+                                                        <Award className="w-4 h-4 text-blue-500" />
                                                     </div>
                                                     Tous les fournisseurs
                                                 </button>
-                                                <div className="border-t border-slate-100" />
+                                                <div className="border-t border-slate-800" />
                                                 {providers.filter(p => p !== 'TOUS').map((provider) => {
                                                     const logo = getProviderLogo(provider);
                                                     return (
                                                         <button
                                                             key={provider}
                                                             onClick={() => { setSelectedProvider(provider); setProviderDropdownOpen(false); }}
-                                                            className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
-                                                                selectedProvider === provider ? 'bg-blue-50 text-blue-700' : 'text-slate-600'
+                                                            className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-[#020617] cursor-pointer ${
+                                                                selectedProvider === provider ? 'bg-[#020617] text-white' : 'text-slate-400'
                                                             }`}
                                                         >
                                                             {logo ? (
-                                                                <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0" />
+                                                                <div className="w-7 h-7 rounded-lg bg-white/95 flex items-center justify-center shrink-0 p-1 border border-slate-200">
+                                                                    <img src={logo} alt="" className="w-full h-full object-contain rounded" />
+                                                                </div>
                                                             ) : (
-                                                                <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
-                                                                    <Award className="w-3.5 h-3.5 text-slate-400" />
+                                                                <div className="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
+                                                                    <Award className="w-3.5 h-3.5 text-blue-500" />
                                                                 </div>
                                                             )}
                                                             {provider}
@@ -402,7 +404,7 @@ export default function CertificationsPublicPage() {
                             const slug = cert.slug || `${cert.codeExamen?.toLowerCase() || cert.id}`;
                             return (
                             <Link key={cert.id} href={`/certifications/${slug}`} scroll={false}
-                                className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-col group transition-all duration-300 hover:shadow-lg hover:border-slate-300 text-left">
+                                className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-2xl p-4 flex flex-col group transition-all duration-300 hover:shadow-lg hover:border-slate-600 text-left">
                                 <div className="relative w-full aspect-[4/3] sm:aspect-auto sm:h-[220px] rounded-xl overflow-hidden shadow-sm transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-blue-900/30 group-hover:shadow-2xl bg-white border border-slate-100">
                                     <img src="/images/cadre_certif.png" alt="" className="absolute inset-0 w-full h-full object-cover z-0" />
                                     {cert.codeExamen && (
@@ -426,10 +428,10 @@ export default function CertificationsPublicPage() {
                                 </div>
                                 <div className="mt-4 flex flex-col gap-2 px-1">
                                     <div className="flex items-center justify-between gap-3">
-                                        <h3 className="text-[13px] font-bold text-slate-900 leading-snug line-clamp-2 flex-1">
+                                        <h3 className="text-[13px] font-bold text-slate-100 leading-snug line-clamp-2 flex-1">
                                             {cert.nom}
                                         </h3>
-                                        <div className="px-3 py-1.5 shrink-0 bg-slate-100 border border-slate-200 rounded-lg flex items-center justify-center text-slate-700 transition-colors shadow-sm group-hover:bg-red-600 group-hover:text-white group-hover:border-red-600 text-[10px] font-bold uppercase tracking-wider">
+                                        <div className="px-3 py-1.5 shrink-0 bg-[#020617] border border-slate-800 rounded-lg flex items-center justify-center text-slate-300 transition-colors shadow-sm group-hover:bg-red-600 group-hover:text-white group-hover:border-red-600 text-[10px] font-bold uppercase tracking-wider">
                                             Voir le détail
                                         </div>
                                     </div>
@@ -440,11 +442,11 @@ export default function CertificationsPublicPage() {
                     </div>
 
                     {totalPages > 1 && (
-                        <div className="flex items-center justify-between mt-8 p-6 bg-white border border-slate-200/80 rounded-3xl shadow-sm">
+                        <div className="flex items-center justify-between mt-8 p-6 bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-3xl shadow-sm">
                             <button
                                 onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                                 disabled={currentPage === 1}
-                                className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-650 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
+                                className="px-4 py-2 border border-slate-800 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:border-slate-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-[#020617] shadow-sm"
                             >
                                 <ArrowLeft className="w-3.5 h-3.5" />
                                 <span>Précédent</span>
@@ -460,8 +462,8 @@ export default function CertificationsPublicPage() {
                                             onClick={() => setCurrentPage(pageNum)}
                                             className={`w-9 h-9 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center ${
                                                 isActive
-                                                    ? 'bg-slate-950 text-white shadow-md'
-                                                    : 'bg-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-950'
+                                                    ? 'bg-blue-600 text-white shadow-md'
+                                                    : 'bg-transparent text-slate-500 hover:bg-[#020617] hover:text-white'
                                             }`}
                                         >
                                             {pageNum}
@@ -473,7 +475,7 @@ export default function CertificationsPublicPage() {
                             <button
                                 onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                                 disabled={currentPage === totalPages}
-                                className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-650 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
+                                className="px-4 py-2 border border-slate-800 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:border-slate-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-[#020617] shadow-sm"
                             >
                                 <span>Suivant</span>
                                 <ArrowRight className="w-3.5 h-3.5" />

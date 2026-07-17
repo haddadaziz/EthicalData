@@ -42,14 +42,20 @@ export class UsersController {
   // PATCH /users/me/profile -> Mettre à jour ses propres informations
   @UseGuards(JwtAuthGuard)
   @Patch('me/profile')
-  async updateMyProfile(@Req() req: any, @Body() updateProfileDto: UpdateProfileDto) {
+  async updateMyProfile(
+    @Req() req: any,
+    @Body() updateProfileDto: UpdateProfileDto,
+  ) {
     return this.usersService.updateUserProfile(req.user.id, updateProfileDto);
   }
 
   // PATCH /users/me/password -> Changer son propre mot de passe
   @UseGuards(JwtAuthGuard)
   @Patch('me/password')
-  async changeMyPassword(@Req() req: any, @Body() changePasswordDto: ChangePasswordDto) {
+  async changeMyPassword(
+    @Req() req: any,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
     return this.usersService.changeUserPassword(req.user.id, changePasswordDto);
   }
 
@@ -102,7 +108,10 @@ export class UsersController {
   // POST /users/become-trainer -> Devenir Formateur
   @UseGuards(JwtAuthGuard)
   @Post('become-trainer')
-  async becomeTrainer(@Req() req: any, @Res({ passthrough: true }) res: Response) {
+  async becomeTrainer(
+    @Req() req: any,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const result = await this.usersService.becomeTrainer(req.user.id);
 
     const isProd = process.env.NODE_ENV === 'production';

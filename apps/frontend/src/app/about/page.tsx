@@ -42,15 +42,15 @@ export default function AboutPage() {
     }, []);
 
     return (
-        <main className="min-h-screen bg-slate-50 selection:bg-blue-600 selection:text-white">
+        <main className="min-h-screen bg-[#020617] text-white selection:bg-blue-600 selection:text-white relative overflow-hidden">
             <Navbar mounted={mounted} isConnected={isConnected} isAdmin={isAdmin} mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
 
             <div className="pt-32 pb-20 px-4 md:px-6">
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-6xl mx-auto space-y-16">
                     <div className="text-center space-y-4">
-                        <h1 className="text-4xl md:text-5xl font-black text-slate-950 tracking-tight">Qui Sommes-Nous</h1>
-                        <p className="text-slate-500 font-medium max-w-3xl mx-auto leading-relaxed">
-                            <strong className="text-slate-900">Ethical Data Security</strong> est un centre de formation agréé spécialisé dans 
+                        <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">Qui Sommes-Nous</h1>
+                        <p className="text-slate-400 font-medium max-w-3xl mx-auto leading-relaxed">
+                            <strong className="text-white">Ethical Data Security</strong> est un centre de formation agréé spécialisé dans 
                             la cybersécurité, le cloud computing et les infrastructures réseau. Depuis plus de 10 ans, 
                             nous accompagnons les professionnels et les entreprises dans leur montée en compétences 
                             sur les technologies les plus critiques du marché.
@@ -59,38 +59,38 @@ export default function AboutPage() {
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
                         {stats.map((s, i) => (
-                            <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="bg-white border border-slate-200/80 rounded-3xl p-6 text-center shadow-sm">
-                                <p className="text-3xl md:text-4xl font-black text-blue-600">{s.value}</p>
-                                <p className="text-xs font-bold text-slate-500 mt-1">{s.label}</p>
+                            <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-3xl p-6 text-center shadow-sm">
+                                <p className="text-3xl md:text-4xl font-black text-blue-500">{s.value}</p>
+                                <p className="text-xs font-bold text-slate-400 mt-1">{s.label}</p>
                             </motion.div>
                         ))}
                     </div>
 
                     <div className="space-y-6">
-                        <h2 className="text-2xl font-black text-slate-950 tracking-tight text-center">Nos Valeurs</h2>
+                        <h2 className="text-2xl font-black text-white tracking-tight text-center">Nos Valeurs</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                             {values.map((v, i) => (
-                                <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-3">
-                                    <div className="w-11 h-11 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
+                                <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-3xl p-6 shadow-sm space-y-3 hover:border-slate-700 transition-colors">
+                                    <div className="w-11 h-11 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500">
                                         <v.icon className="w-5 h-5" />
                                     </div>
-                                    <h3 className="text-sm font-black text-slate-900">{v.title}</h3>
-                                    <p className="text-xs text-slate-500 font-medium leading-relaxed">{v.desc}</p>
+                                    <h3 className="text-sm font-black text-slate-100">{v.title}</h3>
+                                    <p className="text-xs text-slate-400 font-medium leading-relaxed">{v.desc}</p>
                                 </motion.div>
                             ))}
                         </div>
                     </div>
 
-                    <div className="bg-white border border-slate-200/80 rounded-3xl p-8 md:p-10 shadow-sm space-y-6">
-                        <h2 className="text-2xl font-black text-slate-950 tracking-tight">Notre Mission</h2>
-                        <div className="space-y-4 text-sm text-slate-600 leading-relaxed">
+                    <div className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-3xl p-8 md:p-10 shadow-sm space-y-6">
+                        <h2 className="text-2xl font-black text-white tracking-tight">Notre Mission</h2>
+                        <div className="space-y-4 text-sm text-slate-400 leading-relaxed">
                             <p>
                                 Dans un monde où les menaces cyber évoluent chaque jour, la formation continue est la meilleure défense. 
-                                Notre mission est de <strong className="text-slate-900">rendre l'expertise en cybersécurité accessible à tous</strong>, 
+                                Notre mission est de <strong className="text-slate-100">rendre l'expertise en cybersécurité accessible à tous</strong>, 
                                 grâce à une plateforme d'apprentissage innovante alliant pédagogie traditionnelle et intelligence artificielle.
                             </p>
                             <p>
-                                Nous croyons en une approche <strong className="text-slate-900">pratique et orientée examen</strong> : 
+                                Nous croyons en une approche <strong className="text-slate-100">pratique et orientée examen</strong> : 
                                 chaque programme est structuré pour vous préparer efficacement aux certifications les plus exigeantes 
                                 (Microsoft Azure, AWS, CISCO, CompTIA, PECB, Palo Alto Networks, Fortinet...).
                             </p>

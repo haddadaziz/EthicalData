@@ -121,7 +121,9 @@ export class ForumController {
   // 6. Supprimer un sujet (Auteur ou Admin uniquement)
   @Delete(':id')
   async deleteSujet(@Param('id', ParseIntPipe) id: number, @Req() req: any) {
-    const roles = req.user.roles ? req.user.roles.map((r: any) => typeof r === 'string' ? r : r.nom) : [];
+    const roles = req.user.roles
+      ? req.user.roles.map((r: any) => (typeof r === 'string' ? r : r.nom))
+      : [];
     return this.forumService.deleteSujet(req.user.id, roles, id);
   }
 
@@ -141,7 +143,9 @@ export class ForumController {
     @Param('commentId', ParseIntPipe) commentId: number,
     @Req() req: any,
   ) {
-    const roles = req.user.roles ? req.user.roles.map((r: any) => typeof r === 'string' ? r : r.nom) : [];
+    const roles = req.user.roles
+      ? req.user.roles.map((r: any) => (typeof r === 'string' ? r : r.nom))
+      : [];
     return this.forumService.deleteCommentaire(req.user.id, roles, commentId);
   }
 

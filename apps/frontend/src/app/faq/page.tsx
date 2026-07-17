@@ -81,17 +81,17 @@ export default function FaqPage() {
         : null;
 
     return (
-        <main className="min-h-screen bg-slate-50 selection:bg-blue-600 selection:text-white">
+        <main className="min-h-screen bg-[#020617] text-white selection:bg-blue-600 selection:text-white relative overflow-hidden">
             <Navbar mounted={mounted} isConnected={isConnected} isAdmin={isAdmin} mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
 
             <div className="pt-32 pb-20 px-4 md:px-6">
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-4xl mx-auto space-y-10">
                     <div className="text-center space-y-4">
-                        <h1 className="text-4xl md:text-5xl font-black text-slate-950 tracking-tight">Foire Aux Questions</h1>
-                        <p className="text-slate-500 font-medium">Tout ce que vous devez savoir sur Ethical Data Security</p>
+                        <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">Foire Aux Questions</h1>
+                        <p className="text-slate-400 font-medium">Tout ce que vous devez savoir sur Ethical Data Security</p>
                         <div className="relative max-w-lg mx-auto mt-6">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                            <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Rechercher une question..." className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-semibold outline-none transition-all shadow-sm" />
+                            <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Rechercher une question..." className="w-full pl-11 pr-4 py-3 bg-[#080d1a] border border-slate-800 focus:border-blue-600 focus:bg-[#080d1a] text-white placeholder-slate-500 rounded-xl text-xs font-semibold outline-none transition-all shadow-sm" />
                         </div>
                     </div>
 
@@ -101,15 +101,15 @@ export default function FaqPage() {
                                 <p className="text-center text-slate-400 font-medium py-10">Aucun résultat trouvé pour "{search}"</p>
                             ) : (
                                 filtered.map((item, i) => (
-                                    <div key={i} className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm">
-                                        <button onClick={() => setOpenIndex(openIndex === i ? null : i)} className="w-full flex items-center justify-between p-5 text-left cursor-pointer hover:bg-slate-50 transition-colors">
-                                            <span className="text-sm font-bold text-slate-900 pr-4">{item.q}</span>
+                                    <div key={i} className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:border-slate-700 transition-colors">
+                                        <button onClick={() => setOpenIndex(openIndex === i ? null : i)} className="w-full flex items-center justify-between p-5 text-left cursor-pointer hover:bg-[#0a1224] transition-colors">
+                                            <span className="text-sm font-bold text-slate-100 pr-4">{item.q}</span>
                                             <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${openIndex === i ? 'rotate-180' : ''}`} />
                                         </button>
                                         <AnimatePresence>
                                             {openIndex === i && (
                                                 <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                                                    <p className="px-5 pb-5 text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-4">{item.r}</p>
+                                                    <p className="px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-slate-800 pt-4">{item.r}</p>
                                                 </motion.div>
                                             )}
                                         </AnimatePresence>
@@ -121,22 +121,22 @@ export default function FaqPage() {
                         faqData.map((cat, ci) => (
                             <div key={ci} className="space-y-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
+                                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500">
                                         <cat.icon className="w-4 h-4" />
                                     </div>
-                                    <h2 className="text-lg font-black text-slate-900">{cat.category}</h2>
+                                    <h2 className="text-lg font-black text-white">{cat.category}</h2>
                                 </div>
                                 <div className="space-y-2">
                                     {cat.questions.map((item, qi) => (
-                                        <div key={qi} className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm">
-                                            <button onClick={() => setOpenIndex(openIndex === ci * 100 + qi ? null : ci * 100 + qi)} className="w-full flex items-center justify-between p-5 text-left cursor-pointer hover:bg-slate-50 transition-colors">
-                                                <span className="text-sm font-bold text-slate-900 pr-4">{item.q}</span>
+                                        <div key={qi} className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:border-slate-700 transition-colors">
+                                            <button onClick={() => setOpenIndex(openIndex === ci * 100 + qi ? null : ci * 100 + qi)} className="w-full flex items-center justify-between p-5 text-left cursor-pointer hover:bg-[#0a1224] transition-colors">
+                                                <span className="text-sm font-bold text-slate-100 pr-4">{item.q}</span>
                                                 <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${openIndex === ci * 100 + qi ? 'rotate-180' : ''}`} />
                                             </button>
                                             <AnimatePresence>
                                                 {openIndex === ci * 100 + qi && (
                                                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                                                        <p className="px-5 pb-5 text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-4">{item.r}</p>
+                                                        <p className="px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-slate-800 pt-4">{item.r}</p>
                                                     </motion.div>
                                                 )}
                                             </AnimatePresence>

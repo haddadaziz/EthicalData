@@ -114,33 +114,33 @@ export default function CertificationDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-[#020617] text-white flex flex-col font-sans selection:bg-blue-600 selection:text-white">
 
       {/* BARRE DE NAVIGATION CAPSULE GLASSMORPHIC */}
-      <header className="sticky top-0 z-50 w-full border-b border-slate-200/60 bg-white/85 backdrop-blur-xl transition-all">
+      <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-[#020617]/85 backdrop-blur-xl transition-all">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group cursor-pointer">
             <div className="flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
               <TriangleLogo className="w-7 h-7" />
             </div>
-            <span className="font-extrabold text-sm sm:text-base tracking-tight text-slate-950 uppercase">
+            <span className="font-extrabold text-sm sm:text-base tracking-tight text-white uppercase">
               Ethical Data Security
             </span>
           </Link>
-          <nav className="hidden md:flex items-center gap-1 bg-slate-950/[0.04] border border-slate-200/80 rounded-full px-3 py-1.5 shadow-sm backdrop-blur-xl">
-            <Link href="/#about" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-650 hover:text-blue-600 hover:bg-white rounded-full transition-all duration-200 hover:shadow-xs">
+          <nav className="hidden md:flex items-center gap-1 bg-white/[0.04] border border-slate-800 rounded-full px-3 py-1.5 shadow-sm backdrop-blur-xl">
+            <Link href="/#about" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-300 hover:text-white hover:bg-[#080d1a] rounded-full transition-all duration-200 hover:shadow-xs">
               Qui Sommes-Nous
             </Link>
-            <Link href="/certifications" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-blue-600 bg-white shadow-xs rounded-full transition-all duration-200">
+            <Link href="/certifications" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-blue-500 bg-[#080d1a] border border-slate-800 shadow-xs rounded-full transition-all duration-200">
               Certifications
             </Link>
-            <Link href="/#services" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-650 hover:text-blue-600 hover:bg-white rounded-full transition-all duration-200 hover:shadow-xs">
+            <Link href="/#services" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-300 hover:text-white hover:bg-[#080d1a] rounded-full transition-all duration-200 hover:shadow-xs">
               Nos Services
             </Link>
-            <Link href="/#testimonials" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-650 hover:text-blue-600 hover:bg-white rounded-full transition-all duration-200 hover:shadow-xs">
+            <Link href="/#testimonials" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-300 hover:text-white hover:bg-[#080d1a] rounded-full transition-all duration-200 hover:shadow-xs">
               Avis
             </Link>
-            <Link href="/#faq" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-650 hover:text-blue-600 hover:bg-white rounded-full transition-all duration-200 hover:shadow-xs">
+            <Link href="/#faq" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-300 hover:text-white hover:bg-[#080d1a] rounded-full transition-all duration-200 hover:shadow-xs">
               FAQ
             </Link>
           </nav>
@@ -159,12 +159,12 @@ export default function CertificationDetailPage() {
               </Link>
             ) : (
               <>
-                <Link href="/login" className="px-4 py-2 text-xs font-black uppercase tracking-wider text-slate-700 hover:text-blue-600 transition-colors cursor-pointer">
+                <Link href="/login" className="px-4 py-2 text-xs font-black uppercase tracking-wider text-slate-300 hover:text-white transition-colors cursor-pointer">
                   Connexion
                 </Link>
                 <Link
                   href="/register"
-                  className="px-5 py-2.5 bg-slate-950 hover:bg-slate-900 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm hover:shadow-md cursor-pointer hover:scale-105 active:scale-95"
+                  className="px-5 py-2.5 bg-white hover:bg-slate-200 text-slate-950 text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm hover:shadow-md cursor-pointer hover:scale-105 active:scale-95"
                 >
                   S&apos;inscrire
                 </Link>
@@ -172,7 +172,7 @@ export default function CertificationDetailPage() {
             )}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-slate-700 hover:text-slate-950 cursor-pointer rounded-xl bg-slate-100/80 border border-slate-200/80"
+              className="md:hidden p-2 text-slate-300 hover:text-white cursor-pointer rounded-xl bg-[#080d1a] border border-slate-800"
               aria-label="Menu mobile"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -186,14 +186,14 @@ export default function CertificationDetailPage() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="md:hidden border-t border-slate-200 bg-white/95 backdrop-blur-xl overflow-hidden"
+              className="md:hidden border-t border-slate-800 bg-[#020617]/95 backdrop-blur-xl overflow-hidden"
             >
               <nav className="flex flex-col p-4 gap-1 text-xs font-black uppercase tracking-widest">
-                <Link href="/#about" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Qui Sommes-Nous</Link>
-                <Link href="/certifications" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-blue-600 bg-blue-50 rounded-xl font-black">Certifications</Link>
-                <Link href="/#services" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Nos Services</Link>
-                <Link href="/#testimonials" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">Avis</Link>
-                <Link href="/#faq" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-600 hover:text-slate-950 hover:bg-slate-50 rounded-xl">FAQ</Link>
+                <Link href="/#about" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-400 hover:text-white hover:bg-[#080d1a] rounded-xl">Qui Sommes-Nous</Link>
+                <Link href="/certifications" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-blue-500 bg-blue-500/10 border border-blue-500/20 rounded-xl font-black">Certifications</Link>
+                <Link href="/#services" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-400 hover:text-white hover:bg-[#080d1a] rounded-xl">Nos Services</Link>
+                <Link href="/#testimonials" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-400 hover:text-white hover:bg-[#080d1a] rounded-xl">Avis</Link>
+                <Link href="/#faq" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-400 hover:text-white hover:bg-[#080d1a] rounded-xl">FAQ</Link>
               </nav>
             </motion.div>
           )}
@@ -214,65 +214,65 @@ export default function CertificationDetailPage() {
           </div>
         </main>
       ) : (
-    <main className="min-h-screen bg-slate-50 flex-1">
+    <main className="min-h-screen bg-[#020617] flex-1">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <nav className="flex items-center gap-2 text-xs font-semibold text-slate-400 mb-8">
-          <Link href="/" className="hover:text-blue-600 transition-colors">Accueil</Link>
-          <ChevronRight className="w-3 h-3" />
-          <Link href="/certifications" className="hover:text-blue-600 transition-colors">Certifications</Link>
-          <ChevronRight className="w-3 h-3" />
-          <span className="text-slate-700">{cert.codeExamen || cert.nom}</span>
+          <Link href="/" className="hover:text-blue-500 transition-colors">Accueil</Link>
+          <ChevronRight className="w-3 h-3 text-slate-500" />
+          <Link href="/certifications" className="hover:text-blue-500 transition-colors">Certifications</Link>
+          <ChevronRight className="w-3 h-3 text-slate-500" />
+          <span className="text-slate-300">{cert.codeExamen || cert.nom}</span>
         </nav>
 
-        <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+        <div className="bg-[#080d1a]/85 backdrop-blur-sm rounded-3xl shadow-sm border border-slate-800 overflow-hidden">
           <div className="p-6 sm:p-8 md:p-10">
             <div className="flex flex-wrap items-center gap-2 mb-4">
               {cert.categorie && (
                 <Link
                   href={`/certifications?categorie=${cert.categorie.slug}`}
-                  className="text-[10px] uppercase tracking-wider px-2.5 py-1 bg-indigo-50 text-indigo-600 font-bold rounded-lg hover:bg-indigo-100 transition-colors"
+                  className="text-[10px] uppercase tracking-wider px-2.5 py-1 bg-indigo-500/10 text-indigo-400 font-bold rounded-lg hover:bg-indigo-500/20 transition-colors border border-indigo-500/20"
                 >
                   {cert.categorie.nom}
                 </Link>
               )}
-              <span className="text-[10px] uppercase tracking-wider px-2.5 py-1 bg-slate-100 text-slate-700 font-bold rounded-lg flex items-center gap-1.5">
+              <span className="text-[10px] uppercase tracking-wider px-2.5 py-1 bg-[#020617] text-slate-300 font-bold rounded-lg flex items-center gap-1.5 border border-slate-800">
                 {cert.fournisseur.image && (
                   <img src={cert.fournisseur.image} alt="" className="w-3.5 h-3.5 rounded-full object-contain" />
                 )}
                 {cert.fournisseur.nom}
               </span>
-              <span className={`text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-lg border font-bold ${levelColors[cert.niveau] || 'bg-slate-100 text-slate-700'}`}>
+              <span className={`text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-lg border font-bold ${levelColors[cert.niveau] || 'bg-[#020617] text-slate-300 border-slate-800'}`}>
                 {cert.niveau}
               </span>
             </div>
 
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
               <div className="flex-1">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-950 leading-tight mb-3">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight mb-3">
                   {cert.codeExamen && (
-                    <span className="text-blue-600">{cert.codeExamen} — </span>
+                    <span className="text-blue-500">{cert.codeExamen} — </span>
                   )}
                   {cert.nom}
                 </h1>
-                <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-3xl">
+                <p className="text-slate-400 text-sm sm:text-base leading-relaxed max-w-3xl">
                   {cert.description}
                 </p>
               </div>
               {cert.image && (
-                <div className="shrink-0">
+                <div className="shrink-0 bg-white/95 p-3 rounded-2xl border border-slate-200">
                   <img src={cert.image} alt={cert.nom} className="w-32 sm:w-40 object-contain" />
                 </div>
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-4 sm:gap-6 mt-6 pb-6 border-b border-slate-100">
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 mt-6 pb-6 border-b border-slate-800">
               {cert.dureeIndicative && (
-                <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-700">
+                <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-300">
                   <Clock className="w-4 h-4 text-blue-500" />
                   <span>{cert.dureeIndicative}</span>
                 </div>
               )}
-              <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-700">
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-300">
                 <BookOpen className="w-4 h-4 text-blue-500" />
                 <span>{cert.modules?.length || 0} modules</span>
               </div>
@@ -299,7 +299,7 @@ export default function CertificationDetailPage() {
               <button
                 type="button"
                 onClick={() => router.push('/dashboard/cours')}
-                className="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2 text-sm"
+                className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-black rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2 text-sm border border-slate-700"
               >
                 <BookOpen className="w-4 h-4" />
                 Voir les cours
@@ -311,14 +311,14 @@ export default function CertificationDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
           <div className="lg:col-span-2 space-y-6">
             {cert.objectifs && cert.objectifs.length > 0 && (
-              <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 sm:p-8">
-                <h2 className="text-lg font-black text-slate-950 mb-4 flex items-center gap-2">
+              <div className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-3xl shadow-sm p-6 sm:p-8">
+                <h2 className="text-lg font-black text-white mb-4 flex items-center gap-2">
                   <Target className="w-5 h-5 text-blue-500" />
                   Objectifs
                 </h2>
                 <ul className="space-y-2">
                   {cert.objectifs.map((obj, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-sm text-slate-700">
+                    <li key={i} className="flex items-start gap-2.5 text-sm text-slate-300">
                       <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
                       {obj}
                     </li>
@@ -328,14 +328,14 @@ export default function CertificationDetailPage() {
             )}
 
             {cert.prerequis && cert.prerequis.length > 0 && (
-              <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 sm:p-8">
-                <h2 className="text-lg font-black text-slate-950 mb-4 flex items-center gap-2">
+              <div className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-3xl shadow-sm p-6 sm:p-8">
+                <h2 className="text-lg font-black text-white mb-4 flex items-center gap-2">
                   <Award className="w-5 h-5 text-amber-500" />
                   Prerequis
                 </h2>
                 <ul className="space-y-2">
                   {cert.prerequis.map((pr, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-sm text-slate-700">
+                    <li key={i} className="flex items-start gap-2.5 text-sm text-slate-300">
                       <CheckCircle2 className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
                       {pr}
                     </li>
@@ -345,26 +345,26 @@ export default function CertificationDetailPage() {
             )}
 
             {cert.modules && cert.modules.length > 0 && (
-              <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 sm:p-8">
-                <h2 className="text-lg font-black text-slate-950 mb-6 flex items-center gap-2">
+              <div className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-3xl shadow-sm p-6 sm:p-8">
+                <h2 className="text-lg font-black text-white mb-6 flex items-center gap-2">
                   <BookOpen className="w-5 h-5 text-blue-500" />
                   Programme de la certification
                 </h2>
                 <div className="space-y-3">
                   {cert.modules.map((mod, i) => (
-                    <div key={mod.id} className="border border-slate-200 rounded-xl overflow-hidden">
+                    <div key={mod.id} className="border border-slate-800 rounded-xl overflow-hidden">
                       <button
                         onClick={() => toggleModule(mod.id)}
-                        className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 transition-colors text-left cursor-pointer"
+                        className="w-full flex items-center justify-between p-4 bg-[#020617] hover:bg-[#0a1224] transition-colors text-left cursor-pointer"
                       >
                         <div className="flex items-center gap-3">
                           <span className="w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-black flex items-center justify-center shrink-0">
                             {i + 1}
                           </span>
                           <div>
-                            <span className="font-bold text-sm text-slate-900">{mod.titre}</span>
+                            <span className="font-bold text-sm text-slate-100">{mod.titre}</span>
                             {mod.description && (
-                              <p className="text-xs text-slate-500 mt-0.5">{mod.description}</p>
+                              <p className="text-xs text-slate-400 mt-0.5">{mod.description}</p>
                             )}
                           </div>
                         </div>
@@ -388,8 +388,8 @@ export default function CertificationDetailPage() {
                           <div className="px-4 pb-4 space-y-1.5">
                             {mod.sousModules.map((sub) => (
                               <div key={sub.id} className="flex items-center gap-2.5 pl-10 py-1.5">
-                                <div className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
-                                <span className="text-sm text-slate-700">{sub.titre}</span>
+                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
+                                <span className="text-sm text-slate-300">{sub.titre}</span>
                               </div>
                             ))}
                           </div>
@@ -403,30 +403,30 @@ export default function CertificationDetailPage() {
           </div>
 
           <div className="space-y-6">
-            <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-6">
-              <h3 className="text-sm font-black text-slate-950 mb-3">Certification</h3>
+            <div className="bg-[#080d1a]/85 backdrop-blur-sm rounded-3xl shadow-sm border border-slate-800 p-6">
+              <h3 className="text-sm font-black text-white mb-3">Certification</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Code</span>
-                  <span className="font-bold text-slate-900">{cert.codeExamen || '-'}</span>
+                  <span className="text-slate-400">Code</span>
+                  <span className="font-bold text-white">{cert.codeExamen || '-'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Niveau</span>
-                  <span className="font-bold text-slate-900 uppercase">{cert.niveau}</span>
+                  <span className="text-slate-400">Niveau</span>
+                  <span className="font-bold text-white uppercase">{cert.niveau}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Editeur</span>
-                  <span className="font-bold text-slate-900">{cert.fournisseur.nom}</span>
+                  <span className="text-slate-400">Editeur</span>
+                  <span className="font-bold text-white">{cert.fournisseur.nom}</span>
                 </div>
                 {cert.dureeIndicative && (
                   <div className="flex justify-between">
-                    <span className="text-slate-500">Duree</span>
-                    <span className="font-bold text-slate-900">{cert.dureeIndicative}</span>
+                    <span className="text-slate-400">Duree</span>
+                    <span className="font-bold text-white">{cert.dureeIndicative}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Modules</span>
-                  <span className="font-bold text-slate-900">{cert.modules?.length || 0}</span>
+                  <span className="text-slate-400">Modules</span>
+                  <span className="font-bold text-white">{cert.modules?.length || 0}</span>
                 </div>
               </div>
             </div>

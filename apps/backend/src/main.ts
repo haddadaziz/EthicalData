@@ -9,7 +9,7 @@ import { json, urlencoded } from 'express';
 
 // Polyfill global BigInt → string pour JSON.stringify
 (BigInt.prototype as any).toJSON = function () {
-    return this.toString();
+  return this.toString();
 };
 
 process.on('uncaughtException', (err) => {
@@ -38,11 +38,23 @@ async function bootstrap() {
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://ka-f.fontawesome.com"],
-          fontSrc: ["'self'", "https://fonts.gstatic.com", "https://ka-f.fontawesome.com"],
+          styleSrc: [
+            "'self'",
+            "'unsafe-inline'",
+            'https://fonts.googleapis.com',
+            'https://ka-f.fontawesome.com',
+          ],
+          fontSrc: [
+            "'self'",
+            'https://fonts.gstatic.com',
+            'https://ka-f.fontawesome.com',
+          ],
           scriptSrc: ["'self'"],
-          imgSrc: ["'self'", "data:", "blob:"],
-          connectSrc: ["'self'", process.env.FRONTEND_URL || 'http://localhost:3001'],
+          imgSrc: ["'self'", 'data:', 'blob:'],
+          connectSrc: [
+            "'self'",
+            process.env.FRONTEND_URL || 'http://localhost:3001',
+          ],
           frameAncestors: ["'none'"],
           baseUri: ["'self'"],
         },
@@ -59,8 +71,16 @@ async function bootstrap() {
   ];
 
   app.enableCors({
-    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-      if (!origin || allowedOrigins.some(o => typeof o === 'string' ? o === origin : o.test(origin))) {
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
+      if (
+        !origin ||
+        allowedOrigins.some((o) =>
+          typeof o === 'string' ? o === origin : o.test(origin),
+        )
+      ) {
         callback(null, true);
       } else {
         callback(new Error('Origine non autorisée'), false);
@@ -89,13 +109,15 @@ async function bootstrap() {
   console.log(`⚡ Attempting to listen on 0.0.0.0:${port}...`);
   try {
     await app.listen(port, '0.0.0.0');
-    console.log(`🚀 Serveur Backend Ethical Data prêt et sécurisé sur le port ${port}`);
+    console.log(
+      `🚀 Serveur Backend Ethical Data prêt et sécurisé sur le port ${port}`,
+    );
   } catch (err) {
     console.error('❌ Failed to start server:', err);
     process.exit(1);
   }
 }
-bootstrap().catch(err => {
+bootstrap().catch((err) => {
   console.error('❌ Unhandled bootstrap error:', err);
   process.exit(1);
 });

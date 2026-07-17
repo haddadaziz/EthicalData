@@ -26,8 +26,9 @@ export class AppointmentsController {
   @Post('creneaux')
   async createCreneau(@Req() req: any, @Body() dto: CreateCreneauDto) {
     const userRoles: string[] = req.user.roles || [];
-    const isAdmin = userRoles.some(r => r === 'ADMIN' || r === 'SUPER_ADMIN');
-    const formateurId = isAdmin && dto.formateurId ? dto.formateurId : req.user.id;
+    const isAdmin = userRoles.some((r) => r === 'ADMIN' || r === 'SUPER_ADMIN');
+    const formateurId =
+      isAdmin && dto.formateurId ? dto.formateurId : req.user.id;
     return this.appointmentsService.createCreneau(formateurId, dto);
   }
 
@@ -59,9 +60,16 @@ export class AppointmentsController {
 
   // 5b. Annuler un rendez-vous
   @Patch(':id/annuler')
-  async cancelAppointment(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
+  async cancelAppointment(
+    @Req() req: any,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
     const userRoles = req.user.roles || [];
-    return this.appointmentsService.cancelAppointment(req.user.id, userRoles, id);
+    return this.appointmentsService.cancelAppointment(
+      req.user.id,
+      userRoles,
+      id,
+    );
   }
 
   // 6. Supprimer un créneau libre (Admin / Formateur)
@@ -79,6 +87,11 @@ export class AppointmentsController {
     @Body() dto: CreateCreneauDto,
   ) {
     const userRoles = req.user.roles || [];
-    return this.appointmentsService.updateCreneau(req.user.id, userRoles, id, dto);
+    return this.appointmentsService.updateCreneau(
+      req.user.id,
+      userRoles,
+      id,
+      dto,
+    );
   }
 }

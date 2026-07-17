@@ -24,7 +24,16 @@ export class NotificationsController {
   @Post('send')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('SUPER_ADMIN')
-  async sendToGroup(@Body() dto: { titre: string; message: string; target: string; type?: string; lien?: string }) {
+  async sendToGroup(
+    @Body()
+    dto: {
+      titre: string;
+      message: string;
+      target: string;
+      type?: string;
+      lien?: string;
+    },
+  ) {
     return this.notificationsService.sendToGroup({
       titre: dto.titre,
       message: dto.message,
@@ -54,7 +63,10 @@ export class NotificationsController {
 
   // 4. Supprimer une notification
   @Delete(':id')
-  async deleteNotification(@Param('id', ParseIntPipe) id: number, @Req() req: any) {
+  async deleteNotification(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: any,
+  ) {
     return this.notificationsService.deleteNotification(req.user.id, id);
   }
 }

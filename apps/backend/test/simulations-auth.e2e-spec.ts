@@ -20,7 +20,9 @@ describe('Simulations - Auth & Security (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ transform: true, whitelist: true }),
+    );
     await app.init();
   });
 
@@ -164,7 +166,12 @@ describe('Simulations - Auth & Security (e2e)', () => {
     it('should accept valid optional fields', () => {
       return request(app.getHttpServer())
         .post('/simulations')
-        .send({ titre: 'Test', certificationId: 1, duree: 60, scoreMinimal: 75 })
+        .send({
+          titre: 'Test',
+          certificationId: 1,
+          duree: 60,
+          scoreMinimal: 75,
+        })
         .expect(201);
     });
   });

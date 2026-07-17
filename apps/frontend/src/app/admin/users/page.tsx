@@ -302,7 +302,7 @@ export default function AdminUsersPage() {
                 })}
             </div>
         );
-    }, [paginatedUsers]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [paginatedUsers]);  
 
     if (loading) {
         return (

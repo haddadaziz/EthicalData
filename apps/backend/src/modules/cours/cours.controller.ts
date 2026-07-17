@@ -101,10 +101,7 @@ export class CoursController {
   @UseGuards(RolesGuard)
   @Roles('FORMATEUR', 'ADMIN', 'SUPER_ADMIN')
   @Patch(':id/publier')
-  async publish(
-    @Req() req: any,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async publish(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
     return this.coursService.publish(req.user.id, id, req.user.roles);
   }
 
@@ -112,10 +109,7 @@ export class CoursController {
   @UseGuards(RolesGuard)
   @Roles('FORMATEUR', 'ADMIN', 'SUPER_ADMIN')
   @Delete(':id')
-  async remove(
-    @Req() req: any,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async remove(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
     return this.coursService.remove(req.user.id, id, req.user.roles);
   }
 
@@ -191,19 +185,13 @@ export class CoursController {
 
   // S'inscrire à un cours
   @Post(':id/inscrire')
-  async inscrire(
-    @Req() req: any,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async inscrire(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
     return this.coursService.inscrire(req.user.id, id);
   }
 
   // Se désinscrire d'un cours
   @Delete(':id/inscrire')
-  async desinscrire(
-    @Req() req: any,
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async desinscrire(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
     return this.coursService.desinscrire(req.user.id, id);
   }
 

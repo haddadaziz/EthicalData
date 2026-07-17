@@ -4,17 +4,19 @@ import { SettingsService } from '../settings/settings.service';
 
 @Injectable()
 export class MailService {
-    constructor(
-        private readonly configService: ConfigService,
-        private readonly settingsService: SettingsService,
-    ) { }
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly settingsService: SettingsService,
+  ) {}
 
-    async sendPasswordResetEmail(to: string, token: string): Promise<void> {
-        const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3001';
-        const resetLink = `${frontendUrl}/reset-password?token=${token}`;
+  async sendPasswordResetEmail(to: string, token: string): Promise<void> {
+    const frontendUrl =
+      this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3001';
+    const resetLink = `${frontendUrl}/reset-password?token=${token}`;
 
-        const subject = 'Réinitialisation de votre mot de passe - Ethical Data Security';
-        const html = `
+    const subject =
+      'Réinitialisation de votre mot de passe - Ethical Data Security';
+    const html = `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
@@ -42,40 +44,43 @@ export class MailService {
 </body>
 </html>`;
 
-        const settings = await this.settingsService.getSetting('integrations');
-        const smtpConfigured = settings?.smtpHost && settings?.smtpUser && settings?.smtpPass;
+    const settings = await this.settingsService.getSetting('integrations');
+    const smtpConfigured =
+      settings?.smtpHost && settings?.smtpUser && settings?.smtpPass;
 
-        if (smtpConfigured) {
-            try {
-                const nodemailer = await import('nodemailer');
-                const transporter = nodemailer.default.createTransport({
-                    host: settings.smtpHost,
-                    port: settings.smtpPort || 587,
-                    secure: settings.smtpSecure || false,
-                    auth: {
-                        user: settings.smtpUser,
-                        pass: settings.smtpPass,
-                    },
-                });
-                await transporter.sendMail({
-                    from: settings.smtpFrom || '"Ethical Data Security" <noreply@ethicaldata.com>',
-                    to,
-                    subject,
-                    html,
-                });
-                console.log(`Password reset email sent to ${to}`);
-                return;
-            } catch (err) {
-                console.error('SMTP error, falling back to console:', err);
-            }
-        }
-
-        console.log('========================================');
-        console.log('PASSWORD RESET EMAIL (dev mode)');
-        console.log('To:', to);
-        console.log('Subject:', subject);
-        console.log('Reset link:', resetLink);
-        console.log('Token:', token);
-        console.log('========================================');
+    if (smtpConfigured) {
+      try {
+        const nodemailer = await import('nodemailer');
+        const transporter = nodemailer.default.createTransport({
+          host: settings.smtpHost,
+          port: settings.smtpPort || 587,
+          secure: settings.smtpSecure || false,
+          auth: {
+            user: settings.smtpUser,
+            pass: settings.smtpPass,
+          },
+        });
+        await transporter.sendMail({
+          from:
+            settings.smtpFrom ||
+            '"Ethical Data Security" <noreply@ethicaldata.com>',
+          to,
+          subject,
+          html,
+        });
+        console.log(`Password reset email sent to ${to}`);
+        return;
+      } catch (err) {
+        console.error('SMTP error, falling back to console:', err);
+      }
     }
+
+    console.log('========================================');
+    console.log('PASSWORD RESET EMAIL (dev mode)');
+    console.log('To:', to);
+    console.log('Subject:', subject);
+    console.log('Reset link:', resetLink);
+    console.log('Token:', token);
+    console.log('========================================');
+  }
 }

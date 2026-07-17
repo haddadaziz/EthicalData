@@ -78,7 +78,8 @@ INSTRUCTIONS DE NOTATION :
   }
 
   async updateSetting(key: string, value: any): Promise<any> {
-    const stringifiedValue = typeof value === 'string' ? value : JSON.stringify(value);
+    const stringifiedValue =
+      typeof value === 'string' ? value : JSON.stringify(value);
 
     const setting = await this.prisma.configurationSysteme.upsert({
       where: { cle: key },

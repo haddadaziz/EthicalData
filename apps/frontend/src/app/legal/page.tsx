@@ -86,26 +86,26 @@ export default function LegalPage() {
     }, []);
 
     return (
-        <main className="min-h-screen bg-slate-50 selection:bg-blue-600 selection:text-white">
+        <main className="min-h-screen bg-[#020617] text-white selection:bg-blue-600 selection:text-white relative overflow-hidden">
             <Navbar mounted={mounted} isConnected={isConnected} isAdmin={isAdmin} mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
 
             <div className="pt-32 pb-20 px-4 md:px-6">
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-4xl mx-auto space-y-12">
                     <div className="text-center space-y-4">
-                        <h1 className="text-4xl md:text-5xl font-black text-slate-950 tracking-tight">Mentions Légales & Confidentialité</h1>
-                        <p className="text-slate-500 font-medium">Dernière mise à jour : Juillet 2026</p>
+                        <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">Mentions Légales & Confidentialité</h1>
+                        <p className="text-slate-400 font-medium">Dernière mise à jour : Juillet 2026</p>
                     </div>
 
                     <div className="space-y-6">
                         {sections.map((s, i) => (
-                            <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="bg-white border border-slate-200/80 rounded-3xl p-6 md:p-8 shadow-sm space-y-4">
-                                <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-                                    <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0">
+                            <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-3xl p-6 md:p-8 shadow-sm space-y-4 hover:border-slate-700 transition-colors">
+                                <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
+                                    <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500 shrink-0">
                                         <s.icon className="w-5 h-5" />
                                     </div>
-                                    <h2 className="text-base font-black text-slate-900">{s.title}</h2>
+                                    <h2 className="text-base font-black text-slate-100">{s.title}</h2>
                                 </div>
-                                <div className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+                                <div className="text-sm text-slate-400 leading-relaxed whitespace-pre-line">
                                     {s.content}
                                 </div>
                             </motion.div>

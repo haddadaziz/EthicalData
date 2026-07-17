@@ -1,3 +1,5 @@
+/* eslint-disable react/display-name */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faArrowLeft, faArrowRight, faArrowUpRightFromSquare,

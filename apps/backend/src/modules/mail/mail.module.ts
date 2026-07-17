@@ -4,8 +4,8 @@ import { SettingsModule } from '../settings/settings.module';
 
 @Global()
 @Module({
-    imports: [SettingsModule],
-    providers: [MailService],
-    exports: [MailService],
+  imports: [SettingsModule],
+  providers: [MailService],
+  exports: [MailService],
 })
-export class MailModule { }
+export class MailModule {}

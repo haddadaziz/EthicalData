@@ -73,7 +73,11 @@ describe('SimulationsService', () => {
           dateCreation: new Date(),
           certificationId: BigInt(1),
           coursId: null,
-          certification: { id: BigInt(1), nom: 'Azure Fundamentals', codeExamen: 'AZ-900' },
+          certification: {
+            id: BigInt(1),
+            nom: 'Azure Fundamentals',
+            codeExamen: 'AZ-900',
+          },
           cours: null,
           _count: { questions: 10, tentatives: 5 },
         },
@@ -108,7 +112,12 @@ describe('SimulationsService', () => {
         dateCreation: new Date(),
         certificationId: BigInt(1),
         coursId: null,
-        certification: { id: BigInt(1), nom: 'Azure Fundamentals', codeExamen: 'AZ-900', slug: 'az-900' },
+        certification: {
+          id: BigInt(1),
+          nom: 'Azure Fundamentals',
+          codeExamen: 'AZ-900',
+          slug: 'az-900',
+        },
         cours: null,
         questions: [],
         _count: { tentatives: 3 },
@@ -137,7 +146,10 @@ describe('SimulationsService', () => {
     };
 
     it('should create a simulation successfully', async () => {
-      mockPrisma.certification.findFirst.mockResolvedValue({ id: BigInt(1), nom: 'Azure' });
+      mockPrisma.certification.findFirst.mockResolvedValue({
+        id: BigInt(1),
+        nom: 'Azure',
+      });
       mockPrisma.simulation.create.mockResolvedValue({
         id: BigInt(1),
         ...createDto,
@@ -153,7 +165,9 @@ describe('SimulationsService', () => {
 
     it('should throw NotFoundException when certification does not exist', async () => {
       mockPrisma.certification.findFirst.mockResolvedValue(null);
-      await expect(service.create(createDto)).rejects.toThrow(NotFoundException);
+      await expect(service.create(createDto)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should create with optional coursId', async () => {
@@ -198,7 +212,9 @@ describe('SimulationsService', () => {
 
     it('should throw NotFoundException when simulation does not exist', async () => {
       mockPrisma.simulation.findUnique.mockResolvedValue(null);
-      await expect(service.update(999, updateDto)).rejects.toThrow(NotFoundException);
+      await expect(service.update(999, updateDto)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -225,7 +241,14 @@ describe('SimulationsService', () => {
           enonce: 'Question 1',
           type: 'QCM',
           certificationId: BigInt(1),
-          options: [{ id: BigInt(1), lettre: 'A', texte: 'Option A', questionId: BigInt(1) }],
+          options: [
+            {
+              id: BigInt(1),
+              lettre: 'A',
+              texte: 'Option A',
+              questionId: BigInt(1),
+            },
+          ],
         },
       ];
 
@@ -240,11 +263,17 @@ describe('SimulationsService', () => {
 
   describe('createTentative', () => {
     it('should create a tentative and auto-create simulation if needed', async () => {
-      mockPrisma.certification.findFirst.mockResolvedValue({ id: BigInt(1), nom: 'Azure' });
+      mockPrisma.certification.findFirst.mockResolvedValue({
+        id: BigInt(1),
+        nom: 'Azure',
+      });
       mockPrisma.simulation.findFirst
         .mockResolvedValueOnce(null) // No existing simulation
         .mockResolvedValueOnce({ id: BigInt(10), certificationId: BigInt(1) }); // After creation
-      mockPrisma.simulation.create.mockResolvedValue({ id: BigInt(10), certificationId: BigInt(1) });
+      mockPrisma.simulation.create.mockResolvedValue({
+        id: BigInt(10),
+        certificationId: BigInt(1),
+      });
       mockPrisma.tentative.create.mockResolvedValue({
         id: BigInt(1),
         score: 85,
@@ -261,7 +290,9 @@ describe('SimulationsService', () => {
 
     it('should throw NotFoundException when certification does not exist', async () => {
       mockPrisma.certification.findFirst.mockResolvedValue(null);
-      await expect(service.createTentative(42, 999, 50)).rejects.toThrow(NotFoundException);
+      await expect(service.createTentative(42, 999, 50)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -315,7 +346,11 @@ describe('SimulationsService', () => {
           dateCreation: new Date(),
           certificationId: BigInt(2),
           coursId: BigInt(3),
-          certification: { id: BigInt(2), nom: 'Test Cert', codeExamen: 'TC-01' },
+          certification: {
+            id: BigInt(2),
+            nom: 'Test Cert',
+            codeExamen: 'TC-01',
+          },
           cours: { id: BigInt(3), titre: 'Test Course' },
           _count: { questions: 0, tentatives: 0 },
         },
@@ -347,7 +382,9 @@ describe('SimulationsService', () => {
 
     it('should reject tentative with non-existent certification', async () => {
       mockPrisma.certification.findFirst.mockResolvedValue(null);
-      await expect(service.createTentative(1, 999, 50)).rejects.toThrow(NotFoundException);
+      await expect(service.createTentative(1, 999, 50)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

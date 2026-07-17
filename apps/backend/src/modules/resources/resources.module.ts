@@ -3,8 +3,8 @@ import { ResourcesService } from './resources.service';
 import { ResourcesController } from './resources.controller';
 
 @Module({
-    controllers: [ResourcesController],
-    providers: [ResourcesService],
-    exports: [ResourcesService],
+  controllers: [ResourcesController],
+  providers: [ResourcesService],
+  exports: [ResourcesService],
 })
-export class ResourcesModule { }
+export class ResourcesModule {}

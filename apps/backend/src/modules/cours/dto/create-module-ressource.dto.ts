@@ -1,4 +1,11 @@
-import { IsString, IsOptional, IsInt, IsBoolean, IsEnum, Min } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsInt,
+  IsBoolean,
+  IsEnum,
+  Min,
+} from 'class-validator';
 
 export enum TypeRessource {
   PDF = 'PDF',

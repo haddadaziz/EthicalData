@@ -33,10 +33,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
       message = exceptionResponse.message || message;
     }
 
-    if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
+    if (status === (HttpStatus.INTERNAL_SERVER_ERROR as number)) {
       this.logger.error(
         `[${request.method}] ${request.url} - Error: ${
-          exception instanceof Error ? exception.message : JSON.stringify(exception)
+          exception instanceof Error
+            ? exception.message
+            : JSON.stringify(exception)
         }`,
       );
     }

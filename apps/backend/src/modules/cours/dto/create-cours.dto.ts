@@ -1,4 +1,11 @@
-import { IsString, IsOptional, IsInt, IsArray, IsEnum, Min } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsInt,
+  IsArray,
+  IsEnum,
+  Min,
+} from 'class-validator';
 
 export enum StatutCours {
   BROUILLON = 'BROUILLON',

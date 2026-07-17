@@ -1,4 +1,10 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export enum TypeRendezVousEnum {
   ORIENTATION = 'ORIENTATION',
@@ -8,7 +14,7 @@ export enum TypeRendezVousEnum {
 }
 
 export class BookAppointmentDto {
-  @IsNumber({}, { message: 'L\'ID du créneau doit être un nombre.' })
+  @IsNumber({}, { message: "L'ID du créneau doit être un nombre." })
   @IsNotEmpty({ message: 'Le créneau est obligatoire.' })
   creneauId: number;
 

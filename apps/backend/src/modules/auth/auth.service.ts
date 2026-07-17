@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
@@ -26,10 +31,14 @@ export class AuthService {
 
       if (isMatch) {
         if (user.statut === 'BANNI') {
-          throw new UnauthorizedException('Vous êtes banni, vous ne pouvez pas vous connecter.');
+          throw new UnauthorizedException(
+            'Vous êtes banni, vous ne pouvez pas vous connecter.',
+          );
         }
         if (user.statut === 'INACTIF') {
-          throw new UnauthorizedException('Votre compte est inactif, vous ne pouvez pas vous connecter.');
+          throw new UnauthorizedException(
+            'Votre compte est inactif, vous ne pouvez pas vous connecter.',
+          );
         }
 
         const { motDePasse, ...result } = user;
@@ -69,7 +78,10 @@ export class AuthService {
   async forgotPassword(email: string): Promise<{ message: string }> {
     const user = await this.usersService.findByEmail(email);
     if (!user) {
-      return { message: "Si un compte existe avec cet email, un lien de réinitialisation a été envoyé." };
+      return {
+        message:
+          'Si un compte existe avec cet email, un lien de réinitialisation a été envoyé.',
+      };
     }
 
     const now = new Date();
@@ -78,7 +90,10 @@ export class AuthService {
     });
 
     if (existingTokens.length >= 3) {
-      return { message: "Si un compte existe avec cet email, un lien de réinitialisation a été envoyé." };
+      return {
+        message:
+          'Si un compte existe avec cet email, un lien de réinitialisation a été envoyé.',
+      };
     }
 
     const token = crypto.randomBytes(32).toString('hex');
@@ -90,10 +105,16 @@ export class AuthService {
 
     await this.mailService.sendPasswordResetEmail(email, token);
 
-    return { message: "Si un compte existe avec cet email, un lien de réinitialisation a été envoyé." };
+    return {
+      message:
+        'Si un compte existe avec cet email, un lien de réinitialisation a été envoyé.',
+    };
   }
 
-  async resetPassword(token: string, motDePasse: string): Promise<{ message: string }> {
+  async resetPassword(
+    token: string,
+    motDePasse: string,
+  ): Promise<{ message: string }> {
     const record = await this.prisma.passwordResetToken.findUnique({
       where: { token },
     });
@@ -107,7 +128,9 @@ export class AuthService {
     }
 
     if (new Date() > record.expiresAt) {
-      throw new BadRequestException('Ce token a expiré. Veuillez refaire une demande.');
+      throw new BadRequestException(
+        'Ce token a expiré. Veuillez refaire une demande.',
+      );
     }
 
     const hashedPassword = await bcrypt.hash(motDePasse, 10);
@@ -130,7 +153,7 @@ export class AuthService {
     return {
       httpOnly: true,
       secure: isProd,
-      sameSite: isProd ? 'none' as const : 'lax' as const,
+      sameSite: isProd ? ('none' as const) : ('lax' as const),
       path: '/',
       maxAge: 24 * 60 * 60, // 24h (doit correspondre à JWT_EXPIRATION)
     };
