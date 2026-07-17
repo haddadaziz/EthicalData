@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { apiFetch } from '../../../lib/api';
+import { apiFetch } from '../../lib/api';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Mail, ArrowLeft, CheckCircle } from '@/components/icons';
