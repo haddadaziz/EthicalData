@@ -49,9 +49,9 @@ export function Navbar({
       <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
         
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-2 group cursor-pointer">
+        <Link href="/" className="flex items-center gap-2 group cursor-pointer shrink-0">
           <div className="flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-            <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-12 md:h-8 w-auto object-contain" />
+            <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-16 md:h-8 w-auto object-contain scale-110 md:scale-100 origin-left" />
           </div>
         </Link>
 
@@ -93,12 +93,12 @@ export function Navbar({
             </a>
           ) : (
             <>
-              <a href="/login" className={`px-1.5 py-1 md:px-4 text-[9px] md:text-xs font-black uppercase tracking-wider transition-colors cursor-pointer ${scrolled ? 'text-slate-300 hover:text-red-500' : 'text-white/80 hover:text-white'}`}>
+              <a href="/login" className={`hidden md:inline-flex px-4 text-xs font-black uppercase tracking-wider transition-colors cursor-pointer ${scrolled ? 'text-slate-300 hover:text-red-500' : 'text-white/80 hover:text-white'}`}>
                 Connexion
               </a>
               <Link
                 href="/register"
-                className="px-2 py-1.5 md:px-5 md:py-2.5 text-[9px] md:text-xs font-black uppercase tracking-wider rounded-md md:rounded-xl transition-all hover:scale-105 active:scale-95 cursor-pointer bg-red-600 hover:bg-red-700 text-white shadow-md shadow-red-600/20"
+                className="px-3 py-2 md:px-5 md:py-2.5 text-[10px] md:text-xs font-black uppercase tracking-wider rounded-lg md:rounded-xl transition-all hover:scale-105 active:scale-95 cursor-pointer bg-red-600 hover:bg-red-700 text-white shadow-md shadow-red-600/20"
               >
                 S&apos;inscrire
               </Link>
@@ -131,6 +131,13 @@ export function Navbar({
               <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">Avis</a>
               <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">FAQ</a>
               <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">Contact</a>
+              
+              {!isConnected && (
+                <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-slate-800">
+                  <a href="/login" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-center text-slate-300 hover:text-white bg-slate-900/50 rounded-xl font-black uppercase tracking-wider">Connexion</a>
+                  <a href="/register" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-center text-white bg-red-600 hover:bg-red-700 rounded-xl font-black uppercase tracking-wider">S&apos;inscrire</a>
+                </div>
+              )}
             </nav>
           </motion.div>
         )}
