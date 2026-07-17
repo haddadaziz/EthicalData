@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, FileText, Lock, Eye } from '@/components/icons';
+import { ShieldCheck, FileText, Lock, Eye } from '@/components/icons';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 
 const sections = [
     {
-        icon: Shield,
+        icon: ShieldCheck,
         title: 'Responsable du Traitement',
         content: `Ethical Data Security est une société de formation basée au Maroc.
 Adresse : Bureau 305, Technopark, Casablanca, Maroc
@@ -48,7 +48,7 @@ Ces données sont collectées uniquement dans le but de fournir et améliorer no
 Pour exercer vos droits, contactez-nous à : contact@ethicaldatasecurity.ma`,
     },
     {
-        icon: Shield,
+        icon: ShieldCheck,
         title: 'Sécurité des Données',
         content: `Nous mettons en œuvre toutes les mesures techniques et organisationnelles appropriées pour garantir la sécurité de vos données personnelles :
 • Chiffrement des données en transit (TLS 1.3) et au repos

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Send, Clock } from '@/components/icons';
+import { Mail, Phone, Compass, Send, Clock } from '@/components/icons';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { apiFetch } from '../../lib/api';
@@ -92,7 +92,7 @@ export default function ContactPage() {
                             {[
                                 { icon: Mail, label: 'Email', value: 'contact@ethicaldatasecurity.ma', href: 'mailto:contact@ethicaldatasecurity.ma' },
                                 { icon: Phone, label: 'Téléphone', value: '+212 664 244 343', href: 'tel:+212664244343' },
-                                { icon: MapPin, label: 'Adresse', value: 'Bureau 305, Technopark Casablanca' },
+                                { icon: Compass, label: 'Adresse', value: 'Bureau 305, Technopark Casablanca' },
                                 { icon: Clock, label: 'Horaires', value: 'Lun-Ven : 9h00 - 18h00' },
                             ].map((item, i) => (
                                 <div key={i} className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm space-y-2">

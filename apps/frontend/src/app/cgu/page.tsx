@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, CheckCircle, AlertTriangle, Ban, Copyright } from '@/components/icons';
+import { FileText, CheckCircle, AlertTriangle, X, BookOpen } from '@/components/icons';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 
@@ -36,7 +36,7 @@ En créant un compte et en utilisant nos services, vous acceptez sans réserve l
 L'utilisation de la plateforme doit être conforme à sa destination et respecter les droits des autres utilisateurs.`,
     },
     {
-        icon: Ban,
+        icon: X,
         title: '4. Obligations de l\'Utilisateur',
         content: `Il est interdit de :
 • Utiliser la plateforme à des fins frauduleuses ou illicites
@@ -47,7 +47,7 @@ L'utilisation de la plateforme doit être conforme à sa destination et respecte
 • Partager, revendre ou diffuser les ressources pédagogiques protégées`,
     },
     {
-        icon: Copyright,
+        icon: BookOpen,
         title: '5. Propriété Intellectuelle',
         content: `L'ensemble du contenu de la plateforme (textes, images, vidéos, questionnaires, supports de cours) est la propriété exclusive d'Ethical Data Security ou de ses partenaires. Toute reproduction, distribution ou exploitation sans autorisation est interdite et peut faire l'objet de poursuites.
 

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Search, MessageCircle, BookOpen, Award, CreditCard, HelpCircle } from '@/components/icons';
+import { ChevronDown, Search, MessageCircle, BookOpen, Award, Activity, HelpCircle } from '@/components/icons';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 
@@ -38,7 +38,7 @@ const faqData = [
     },
     {
         category: 'Paiement',
-        icon: CreditCard,
+        icon: Activity,
         questions: [
             { q: 'Combien coûte l\'accès à la plateforme ?', r: 'Pour le moment, l\'accès à la plateforme est en phase MVP. Les tarifs seront communiqués ultérieurement. Contactez-nous pour plus d\'informations.' },
             { q: 'Y a-t-il des frais pour les simulations ?', r: 'Les simulations d\'entraînement sont incluses dans votre accès à la plateforme. Aucun frais supplémentaire n\'est facturé pour les passer.' },

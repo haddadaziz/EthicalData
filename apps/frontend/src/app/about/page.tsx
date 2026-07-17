@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Target, Users, Award, Eye, TrendingUp } from '@/components/icons';
+import { ShieldCheck, Target, Users, Award, Eye, Activity } from '@/components/icons';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 
@@ -14,11 +14,11 @@ const stats = [
 ];
 
 const values = [
-    { icon: Shield, title: 'Excellence', desc: 'Des programmes conçus par des experts certifiés, alignés sur les référentiels officiels.' },
+    { icon: ShieldCheck, title: 'Excellence', desc: 'Des programmes conçus par des experts certifiés, alignés sur les référentiels officiels.' },
     { icon: Target, title: 'Pédagogie active', desc: 'Une approche pratique avec des mises en situation réelles et des simulations chronométrées.' },
     { icon: Users, title: 'Accompagnement', desc: 'Un suivi personnalisé avec des formateurs dédiés pour maximiser votre réussite.' },
     { icon: Eye, title: 'Innovation', desc: 'L\'intelligence artificielle au service de votre apprentissage pour une correction intelligente.' },
-    { icon: TrendingUp, title: 'Progression', desc: 'Un dashboard complet pour suivre votre readiness score et votre évolution en temps réel.' },
+    { icon: Activity, title: 'Progression', desc: 'Un dashboard complet pour suivre votre readiness score et votre évolution en temps réel.' },
     { icon: Award, title: 'Certification', desc: 'Préparez-vous efficacement aux examens les plus reconnus du marché (Microsoft, AWS, CISCO...).' },
 ];
 
