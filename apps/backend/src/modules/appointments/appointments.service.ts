@@ -215,6 +215,29 @@ export class AppointmentsService {
     }));
   }
 
+  // 4b. Tous les rendez-vous (Admin uniquement)
+  async getAllAppointments() {
+    const rdvList = await this.prisma.rendezVous.findMany({
+      orderBy: { creneau: { dateDebut: 'desc' } },
+      include: {
+        candidat: { select: { id: true, prenom: true, nom: true, avatar: true, email: true } },
+        formateur: { select: { id: true, prenom: true, nom: true, avatar: true, email: true } },
+        creneau: true,
+      },
+    });
+
+    return rdvList.map((rdv) => ({
+      ...rdv,
+      id: rdv.id.toString(),
+      candidatId: rdv.candidatId.toString(),
+      formateurId: rdv.formateurId.toString(),
+      creneauId: rdv.creneauId.toString(),
+      candidat: { ...rdv.candidat, id: rdv.candidat.id.toString() },
+      formateur: { ...rdv.formateur, id: rdv.formateur.id.toString() },
+      creneau: { ...rdv.creneau, id: rdv.creneau.id.toString(), formateurId: rdv.creneau.formateurId.toString() },
+    }));
+  }
+
   // 5. Annuler un rendez-vous (Libère le créneau et notifie les DEUX parties)
   async cancelAppointment(userId: number, userRoles: string[], rdvId: number) {
     const rdv = await this.prisma.rendezVous.findUnique({

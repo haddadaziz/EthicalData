@@ -25,9 +25,7 @@ export default function AdminHealthPage() {
     const fetchHealth = async () => {
         const start = Date.now();
         try {
-            // Appels direct du backend /health
-            const res = await fetch('http://localhost:3000/health');
-            const data = await res.json();
+            const data = await apiFetch('/health');
             const end = Date.now();
             setLatency(end - start);
             setHealth(data);

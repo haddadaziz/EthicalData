@@ -26,7 +26,7 @@ export default function AdminDashboardPage() {
                 apiFetch('/users'),
                 apiFetch('/certifications'),
                 apiFetch('/cours'),
-                apiFetch('/appointments/mes-rdv'),
+                apiFetch('/appointments/all'),
             ]);
 
             setStats({

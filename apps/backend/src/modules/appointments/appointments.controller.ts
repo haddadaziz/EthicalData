@@ -49,7 +49,15 @@ export class AppointmentsController {
     return this.appointmentsService.getMyAppointments(req.user.id);
   }
 
-  // 5. Annuler un rendez-vous
+  // 5a. Tous les rendez-vous (Admin)
+  @Get('all')
+  @UseGuards(RolesGuard)
+  @Roles('SUPER_ADMIN', 'ADMIN')
+  async getAllAppointments() {
+    return this.appointmentsService.getAllAppointments();
+  }
+
+  // 5b. Annuler un rendez-vous
   @Patch(':id/annuler')
   async cancelAppointment(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
     const userRoles = req.user.roles || [];
