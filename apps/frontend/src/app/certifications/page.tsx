@@ -177,10 +177,32 @@ export default function CertificationsPublicPage() {
 
             {/* HEADER HERO SECTION */}
             <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden border-b border-slate-800">
-                {/* Background effects */}
-                <div className="absolute inset-0">
-                    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
-                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
+                {/* Background image */}
+                <div className="absolute inset-0 z-0">
+                    <img 
+                        src="/logos/landing_page_logo_ethicaldata.jpeg" 
+                        alt="Ethical Data Background Logo" 
+                        className="w-full h-full object-cover opacity-80" 
+                        decoding="async"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#020617]/50 via-[#020617]/30 to-[#020617]/70" />
+
+                    <style dangerouslySetInnerHTML={{__html: `
+                        @keyframes scan-laser {
+                            0% { transform: translate3d(0, 0vh, 0); }
+                            50% { transform: translate3d(0, 60vh, 0); }
+                            100% { transform: translate3d(0, 0vh, 0); }
+                        }
+                        .animate-scan-laser {
+                            animation: scan-laser 6s linear infinite;
+                            will-change: transform;
+                            backface-visibility: hidden;
+                        }
+                    `}} />
+
+                    <div 
+                        className="absolute top-0 left-0 w-full h-[2px] bg-red-600/80 shadow-[0_0_15px_#dc2626] animate-scan-laser pointer-events-none z-10"
+                    />
                 </div>
 
                 {/* Hero content */}
