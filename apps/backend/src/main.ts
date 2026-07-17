@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
+import compression from 'compression';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { json, urlencoded } from 'express';
@@ -24,12 +25,18 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bodyParser: false });
   console.log('⚡ NestJS app created');
 
+  // Enable shutdown hooks for graceful exit (e.g. Prisma disconnection)
+  app.enableShutdownHooks();
+
   // Augmenter la taille limite des requêtes pour accepter les images en Base64 (ex. 10mb)
   app.use(json({ limit: '10mb' }));
   app.use(urlencoded({ limit: '10mb', extended: true }));
 
   // Parser les cookies pour l'authentification httpOnly
   app.use(cookieParser());
+
+  // Compression des réponses HTTP (Gzip)
+  app.use(compression());
 
   // Injection des en-têtes de sécurité HTTP Helmet (XSS, Clickjacking, CSP)
   app.use(

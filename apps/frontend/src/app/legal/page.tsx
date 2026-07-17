@@ -1,10 +1,8 @@
-"use client";
-
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React from 'react';
 import { ShieldCheck, FileText, Lock, Eye } from '@/components/icons';
 import { Navbar } from '@/components/landing/Navbar';
 import { Footer } from '@/components/layout/Footer';
+import { MotionDiv } from '@/components/ui/MotionDiv';
 
 const sections = [
     {
@@ -66,31 +64,17 @@ Vous pouvez paramétrer vos préférences de cookies à tout moment depuis les p
     },
 ];
 
+export const metadata = {
+    title: "Mentions Légales - Ethical Data Security"
+};
+
 export default function LegalPage() {
-    const [mounted, setMounted] = useState(false);
-    const [isConnected, setIsConnected] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(false);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-        const token = localStorage.getItem('access_token');
-        if (token) {
-            setIsConnected(true);
-            try {
-                const payload = JSON.parse(atob(token.split('.')[1]));
-                setIsAdmin(payload.roles?.includes('ADMIN') || payload.roles?.includes('SUPER_ADMIN'));
-            } catch { }
-        }
-        document.title = "Mentions Légales & Confidentialité - Ethical Data Security";
-    }, []);
-
     return (
         <main className="min-h-screen bg-[#020617] text-white selection:bg-blue-600 selection:text-white relative overflow-hidden">
-            <Navbar mounted={mounted} isConnected={isConnected} isAdmin={isAdmin} mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
+            <Navbar />
 
             <div className="pt-32 pb-20 px-4 md:px-6">
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-4xl mx-auto space-y-12">
+                <MotionDiv initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-4xl mx-auto space-y-12">
                     <div className="text-center space-y-4">
                         <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">Mentions Légales & Confidentialité</h1>
                         <p className="text-slate-400 font-medium">Dernière mise à jour : Juillet 2026</p>
@@ -98,7 +82,7 @@ export default function LegalPage() {
 
                     <div className="space-y-6">
                         {sections.map((s, i) => (
-                            <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-3xl p-6 md:p-8 shadow-sm space-y-4 hover:border-slate-700 transition-colors">
+                            <MotionDiv key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-800 rounded-3xl p-6 md:p-8 shadow-sm space-y-4 hover:border-slate-700 transition-colors">
                                 <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
                                     <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500 shrink-0">
                                         <s.icon className="w-5 h-5" />
@@ -108,10 +92,10 @@ export default function LegalPage() {
                                 <div className="text-sm text-slate-400 leading-relaxed whitespace-pre-line">
                                     {s.content}
                                 </div>
-                            </motion.div>
+                            </MotionDiv>
                         ))}
                     </div>
-                </motion.div>
+                </MotionDiv>
             </div>
 
             <Footer />

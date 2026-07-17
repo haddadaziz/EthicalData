@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState } from 'react';
 import { ChevronDown, Search, MessageCircle, BookOpen, Award, Activity, HelpCircle } from '@/components/icons';
 import { Navbar } from '@/components/landing/Navbar';
 import { Footer } from '@/components/layout/Footer';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const faqData = [
     {
@@ -55,34 +55,16 @@ const faqData = [
 ];
 
 export default function FaqPage() {
-    const [mounted, setMounted] = useState(false);
-    const [isConnected, setIsConnected] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(false);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [search, setSearch] = useState('');
     const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-    useEffect(() => {
-        setMounted(true);
-        const token = localStorage.getItem('access_token');
-        if (token) {
-            setIsConnected(true);
-            try {
-                const payload = JSON.parse(atob(token.split('.')[1]));
-                setIsAdmin(payload.roles?.includes('ADMIN') || payload.roles?.includes('SUPER_ADMIN'));
-            } catch { }
-        }
-        document.title = "FAQ - Ethical Data Security";
-    }, []);
 
     const allQuestions = faqData.flatMap((cat) => cat.questions.map((q, i) => ({ ...q, cat: cat.category, globalIdx: i })));
     const filtered = search
         ? allQuestions.filter((q) => q.q.toLowerCase().includes(search.toLowerCase()) || q.r.toLowerCase().includes(search.toLowerCase()))
         : null;
-
     return (
         <main className="min-h-screen bg-[#020617] text-white selection:bg-blue-600 selection:text-white relative overflow-hidden">
-            <Navbar mounted={mounted} isConnected={isConnected} isAdmin={isAdmin} mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
+            <Navbar />
 
             <div className="pt-32 pb-20 px-4 md:px-6">
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-4xl mx-auto space-y-10">

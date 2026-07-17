@@ -1,28 +1,32 @@
+"use client";
+
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from '@/components/icons';
 
-interface NavbarProps {
-  mounted: boolean;
-  isConnected: boolean;
-  isAdmin: boolean;
-  mobileMenuOpen: boolean;
-  setMobileMenuOpen: (open: boolean) => void;
-}
-
-export function Navbar({
-  mounted,
-  isConnected,
-  isAdmin,
-  mobileMenuOpen,
-  setMobileMenuOpen
-}: NavbarProps) {
+export function Navbar() {
+  const [mounted, setMounted] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [navVisible, setNavVisible] = useState(true);
   const lastScrollY = useRef(0);
 
   useEffect(() => {
+    // Auth logic
+    setMounted(true);
+    const token = localStorage.getItem('access_token');
+    if (token) {
+        setIsConnected(true);
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            setIsAdmin(payload.roles?.includes('ADMIN') || payload.roles?.includes('SUPER_ADMIN'));
+        } catch { }
+    }
+
+    // Scroll logic
     let ticking = false;
     const handleScroll = () => {
       if (!ticking) {

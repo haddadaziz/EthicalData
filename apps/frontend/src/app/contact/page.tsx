@@ -10,23 +10,10 @@ import { useToast } from '../../context/ToastContext';
 
 export default function ContactPage() {
     const { showToast } = useToast();
-    const [mounted, setMounted] = useState(false);
-    const [isConnected, setIsConnected] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(false);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [formData, setFormData] = useState({ nom: '', email: '', sujet: '', message: '' });
     const [sending, setSending] = useState(false);
 
     useEffect(() => {
-        setMounted(true);
-        const token = localStorage.getItem('access_token');
-        if (token) {
-            setIsConnected(true);
-            try {
-                const payload = JSON.parse(atob(token.split('.')[1]));
-                setIsAdmin(payload.roles?.includes('ADMIN') || payload.roles?.includes('SUPER_ADMIN'));
-            } catch { }
-        }
         document.title = "Contact - Ethical Data Security";
     }, []);
 
@@ -49,7 +36,7 @@ export default function ContactPage() {
 
     return (
         <main className="min-h-screen bg-[#020617] text-white selection:bg-blue-600 selection:text-white relative overflow-hidden">
-            <Navbar mounted={mounted} isConnected={isConnected} isAdmin={isAdmin} mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
+            <Navbar />
 
             <div className="pt-32 pb-20 px-4 md:px-6">
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-6xl mx-auto space-y-12">

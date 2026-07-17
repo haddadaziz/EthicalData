@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useRef, useState, useEffect } from 'react';
 
 export const AnimatedSection = ({ children, className = "", delay = 0 }: any) => {

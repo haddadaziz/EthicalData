@@ -102,13 +102,7 @@ export default function LandingPage() {
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,#dc262608_0%,transparent_70%)] pointer-events-none z-0" />
 
       <HeroSection isConnected={isConnected}>
-        <Navbar
-          mounted={mounted}
-          isConnected={isConnected}
-          isAdmin={isAdmin}
-          mobileMenuOpen={mobileMenuOpen}
-          setMobileMenuOpen={setMobileMenuOpen}
-        />
+        <Navbar />
       </HeroSection>
 
       <ClientsSection />

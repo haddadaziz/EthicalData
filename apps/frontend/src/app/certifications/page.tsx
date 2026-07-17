@@ -173,13 +173,7 @@ export default function CertificationsPublicPage() {
         <div className="min-h-screen bg-[#020617] text-white flex flex-col font-sans selection:bg-blue-600 selection:text-white relative overflow-hidden">
             
             {/* NAVBAR IDENTIQUE À LA LANDING PAGE (transparent en haut, blanc au scroll, disparaît en descendant) */}
-            <Navbar
-                mounted={mounted}
-                isConnected={isConnected}
-                isAdmin={isAdmin}
-                mobileMenuOpen={mobileMenuOpen}
-                setMobileMenuOpen={setMobileMenuOpen}
-            />
+            <Navbar />
 
             {/* HEADER HERO SECTION */}
             <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden border-b border-slate-800">
