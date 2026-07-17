@@ -51,7 +51,7 @@ export function Navbar({
         {/* White Logo for dark background */}
         <Link href="/" className="flex items-center gap-2 group cursor-pointer shrink-0">
           <div className="flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-            <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-16 md:h-8 w-auto object-contain scale-110 md:scale-100 origin-left" />
+            <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-10 md:h-8 w-auto object-contain" />
           </div>
         </Link>
 
