@@ -49,6 +49,12 @@ INSTRUCTIONS DE NOTATION :
         stripePublicKey: '',
         stripeSecretKey: '',
         ssoEnabled: false,
+        smtpHost: '',
+        smtpPort: 587,
+        smtpSecure: false,
+        smtpUser: '',
+        smtpPass: '',
+        smtpFrom: '',
       },
     };
 

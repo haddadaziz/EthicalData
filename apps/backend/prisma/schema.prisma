@@ -602,6 +602,19 @@ model RendezVous {
   @@map("rendez_vous")
 }
 
+model PasswordResetToken {
+  id        BigInt   @id @default(autoincrement())
+  email     String
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([token])
+  @@index([email])
+  @@map("password_reset_tokens")
+}
+
 model ConfigurationSysteme {
   cle       String   @id
   valeur    String   @db.Text

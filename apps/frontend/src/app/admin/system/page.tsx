@@ -63,6 +63,12 @@ export default function SystemSettingsPage() {
     stripePublicKey: '',
     stripeSecretKey: '',
     ssoEnabled: false,
+    smtpHost: '',
+    smtpPort: 587,
+    smtpSecure: false,
+    smtpUser: '',
+    smtpPass: '',
+    smtpFrom: '',
   });
 
   const [rawBannedIps, setRawBannedIps] = useState('');
@@ -554,6 +560,79 @@ export default function SystemSettingsPage() {
                         placeholder="sk_test_..."
                         className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-semibold outline-none transition-all"
                       />
+                    </div>
+                  </div>
+                </div>
+
+                <hr className="border-slate-100" />
+
+                <div>
+                  <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider mb-3">Serveur SMTP (Emails transactionnels)</h4>
+                  <p className="text-[10px] text-slate-500 font-medium mb-4">Configurez le serveur SMTP pour l'envoi d'emails (réinitialisation de mot de passe, notifications, etc.).</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700">Hôte SMTP</label>
+                      <input
+                        type="text"
+                        value={integrations.smtpHost}
+                        onChange={(e) => setIntegrations({ ...integrations, smtpHost: e.target.value })}
+                        placeholder="smtp.gmail.com"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-semibold outline-none transition-all"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700">Port SMTP</label>
+                      <input
+                        type="number"
+                        value={integrations.smtpPort}
+                        onChange={(e) => setIntegrations({ ...integrations, smtpPort: parseInt(e.target.value) || 587 })}
+                        placeholder="587"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-semibold outline-none transition-all"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700">Utilisateur SMTP</label>
+                      <input
+                        type="text"
+                        value={integrations.smtpUser}
+                        onChange={(e) => setIntegrations({ ...integrations, smtpUser: e.target.value })}
+                        placeholder="noreply@ethicaldata.com"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-semibold outline-none transition-all"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700">Mot de passe SMTP</label>
+                      <input
+                        type="password"
+                        value={integrations.smtpPass}
+                        onChange={(e) => setIntegrations({ ...integrations, smtpPass: e.target.value })}
+                        placeholder="••••••••"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-semibold outline-none transition-all"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700">Email expéditeur</label>
+                      <input
+                        type="email"
+                        value={integrations.smtpFrom}
+                        onChange={(e) => setIntegrations({ ...integrations, smtpFrom: e.target.value })}
+                        placeholder='"Ethical Data" <noreply@ethicaldata.com>'
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-semibold outline-none transition-all"
+                      />
+                    </div>
+                    <div className="flex items-end">
+                      <label className="w-full flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors">
+                        <div className="space-y-0.5 text-left">
+                          <h4 className="text-xs font-bold text-slate-900">Connexion sécurisée (TLS)</h4>
+                          <p className="text-[10px] text-slate-500 font-medium">Utiliser SSL/TLS pour la connexion SMTP.</p>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={integrations.smtpSecure}
+                          onChange={(e) => setIntegrations({ ...integrations, smtpSecure: e.target.checked })}
+                          className="accent-blue-600 w-5 h-5 cursor-pointer shrink-0"
+                        />
+                      </label>
                     </div>
                   </div>
                 </div>

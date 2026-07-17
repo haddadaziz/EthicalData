@@ -1,15 +1,20 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, NotFoundException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
+import { MailService } from '../mail/mail.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
+    private readonly prisma: PrismaService,
   ) {}
 
   // valider l'authentification et renvoyer sans mot de passe
@@ -59,6 +64,65 @@ export class AuthService {
 
     const user = await this.usersService.create(createUserDto);
     return this.login(user);
+  }
+
+  async forgotPassword(email: string): Promise<{ message: string }> {
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      return { message: "Si un compte existe avec cet email, un lien de réinitialisation a été envoyé." };
+    }
+
+    const now = new Date();
+    const existingTokens = await this.prisma.passwordResetToken.findMany({
+      where: { email, used: false, expiresAt: { gte: now } },
+    });
+
+    if (existingTokens.length >= 3) {
+      return { message: "Si un compte existe avec cet email, un lien de réinitialisation a été envoyé." };
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(now.getTime() + 60 * 60 * 1000);
+
+    await this.prisma.passwordResetToken.create({
+      data: { email, token, expiresAt },
+    });
+
+    await this.mailService.sendPasswordResetEmail(email, token);
+
+    return { message: "Si un compte existe avec cet email, un lien de réinitialisation a été envoyé." };
+  }
+
+  async resetPassword(token: string, motDePasse: string): Promise<{ message: string }> {
+    const record = await this.prisma.passwordResetToken.findUnique({
+      where: { token },
+    });
+
+    if (!record) {
+      throw new NotFoundException('Token de réinitialisation invalide.');
+    }
+
+    if (record.used) {
+      throw new BadRequestException('Ce token a déjà été utilisé.');
+    }
+
+    if (new Date() > record.expiresAt) {
+      throw new BadRequestException('Ce token a expiré. Veuillez refaire une demande.');
+    }
+
+    const hashedPassword = await bcrypt.hash(motDePasse, 10);
+
+    await this.prisma.utilisateur.update({
+      where: { email: record.email },
+      data: { motDePasse: hashedPassword },
+    });
+
+    await this.prisma.passwordResetToken.update({
+      where: { id: record.id },
+      data: { used: true },
+    });
+
+    return { message: 'Mot de passe réinitialisé avec succès.' };
   }
 
   getCookieOptions() {
