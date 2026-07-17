@@ -31,7 +31,10 @@ export class AiService {
     const activeModel = aiSettings?.activeModel || 'gemini-2.5-flash';
     const customPromptTemplate = aiSettings?.customPrompt || '';
 
+    console.log(`[AiService] Model: ${activeModel}, Key set: ${!!apiKey}, Key prefix: ${apiKey?.substring(0, 10)}...`);
+
     if (!apiKey || apiKey.includes('AIzaSy...')) {
+      console.log('[AiService] No valid API key, using simulated evaluation');
       return this.evaluationSimulee(reponseCandidat, reponseCorrecte);
     }
 
@@ -122,9 +125,14 @@ INSTRUCTIONS DE NOTATION :
       const parsedResult: ResultatEvaluation = JSON.parse(textResponse);
       return parsedResult;
     } catch (error: any) {
-      console.error("Erreur lors de l'évaluation IA :", error);
-      // Fallback résilient en cas d'erreur de connexion réseau ou d'API
-      return this.evaluationSimulee(reponseCandidat, reponseCorrecte);
+      const msg = error?.message || 'Erreur inconnue';
+      console.error("[AiService] Erreur lors de l'évaluation IA :", msg);
+      // Retourner l'erreur pour diagnostic plutôt que de tomber silencieusement en mode simulé
+      return {
+        score: 0,
+        critique: `Erreur API Gemini : ${msg}`,
+        suggestions: 'Vérifiez votre clé API et le modèle sélectionné dans Admin → Paramètres Système → Configuration IA.',
+      };
     }
   }
 
