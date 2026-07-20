@@ -64,7 +64,7 @@ export function HeroSection({ isConnected, children }: HeroSectionProps) {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative z-10 w-[220px] h-[220px] sm:w-[320px] sm:h-[320px] rounded-2xl overflow-hidden border border-cyan-500/20 bg-[#080d1a] p-4 shadow-xl shadow-red-950/20 group/card"
+            className="relative z-10 w-[220px] h-[220px] sm:w-[320px] sm:h-[320px] rounded-2xl overflow-hidden border border-cyan-500/20 bg-[#080d1a] p-4 shadow-xl shadow-cyan-950/30 group/card"
           >
             {/* Corner tech lines */}
             <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-500/50 rounded-tl-lg" />
@@ -95,20 +95,30 @@ export function HeroSection({ isConnected, children }: HeroSectionProps) {
         <div className="absolute inset-0 bg-gradient-to-b from-[#020617]/50 via-[#020617]/30 to-[#020617]/70" />
 
         <style dangerouslySetInnerHTML={{__html: `
-          @keyframes scan-laser {
+          @keyframes scan-laser-mobile {
+            0% { transform: translate3d(0, 0vh, 0); }
+            50% { transform: translate3d(0, 115vh, 0); }
+            100% { transform: translate3d(0, 0vh, 0); }
+          }
+          @keyframes scan-laser-desktop {
             0% { transform: translate3d(0, 0vh, 0); }
             50% { transform: translate3d(0, 80vh, 0); }
             100% { transform: translate3d(0, 0vh, 0); }
           }
           .animate-scan-laser {
-            animation: scan-laser 6s linear infinite;
+            animation: scan-laser-mobile 6s linear infinite;
             will-change: transform;
             backface-visibility: hidden;
+          }
+          @media (min-width: 1024px) {
+            .animate-scan-laser {
+              animation: scan-laser-desktop 6s linear infinite;
+            }
           }
         `}} />
 
         <div 
-          className="absolute top-0 left-0 w-full h-[2px] bg-blue-600/80 shadow-[0_0_15px_#dc2626] animate-scan-laser pointer-events-none z-10"
+          className="absolute top-0 left-0 w-full h-[2px] bg-cyan-400 shadow-[0_0_15px_#06b6d4] animate-scan-laser pointer-events-none z-10"
         />
       </div>
     </section>

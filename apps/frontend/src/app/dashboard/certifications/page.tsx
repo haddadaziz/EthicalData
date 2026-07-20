@@ -348,8 +348,8 @@ export default function LearnerCertificationsPage() {
                       {cert.image ? (
                         <img src={cert.image} alt={cert.nom} className="max-w-full max-h-full object-contain filter drop-shadow-xl" />
                       ) : (
-                        <div className="w-16 h-16 bg-white/95 rounded-full flex items-center justify-center border border-slate-200 shadow-sm">
-                          <Award className="w-8 h-8 text-slate-400" />
+                        <div className="w-16 h-16 bg-[#080d1a]/95 rounded-full flex items-center justify-center border border-slate-800 shadow-sm">
+                          <Award className="w-8 h-8 text-slate-500" />
                         </div>
                       )}
                     </div>
@@ -400,7 +400,7 @@ export default function LearnerCertificationsPage() {
                 className="fixed inset-0 z-[60] flex items-start justify-center p-4 bg-slate-950/40 overflow-y-auto"
                 onClick={(e) => { if (e.target === e.currentTarget) setSelectedCertModal(null); }}>
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} transition={{ duration: 0.2 }}
-                  className="bg-white rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden my-auto">
+                  className="bg-[#080d1a] border border-slate-800 rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden my-auto">
                   <CertDetailModal cert={selectedCertModal} onClose={() => setSelectedCertModal(null)} onPractice={(c: Certification) => { setSelectedCertModal(null); router.push(`/dashboard/practice?cert=${c.slug}`); }} isTargeted={targetCertIds.includes(selectedCertModal.id.toString())} onToggleTarget={() => toggleTargetCertification(selectedCertModal.id.toString())} />
                 </motion.div>
               </motion.div>

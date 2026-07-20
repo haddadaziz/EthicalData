@@ -91,7 +91,7 @@ export function Navbar() {
           ) : isConnected ? (
             <a
               href={isAdmin ? "/admin" : "/dashboard"}
-              className="px-3 py-2 md:px-5 md:py-2.5 bg-gradient-to-r from-blue-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white text-[10px] md:text-xs font-black uppercase tracking-wider rounded-lg md:rounded-xl transition-all shadow-md shadow-blue-600/30 cursor-pointer hover:scale-105 active:scale-95"
+              className="px-3 py-2 md:px-5 md:py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-[10px] md:text-xs font-black uppercase tracking-wider rounded-lg md:rounded-xl transition-all shadow-md shadow-blue-600/20 cursor-pointer hover:scale-105 active:scale-95"
             >
               Mon Espace
             </a>
