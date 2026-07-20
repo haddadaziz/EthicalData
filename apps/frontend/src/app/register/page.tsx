@@ -33,8 +33,6 @@ export default function RegisterPage() {
     // Configuration SEO de la page
     useEffect(() => {
         document.title = "Inscription - Ethical Data Security";
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
     }, []);
 
     // Animation de fond interactive (particules rouges EDS)
@@ -224,7 +222,7 @@ export default function RegisterPage() {
     };
 
     return (
-        <main className="min-h-screen w-screen bg-slate-50 flex flex-col justify-between p-4 sm:p-6 selection:bg-red-600 selection:text-white relative overflow-hidden">
+        <main className="min-h-screen w-screen bg-[#020617] flex flex-col justify-between p-4 sm:p-6 selection:bg-red-600 selection:text-white relative overflow-hidden">
             
             {/* BARRE SUPÉRIEURE ÉPURÉE */}
             <header className="w-full max-w-7xl mx-auto flex items-center justify-between z-20 px-2 sm:px-4 py-2">
@@ -232,8 +230,8 @@ export default function RegisterPage() {
 
 
             {/* Grille d'arrière-plan claire */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000003_1px,transparent_1px),linear-gradient(to_bottom,#00000003_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none z-0" />
-            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/[0.02] rounded-full blur-[130px] pointer-events-none z-0" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none z-0" />
+            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-red-600/[0.05] rounded-full blur-[130px] pointer-events-none z-0" />
 
             <canvas
                 ref={canvasRef}
@@ -246,59 +244,59 @@ export default function RegisterPage() {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, ease: 'easeOut' }}
-                    className="w-full max-w-[400px] bg-white border border-slate-200/80 rounded-[28px] shadow-xl p-6 sm:p-8 relative z-10 hover:border-slate-350 hover:shadow-2xl transition-all duration-500 group/card"
+                    className="w-full max-w-[400px] bg-[#080d1a]/90 border border-slate-800 rounded-[28px] shadow-xl p-6 sm:p-8 relative z-10 hover:border-slate-700 hover:shadow-2xl transition-all duration-500 group/card"
                 >
                     <div className="flex flex-col items-center mb-5">
                         <div className="flex items-center justify-center mb-2 group-hover/card:scale-105 transition-transform duration-300">
                             <img src="/favicon_ethical_data.png" alt="Ethical Data Security" className="w-10 h-10 object-contain" />
                         </div>
-                        <h1 className="text-lg font-bold text-slate-900 tracking-tight">Inscription</h1>
-                        <p className="text-[10px] text-slate-500 mt-1 font-bold uppercase tracking-wider">
+                        <h1 className="text-lg font-bold text-white tracking-tight">Inscription</h1>
+                        <p className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-wider">
                             Créez votre accès étudiant
                         </p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {error && (
-                            <div className="p-3 bg-rose-50 border border-rose-100 text-rose-600 rounded-xl text-xs font-semibold text-left">
+                            <div className="p-3 bg-red-950/30 border border-red-900/20 text-red-500 rounded-xl text-xs font-semibold text-left">
                                 {error}
                             </div>
                         )}
 
                         {successMessage && (
-                            <div className="p-3 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-xl text-xs font-semibold text-left">
+                            <div className="p-3 bg-emerald-950/30 border border-emerald-900/20 text-emerald-500 rounded-xl text-xs font-semibold text-left">
                                 {successMessage}
                             </div>
                         )}
 
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1.5 text-left group">
-                                <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Prénom</label>
+                                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Prénom</label>
                                 <input
                                     type="text"
                                     required
                                     value={prenom}
                                     onChange={(e) => setPrenom(e.target.value)}
                                     placeholder="Jean"
-                                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 hover:border-slate-300 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/5 rounded-xl text-slate-900 placeholder-slate-400 transition-all text-xs outline-none font-semibold"
+                                    className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 hover:border-slate-700 focus:border-red-600 focus:bg-[#020617] focus:ring-4 focus:ring-red-600/5 rounded-xl text-white placeholder-slate-500 transition-all text-xs outline-none font-semibold"
                                 />
                             </div>
 
                             <div className="space-y-1.5 text-left group">
-                                <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Nom</label>
+                                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Nom</label>
                                 <input
                                     type="text"
                                     required
                                     value={nom}
                                     onChange={(e) => setNom(e.target.value)}
                                     placeholder="Dupont"
-                                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 hover:border-slate-300 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/5 rounded-xl text-slate-900 placeholder-slate-400 transition-all text-xs outline-none font-semibold"
+                                    className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 hover:border-slate-700 focus:border-red-600 focus:bg-[#020617] focus:ring-4 focus:ring-red-600/5 rounded-xl text-white placeholder-slate-500 transition-all text-xs outline-none font-semibold"
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-1.5 text-left group">
-                            <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Adresse e-mail</label>
+                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Adresse e-mail</label>
                             <div className="relative">
                                 <input
                                     type="email"
@@ -306,13 +304,13 @@ export default function RegisterPage() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="nom@exemple.com"
-                                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 hover:border-slate-300 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/5 rounded-xl text-slate-900 placeholder-slate-400 transition-all text-xs outline-none font-semibold"
+                                    className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 hover:border-slate-700 focus:border-red-600 focus:bg-[#020617] focus:ring-4 focus:ring-red-600/5 rounded-xl text-white placeholder-slate-500 transition-all text-xs outline-none font-semibold"
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-1.5 text-left group">
-                            <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Mot de passe</label>
+                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Mot de passe</label>
                             <div className="relative">
                                 <input
                                     type={showPassword ? "text" : "password"}
@@ -320,23 +318,23 @@ export default function RegisterPage() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="••••••••"
-                                    className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 hover:border-slate-300 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/5 rounded-xl text-slate-900 placeholder-slate-400 transition-all text-xs outline-none font-semibold"
+                                    className="w-full pl-4 pr-10 py-2.5 bg-[#020617] border border-slate-800 hover:border-slate-700 focus:border-red-600 focus:bg-[#020617] focus:ring-4 focus:ring-red-600/5 rounded-xl text-white placeholder-slate-500 transition-all text-xs outline-none font-semibold"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-800 transition-colors cursor-pointer"
+                                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-white transition-colors cursor-pointer"
                                 >
                                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                 </button>
                             </div>
                             {password && (
                                 <div className="mt-2 space-y-1">
-                                    <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+                                    <div className="h-1.5 w-full bg-[#020617] border border-slate-800 rounded-full overflow-hidden">
                                         <div className={`h-full rounded-full transition-all duration-300 ${getPasswordStrength(password).color} ${getPasswordStrength(password).width}`} />
                                     </div>
                                     <p className="text-[10px] font-semibold text-slate-400">
-                                        Force : <span className="text-slate-600">{getPasswordStrength(password).label}</span>
+                                        Force : <span className="text-white">{getPasswordStrength(password).label}</span>
                                     </p>
                                 </div>
                             )}
@@ -348,7 +346,7 @@ export default function RegisterPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all focus:outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4 shadow-md"
+                            className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all focus:outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4 shadow-md"
                         >
                             {loading ? (
                                 <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -358,16 +356,16 @@ export default function RegisterPage() {
                         </button>
                     </form>
 
-                    <div className="mt-5 pt-4 border-t border-slate-100 flex flex-col items-center gap-2 text-center">
+                    <div className="mt-5 pt-4 border-t border-slate-800 flex flex-col items-center gap-2 text-center">
                         <Link
                             href="/login"
-                            className="text-xs text-slate-600 hover:text-slate-950 font-bold transition-colors cursor-pointer"
+                            className="text-xs text-slate-400 hover:text-white font-bold transition-colors cursor-pointer"
                         >
                             Déjà inscrit ? Se connecter
                         </Link>
                         <Link
                             href="/"
-                            className="text-[11px] text-slate-400 hover:text-blue-600 font-bold tracking-wide uppercase transition-colors cursor-pointer flex items-center gap-1 mt-1"
+                            className="text-[11px] text-slate-500 hover:text-red-500 font-bold tracking-wide uppercase transition-colors cursor-pointer flex items-center gap-1 mt-1"
                         >
                             <span>← Retourner à l&apos;accueil</span>
                         </Link>
@@ -375,7 +373,7 @@ export default function RegisterPage() {
                 </motion.div>
             </div>
 
-            <footer className="w-full text-center py-2 text-[11px] text-slate-400 font-medium z-20">
+            <footer className="w-full text-center py-2 text-[11px] text-slate-500 font-medium z-20">
                 © {new Date().getFullYear()} Ethical Data Security. Tous droits réservés.
             </footer>
         </main>
