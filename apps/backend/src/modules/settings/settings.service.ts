@@ -23,8 +23,9 @@ export class SettingsService {
         bannedIps: [],
       },
       ai: {
-        activeModel: 'gemini-2.5-flash',
+        activeModel: 'gemini-1.5-flash',
         apiKey: '',
+        apiUrl: '',
         customPrompt: `Vous êtes un examinateur officiel expert en certifications informatiques (Cloud, Cybersécurité, Réseaux, ISO 27001, etc.).
 Évaluez de manière rigoureuse et constructive la réponse fournie par le candidat à la question ouverte ci-dessous en vous référant au corrigé type officiel.
 

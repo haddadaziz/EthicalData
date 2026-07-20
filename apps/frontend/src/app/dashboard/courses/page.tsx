@@ -153,55 +153,55 @@ export default function CoursesPage() {
 
     return (
         <div className="space-y-8 pb-20">
-            <div className="space-y-8 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
+            <div className="space-y-8 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-white text-left">
                 {loading ? (
-                    <div className="p-16 text-center text-slate-400 bg-white border border-slate-200/80 rounded-3xl max-w-5xl mx-auto">
-                        <span className="w-10 h-10 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin inline-block mb-3" />
-                        <p className="text-xs font-bold uppercase tracking-widest text-blue-600">Chargement des cours...</p>
+                    <div className="p-16 text-center text-slate-400 bg-[#080d1a] border border-slate-800 rounded-3xl max-w-5xl mx-auto">
+                        <span className="w-10 h-10 border-4 border-slate-800 border-t-cyan-500 rounded-full animate-spin inline-block mb-3" />
+                        <p className="text-xs font-bold uppercase tracking-widest text-cyan-500">Chargement des cours...</p>
                     </div>
                 ) : (
                     <>
                         {/* STATS */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0">
+                            <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 shadow-xs flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-blue-950/20 border border-blue-900/40 flex items-center justify-center text-cyan-400 shrink-0">
                                     <BookMarked className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <span className="text-2xl font-black text-slate-900 block leading-tight">{totalCours}</span>
+                                    <span className="text-2xl font-black text-white block leading-tight">{totalCours}</span>
                                     <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Cours créés</span>
                                 </div>
                             </div>
-                            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+                            <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 shadow-xs flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-emerald-950/20 border border-emerald-900/40 flex items-center justify-center text-emerald-500 shrink-0">
                                     <Globe className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <span className="text-2xl font-black text-slate-900 block leading-tight">{totalPublies}</span>
+                                    <span className="text-2xl font-black text-white block leading-tight">{totalPublies}</span>
                                     <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Cours publiés</span>
                                 </div>
                             </div>
-                            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0">
+                            <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 shadow-xs flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-amber-950/20 border border-amber-900/40 flex items-center justify-center text-amber-500 shrink-0">
                                     <FilePen className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <span className="text-2xl font-black text-slate-900 block leading-tight">{totalBrouillons}</span>
+                                    <span className="text-2xl font-black text-white block leading-tight">{totalBrouillons}</span>
                                     <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Brouillons</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* HEADER + FILTRES */}
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
                             <div className="flex items-center gap-2">
                                 {(['TOUS', 'PUBLIE', 'BROUILLON'] as const).map(tab => (
                                     <button
                                         key={tab}
                                         onClick={() => setActiveTab(tab)}
                                         className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${activeTab === tab
-                                            ? 'bg-slate-950 text-white shadow-xs'
-                                            : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200/80'
+                                            ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.2)] border border-cyan-500'
+                                            : 'bg-[#020617] text-slate-400 hover:bg-slate-900/50 hover:text-white border border-slate-800'
                                             }`}
                                     >
                                         {tab === 'TOUS' ? 'Tous les cours' : tab === 'PUBLIE' ? 'Publiés' : 'Brouillons'}
@@ -210,7 +210,7 @@ export default function CoursesPage() {
                             </div>
                             <button
                                 onClick={() => setIsCreating(true)}
-                                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-2xl text-xs flex items-center gap-2 shadow-xs hover:shadow-md transition-all shrink-0 cursor-pointer"
+                                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-2xl text-xs flex items-center gap-2 shadow-xs hover:shadow-[0_0_15px_rgba(37,99,235,0.3)] transition-all shrink-0 cursor-pointer"
                             >
                                 <Plus className="w-4 h-4" />
                                 <span>Nouveau cours</span>

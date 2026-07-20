@@ -119,9 +119,9 @@ export default function CourseDetailPage() {
 
     if (loading) {
         return (
-            <div className="min-h-[50vh] flex flex-col items-center justify-center text-slate-600 gap-4">
-                <span className="w-10 h-10 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin" />
-                <p className="text-xs font-bold uppercase tracking-widest text-blue-600">Chargement du cours...</p>
+            <div className="min-h-[50vh] flex flex-col items-center justify-center text-slate-400 gap-4">
+                <span className="w-10 h-10 border-4 border-slate-800 border-t-cyan-500 rounded-full animate-spin" />
+                <p className="text-xs font-bold uppercase tracking-widest text-cyan-500">Chargement du cours...</p>
             </div>
         );
     }
@@ -132,7 +132,7 @@ export default function CourseDetailPage() {
     const progression = inscription?.progression || 0;
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8 text-slate-800">
+        <div className="max-w-4xl mx-auto space-y-8 text-white">
             {/* Retour */}
             <button onClick={() => {
                 const from = searchParams.get('from');
@@ -142,35 +142,35 @@ export default function CourseDetailPage() {
                     router.back();
                 }
             }}
-                className="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
+                className="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-white transition-colors cursor-pointer">
                 <ChevronLeft className="w-4 h-4" /> Retour
             </button>
 
             {/* En-tête */}
             <div className="space-y-4">
                 <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                    <span className="px-2 py-0.5 bg-slate-100 rounded">{cours.certification?.fournisseur?.nom || 'Général'}</span>
+                    <span className="px-2 py-0.5 bg-slate-800 border border-slate-700 rounded">{cours.certification?.fournisseur?.nom || 'Général'}</span>
                     <span>{cours.certification?.nom || 'Certification'}</span>
                 </div>
-                <h1 className="text-3xl font-black text-slate-900 leading-tight">{cours.titre}</h1>
-                <p className="text-sm text-slate-500 leading-relaxed max-w-2xl">{cours.description}</p>
+                <h1 className="text-3xl font-black text-white leading-tight">{cours.titre}</h1>
+                <p className="text-sm text-slate-400 leading-relaxed max-w-2xl">{cours.description}</p>
 
                 <div className="flex flex-wrap items-center gap-4 text-[11px] text-slate-500 font-bold">
                     <span className="flex items-center gap-1.5">
-                        <Clock className="w-4 h-4 text-slate-400" />
+                        <Clock className="w-4 h-4 text-slate-500" />
                         {cours.dureeEstimee || '?'} min
                     </span>
                     <span className="flex items-center gap-1.5">
-                        <BookOpen className="w-4 h-4 text-slate-400" />
+                        <BookOpen className="w-4 h-4 text-slate-500" />
                         {cours.modules?.length || 0} modules
                     </span>
                     <span className="flex items-center gap-1.5">
-                        <Users className="w-4 h-4 text-slate-400" />
+                        <Users className="w-4 h-4 text-slate-500" />
                         {cours._count?.inscriptions || 0} inscrits
                     </span>
                     {cours.formateur && (
                         <span className="flex items-center gap-1.5">
-                            <div className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[8px] font-black">
+                            <div className="w-5 h-5 rounded-full bg-blue-950/30 text-cyan-400 border border-blue-900/30 flex items-center justify-center text-[8px] font-black overflow-hidden">
                                 {cours.formateur.avatar ? (
                                     <img src={cours.formateur.avatar} alt="" className="w-full h-full object-cover rounded-full" />
                                 ) : (
@@ -186,7 +186,7 @@ export default function CourseDetailPage() {
             {/* Vidéo de présentation */}
             {cours.videoUrl && (
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                    className="aspect-video bg-slate-900 rounded-2xl overflow-hidden shadow-lg">
+                    className="aspect-video bg-black rounded-2xl overflow-hidden shadow-[0_0_20px_rgba(37,99,235,0.1)] border border-slate-800">
                     <iframe src={cours.videoUrl} title="Vidéo de présentation"
                         className="w-full h-full"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -197,13 +197,13 @@ export default function CourseDetailPage() {
             {/* Objectifs & Prérequis */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {cours.objectifs && cours.objectifs.length > 0 && (
-                    <div className="bg-white border border-slate-200/80 rounded-2xl p-5 space-y-3">
-                        <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-2">
-                            <Target className="w-4 h-4 text-blue-600" /> Objectifs d'apprentissage
+                    <div className="bg-[#080d1a] border border-slate-800 rounded-2xl p-5 space-y-3">
+                        <h3 className="text-xs font-black uppercase tracking-wider text-white flex items-center gap-2">
+                            <Target className="w-4 h-4 text-cyan-400" /> Objectifs d'apprentissage
                         </h3>
                         <ul className="space-y-2">
                             {cours.objectifs.map((obj, i) => (
-                                <li key={i} className="flex items-start gap-2 text-[13px] text-slate-600 font-medium">
+                                <li key={i} className="flex items-start gap-2 text-[13px] text-slate-400 font-medium">
                                     <CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
                                     {obj}
                                 </li>
@@ -212,13 +212,13 @@ export default function CourseDetailPage() {
                     </div>
                 )}
                 {cours.prerequis && cours.prerequis.length > 0 && (
-                    <div className="bg-white border border-slate-200/80 rounded-2xl p-5 space-y-3">
-                        <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-2">
-                            <ListChecks className="w-4 h-4 text-amber-600" /> Prérequis
+                    <div className="bg-[#080d1a] border border-slate-800 rounded-2xl p-5 space-y-3">
+                        <h3 className="text-xs font-black uppercase tracking-wider text-white flex items-center gap-2">
+                            <ListChecks className="w-4 h-4 text-amber-500" /> Prérequis
                         </h3>
                         <ul className="space-y-2">
                             {cours.prerequis.map((pre, i) => (
-                                <li key={i} className="flex items-start gap-2 text-[13px] text-slate-600 font-medium">
+                                <li key={i} className="flex items-start gap-2 text-[13px] text-slate-400 font-medium">
                                     <span className="w-1.5 h-1.5 bg-amber-400 rounded-full mt-2 shrink-0" />
                                     {pre}
                                 </li>
@@ -230,22 +230,22 @@ export default function CourseDetailPage() {
 
             {/* Sommaire des modules */}
             <div className="space-y-4">
-                <h2 className="text-lg font-black text-slate-900 flex items-center gap-2">
-                    <BookOpen className="w-5 h-5 text-blue-600" /> Modules du cours
+                <h2 className="text-lg font-black text-white flex items-center gap-2">
+                    <BookOpen className="w-5 h-5 text-cyan-400" /> Modules du cours
                 </h2>
                 <div className="space-y-3">
                     {cours.modules?.map((module, index) => (
                         <motion.div key={module.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}
-                            className="bg-white border border-slate-200/80 rounded-xl p-4 flex items-start gap-4 hover:border-slate-300 transition-colors">
-                            <span className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-black shrink-0">
+                            className="bg-[#080d1a] border border-slate-800 rounded-xl p-4 flex items-start gap-4 hover:border-slate-700 hover:shadow-[0_0_15px_rgba(37,99,235,0.05)] transition-all">
+                            <span className="w-8 h-8 rounded-lg bg-blue-950/30 text-cyan-400 border border-blue-900/30 flex items-center justify-center text-xs font-black shrink-0">
                                 {index + 1}
                             </span>
                             <div className="flex-1 min-w-0">
-                                <h3 className="text-sm font-bold text-slate-900">{module.titre}</h3>
+                                <h3 className="text-sm font-bold text-white">{module.titre}</h3>
                                 {module.description && (
-                                    <p className="text-[12px] text-slate-500 font-medium mt-0.5 line-clamp-2">{module.description}</p>
+                                    <p className="text-[12px] text-slate-400 font-medium mt-0.5 line-clamp-2">{module.description}</p>
                                 )}
-                                <div className="flex items-center gap-3 mt-2 text-[10px] text-slate-400 font-semibold">
+                                <div className="flex items-center gap-3 mt-2 text-[10px] text-slate-500 font-semibold">
                                     {module.dureeEstimee && (
                                         <span className="flex items-center gap-1">
                                             <Clock className="w-3 h-3" /> {module.dureeEstimee} min
@@ -267,9 +267,9 @@ export default function CourseDetailPage() {
             {isEnrolled && (
                 <div className="text-center">
                     <button onClick={handleQuit} disabled={quitting}
-                        className="text-[11px] font-bold text-slate-400 hover:text-rose-600 transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center gap-1.5">
+                        className="text-[11px] font-bold text-slate-500 hover:text-cyan-400 transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center gap-1.5">
                         {quitting ? (
-                            <span className="w-3.5 h-3.5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
+                            <span className="w-3.5 h-3.5 border-2 border-slate-800 border-t-cyan-500 rounded-full animate-spin" />
                         ) : (
                             <><LogOut className="w-3.5 h-3.5" /> Quitter le cours</>
                         )}
@@ -278,33 +278,36 @@ export default function CourseDetailPage() {
             )}
 
             {/* CTA Rejoindre / Continuer */}
-            <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-8 text-white text-center space-y-4 shadow-xl">
-                <h2 className="text-xl font-black">Prêt à commencer ?</h2>
-                <p className="text-sm text-blue-100 font-medium max-w-md mx-auto">
+            <div className="bg-[#080d1a] border border-blue-900/40 rounded-2xl p-8 text-white text-center space-y-4 shadow-[0_0_20px_rgba(37,99,235,0.15)] relative overflow-hidden">
+                {/* Glow effect */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-red-900/10 blur-[100px] pointer-events-none" />
+
+                <h2 className="text-xl font-black relative z-10">Prêt à commencer ?</h2>
+                <p className="text-sm text-slate-400 font-medium max-w-md mx-auto relative z-10">
                     {isEnrolled
                         ? "Continuez votre apprentissage là où vous vous êtes arrêté."
                         : "Rejoignez ce cours et commencez votre formation dès maintenant."}
                 </p>
                 {isEnrolled ? (
-                    <div className="space-y-3">
+                    <div className="space-y-3 relative z-10">
                         <div className="flex items-center justify-center gap-3 text-sm font-bold">
                             <span>Progression</span>
-                            <span className="text-blue-200">{progression}%</span>
+                            <span className="text-slate-300">{progression}%</span>
                         </div>
-                        <div className="w-full max-w-xs mx-auto h-2 bg-blue-400/30 rounded-full overflow-hidden">
-                            <div className="h-full bg-white rounded-full transition-all duration-500"
+                        <div className="w-full max-w-xs mx-auto h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+                            <div className="h-full bg-blue-600 rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(37,99,235,0.5)]"
                                 style={{ width: `${progression}%` }} />
                         </div>
                         <button onClick={() => router.push(`/dashboard/cours/${cours.id}/apprendre`)}
-                            className="mt-4 px-8 py-3 bg-white text-blue-700 text-sm font-black rounded-xl hover:bg-blue-50 transition-all cursor-pointer inline-flex items-center gap-2">
+                            className="mt-4 px-8 py-3 bg-blue-600 text-white text-sm font-black rounded-xl hover:bg-blue-700 shadow-[0_0_15px_rgba(37,99,235,0.3)] transition-all cursor-pointer inline-flex items-center gap-2">
                             <Play className="w-4 h-4" /> Continuer le cours
                         </button>
                     </div>
                 ) : (
                     <button onClick={handleJoin} disabled={joining}
-                        className="px-8 py-3 bg-white text-blue-700 text-sm font-black rounded-xl hover:bg-blue-50 transition-all cursor-pointer disabled:opacity-60 inline-flex items-center gap-2">
+                        className="px-8 py-3 bg-blue-600 text-white text-sm font-black rounded-xl hover:bg-blue-700 shadow-[0_0_15px_rgba(37,99,235,0.3)] transition-all cursor-pointer disabled:opacity-60 inline-flex items-center gap-2 relative z-10">
                         {joining ? (
-                            <span className="w-4 h-4 border-2 border-blue-300 border-t-blue-700 rounded-full animate-spin" />
+                            <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         ) : (
                             <><DoorOpen className="w-4 h-4" /> Rejoindre le cours</>
                         )}

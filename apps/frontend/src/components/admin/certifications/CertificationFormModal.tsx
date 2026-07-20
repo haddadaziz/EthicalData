@@ -151,7 +151,7 @@ export function CertificationFormModal({
             {/* Header */}
           <div className="p-6 border-b border-slate-200 flex items-center justify-between bg-white relative z-20">
             <div className="flex items-center gap-2">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${initialData ? 'bg-blue-50 border-blue-100 text-blue-600' : 'bg-red-50 border-red-100 text-red-600'}`}>
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${initialData ? 'bg-blue-50 border-blue-100 text-blue-600' : 'bg-red-50 border-red-100 text-cyan-500'}`}>
                 {initialData ? <Edit className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
               </div>
               <div className="text-left">
@@ -192,7 +192,7 @@ export function CertificationFormModal({
                   value={nom}
                   onChange={(e) => setNom(e.target.value)}
                   placeholder="Azure Fundamentals"
-                  className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
+                  className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
                 />
               </div>
 
@@ -205,7 +205,7 @@ export function CertificationFormModal({
                     value={codeExamen}
                     onChange={(e) => setCodeExamen(e.target.value)}
                     placeholder="AZ-900"
-                    className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
+                    className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -214,7 +214,7 @@ export function CertificationFormModal({
                     <button
                       type="button"
                       onClick={onManageFournisseurs}
-                      className="text-[10px] text-red-600 hover:text-red-750 font-bold uppercase tracking-wider cursor-pointer"
+                      className="text-[10px] text-cyan-500 hover:text-red-750 font-bold uppercase tracking-wider cursor-pointer"
                     >
                       + Gérer
                     </button>
@@ -222,7 +222,7 @@ export function CertificationFormModal({
                   <select
                     value={fournisseurId}
                     onChange={(e) => setFournisseurId(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold"
+                    className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold"
                   >
                     {fournisseurs.length === 0 ? (
                       <option value="" disabled>Aucun fournisseur - Cliquez sur "+ Gérer"</option>
@@ -244,7 +244,7 @@ export function CertificationFormModal({
                   <select
                     value={niveau}
                     onChange={(e) => setNiveau(e.target.value as any)}
-                    className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold"
+                    className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold"
                   >
                     <option value="DEBUTANT">Débutant</option>
                     <option value="INTERMEDIAIRE">Intermédiaire</option>
@@ -258,7 +258,7 @@ export function CertificationFormModal({
                     value={dureeIndicative}
                     onChange={(e) => setDureeIndicative(e.target.value)}
                     placeholder="15 heures"
-                    className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
+                    className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
                   />
                 </div>
               </div>
@@ -303,7 +303,7 @@ export function CertificationFormModal({
                       value={image}
                       onChange={(e) => setImage(e.target.value)}
                       placeholder="Ou saisissez un chemin d'accès (ex: /certifications/az900.png)"
-                      className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
+                      className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
                     />
                   </div>
                 )}
@@ -326,7 +326,7 @@ export function CertificationFormModal({
                     el.style.overflowY = el.scrollHeight > 200 ? 'auto' : 'hidden';
                   }}
                   placeholder="Objectifs de la certification..."
-                  className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all resize-none overflow-y-hidden"
+                  className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all resize-none overflow-y-hidden"
                 />
               </div>
 
@@ -367,8 +367,8 @@ export function CertificationFormModal({
                     {/* Examen code overlay */}
                     {codeExamen && (
                       <div className="absolute top-4 left-4 z-30">
-                        <div className="bg-slate-900/80 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-700/50 shadow-sm flex items-center gap-1.5 group-hover:bg-red-600 group-hover:border-red-500 transition-colors">
-                          <span className="w-1 h-1 rounded-full bg-red-500 group-hover:bg-white animate-pulse transition-colors"></span>
+                        <div className="bg-slate-900/80 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-700/50 shadow-sm flex items-center gap-1.5 group-hover:bg-blue-600 group-hover:border-cyan-500 transition-colors">
+                          <span className="w-1 h-1 rounded-full bg-blue-500 group-hover:bg-white animate-pulse transition-colors"></span>
                           {codeExamen}
                         </div>
                       </div>

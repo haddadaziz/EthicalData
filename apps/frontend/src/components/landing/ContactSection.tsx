@@ -70,13 +70,13 @@ export function ContactSection() {
               <h3 className="text-xl font-black text-white tracking-tight leading-none mb-2">
                 Coordonnées
               </h3>
-              <p className="text-xs text-red-500 font-extrabold uppercase tracking-wider">
+              <p className="text-xs text-cyan-400 font-extrabold uppercase tracking-wider">
                 Ethical Data Security
               </p>
 
               <div className="space-y-4 pt-2">
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-red-950/30 border border-red-900/20 flex items-center justify-center text-red-500 shrink-0 shadow-[0_0_10px_rgba(220,38,38,0.15)]">
+                  <div className="w-10 h-10 rounded-xl bg-blue-950/30 border border-blue-900/20 flex items-center justify-center text-cyan-400 shrink-0 shadow-[0_0_10px_rgba(37,99,235,0.15)]">
                     <Mail className="w-5 h-5" />
                   </div>
                   <div>
@@ -86,7 +86,7 @@ export function ContactSection() {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-red-950/30 border border-red-900/20 flex items-center justify-center text-red-500 shrink-0 shadow-[0_0_10px_rgba(220,38,38,0.15)]">
+                  <div className="w-10 h-10 rounded-xl bg-blue-950/30 border border-blue-900/20 flex items-center justify-center text-cyan-400 shrink-0 shadow-[0_0_10px_rgba(37,99,235,0.15)]">
                     <Phone className="w-5 h-5" />
                   </div>
                   <div>
@@ -96,7 +96,7 @@ export function ContactSection() {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-red-950/30 border border-red-900/20 flex items-center justify-center text-red-500 shrink-0 shadow-[0_0_10px_rgba(220,38,38,0.15)]">
+                  <div className="w-10 h-10 rounded-xl bg-blue-950/30 border border-blue-900/20 flex items-center justify-center text-cyan-400 shrink-0 shadow-[0_0_10px_rgba(37,99,235,0.15)]">
                     <Globe className="w-5 h-5" />
                   </div>
                   <div>
@@ -120,7 +120,7 @@ export function ContactSection() {
                     value={nom}
                     onChange={(e) => setNom(e.target.value)}
                     placeholder="Votre nom et prénom"
-                    className="w-full p-3.5 bg-[#030712] border border-slate-900 focus:border-red-600 rounded-2xl text-white text-xs font-semibold outline-none transition-colors placeholder-slate-600"
+                    className="w-full p-3.5 bg-[#030712] border border-slate-900 focus:border-blue-600 rounded-2xl text-white text-xs font-semibold outline-none transition-colors placeholder-slate-600"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -131,7 +131,7 @@ export function ContactSection() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="nom@exemple.com"
-                    className="w-full p-3.5 bg-[#030712] border border-slate-900 focus:border-red-600 rounded-2xl text-white text-xs font-semibold outline-none transition-colors placeholder-slate-600"
+                    className="w-full p-3.5 bg-[#030712] border border-slate-900 focus:border-blue-600 rounded-2xl text-white text-xs font-semibold outline-none transition-colors placeholder-slate-600"
                   />
                 </div>
               </div>
@@ -144,7 +144,7 @@ export function ContactSection() {
                   value={sujet}
                   onChange={(e) => setSujet(e.target.value)}
                   placeholder="De quoi s'agit-il ?"
-                  className="w-full p-3.5 bg-[#030712] border border-slate-900 focus:border-red-600 rounded-2xl text-white text-xs font-semibold outline-none transition-colors placeholder-slate-600"
+                  className="w-full p-3.5 bg-[#030712] border border-slate-900 focus:border-blue-600 rounded-2xl text-white text-xs font-semibold outline-none transition-colors placeholder-slate-600"
                 />
               </div>
 
@@ -156,7 +156,7 @@ export function ContactSection() {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Décrivez votre demande en détail..."
-                  className="w-full p-3.5 bg-[#030712] border border-slate-900 focus:border-red-600 rounded-2xl text-white text-xs font-semibold outline-none transition-colors resize-none placeholder-slate-600"
+                  className="w-full p-3.5 bg-[#030712] border border-slate-900 focus:border-blue-600 rounded-2xl text-white text-xs font-semibold outline-none transition-colors resize-none placeholder-slate-600"
                 />
               </div>
 
@@ -164,7 +164,7 @@ export function ContactSection() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl text-xs flex items-center gap-2 transition-all shadow-md shadow-red-600/20 cursor-pointer disabled:opacity-50"
+                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl text-xs flex items-center gap-2 transition-all shadow-md shadow-blue-600/20 cursor-pointer disabled:opacity-50"
                 >
                   {loading ? (
                     <>

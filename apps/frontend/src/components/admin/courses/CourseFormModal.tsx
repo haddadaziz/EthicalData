@@ -150,7 +150,7 @@ export const CourseFormModal = React.memo(function CourseFormModal({
             {/* Header */}
             <div className="p-6 border-b border-slate-200 flex items-center justify-between bg-white relative z-20">
               <div className="flex items-center gap-2">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${initialData ? 'bg-blue-50 border-blue-100 text-blue-600' : 'bg-red-50 border-red-100 text-red-600'}`}>
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${initialData ? 'bg-blue-50 border-blue-100 text-blue-600' : 'bg-red-50 border-red-100 text-cyan-500'}`}>
                   {initialData ? <Edit className="w-5 h-5" /> : <BookOpen className="w-5 h-5" />}
                 </div>
                 <div className="text-left">
@@ -191,7 +191,7 @@ export const CourseFormModal = React.memo(function CourseFormModal({
                     value={titre}
                     onChange={(e) => setTitre(e.target.value)}
                     placeholder="Initiation à la Sécurité Informatique"
-                    className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
+                    className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
                   />
                 </div>
 
@@ -202,7 +202,7 @@ export const CourseFormModal = React.memo(function CourseFormModal({
                     <select
                       value={certificationId}
                       onChange={(e) => setCertificationId(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold"
+                      className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold"
                     >
                       <option value="">Aucune certification</option>
                       {certifications.map((c) => (
@@ -220,7 +220,7 @@ export const CourseFormModal = React.memo(function CourseFormModal({
                       min={1}
                       value={dureeEstimee}
                       onChange={(e) => setDureeEstimee(Number(e.target.value))}
-                      className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
+                      className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -231,7 +231,7 @@ export const CourseFormModal = React.memo(function CourseFormModal({
                   <select
                     value={statut}
                     onChange={(e) => setStatut(e.target.value as any)}
-                    className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold"
+                    className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold"
                   >
                     <option value="BROUILLON">Brouillon (Privé)</option>
                     <option value="PUBLIE">Publié (Visible par tous)</option>
@@ -279,7 +279,7 @@ export const CourseFormModal = React.memo(function CourseFormModal({
                         value={imageUrl}
                         onChange={(e) => setImageUrl(e.target.value)}
                         placeholder="Ou saisissez une URL (ex: /courses/security.png)"
-                        className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
+                        className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
                       />
                     </div>
                   )}
@@ -294,7 +294,7 @@ export const CourseFormModal = React.memo(function CourseFormModal({
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Présentation générale du cours..."
-                    className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all resize-none"
+                    className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all resize-none"
                   />
                 </div>
 
@@ -309,7 +309,7 @@ export const CourseFormModal = React.memo(function CourseFormModal({
                           value={val}
                           onChange={(e) => handleChange(i, e.target.value, setObjectifsList)}
                           placeholder="Ex : Maîtriser le déploiement d'architectures hybrides"
-                          className="flex-1 px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
+                          className="flex-1 px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
                         />
                         {objectifsList.length > 1 && (
                           <button
@@ -345,7 +345,7 @@ export const CourseFormModal = React.memo(function CourseFormModal({
                           value={val}
                           onChange={(e) => handleChange(i, e.target.value, setPrerequisList)}
                           placeholder="Ex : Connaissances de base en administration réseau"
-                          className="flex-1 px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
+                          className="flex-1 px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
                         />
                         {prerequisList.length > 1 && (
                           <button
@@ -381,7 +381,7 @@ export const CourseFormModal = React.memo(function CourseFormModal({
                           value={val}
                           onChange={(e) => handleChange(i, e.target.value, setPublicCibleList)}
                           placeholder="Ex : Administrateurs systèmes souhaitant passer AZ-500"
-                          className="flex-1 px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
+                          className="flex-1 px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
                         />
                         {publicCibleList.length > 1 && (
                           <button

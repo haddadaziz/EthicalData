@@ -76,13 +76,13 @@ export function AboutSlider() {
           {/* Flèches de navigation */}
           <button 
             onClick={prevSlide}
-            className="cursor-pointer absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-[#080d1a] border border-red-500 text-red-500 hover:bg-red-950/30 hover:scale-110 rounded-full flex items-center justify-center transition-all z-30 shadow-md"
+            className="cursor-pointer absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-[#080d1a] border border-cyan-500 text-cyan-400 hover:bg-blue-950/30 hover:scale-110 rounded-full flex items-center justify-center transition-all z-30 shadow-md"
           >
             <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 ml-[-2px]" />
           </button>
           <button 
             onClick={nextSlide}
-            className="cursor-pointer absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-[#080d1a] border border-red-500 text-red-500 hover:bg-red-950/30 hover:scale-110 rounded-full flex items-center justify-center transition-all z-30 shadow-md"
+            className="cursor-pointer absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-[#080d1a] border border-cyan-500 text-cyan-400 hover:bg-blue-950/30 hover:scale-110 rounded-full flex items-center justify-center transition-all z-30 shadow-md"
           >
             <ChevronRight className="w-5 h-5 md:w-6 md:h-6 mr-[-2px]" />
           </button>
@@ -99,7 +99,7 @@ export function AboutSlider() {
                 transition={{ duration: 0.3 }}
                 className={`w-full ${
                   slides[currentSlide].isTransparent 
-                    ? "h-40 md:h-56 object-contain drop-shadow-[0_0_15px_rgba(220,38,38,0.25)]" 
+                    ? "h-40 md:h-56 object-contain drop-shadow-[0_0_15px_rgba(37,99,235,0.25)]" 
                     : "h-40 md:h-56 object-cover rounded-xl shadow-md border border-slate-800"
                 }`} 
               />
@@ -117,7 +117,7 @@ export function AboutSlider() {
                 className="space-y-3 md:space-y-4"
               >
                 <h3 className="text-lg md:text-2xl font-bold text-white">
-                  {slides[currentSlide].isRed ? <span className="text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.2)]">{slides[currentSlide].title}</span> : slides[currentSlide].title}
+                  {slides[currentSlide].isRed ? <span className="text-cyan-400 drop-shadow-[0_0_8px_rgba(239,68,68,0.2)]">{slides[currentSlide].title}</span> : slides[currentSlide].title}
                 </h3>
                 <p className="text-slate-300 text-xs md:text-sm leading-relaxed font-semibold">
                   {slides[currentSlide].text}

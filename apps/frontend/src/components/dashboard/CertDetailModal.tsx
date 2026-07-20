@@ -44,7 +44,7 @@ export default function CertDetailModal({ cert, onClose, onPractice, isTargeted,
                     <div className="space-y-2">
                         <div className="flex items-center gap-1.5 flex-wrap">
                             {cert.codeExamen && (
-                                <span className="text-[10px] font-black text-red-500 bg-red-950/20 border border-red-900/40 px-2 py-0.5 rounded-md">{cert.codeExamen}</span>
+                                <span className="text-[10px] font-black text-cyan-400 bg-blue-950/20 border border-blue-900/40 px-2 py-0.5 rounded-md">{cert.codeExamen}</span>
                             )}
                             <span className={`text-[10px] px-2 py-0.5 rounded-md font-black border ${getLevelBadgeStyle(cert.niveau)}`}>{cert.niveau}</span>
                         </div>
@@ -74,14 +74,14 @@ export default function CertDetailModal({ cert, onClose, onPractice, isTargeted,
                     </div>
 
                     {cert.objectifs && cert.objectifs.length > 0 && (
-                        <div className="p-4 bg-red-950/20 border border-red-900/40 rounded-xl space-y-2">
-                            <span className="text-[9px] font-black text-red-500 uppercase tracking-wider flex items-center gap-1.5">
+                        <div className="p-4 bg-blue-950/20 border border-blue-900/40 rounded-xl space-y-2">
+                            <span className="text-[9px] font-black text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
                                 <CheckCircle2 className="w-3.5 h-3.5" /> Objectifs
                             </span>
                             <ul className="space-y-1.5">
                                 {cert.objectifs.slice(0, 3).map((obj: string, i: number) => (
                                     <li key={i} className="text-xs text-slate-300 font-semibold flex items-start gap-1.5">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
+                                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 shrink-0" />
                                         <span>{obj}</span>
                                     </li>
                                 ))}
@@ -92,7 +92,7 @@ export default function CertDetailModal({ cert, onClose, onPractice, isTargeted,
 
                 <div className="flex flex-col gap-3 pt-2">
                     <button type="button" onClick={() => onPractice(cert)}
-                        className="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98]">
+                        className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98]">
                         <Play className="w-3.5 h-3.5 fill-white text-white" />
                         Commencer la formation
                     </button>

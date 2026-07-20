@@ -27,7 +27,7 @@ const googleReviews = [
     stars: 5,
   },
   {
-    initial: "Y", bg: "bg-red-500",
+    initial: "Y", bg: "bg-blue-500",
     name: "Yassine M.", date: "il y a 6 mois",
     text: "Grâce aux simulations d'Ethical Data, j'ai obtenu ma certification AZ-900 avec un score de 940/1000.",
     stars: 5
@@ -133,7 +133,7 @@ export function TestimonialsSection() {
                   <div 
                     key={idx} 
                     style={{ flex: `0 0 calc(${100 / itemsPerView}% - ${(itemsPerView - 1) * 24 / itemsPerView}px)` }} 
-                    className="bg-[#080d1a]/85 border border-slate-900 hover:border-red-500/20 rounded-2xl p-4 sm:p-6 text-left flex flex-col space-y-4 hover:-translate-y-1 hover:shadow-lg hover:shadow-red-950/5 transition-all duration-300 group cursor-default h-full"
+                    className="bg-[#080d1a]/85 border border-slate-900 hover:border-cyan-500/20 rounded-2xl p-4 sm:p-6 text-left flex flex-col space-y-4 hover:-translate-y-1 hover:shadow-lg hover:shadow-red-950/5 transition-all duration-300 group cursor-default h-full"
                   >
                     {/* Header de l'avis */}
                     <div className="flex items-start justify-between">
@@ -142,7 +142,7 @@ export function TestimonialsSection() {
                           {test.initial}
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-[13px] font-bold text-white group-hover:text-red-500 transition-colors duration-300 leading-tight">
+                          <span className="text-[13px] font-bold text-white group-hover:text-cyan-400 transition-colors duration-300 leading-tight">
                             {test.name}
                           </span>
                           <span className="text-[11px] text-slate-400 mt-0.5">{test.date}</span>
@@ -173,7 +173,7 @@ export function TestimonialsSection() {
                     {(test.text.endsWith('...') || isExpanded) && (
                       <button 
                         onClick={() => toggleReviewText(idx)} 
-                        className="text-[12px] text-red-500 hover:text-red-400 font-bold text-left mt-auto pt-2 transition-colors cursor-pointer hover:underline border-0 bg-transparent outline-none p-0"
+                        className="text-[12px] text-cyan-400 hover:text-cyan-300 font-bold text-left mt-auto pt-2 transition-colors cursor-pointer hover:underline border-0 bg-transparent outline-none p-0"
                       >
                         {isExpanded ? 'Réduire' : 'Lire la suite'}
                       </button>

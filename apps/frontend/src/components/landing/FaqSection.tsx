@@ -43,7 +43,7 @@ export function FaqSection() {
 
       <div className="relative z-10 max-w-4xl mx-auto px-6">
         <AnimatedSection className="text-center mb-16">
-          <span className="text-xs font-bold text-red-500 uppercase tracking-widest">Support</span>
+          <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest">Support</span>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mt-3 uppercase tracking-tight">Questions Fréquentes</h2>
         </AnimatedSection>
 
@@ -55,7 +55,7 @@ export function FaqSection() {
                 <div className="bg-[#0a0f1d]/85 border border-slate-900 rounded-2xl overflow-hidden transition-all duration-300 hover:border-slate-800 shadow-sm">
                   <button
                     onClick={() => toggleFaq(idx)}
-                    className="w-full flex items-center justify-between p-5 text-left font-bold text-xs sm:text-sm text-slate-200 hover:text-red-500 transition-colors outline-none cursor-pointer border-0 bg-transparent"
+                    className="w-full flex items-center justify-between p-5 text-left font-bold text-xs sm:text-sm text-slate-200 hover:text-cyan-400 transition-colors outline-none cursor-pointer border-0 bg-transparent"
                   >
                     <span className="pr-4 uppercase tracking-wider">{item.q}</span>
                     <motion.div

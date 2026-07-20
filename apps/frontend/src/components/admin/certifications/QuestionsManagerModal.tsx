@@ -184,7 +184,7 @@ export function QuestionsManagerModal({
           {/* En-tête */}
           <div className="p-6 border-b border-slate-200/80 flex items-center justify-between bg-slate-50/20">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-red-600">
+              <div className="w-10 h-10 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-cyan-500">
                 <HelpCircle className="w-5 h-5" />
               </div>
               <div className="text-left">
@@ -231,7 +231,7 @@ export function QuestionsManagerModal({
                           setQuestionType(e.target.value);
                           setQuestionReponseCorrecte(e.target.value === 'QCM' || e.target.value === 'VRAI_FAUX' ? 'A' : '');
                         }}
-                        className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold"
+                        className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold"
                       >
                         <option value="QCM">QCM (Options A, B, C, D)</option>
                         <option value="VRAI_FAUX">Vrai / Faux</option>
@@ -246,7 +246,7 @@ export function QuestionsManagerModal({
                         value={questionCategorie}
                         onChange={(e) => setQuestionCategorie(e.target.value)}
                         placeholder="ex: Identité & IAM"
-                        className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
+                        className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
                       />
                     </div>
                   </div>
@@ -260,7 +260,7 @@ export function QuestionsManagerModal({
                       value={questionEnonce}
                       onChange={(e) => setQuestionEnonce(e.target.value)}
                       placeholder="Saisissez la question..."
-                      className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all resize-none"
+                      className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all resize-none"
                     />
                   </div>
 
@@ -273,7 +273,7 @@ export function QuestionsManagerModal({
                         <select
                           value={questionReponseCorrecte}
                           onChange={(e) => setQuestionReponseCorrecte(e.target.value)}
-                          className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold"
+                          className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold"
                         >
                           <option value="A">Option A</option>
                           <option value="B">Option B</option>
@@ -291,7 +291,7 @@ export function QuestionsManagerModal({
                             required={questionType === 'QCM'}
                             value={optA}
                             onChange={(e) => setOptA(e.target.value)}
-                            className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
+                            className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
                           />
                         </div>
                         <div className="space-y-1.5">
@@ -301,7 +301,7 @@ export function QuestionsManagerModal({
                             required={questionType === 'QCM'}
                             value={optB}
                             onChange={(e) => setOptB(e.target.value)}
-                            className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
+                            className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
                           />
                         </div>
                         <div className="space-y-1.5">
@@ -311,7 +311,7 @@ export function QuestionsManagerModal({
                             required={questionType === 'QCM'}
                             value={optC}
                             onChange={(e) => setOptC(e.target.value)}
-                            className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
+                            className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
                           />
                         </div>
                         <div className="space-y-1.5">
@@ -321,7 +321,7 @@ export function QuestionsManagerModal({
                             required={questionType === 'QCM'}
                             value={optD}
                             onChange={(e) => setOptD(e.target.value)}
-                            className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
+                            className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
                           />
                         </div>
                       </div>
@@ -334,7 +334,7 @@ export function QuestionsManagerModal({
                       <select
                         value={questionReponseCorrecte}
                         onChange={(e) => setQuestionReponseCorrecte(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold"
+                        className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold"
                       >
                         <option value="A">Vrai</option>
                         <option value="B">Faux</option>
@@ -353,7 +353,7 @@ export function QuestionsManagerModal({
                           value={questionReponseCorrecte}
                           onChange={(e) => setQuestionReponseCorrecte(e.target.value)}
                           placeholder="Rédigez la réponse idéale qui servira de référence à l'apprenant..."
-                          className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all resize-none"
+                          className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all resize-none"
                         />
                       </div>
 
@@ -366,7 +366,7 @@ export function QuestionsManagerModal({
                           value={questionGrilleNotation}
                           onChange={(e) => setQuestionGrilleNotation(e.target.value)}
                           placeholder="Décrivez les critères précis d'évaluation (ex: Attribuer 2 pts si le mot-clé 'A' est présent, etc.)..."
-                          className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all resize-none"
+                          className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all resize-none"
                         />
                       </div>
                     </div>
@@ -380,7 +380,7 @@ export function QuestionsManagerModal({
                       value={questionExplication}
                       onChange={(e) => setQuestionExplication(e.target.value)}
                       placeholder="Expliquez en détail les notions de cours liées..."
-                      className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all resize-none"
+                      className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all resize-none"
                     />
                   </div>
 
@@ -444,7 +444,7 @@ export function QuestionsManagerModal({
                           {q.type || 'QCM'}
                         </span>
                         {q.categorie && (
-                          <span className="text-[9px] font-black text-red-600 bg-red-50 border border-red-100 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                          <span className="text-[9px] font-black text-cyan-500 bg-red-50 border border-red-100 px-2 py-0.5 rounded-full uppercase tracking-wider">
                             {q.categorie}
                           </span>
                         )}
@@ -500,7 +500,7 @@ export function QuestionsManagerModal({
                     {(q.type === 'OUVERTE' || q.type === 'CAS_PRATIQUE') && (
                       <div className="space-y-3">
                         <div className="p-4 bg-indigo-950/10 border border-indigo-900/20 rounded-2xl text-xs leading-relaxed text-slate-700">
-                          <p className="font-bold text-red-600 uppercase tracking-wider text-[9px] mb-1">Réponse modèle attendue :</p>
+                          <p className="font-bold text-cyan-500 uppercase tracking-wider text-[9px] mb-1">Réponse modèle attendue :</p>
                           <p className="font-semibold whitespace-pre-wrap">{q.reponseCorrecte}</p>
                         </div>
                         {q.grilleNotation && (
@@ -514,7 +514,7 @@ export function QuestionsManagerModal({
 
                     {q.explication && (
                       <div className="p-3.5 bg-slate-50/40 border border-slate-200/80 rounded-xl text-xs leading-relaxed text-slate-600">
-                        <p className="font-bold text-red-600 uppercase tracking-wider text-[9px] mb-0.5">Correction :</p>
+                        <p className="font-bold text-cyan-500 uppercase tracking-wider text-[9px] mb-0.5">Correction :</p>
                         <p className="font-medium">{q.explication}</p>
                       </div>
                     )}

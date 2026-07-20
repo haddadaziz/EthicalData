@@ -30,21 +30,21 @@ export function ServicesSection() {
         
         <AnimatedSection className="text-center max-w-2xl mx-auto mb-16">
           <div className="flex items-center justify-center gap-4 mb-4">
-            <span className="w-10 h-[2px] bg-red-600 rounded-full" />
-            <span className="text-sm font-black text-red-500 uppercase tracking-[0.2em]">Notre Expertise</span>
-            <span className="w-10 h-[2px] bg-red-600 rounded-full" />
+            <span className="w-10 h-[2px] bg-blue-600 rounded-full" />
+            <span className="text-sm font-black text-cyan-400 uppercase tracking-[0.2em]">Notre Expertise</span>
+            <span className="w-10 h-[2px] bg-blue-600 rounded-full" />
           </div>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white uppercase tracking-tighter">Nos Prestations</h2>
         </AnimatedSection>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((srv, i) => (
-              <div key={i} className="group relative bg-[#0a0f1d]/60 border border-slate-900 hover:border-red-900/50 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1">
+              <div key={i} className="group relative bg-[#0a0f1d]/60 border border-slate-900 hover:border-blue-900/50 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1">
                 <div className="flex items-start gap-4 mb-4">
-                  <span className="text-3xl font-black text-red-500/30 group-hover:text-red-500 transition-colors duration-500 leading-none mt-1">
+                  <span className="text-3xl font-black text-cyan-400/30 group-hover:text-cyan-400 transition-colors duration-500 leading-none mt-1">
                     {String(i + 1).padStart(2, '0')}
                   </span>
-                  <h3 className="text-lg font-bold text-white group-hover:text-red-400 transition-colors duration-300 leading-tight">
+                  <h3 className="text-lg font-bold text-white group-hover:text-cyan-300 transition-colors duration-300 leading-tight">
                     {srv.title}
                   </h3>
                 </div>

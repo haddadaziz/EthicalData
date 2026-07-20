@@ -35,17 +35,17 @@ export default function CommentForm({
     };
 
     return (
-        <div className="p-4 md:p-5 bg-white border-t border-slate-200 shadow-lg sticky bottom-0 z-20 space-y-3">
+        <div className="p-4 md:p-5 bg-[#020617] border-t border-slate-800 shadow-2xl sticky bottom-0 z-20 space-y-3">
             {replyTarget && (
-                <div className="flex items-center justify-between px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-700 font-bold">
+                <div className="flex items-center justify-between px-3 py-1.5 bg-blue-950/30 border border-blue-900/50 rounded-xl text-xs text-cyan-400 font-bold">
                     <div className="flex items-center gap-1.5">
-                        <Reply className="w-3.5 h-3.5 text-blue-600" />
+                        <Reply className="w-3.5 h-3.5 text-cyan-300" />
                         <span>Réponse à @{replyTarget.authorName}</span>
                     </div>
                     <button
                         type="button"
                         onClick={onCancelReply}
-                        className="p-1 text-blue-500 hover:text-blue-900 rounded-md cursor-pointer"
+                        className="p-1 text-cyan-300 hover:text-cyan-200 rounded-md cursor-pointer"
                     >
                         <X className="w-3.5 h-3.5" />
                     </button>
@@ -59,14 +59,14 @@ export default function CommentForm({
                     placeholder={replyTarget ? `Répondre à ${replyTarget.authorName}...` : "Exprimez-vous ou posez une question..."}
                     value={commentText}
                     onChange={(e) => onCommentTextChange(e.target.value)}
-                    className="w-full p-3 bg-slate-50 border border-slate-200 focus:border-red-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none resize-none transition-all"
+                    className="w-full p-3 bg-[#080d1a] border border-slate-800 focus:border-cyan-500 rounded-2xl text-white text-xs font-semibold outline-none resize-none transition-all"
                 />
                 <div className="flex justify-end gap-2">
                     {replyTarget && (
                         <button
                             type="button"
                             onClick={onCancelReply}
-                            className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs cursor-pointer transition-all"
+                            className="px-4 py-2 bg-[#080d1a] hover:bg-slate-800 border border-slate-800 text-slate-400 font-bold rounded-xl text-xs cursor-pointer transition-all"
                         >
                             Annuler
                         </button>
@@ -74,7 +74,7 @@ export default function CommentForm({
                     <button
                         type="submit"
                         disabled={loading || !commentText.trim()}
-                        className="px-6 py-2.5 bg-slate-950 hover:bg-slate-800 text-white font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer transition-all disabled:opacity-50 shadow-md"
+                        className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer transition-all disabled:opacity-50 shadow-[0_0_15px_rgba(37,99,235,0.3)] hover:shadow-[0_0_20px_rgba(37,99,235,0.5)]"
                     >
                         {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                         <span>{replyTarget ? "Envoyer la réponse" : "Publier"}</span>

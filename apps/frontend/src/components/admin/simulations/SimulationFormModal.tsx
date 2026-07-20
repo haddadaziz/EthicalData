@@ -282,21 +282,21 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Titre *</label>
                                     <input type="text" required value={titre} onChange={e => setTitre(e.target.value)}
                                         placeholder="Simulation AZ-900"
-                                        className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold" />
+                                        className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold" />
                                 </div>
 
                                 <div className="space-y-1.5">
                                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Description</label>
                                     <textarea value={description} onChange={e => setDescription(e.target.value)}
                                         placeholder="Description de la simulation..."
-                                        className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all resize-none h-16" />
+                                        className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all resize-none h-16" />
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="space-y-1.5">
                                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Certification *</label>
                                         <select value={certificationId} onChange={e => setCertificationId(e.target.value)}
-                                            className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold cursor-pointer">
+                                            className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold cursor-pointer">
                                             <option value="">Sélectionner...</option>
                                             {certifications.map(c => (
                                                 <option key={c.id} value={c.id}>{c.codeExamen || c.nom}</option>
@@ -306,7 +306,7 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                                     <div className="space-y-1.5">
                                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Cours (optionnel)</label>
                                         <select value={coursId} onChange={e => setCoursId(e.target.value)}
-                                            className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold cursor-pointer">
+                                            className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold cursor-pointer">
                                             <option value="">Aucun cours</option>
                                             {coursesList.map(c => (
                                                 <option key={c.id} value={c.id}>{c.titre}</option>
@@ -319,12 +319,12 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                                     <div className="space-y-1.5">
                                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Durée (minutes)</label>
                                         <input type="number" required min={1} value={duree} onChange={e => setDuree(e.target.value)}
-                                            className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold" />
+                                            className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold" />
                                     </div>
                                     <div className="space-y-1.5">
                                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Score minimal</label>
                                         <input type="number" required min={0} max={100} value={scoreMinimal} onChange={e => setScoreMinimal(e.target.value)}
-                                            className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold" />
+                                            className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold" />
                                     </div>
                                 </div>
                             </div>
@@ -405,7 +405,7 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
 
                                     <div className="absolute top-4 left-4 z-30 flex flex-col gap-1">
                                         {selectedCert?.codeExamen && (
-                                            <div className="bg-red-600 text-white font-extrabold uppercase text-[8px] tracking-wider px-2 py-0.5 rounded-md border border-red-500/50 shadow-sm w-fit hover:bg-red-700 transition-colors">
+                                            <div className="bg-blue-600 text-white font-extrabold uppercase text-[8px] tracking-wider px-2 py-0.5 rounded-md border border-cyan-500/50 shadow-sm w-fit hover:bg-blue-700 transition-colors">
                                                 {selectedCert.codeExamen}
                                             </div>
                                         )}
@@ -481,7 +481,7 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                                     <div className="space-y-1">
                                         <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Type</label>
                                         <select value={qType} onChange={e => { setQType(e.target.value); setQReponse(e.target.value === 'QCM' || e.target.value === 'VRAI_FAUX' ? 'A' : ''); }}
-                                            className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-red-600 rounded-lg text-[11px] font-semibold outline-none">
+                                            className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-blue-600 rounded-lg text-[11px] font-semibold outline-none">
                                             <option value="QCM">QCM</option>
                                             <option value="VRAI_FAUX">V/F</option>
                                             <option value="OUVERTE">Ouverte</option>
@@ -491,14 +491,14 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                                     <div className="space-y-1">
                                         <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Catégorie</label>
                                         <input type="text" value={qCategorie} onChange={e => setQCategorie(e.target.value)} placeholder="IAM"
-                                            className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-red-600 rounded-lg text-[11px] font-semibold outline-none" />
+                                            className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-blue-600 rounded-lg text-[11px] font-semibold outline-none" />
                                     </div>
                                 </div>
 
                                 <div className="space-y-1">
                                     <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Énoncé</label>
                                     <textarea required rows={2} value={qEnonce} onChange={e => setQEnonce(e.target.value)} placeholder="Saisissez la question..."
-                                        className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-red-600 rounded-lg text-[11px] font-semibold outline-none resize-none" />
+                                        className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-blue-600 rounded-lg text-[11px] font-semibold outline-none resize-none" />
                                 </div>
 
                                 {qType === 'QCM' && (
@@ -506,7 +506,7 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                                         <div className="flex items-center gap-2">
                                             <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest shrink-0">Bonne réponse</label>
                                             <select value={qReponse} onChange={e => setQReponse(e.target.value)}
-                                                className="px-2 py-1 bg-white border border-slate-200 focus:border-red-600 rounded-lg text-[10px] font-semibold outline-none">
+                                                className="px-2 py-1 bg-white border border-slate-200 focus:border-blue-600 rounded-lg text-[10px] font-semibold outline-none">
                                                 <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
                                             </select>
                                         </div>
@@ -518,7 +518,7 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                                                     <div key={lettre} className="space-y-0.5">
                                                         <label className="text-[9px] font-black text-slate-500 pl-1">{lettre}</label>
                                                         <input type="text" required value={val} onChange={e => setVal(e.target.value)} placeholder={`Option ${lettre}`}
-                                                            className="w-full px-2.5 py-1.5 bg-white border border-slate-200 focus:border-red-600 rounded-lg text-[11px] font-semibold outline-none" />
+                                                            className="w-full px-2.5 py-1.5 bg-white border border-slate-200 focus:border-blue-600 rounded-lg text-[11px] font-semibold outline-none" />
                                                     </div>
                                                 );
                                             })}
@@ -530,7 +530,7 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                                     <div className="space-y-1">
                                         <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Bonne réponse</label>
                                         <select value={qReponse} onChange={e => setQReponse(e.target.value)}
-                                            className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-red-600 rounded-lg text-[11px] font-semibold outline-none">
+                                            className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-blue-600 rounded-lg text-[11px] font-semibold outline-none">
                                             <option value="A">Vrai</option><option value="B">Faux</option>
                                         </select>
                                     </div>
@@ -540,14 +540,14 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                                     <div className="space-y-1">
                                         <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Grille de notation IA</label>
                                         <textarea required rows={2} value={qGrille} onChange={e => setQGrille(e.target.value)} placeholder="Critères d'évaluation..."
-                                            className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-red-600 rounded-lg text-[11px] font-semibold outline-none resize-none" />
+                                            className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-blue-600 rounded-lg text-[11px] font-semibold outline-none resize-none" />
                                     </div>
                                 )}
 
                                 <div className="space-y-1">
                                     <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Explication (opt.)</label>
                                     <textarea rows={1} value={qExplication} onChange={e => setQExplication(e.target.value)} placeholder="Explication de la réponse..."
-                                        className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-red-600 rounded-lg text-[11px] font-semibold outline-none resize-none" />
+                                        className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-blue-600 rounded-lg text-[11px] font-semibold outline-none resize-none" />
                                 </div>
 
                                 <div className="flex justify-end gap-2 pt-4 border-t border-slate-100">

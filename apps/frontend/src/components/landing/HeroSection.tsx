@@ -46,7 +46,7 @@ export function HeroSection({ isConnected, children }: HeroSectionProps) {
           >
             <a
               href={isConnected ? "/dashboard/practice" : "/login"}
-              className="w-full sm:w-auto px-8 py-3.5 bg-red-600 hover:bg-red-700 text-white font-extrabold rounded-xl transition-all duration-300 flex items-center justify-center gap-2.5 cursor-pointer shadow-lg shadow-red-600/30 text-sm uppercase tracking-wider hover:scale-105 active:scale-95"
+              className="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl transition-all duration-300 flex items-center justify-center gap-2.5 cursor-pointer shadow-lg shadow-blue-600/30 text-sm uppercase tracking-wider hover:scale-105 active:scale-95"
             >
               <span>Réserver un diagnostic</span>
               <ArrowRight className="w-4 h-4" />
@@ -57,26 +57,26 @@ export function HeroSection({ isConnected, children }: HeroSectionProps) {
         {/* Right Side: Simple Cyber Wolf Mascot Card */}
         <div className="w-full lg:w-5/12 flex items-center justify-center relative select-none mt-auto lg:mt-0 mb-0 pt-24 lg:pt-0">
           {/* Static design rings */}
-          <div className="absolute w-[260px] h-[260px] sm:w-[340px] sm:h-[340px] border border-red-500/10 rounded-full" />
-          <div className="absolute w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] border border-dashed border-red-500/15 rounded-full" />
+          <div className="absolute w-[260px] h-[260px] sm:w-[340px] sm:h-[340px] border border-cyan-500/10 rounded-full" />
+          <div className="absolute w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] border border-dashed border-cyan-500/15 rounded-full" />
           
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative z-10 w-[220px] h-[220px] sm:w-[320px] sm:h-[320px] rounded-2xl overflow-hidden border border-red-500/20 bg-[#080d1a] p-4 shadow-xl shadow-red-950/20 group/card"
+            className="relative z-10 w-[220px] h-[220px] sm:w-[320px] sm:h-[320px] rounded-2xl overflow-hidden border border-cyan-500/20 bg-[#080d1a] p-4 shadow-xl shadow-red-950/20 group/card"
           >
             {/* Corner tech lines */}
-            <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-red-500/50 rounded-tl-lg" />
-            <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-red-500/50 rounded-tr-lg" />
-            <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-red-500/50 rounded-bl-lg" />
-            <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-red-500/50 rounded-br-lg" />
+            <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-500/50 rounded-tl-lg" />
+            <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-cyan-500/50 rounded-tr-lg" />
+            <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-cyan-500/50 rounded-bl-lg" />
+            <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyan-500/50 rounded-br-lg" />
 
             <div className="relative w-full h-full rounded-xl overflow-hidden bg-slate-950 flex items-center justify-center">
               <img
                 src="/images/wolf_mascot.png"
                 alt="Cyber Wolf Mascot"
-                className="w-[85%] h-[85%] object-contain drop-shadow-[0_0_20px_rgba(220,38,38,0.3)] transition-transform duration-500 ease-out hover:scale-105 cursor-pointer transform-gpu"
+                className="w-[85%] h-[85%] object-contain drop-shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-transform duration-500 ease-out hover:scale-105 cursor-pointer transform-gpu"
               />
             </div>
           </motion.div>
@@ -108,7 +108,7 @@ export function HeroSection({ isConnected, children }: HeroSectionProps) {
         `}} />
 
         <div 
-          className="absolute top-0 left-0 w-full h-[2px] bg-red-600/80 shadow-[0_0_15px_#dc2626] animate-scan-laser pointer-events-none z-10"
+          className="absolute top-0 left-0 w-full h-[2px] bg-blue-600/80 shadow-[0_0_15px_#dc2626] animate-scan-laser pointer-events-none z-10"
         />
       </div>
     </section>

@@ -34,7 +34,7 @@ export default function RecentActivity({ history, certifications, onCertClick }:
                     </p>
                 </div>
 
-                <span className="text-xs font-extrabold text-red-500 bg-red-950/20 border border-red-900/40 px-3 py-1.5 rounded-xl shrink-0">
+                <span className="text-xs font-extrabold text-cyan-400 bg-blue-950/20 border border-blue-900/40 px-3 py-1.5 rounded-xl shrink-0">
                     {history.length} tentative(s) enregistrée(s)
                 </span>
             </div>
@@ -54,11 +54,11 @@ export default function RecentActivity({ history, certifications, onCertClick }:
                 </div>
             ) : (
                 <div className="bg-[#020617] border border-dashed border-slate-800 rounded-2xl p-8 text-center space-y-3">
-                    <div className="w-12 h-12 rounded-2xl bg-red-950/20 text-red-500 border border-red-900/30 shadow-[0_0_15px_rgba(220,38,38,0.15)] flex items-center justify-center mx-auto">
+                    <div className="w-12 h-12 rounded-2xl bg-blue-950/20 text-cyan-400 border border-blue-900/30 shadow-[0_0_15px_rgba(37,99,235,0.15)] flex items-center justify-center mx-auto">
                         {selectedCert ? (
-                            <Play className="w-6 h-6 fill-red-500 text-red-500" />
+                            <Play className="w-6 h-6 fill-red-500 text-cyan-400" />
                         ) : (
-                            <Target className="w-6 h-6 text-red-500" />
+                            <Target className="w-6 h-6 text-cyan-400" />
                         )}
                     </div>
                     <div className="space-y-1">
@@ -77,7 +77,7 @@ export default function RecentActivity({ history, certifications, onCertClick }:
                     </div>
                     <Link
                         href={selectedCert ? `/dashboard/practice?cert=${selectedCert.slug}` : "/dashboard/certifications"}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer"
                     >
                         {selectedCert ? (
                             <>

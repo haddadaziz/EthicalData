@@ -20,7 +20,7 @@ export default function CertHistoryCard({ item, cert, index, onCertClick, format
                 <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-xs shrink-0 ${
                     isPassed ? 'bg-emerald-950/30 text-emerald-500 border border-emerald-900/50' :
                     isWarning ? 'bg-amber-950/30 text-amber-500 border border-amber-900/50' :
-                    'bg-red-950/30 text-red-500 border border-red-900/50'
+                    'bg-blue-950/30 text-cyan-400 border border-blue-900/50'
                 }`}>
                     {item.score}%
                 </div>
@@ -42,14 +42,14 @@ export default function CertHistoryCard({ item, cert, index, onCertClick, format
                 <span className={`text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-lg border ${
                     isPassed ? 'bg-emerald-950/30 text-emerald-500 border-emerald-900/50' :
                     isWarning ? 'bg-amber-950/30 text-amber-500 border-amber-900/50' :
-                    'bg-red-950/30 text-red-500 border-red-900/50'
+                    'bg-blue-950/30 text-cyan-400 border-blue-900/50'
                 }`}>
                     {isPassed ? 'RÉUSSI' : isWarning ? 'À PEAUFINER' : 'À RENFORCER'}
                 </span>
 
                 <Link
                     href={`/dashboard/practice${(item.certificationSlug || cert?.slug) ? `?cert=${item.certificationSlug || cert?.slug}` : ''}`}
-                    className="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer inline-flex items-center gap-1.5"
+                    className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer inline-flex items-center gap-1.5"
                 >
                     <Play className="w-3 h-3 fill-white text-white" />
                     <span>Refaire</span>

@@ -11,10 +11,10 @@ import { useMutationGuard } from '../../../hooks/useMutationGuard';
 
 function getLevelBadgeStyle(niv: string) {
   switch (niv) {
-    case 'AVANCE': return 'bg-rose-50 text-rose-700 border border-rose-150';
-    case 'INTERMEDIAIRE': return 'bg-amber-50 text-amber-700 border border-amber-150';
+    case 'AVANCE': return 'bg-blue-950/20 text-cyan-400 border border-blue-900/40';
+    case 'INTERMEDIAIRE': return 'bg-amber-950/20 text-amber-500 border border-amber-900/40';
     case 'DEBUTANT':
-    default: return 'bg-emerald-50 text-emerald-700 border border-emerald-150';
+    default: return 'bg-emerald-950/20 text-emerald-500 border border-emerald-900/40';
   }
 }
 
@@ -158,10 +158,10 @@ export default function LearnerCertificationsPage() {
   }
 
   return (
-    <div className="space-y-8 text-slate-800 text-left animate-fadeIn">
+    <div className="space-y-8 text-white text-left animate-fadeIn">
 
       {/* Barre de Recherche et Filtres */}
-      <div className="bg-white border border-slate-200/80 rounded-3xl p-6 space-y-6 shadow-sm">
+      <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 space-y-6 shadow-xl">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="relative max-w-md w-full">
             <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
@@ -172,7 +172,7 @@ export default function LearnerCertificationsPage() {
               placeholder="Rechercher par nom ou code d'examen..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-xl text-slate-900 placeholder-slate-400 transition-all text-sm outline-none font-semibold"
+              className="w-full pl-10 pr-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 rounded-xl text-white placeholder-slate-500 transition-all text-sm outline-none font-semibold"
             />
           </div>
           <div className="flex items-center justify-between md:justify-start gap-3 w-full md:w-auto shrink-0">
@@ -180,8 +180,8 @@ export default function LearnerCertificationsPage() {
               onClick={() => setOnlyTargeted(!onlyTargeted)}
               className={`px-3.5 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer flex items-center gap-1.5 border ${
                 onlyTargeted 
-                  ? 'bg-blue-600 text-white border-blue-600 shadow-2xs' 
-                  : 'bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-700'
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-[0_0_15px_rgba(37,99,235,0.15)]' 
+                  : 'bg-[#020617] border-slate-800 hover:border-slate-700 text-slate-400'
               }`}
             >
               <Target className="w-3.5 h-3.5" />
@@ -194,16 +194,16 @@ export default function LearnerCertificationsPage() {
         </div>
 
         {/* Filtres */}
-        <div className="pt-4 border-t border-slate-100">
+        <div className="pt-4 border-t border-slate-800">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             {/* Niveau */}
             <div className="flex items-center gap-3 w-full sm:w-auto">
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 shrink-0 w-[92px] text-right">Niveau :</span>
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 shrink-0 w-[92px] text-right">Niveau :</span>
               <div className="relative w-full sm:w-52">
                 <button
                   type="button"
                   onClick={() => setLevelDropdownOpen(!levelDropdownOpen)}
-                  className="flex items-center gap-2.5 px-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-xs font-bold outline-none cursor-pointer hover:bg-slate-100 transition-all w-full"
+                  className="flex items-center gap-2.5 px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 rounded-xl text-white text-xs font-bold outline-none cursor-pointer hover:bg-slate-900/50 transition-all w-full"
                 >
                   <span className="flex-1 text-left truncate">
                     {selectedLevel === 'TOUS' ? 'Tous les niveaux' : selectedLevel === 'DEBUTANT' ? 'Débutant' : selectedLevel === 'INTERMEDIAIRE' ? 'Intermédiaire' : 'Avancé'}
@@ -214,7 +214,7 @@ export default function LearnerCertificationsPage() {
                 {levelDropdownOpen && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setLevelDropdownOpen(false)} />
-                    <div className="absolute top-full left-0 mt-1.5 z-50 w-full bg-white border border-slate-200/80 rounded-2xl shadow-xl overflow-hidden">
+                    <div className="absolute top-full left-0 mt-1.5 z-50 w-full bg-[#080d1a] border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
                       {[
                         { val: 'TOUS', label: 'Tous les niveaux' },
                         { val: 'DEBUTANT', label: 'Débutant' },
@@ -224,19 +224,19 @@ export default function LearnerCertificationsPage() {
                         <button
                           key={niv.val}
                           onClick={() => { setSelectedLevel(niv.val as any); setLevelDropdownOpen(false); }}
-                          className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
-                            selectedLevel === niv.val ? 'bg-slate-100 text-slate-950' : 'text-slate-600'
+                          className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-[#020617] cursor-pointer ${
+                            selectedLevel === niv.val ? 'bg-[#020617] text-white' : 'text-slate-400'
                           }`}
                         >
                           <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
-                            niv.val === 'TOUS' ? 'bg-slate-100' :
-                            niv.val === 'DEBUTANT' ? 'bg-emerald-50' :
-                            niv.val === 'INTERMEDIAIRE' ? 'bg-amber-50' : 'bg-rose-50'
+                            niv.val === 'TOUS' ? 'bg-slate-800' :
+                            niv.val === 'DEBUTANT' ? 'bg-emerald-950/20' :
+                            niv.val === 'INTERMEDIAIRE' ? 'bg-amber-950/20' : 'bg-blue-950/20'
                           }`}>
                             <span className={`text-[9px] font-black uppercase ${
-                              niv.val === 'TOUS' ? 'text-slate-500' :
-                              niv.val === 'DEBUTANT' ? 'text-emerald-600' :
-                              niv.val === 'INTERMEDIAIRE' ? 'text-amber-600' : 'text-rose-600'
+                              niv.val === 'TOUS' ? 'text-slate-400' :
+                              niv.val === 'DEBUTANT' ? 'text-emerald-500' :
+                              niv.val === 'INTERMEDIAIRE' ? 'text-amber-500' : 'text-cyan-400'
                             }`}>
                               {niv.val === 'TOUS' ? 'T' : niv.val === 'DEBUTANT' ? 'D' : niv.val === 'INTERMEDIAIRE' ? 'I' : 'A'}
                             </span>
@@ -252,12 +252,12 @@ export default function LearnerCertificationsPage() {
 
             {/* Fournisseur */}
             <div className="flex items-center gap-3 w-full sm:w-auto">
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 shrink-0 w-[92px] text-right">Fournisseur :</span>
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 shrink-0 w-[92px] text-right">Fournisseur :</span>
               <div className="relative w-full sm:w-52">
                 <button
                   type="button"
                   onClick={() => setProviderDropdownOpen(!providerDropdownOpen)}
-                  className="flex items-center gap-2.5 px-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-xs font-bold outline-none cursor-pointer hover:bg-slate-100 transition-all w-full"
+                  className="flex items-center gap-2.5 px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 rounded-xl text-white text-xs font-bold outline-none cursor-pointer hover:bg-slate-900/50 transition-all w-full"
                 >
                   {selectedProvider !== 'TOUS' && getProviderLogo(fournisseurs.find((f: any) => f.id === selectedProvider)?.slug || '') && (
                     <img src={getProviderLogo(fournisseurs.find((f: any) => f.id === selectedProvider)?.slug || '')} alt="" className="w-5 h-5 object-contain rounded shrink-0" />
@@ -271,19 +271,19 @@ export default function LearnerCertificationsPage() {
                 {providerDropdownOpen && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setProviderDropdownOpen(false)} />
-                    <div className="absolute top-full left-0 mt-1.5 z-50 w-full bg-white border border-slate-200/80 rounded-2xl shadow-xl overflow-hidden">
+                    <div className="absolute top-full left-0 mt-1.5 z-50 w-full bg-[#080d1a] border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
                       <button
                         onClick={() => { setSelectedProvider('TOUS'); setProviderDropdownOpen(false); }}
-                        className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
-                          selectedProvider === 'TOUS' ? 'bg-slate-100 text-slate-950' : 'text-slate-600'
+                        className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-[#020617] cursor-pointer ${
+                          selectedProvider === 'TOUS' ? 'bg-[#020617] text-white' : 'text-slate-400'
                         }`}
                       >
-                        <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                        <div className="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center shrink-0">
                           <Award className="w-4 h-4 text-slate-500" />
                         </div>
                         <span className="truncate">Tous les constructeurs</span>
                       </button>
-                      <div className="border-t border-slate-100" />
+                      <div className="border-t border-slate-800" />
                       <div className="max-h-64 overflow-y-auto">
                         {fournisseurs.map((f: any) => {
                           const logo = getProviderLogo(f.slug || f.nom || '');
@@ -291,14 +291,14 @@ export default function LearnerCertificationsPage() {
                             <button
                               key={f.id}
                               onClick={() => { setSelectedProvider(f.id); setProviderDropdownOpen(false); }}
-                              className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
-                                selectedProvider === f.id ? 'bg-slate-100 text-slate-950' : 'text-slate-600'
+                              className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-[#020617] cursor-pointer ${
+                                selectedProvider === f.id ? 'bg-[#020617] text-white' : 'text-slate-400'
                               }`}
                             >
                               {logo ? (
                                 <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0" />
                               ) : (
-                                <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                <div className="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center shrink-0">
                                   <Award className="w-4 h-4 text-slate-500" />
                                 </div>
                               )}
@@ -318,7 +318,7 @@ export default function LearnerCertificationsPage() {
 
       {/* Grille de Certifications */}
       {filteredCerts.length === 0 ? (
-        <div className="p-12 text-center bg-white border border-slate-200/80 rounded-3xl text-slate-550 font-semibold shadow-sm">
+        <div className="p-12 text-center bg-[#080d1a] border border-slate-800 rounded-3xl text-slate-400 font-semibold shadow-sm">
           Aucune certification ne correspond aux critères sélectionnés.
         </div>
       ) : (
@@ -326,17 +326,17 @@ export default function LearnerCertificationsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
             {currentCerts.map((cert) => (
               <motion.div key={cert.id} layout initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.2 }}
-                className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-col justify-between group transition-all duration-300 hover:shadow-lg hover:border-slate-300 text-left"
+                className="bg-[#080d1a] border border-slate-800 rounded-2xl p-4 flex flex-col justify-between group transition-all duration-300 hover:shadow-xl hover:border-slate-700 text-left"
               >
                 {/* Visual Box (Landing Page Style) */}
-                <div onClick={() => setSelectedCertModal(cert)} className="relative w-full aspect-[4/3] sm:aspect-auto sm:h-[240px] rounded-xl overflow-hidden shadow-sm transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-blue-900/30 group-hover:shadow-2xl bg-white border border-slate-100 cursor-pointer">
+                <div onClick={() => setSelectedCertModal(cert)} className="relative w-full aspect-[4/3] sm:aspect-auto sm:h-[240px] rounded-xl overflow-hidden shadow-sm transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-blue-900/20 group-hover:shadow-2xl bg-[#020617] border border-slate-800 cursor-pointer">
                   {/* Background Template */}
-                  <img src="/images/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
+                  <img src="/images/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0 opacity-50 mix-blend-screen" />
 
                   {/* Examen code overlay */}
                   {cert.codeExamen && (
                     <div className="absolute top-3 left-3 z-30">
-                      <div className="bg-slate-950 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-800 shadow-sm flex items-center group-hover:bg-red-600 group-hover:border-red-500 transition-colors">
+                      <div className="bg-[#020617] text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-800 shadow-sm flex items-center group-hover:bg-blue-600 group-hover:border-cyan-500 transition-colors">
                         {cert.codeExamen}
                       </div>
                     </div>
@@ -359,18 +359,18 @@ export default function LearnerCertificationsPage() {
                 {/* Title & Info & Actions */}
                 <div className="mt-4 flex-1 flex flex-col justify-between">
                   <div className="space-y-1">
-                    <h3 onClick={() => setSelectedCertModal(cert)} className="text-sm font-black text-slate-950 leading-snug line-clamp-2 cursor-pointer hover:text-blue-600 transition-colors">
+                    <h3 onClick={() => setSelectedCertModal(cert)} className="text-sm font-black text-white leading-snug line-clamp-2 cursor-pointer hover:text-cyan-400 transition-colors">
                       {cert.nom}
                     </h3>
-                    <p className="text-[10px] text-slate-450 font-bold uppercase tracking-wider">
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
                       {cert.fournisseur?.nom || 'Officiel'} • {cert.niveau} • {cert.dureeIndicative || '15h'}
                     </p>
                   </div>
 
-                  <div className="pt-4 border-t border-slate-100 flex items-center gap-2 mt-4">
+                  <div className="pt-4 border-t border-slate-800 flex items-center gap-2 mt-4">
                     <button
                       onClick={() => setSelectedCertModal(cert)}
-                      className="flex-1 py-2.5 bg-slate-950 hover:bg-slate-900 text-white font-black rounded-xl text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md"
+                      className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(37,99,235,0.3)] hover:shadow-[0_0_20px_rgba(37,99,235,0.5)] active:scale-[0.98]"
                     >
                       <span>Consulter</span>
                     </button>
@@ -379,8 +379,8 @@ export default function LearnerCertificationsPage() {
                       onClick={() => toggleTargetCertification(cert.id.toString())}
                       className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer border flex items-center justify-center gap-1.5 ${
                         targetCertIds.includes(cert.id.toString())
-                          ? 'bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100'
-                          : 'bg-slate-50 text-slate-500 border-slate-200 hover:text-slate-700 hover:border-slate-300'
+                          ? 'bg-emerald-950/20 text-emerald-500 border-emerald-900/50 hover:bg-emerald-950/40'
+                          : 'bg-[#020617] text-slate-400 border-slate-800 hover:text-white hover:border-slate-700'
                       }`}
                       title={targetCertIds.includes(cert.id.toString()) ? "Retirer des objectifs" : "Ajouter aux objectifs"}
                     >
@@ -409,11 +409,11 @@ export default function LearnerCertificationsPage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-8 p-6 bg-white border border-slate-200/80 rounded-3xl shadow-sm">
+            <div className="flex items-center justify-between mt-8 p-6 bg-[#080d1a] border border-slate-800 rounded-3xl shadow-sm">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
-                className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-650 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
+                className="px-4 py-2 border border-slate-800 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:border-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-[#020617] shadow-sm"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Précédent</span>
@@ -429,8 +429,8 @@ export default function LearnerCertificationsPage() {
                       onClick={() => setCurrentPage(pageNum)}
                       className={`w-9 h-9 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center ${
                         isActive
-                          ? 'bg-slate-950 text-white shadow-md'
-                          : 'bg-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-950'
+                          ? 'bg-blue-600 text-white shadow-md'
+                          : 'bg-transparent text-slate-400 hover:bg-[#020617] hover:text-white'
                       }`}
                     >
                       {pageNum}
@@ -442,7 +442,7 @@ export default function LearnerCertificationsPage() {
               <button
                 onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-650 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-white shadow-sm"
+                className="px-4 py-2 border border-slate-800 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:border-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-[#020617] shadow-sm"
               >
                 <span>Suivant</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -458,17 +458,17 @@ export default function LearnerCertificationsPage() {
 /* ───── MODAL DÉTAIL CERTIFICATION ───── */
 function CertDetailModal({ cert, onClose, onPractice, isTargeted, onToggleTarget }: { cert: Certification; onClose: () => void; onPractice: (cert: Certification) => void; isTargeted?: boolean; onToggleTarget?: () => void }) {
   return (
-    <div className="flex flex-col md:flex-row-reverse bg-white overflow-hidden rounded-2xl">
+    <div className="flex flex-col md:flex-row-reverse bg-transparent overflow-hidden rounded-2xl">
       {/* Côté Droit (Desktop) / Haut (Mobile) : Le cadre de la certification */}
-      <div className="w-full md:w-[340px] p-5 flex flex-col items-center justify-center bg-slate-50 border-b md:border-b-0 md:border-l border-slate-200/80 shrink-0">
-        <div className="relative w-full max-w-[280px] h-[340px] rounded-2xl overflow-hidden shadow-lg border border-slate-200 bg-white">
+      <div className="w-full md:w-[340px] p-5 flex flex-col items-center justify-center bg-[#020617] border-b md:border-b-0 md:border-l border-slate-800 shrink-0">
+        <div className="relative w-full max-w-[280px] h-[340px] rounded-2xl overflow-hidden shadow-xl border border-slate-800 bg-[#080d1a]">
           {/* Background Template */}
-          <img src="/images/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
+          <img src="/images/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0 opacity-50 mix-blend-screen" />
 
           {/* Examen code overlay */}
           {cert.codeExamen && (
             <div className="absolute top-4 left-4 z-30">
-              <div className="bg-red-600 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-red-500 shadow-sm flex items-center">
+              <div className="bg-[#020617] text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-800 shadow-sm flex items-center">
                 {cert.codeExamen}
               </div>
             </div>
@@ -479,8 +479,8 @@ function CertDetailModal({ cert, onClose, onPractice, isTargeted, onToggleTarget
             {cert.image ? (
               <img src={cert.image} alt={cert.nom} className="w-full h-auto object-contain filter drop-shadow-xl" />
             ) : (
-              <div className="w-18 h-18 bg-white/95 rounded-full flex items-center justify-center border border-slate-200 shadow-sm">
-                <Award className="w-8 h-8 text-slate-400" />
+              <div className="w-18 h-18 bg-[#080d1a]/95 rounded-full flex items-center justify-center border border-slate-800 shadow-sm">
+                <Award className="w-8 h-8 text-slate-500" />
               </div>
             )}
           </div>
@@ -494,44 +494,44 @@ function CertDetailModal({ cert, onClose, onPractice, isTargeted, onToggleTarget
           <div className="space-y-2">
             <div className="flex items-center gap-1.5 flex-wrap">
               {cert.codeExamen && (
-                <span className="text-[10px] font-black text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md">{cert.codeExamen}</span>
+                <span className="text-[10px] font-black text-cyan-400 bg-blue-950/20 border border-blue-900/40 px-2 py-0.5 rounded-md">{cert.codeExamen}</span>
               )}
               <span className={`text-[10px] px-2 py-0.5 rounded-md font-black border ${getLevelBadgeStyle(cert.niveau)}`}>{cert.niveau}</span>
             </div>
-            <h2 className="text-xl font-black text-slate-950 leading-snug">{cert.nom}</h2>
-            <p className="text-xs text-slate-450 font-bold uppercase tracking-wider">{cert.fournisseur?.nom || 'Officiel'}</p>
+            <h2 className="text-xl font-black text-white leading-snug">{cert.nom}</h2>
+            <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">{cert.fournisseur?.nom || 'Officiel'}</p>
           </div>
           <button onClick={onClose}
-            className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-650 transition-all cursor-pointer shrink-0">
+            className="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-all cursor-pointer shrink-0">
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Description et métriques */}
         <div className="space-y-4">
-          <p className="text-xs text-slate-600 font-semibold leading-relaxed">
+          <p className="text-xs text-slate-400 font-semibold leading-relaxed">
             {cert.description || "Préparez-vous efficacement à l'examen officiel grâce à nos questionnaires actualisés."}
           </p>
 
           <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl">
-              <span className="text-[9px] font-black text-slate-450 uppercase tracking-wider">Niveau</span>
-              <p className="text-xs font-extrabold text-slate-900 mt-0.5">{cert.niveau}</p>
+            <div className="p-3 bg-[#020617] border border-slate-800 rounded-xl">
+              <span className="text-[9px] font-black text-slate-500 uppercase tracking-wider">Niveau</span>
+              <p className="text-xs font-extrabold text-white mt-0.5">{cert.niveau}</p>
             </div>
-            <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl">
-              <span className="text-[9px] font-black text-slate-450 uppercase tracking-wider">Durée</span>
-              <p className="text-xs font-extrabold text-slate-900 mt-0.5">{cert.dureeIndicative || '15h'}</p>
+            <div className="p-3 bg-[#020617] border border-slate-800 rounded-xl">
+              <span className="text-[9px] font-black text-slate-500 uppercase tracking-wider">Durée</span>
+              <p className="text-xs font-extrabold text-white mt-0.5">{cert.dureeIndicative || '15h'}</p>
             </div>
           </div>
 
           {cert.objectifs && cert.objectifs.length > 0 && (
-            <div className="p-4 bg-blue-50/50 border border-blue-100/50 rounded-xl space-y-2">
-              <span className="text-[9px] font-black text-blue-600 uppercase tracking-wider flex items-center gap-1.5">
+            <div className="p-4 bg-blue-950/20 border border-blue-900/40 rounded-xl space-y-2">
+              <span className="text-[9px] font-black text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5" /> Objectifs
               </span>
               <ul className="space-y-1.5">
                 {cert.objectifs.map((obj, i) => (
-                  <li key={i} className="text-xs text-slate-750 font-semibold flex items-start gap-1.5">
+                  <li key={i} className="text-xs text-slate-300 font-semibold flex items-start gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 shrink-0" />
                     <span>{obj}</span>
                   </li>
@@ -541,13 +541,13 @@ function CertDetailModal({ cert, onClose, onPractice, isTargeted, onToggleTarget
           )}
 
           {cert.prerequis && cert.prerequis.length > 0 && (
-            <div className="p-4 bg-amber-50/50 border border-amber-100/50 rounded-xl space-y-2">
-              <span className="text-[9px] font-black text-amber-600 uppercase tracking-wider flex items-center gap-1.5">
+            <div className="p-4 bg-amber-950/20 border border-amber-900/40 rounded-xl space-y-2">
+              <span className="text-[9px] font-black text-amber-500 uppercase tracking-wider flex items-center gap-1.5">
                 <FileText className="w-3.5 h-3.5" /> Prérequis
               </span>
               <ul className="space-y-1.5">
                 {cert.prerequis.map((pr, i) => (
-                  <li key={i} className="text-xs text-slate-750 font-semibold flex items-start gap-1.5">
+                  <li key={i} className="text-xs text-slate-300 font-semibold flex items-start gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1.5 shrink-0" />
                     <span>{pr}</span>
                   </li>
@@ -560,7 +560,7 @@ function CertDetailModal({ cert, onClose, onPractice, isTargeted, onToggleTarget
         {/* Boutons d'action */}
         <div className="flex flex-col gap-3 pt-2">
           <button onClick={() => onPractice(cert)}
-            className="flex-1 py-3 bg-slate-950 hover:bg-slate-900 text-white font-black rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98]">
+            className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98]">
             <Play className="w-3.5 h-3.5 fill-white text-white" />
             Commencer la formation
           </button>
@@ -568,8 +568,8 @@ function CertDetailModal({ cert, onClose, onPractice, isTargeted, onToggleTarget
             <button onClick={() => onToggleTarget()}
               className={`flex-1 py-3 border font-black rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-[0.98] ${
                 isTargeted
-                  ? 'border-emerald-200 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:border-emerald-300'
-                  : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-700 hover:border-slate-300'
+                  ? 'border-emerald-900/50 bg-emerald-950/20 text-emerald-500 hover:bg-emerald-950/40'
+                  : 'border-slate-800 bg-[#020617] text-slate-400 hover:bg-slate-800 hover:text-white hover:border-slate-700'
               }`}>
               {isTargeted ? <Check className="w-3.5 h-3.5" /> : <Target className="w-3.5 h-3.5" />}
               <span>{isTargeted ? 'Dans mes objectifs' : 'Viser cet examen'}</span>

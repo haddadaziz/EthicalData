@@ -226,9 +226,10 @@ export default function StudentDashboard() {
 
     if (loading) {
         return (
-            <div className="min-h-[50vh] flex flex-col items-center justify-center text-slate-500 gap-3">
-                <span className="w-10 h-10 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin" />
-                <p className="text-xs font-bold uppercase tracking-widest text-blue-600">Chargement de votre analyse IA...</p>
+            <div className="min-h-[50vh] flex flex-col items-center justify-center text-slate-500 gap-3 relative overflow-hidden">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-blue-600/10 rounded-full blur-[80px]" />
+                <span className="w-10 h-10 border-4 border-[#080d1a] border-t-cyan-500 rounded-full animate-spin relative z-10" />
+                <p className="text-xs font-bold uppercase tracking-widest text-cyan-400 relative z-10 animate-pulse">Chargement de votre analyse IA...</p>
             </div>
         );
     }
@@ -249,24 +250,24 @@ export default function StudentDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* STAT CARD 1: COURS CRÉÉS */}
                     <div className="bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-6 shadow-xl flex items-center justify-between gap-4 relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-gradient-to-br from-red-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                         <div className="space-y-1 relative z-10">
                             <span className="text-2xl font-black text-white block leading-tight">{trainerTotalCourses}</span>
                             <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Cours créés</span>
                         </div>
-                        <div className="w-12 h-12 rounded-2xl bg-red-950/30 border border-red-900/30 flex items-center justify-center text-red-500 relative z-10 shadow-[0_0_15px_rgba(220,38,38,0.15)]">
+                        <div className="w-12 h-12 rounded-2xl bg-blue-950/30 border border-blue-900/30 flex items-center justify-center text-cyan-400 relative z-10 shadow-[0_0_15px_rgba(37,99,235,0.15)]">
                             <BookMarked className="w-6 h-6" />
                         </div>
                     </div>
 
                     {/* STAT CARD 2: SÉANCES DE COACHING */}
                     <div className="bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-6 shadow-xl flex items-center justify-between gap-4 relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-gradient-to-br from-red-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                         <div className="space-y-1 relative z-10">
                             <span className="text-2xl font-black text-white block leading-tight">{mySessions.length}</span>
                             <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Séances confirmées</span>
                         </div>
-                        <div className="w-12 h-12 rounded-2xl bg-red-950/30 border border-red-900/30 flex items-center justify-center text-red-500 relative z-10 shadow-[0_0_15px_rgba(220,38,38,0.15)]">
+                        <div className="w-12 h-12 rounded-2xl bg-blue-950/30 border border-blue-900/30 flex items-center justify-center text-cyan-400 relative z-10 shadow-[0_0_15px_rgba(37,99,235,0.15)]">
                             <CalendarCheck className="w-6 h-6" />
                         </div>
                     </div>
@@ -286,7 +287,7 @@ export default function StudentDashboard() {
                                 </div>
                                 <button
                                     onClick={() => router.push('/dashboard/courses')}
-                                    className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs rounded-2xl transition-all cursor-pointer shadow-md shadow-red-600/20"
+                                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-2xl transition-all cursor-pointer shadow-md shadow-blue-600/20"
                                 >
                                     Créer mon premier cours
                                 </button>
@@ -312,7 +313,7 @@ export default function StudentDashboard() {
                                         .map(c => (
                                             <div key={c.id} className="p-4 bg-[#020617] border border-slate-800/80 rounded-2xl space-y-3">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="px-2 py-0.5 bg-red-950/20 text-red-500 font-extrabold text-[8px] rounded-full uppercase tracking-wider border border-red-900/30">
+                                                    <span className="px-2 py-0.5 bg-blue-950/20 text-cyan-400 font-extrabold text-[8px] rounded-full uppercase tracking-wider border border-blue-900/30">
                                                         {c.certification?.codeExamen || 'COURS'}
                                                     </span>
                                                     <span className="text-[10px] font-extrabold text-white truncate">{c.titre}</span>
@@ -325,7 +326,7 @@ export default function StudentDashboard() {
                                                         </div>
                                                     ))}
                                                     {(c.modules || []).length > 3 && (
-                                                        <span className="text-[10px] text-red-500 font-extrabold block pt-1">
+                                                        <span className="text-[10px] text-cyan-400 font-extrabold block pt-1">
                                                             + {(c.modules || []).length - 3} autres modules...
                                                         </span>
                                                     )}
@@ -351,7 +352,7 @@ export default function StudentDashboard() {
                         {/* PROCHAINES SESSIONS DU FORMATEUR */}
                         <div className="bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
                             <h3 className="text-sm font-black text-white border-b border-slate-800 pb-3 flex items-center gap-2">
-                                <Clock className="w-4 h-4 text-red-500" />
+                                <Clock className="w-4 h-4 text-cyan-400" />
                                 <span>Prochaines Sessions</span>
                             </h3>
 
@@ -364,7 +365,7 @@ export default function StudentDashboard() {
                                         .slice(0, 3)
                                         .map((rdv) => (
                                             <div key={rdv.id} className="p-3 bg-[#020617] border border-slate-800/80 rounded-2xl text-left space-y-1">
-                                                <span className="text-[9px] font-black text-red-500 uppercase bg-red-950/20 border border-red-900/30 px-2 py-0.5 rounded w-fit block">
+                                                <span className="text-[9px] font-black text-cyan-400 uppercase bg-blue-950/20 border border-blue-900/30 px-2 py-0.5 rounded w-fit block">
                                                     {rdv.type.replace(/_/g, ' ')}
                                                 </span>
                                                 <span className="text-xs font-bold text-white block">
@@ -385,7 +386,7 @@ export default function StudentDashboard() {
     }
 
     return (
-        <div className="space-y-8 text-slate-300 text-left font-sans selection:bg-red-600 selection:text-white pb-10">
+        <div className="space-y-8 text-slate-300 text-left font-sans selection:bg-blue-600 selection:text-white pb-10">
 
             {/* BARRE D'EN-TÊTE ACTION & SÉLECTEUR DE CERTIFICATION D'EXAMEN */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
@@ -405,7 +406,7 @@ export default function StudentDashboard() {
                             <button
                                 type="button"
                                 onClick={() => setCertDropdownOpen(!certDropdownOpen)}
-                                className="w-full flex items-center gap-2 px-4 py-2.5 bg-[#080d1a] border border-slate-800 focus:border-red-600 rounded-2xl text-white text-xs font-bold outline-none cursor-pointer hover:bg-slate-800/50 transition-all sm:min-w-[220px]"
+                                className="w-full flex items-center gap-2 px-4 py-2.5 bg-[#080d1a] border border-slate-800 focus:border-blue-600 rounded-2xl text-white text-xs font-bold outline-none cursor-pointer hover:bg-slate-800/50 transition-all sm:min-w-[220px]"
                             >
                                 {selectedCert && getCertificateBadgeLogo(selectedCert) && (
                                     <img src={getCertificateBadgeLogo(selectedCert)} alt="" className="w-5 h-5 object-contain rounded shrink-0" />
@@ -459,9 +460,9 @@ export default function StudentDashboard() {
                     ) : (
                         <Link 
                             href="/dashboard/certifications"
-                            className="px-3.5 py-2 bg-red-950/20 hover:bg-red-950/40 text-red-500 font-extrabold rounded-xl text-xs transition-all border border-red-900/50 cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                            className="px-3.5 py-2 bg-blue-950/20 hover:bg-blue-950/40 text-cyan-400 font-extrabold rounded-xl text-xs transition-all border border-blue-900/50 cursor-pointer flex items-center gap-1.5 shadow-2xs"
                         >
-                            <Target className="w-3.5 h-3.5 text-red-500" />
+                            <Target className="w-3.5 h-3.5 text-cyan-400" />
                             <span>Ajouter un objectif visé</span>
                         </Link>
                     )}
@@ -473,7 +474,7 @@ export default function StudentDashboard() {
 
                 {/* GAUCHE : SCORE FINAL DONUT GAUGE OU INVITATION À VISER UNE CERTIF */}
                 <div className="lg:col-span-4 bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-7 flex flex-col items-center justify-between text-center shadow-xl relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-red-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     {!selectedCert ? (
                         <div className="my-auto space-y-4 flex flex-col items-center justify-center relative z-10">
                             <div className="w-12 h-12 rounded-2xl bg-amber-950/30 border border-amber-900/30 flex items-center justify-center text-amber-500 shrink-0 shadow-[0_0_15px_rgba(245,158,11,0.15)]">
@@ -489,7 +490,7 @@ export default function StudentDashboard() {
                             </div>
                             <Link
                                 href="/dashboard/certifications"
-                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer inline-flex items-center gap-1.5"
+                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer inline-flex items-center gap-1.5"
                             >
                                 <Target className="w-3.5 h-3.5 text-white" />
                                 <span>Choisir une certif</span>
@@ -510,7 +511,7 @@ export default function StudentDashboard() {
                             </div>
                             <Link
                                 href={`/dashboard/practice?cert=${selectedCert.slug}`}
-                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer inline-flex items-center gap-1.5"
+                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer inline-flex items-center gap-1.5"
                             >
                                 <Target className="w-3.5 h-3.5 text-white" />
                                 <span>S&apos;entraîner</span>
@@ -536,7 +537,7 @@ export default function StudentDashboard() {
                                         cx="88"
                                         cy="88"
                                         r="70"
-                                        className={`fill-none ${isReady ? 'stroke-emerald-500' : isAlmostReady ? 'stroke-amber-500' : 'stroke-red-600'}`}
+                                        className={`fill-none ${isReady ? 'stroke-emerald-500' : isAlmostReady ? 'stroke-amber-500' : 'stroke-blue-500'}`}
                                         strokeWidth="12"
                                         strokeDasharray={2 * Math.PI * 70}
                                         initial={{ strokeDashoffset: 2 * Math.PI * 70 }}
@@ -556,7 +557,7 @@ export default function StudentDashboard() {
                                 <div className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-extrabold ${
                                     isReady ? 'bg-emerald-950/30 border border-emerald-900/50 text-emerald-500' :
                                     isAlmostReady ? 'bg-amber-950/30 border border-amber-900/50 text-amber-500' :
-                                    'bg-red-950/30 border border-red-900/50 text-red-500'
+                                    'bg-blue-950/30 border border-blue-900/50 text-cyan-400'
                                 }`}>
                                     <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
                                     <span>{isReady ? "Prêt pour l'examen" : isAlmostReady ? "Presque Prêt" : "À renforcer"}</span>
@@ -570,7 +571,7 @@ export default function StudentDashboard() {
                 </div>
 
                 {/* DROITE : ANALYSE DE L'IA (8 COLS) SANS LOGO ET SANS TUTOR */}
-                <div className="lg:col-span-8 bg-[#080d1a]/90 border border-slate-800 border-l-4 border-l-red-600 rounded-3xl p-7 text-left space-y-6 shadow-xl flex flex-col justify-between">
+                <div className="lg:col-span-8 bg-[#080d1a]/90 border border-slate-800 border-l-4 border-l-cyan-500 rounded-3xl p-7 text-left space-y-6 shadow-xl flex flex-col justify-between">
                     
                     {/* Titre sans logo ni tutor */}
                     <div className="flex items-center justify-between">
@@ -589,7 +590,7 @@ export default function StudentDashboard() {
                             </p>
                             <Link
                                 href="/dashboard/certifications"
-                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer shadow-2xs"
+                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer shadow-2xs"
                             >
                                 <Target className="w-3.5 h-3.5 text-white" />
                                 <span>Voir le catalogue des certifications</span>
@@ -602,7 +603,7 @@ export default function StudentDashboard() {
                             </p>
                             <Link
                                 href={`/dashboard/practice?cert=${selectedCert.slug || selectedCert.id}`}
-                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer shadow-2xs"
+                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer shadow-2xs"
                             >
                                 <Play className="w-3 h-3 fill-white text-white" />
                                 <span>Lancer un premier entraînement</span>
@@ -618,7 +619,7 @@ export default function StudentDashboard() {
                                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block">
                                         Points Forts
                                     </span>
-                                    <ul className="space-y-2 text-xs font-bold text-slate-800">
+                                    <ul className="space-y-2 text-xs font-bold text-white">
                                         {(readinessData?.pointsForts && readinessData.pointsForts.length > 0) ? (
                                             readinessData.pointsForts.map((pf: string, i: number) => (
                                                 <li key={i} className="flex items-start gap-2">
@@ -637,7 +638,7 @@ export default function StudentDashboard() {
                                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block">
                                         Lacunes Identifiées
                                     </span>
-                                    <ul className="space-y-2 text-xs font-bold text-slate-800">
+                                    <ul className="space-y-2 text-xs font-bold text-white">
                                         {(readinessData?.lacunes && readinessData.lacunes.length > 0) ? (
                                             readinessData.lacunes.map((lac: string, i: number) => (
                                                 <li key={i} className="flex items-start gap-2 text-white">
@@ -653,7 +654,7 @@ export default function StudentDashboard() {
                             </div>
 
                             {/* Encart Conseil IA Dynamique issu du Backend */}
-                            <div className="bg-red-950/20 border border-red-900/40 rounded-2xl p-4 text-xs font-semibold text-red-100 leading-relaxed italic text-left relative z-10">
+                            <div className="bg-blue-950/20 border border-blue-900/40 rounded-2xl p-4 text-xs font-semibold text-cyan-100 leading-relaxed italic text-left relative z-10">
                                 &ldquo;{readinessData?.conseil || `${firstName}, vous avez de très bonnes bases.`}&rdquo;
                             </div>
                         </>
@@ -687,7 +688,7 @@ export default function StudentDashboard() {
                         
                         {/* Ligne horizontale active */}
                         <div 
-                            className="absolute left-6 top-[44px] h-1 bg-gradient-to-r from-red-600 to-red-900 rounded-full transition-all duration-500 ease-out z-0" 
+                            className="absolute left-6 top-[44px] h-1 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-full transition-all duration-500 ease-out z-0" 
                             style={{ 
                                 width: activeStep !== null 
                                     ? `calc(${(activeStep / (((readinessData?.planRevision || [1, 2, 3]).length) - 1)) * 100}% - 12px)`
@@ -715,8 +716,8 @@ export default function StudentDashboard() {
                                                 onClick={() => setActiveStep(activeStep === idx ? null : idx)}
                                                 className={`step-btn w-14 h-14 rounded-full border-4 font-black text-base flex items-center justify-center transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-md cursor-pointer relative z-30 ${
                                                     isActive
-                                                        ? 'border-red-600 bg-red-600 text-white ring-8 ring-red-950/50'
-                                                        : 'border-[#020617] bg-slate-800 text-slate-400 hover:border-red-500 hover:text-red-500 hover:bg-[#080d1a] hover:shadow-[0_0_15px_rgba(220,38,38,0.2)]'
+                                                        ? 'border-blue-600 bg-blue-600 text-white ring-8 ring-blue-950/50'
+                                                        : 'border-[#020617] bg-slate-800 text-slate-400 hover:border-cyan-500 hover:text-cyan-400 hover:bg-[#080d1a] hover:shadow-[0_0_15px_rgba(37,99,235,0.2)]'
                                                 }`}
                                                 title={`Étape ${idx + 1} - Cliquer pour les détails`}
                                             >
@@ -750,7 +751,7 @@ export default function StudentDashboard() {
                                                                 <StepIcon className="w-4 h-4" />
                                                             </div>
                                                             <div>
-                                                                <span className="text-[9px] font-black text-red-500 uppercase tracking-widest block">Étape {idx + 1} sur {steps.length}</span>
+                                                                <span className="text-[9px] font-black text-cyan-400 uppercase tracking-widest block">Étape {idx + 1} sur {steps.length}</span>
                                                                 <h3 className="text-xs font-black text-white leading-tight">{metadata.title}</h3>
                                                             </div>
                                                         </div>
@@ -800,7 +801,7 @@ export default function StudentDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 {/* CARTE 1 : BESOIN D'AIDE ? (RDV EXPERT) */}
-                <div className="bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-xl hover:shadow-[0_0_20px_rgba(220,38,38,0.1)] transition-shadow text-left group">
+                <div className="bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-xl hover:shadow-[0_0_20px_rgba(37,99,235,0.1)] transition-shadow text-left group">
                     <div className="flex items-center gap-4">
                         <div className="w-11 h-11 rounded-2xl bg-blue-950/20 border border-blue-900/40 flex items-center justify-center text-blue-500 shrink-0">
                             <Calendar className="w-5 h-5" />
@@ -815,14 +816,14 @@ export default function StudentDashboard() {
 
                     <Link
                         href="/dashboard/appointments"
-                        className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer shrink-0 text-center"
+                        className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer shrink-0 text-center"
                     >
                         Prendre RDV
                     </Link>
                 </div>
 
                 {/* CARTE 2 : STUDY GROUP (COMMUNAUTÉ) */}
-                <div className="bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-xl hover:shadow-[0_0_20px_rgba(220,38,38,0.1)] transition-shadow text-left group">
+                <div className="bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-xl hover:shadow-[0_0_20px_rgba(37,99,235,0.1)] transition-shadow text-left group">
                     <div className="flex items-center gap-4">
                         <div className="w-11 h-11 rounded-2xl bg-emerald-950/20 border border-emerald-900/40 flex items-center justify-center text-emerald-500 shrink-0">
                             <Users className="w-5 h-5" />
@@ -864,7 +865,7 @@ export default function StudentDashboard() {
 
                     <Link
                         href="/dashboard/certifications"
-                        className="text-xs font-extrabold text-red-500 hover:text-red-400 transition-colors inline-flex items-center gap-1 cursor-pointer"
+                        className="text-xs font-extrabold text-cyan-400 hover:text-cyan-300 transition-colors inline-flex items-center gap-1 cursor-pointer"
                     >
                         <span>Gérer mes objectifs ({certs.length} disponibles)</span>
                         <ChevronRight className="w-4 h-4" />
@@ -879,7 +880,7 @@ export default function StudentDashboard() {
                             return (
                                 <div 
                                     key={cert.id || idx} 
-                                    className="bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-4 flex flex-col justify-between group transition-all duration-300 hover:shadow-xl hover:shadow-[0_0_20px_rgba(220,38,38,0.1)] hover:border-slate-700 text-left"
+                                    className="bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-4 flex flex-col justify-between group transition-all duration-300 hover:shadow-xl hover:shadow-[0_0_20px_rgba(37,99,235,0.1)] hover:border-slate-700 text-left"
                                 >
                                     {/* Visual Box (Landing Page Style) */}
                                     <div 
@@ -892,7 +893,7 @@ export default function StudentDashboard() {
                                         {/* Examen code overlay */}
                                         {cert.codeExamen && (
                                             <div className="absolute top-3 left-3 z-30">
-                                                <div className="bg-[#020617] text-white font-black uppercase text-[8px] tracking-widest px-2 py-0.5 rounded-md border border-slate-800 shadow-sm flex items-center group-hover:bg-red-600 group-hover:border-red-500 transition-colors">
+                                                <div className="bg-[#020617] text-white font-black uppercase text-[8px] tracking-widest px-2 py-0.5 rounded-md border border-slate-800 shadow-sm flex items-center group-hover:bg-blue-600 group-hover:border-cyan-500 transition-colors">
                                                     {cert.codeExamen}
                                                 </div>
                                             </div>
@@ -917,7 +918,7 @@ export default function StudentDashboard() {
                                         <div className="space-y-1">
                                             <h3 
                                                 onClick={() => setSelectedCertModal(cert)} 
-                                                className="text-xs font-black text-white leading-snug line-clamp-2 cursor-pointer hover:text-red-500 transition-colors"
+                                                className="text-xs font-black text-white leading-snug line-clamp-2 cursor-pointer hover:text-cyan-400 transition-colors"
                                             >
                                                 {cert.nom}
                                             </h3>
@@ -930,7 +931,7 @@ export default function StudentDashboard() {
                                             <button
                                                 type="button"
                                                 onClick={() => setSelectedCertModal(cert)}
-                                                className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md"
+                                                className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md"
                                             >
                                                 <span>Consulter</span>
                                             </button>
@@ -942,8 +943,8 @@ export default function StudentDashboard() {
                     </div>
                 ) : (
                     <div className="bg-[#020617] border border-dashed border-slate-800 rounded-3xl p-10 text-center space-y-4">
-                        <div className="w-14 h-14 rounded-2xl bg-red-950/20 text-red-500 flex items-center justify-center mx-auto border border-red-900/30 shadow-[0_0_15px_rgba(220,38,38,0.15)]">
-                            <Target className="w-7 h-7 text-red-500" />
+                        <div className="w-14 h-14 rounded-2xl bg-blue-950/20 text-cyan-400 flex items-center justify-center mx-auto border border-blue-900/30 shadow-[0_0_15px_rgba(37,99,235,0.15)]">
+                            <Target className="w-7 h-7 text-cyan-400" />
                         </div>
                         <div className="space-y-1.5 max-w-md mx-auto">
                             <h3 className="font-extrabold text-white text-base">Aucune certification visée</h3>
@@ -953,7 +954,7 @@ export default function StudentDashboard() {
                         </div>
                         <Link
                             href="/dashboard/certifications"
-                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer"
+                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer"
                         >
                             <BookOpen className="w-4 h-4 text-white" />
                             <span>Accéder au Catalogue des Certifications</span>

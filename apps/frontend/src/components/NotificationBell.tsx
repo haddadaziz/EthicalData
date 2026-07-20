@@ -134,7 +134,7 @@ export default function NotificationBell() {
       {/* Bouton Cloche */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200/80 rounded-2xl text-slate-700 hover:text-slate-950 transition-all cursor-pointer shadow-sm flex items-center justify-center"
+        className="relative p-2.5 hover:bg-white/10 rounded-2xl text-white transition-all cursor-pointer flex items-center justify-center"
         title="Notifications"
       >
         <Bell className="w-5 h-5" />
@@ -169,7 +169,7 @@ export default function NotificationBell() {
               {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllAsRead}
-                  className="text-[11px] font-bold text-slate-500 hover:text-red-600 flex items-center gap-1 cursor-pointer transition-colors"
+                  className="text-[11px] font-bold text-slate-500 hover:text-cyan-500 flex items-center gap-1 cursor-pointer transition-colors"
                 >
                   <CheckCheck className="w-3.5 h-3.5" />
                   <span>Tout marquer comme lu</span>
@@ -182,7 +182,7 @@ export default function NotificationBell() {
               <button
                 onClick={() => setFilter('ALL')}
                 className={`pb-2 border-b-2 transition-colors cursor-pointer ${
-                  filter === 'ALL' ? 'border-red-600 text-slate-950 font-black' : 'border-transparent hover:text-slate-700'
+                  filter === 'ALL' ? 'border-blue-600 text-slate-950 font-black' : 'border-transparent hover:text-slate-700'
                 }`}
               >
                 Toutes ({notifications.length})
@@ -191,7 +191,7 @@ export default function NotificationBell() {
               <button
                 onClick={() => setFilter('UNREAD')}
                 className={`pb-2 border-b-2 transition-colors cursor-pointer ${
-                  filter === 'UNREAD' ? 'border-red-600 text-slate-950 font-black' : 'border-transparent hover:text-slate-700'
+                  filter === 'UNREAD' ? 'border-blue-600 text-slate-950 font-black' : 'border-transparent hover:text-slate-700'
                 }`}
               >
                 Non lues ({unreadCount})

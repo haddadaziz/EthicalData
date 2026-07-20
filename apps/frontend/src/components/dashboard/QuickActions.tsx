@@ -13,8 +13,8 @@ export default function QuickActions({ onStartPractice, onBrowseCourses, onGoToC
             label: "Lancer une simulation",
             sublabel: "Testez vos connaissances en conditions réelles",
             onClick: onStartPractice,
-            hoverBg: 'hover:bg-red-950/20 hover:border-red-900/40',
-            hoverText: 'group-hover:text-red-500',
+            hoverBg: 'hover:bg-blue-950/20 hover:border-blue-900/40',
+            hoverText: 'group-hover:text-cyan-400',
         },
         {
             label: "Parcourir les cours",
@@ -35,7 +35,7 @@ export default function QuickActions({ onStartPractice, onBrowseCourses, onGoToC
     return (
         <div className="bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
             <h3 className="text-sm font-black text-white border-b border-slate-800 pb-3 flex items-center gap-2">
-                <ListChecks className="w-4 h-4 text-red-500" />
+                <ListChecks className="w-4 h-4 text-cyan-400" />
                 <span>Actions rapides</span>
             </h3>
             <div className="space-y-2">

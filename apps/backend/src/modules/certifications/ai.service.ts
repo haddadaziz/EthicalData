@@ -28,7 +28,7 @@ export class AiService {
   ): Promise<ResultatEvaluation> {
     const aiSettings = await this.settingsService.getSetting('ai');
     const apiKey = aiSettings?.apiKey || this.fallbackApiKey;
-    const activeModel = aiSettings?.activeModel || 'gemini-2.5-flash';
+    const activeModel = aiSettings?.activeModel || 'gemini-1.5-flash';
     const customPromptTemplate = aiSettings?.customPrompt || '';
 
     console.log(`[AiService] Model: ${activeModel}, Key set: ${!!apiKey}, Key prefix: ${apiKey?.substring(0, 10)}...`);
@@ -66,76 +66,120 @@ INSTRUCTIONS DE NOTATION :
 1. Attribuez un score entier entre 0 et 100.
 2. Soyez constructif. Si la réponse est très courte ou incomplète, pénalisez le score de manière proportionnelle mais juste.
 3. Rédigez une critique claire résumant ce qui est correct et ce qui manque.
-4. Rédigez des suggestions concrètes pour aider le candidat à réviser la notion si sa réponse est imparfaite.`;
+4. Rédigez des suggestions concrètes pour aider le candidat à réviser la notion si sa réponse est imparfaite.
+5. Vous devez obligatoirement formater votre réponse en JSON valide avec les clés "score", "critique" et "suggestions".`;
       }
 
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${activeModel}:generateContent?key=${apiKey}`,
-        {
+      const isGeminiNative = activeModel.toLowerCase().startsWith('gemini') && !aiSettings?.apiUrl;
+      let parsedResult: ResultatEvaluation;
+
+      if (isGeminiNative) {
+        // --- NATIVE GEMINI API ---
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${activeModel}:generateContent?key=${apiKey}`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              contents: [
+                {
+                  parts: [{ text: prompt }],
+                },
+              ],
+              generationConfig: {
+                responseMimeType: 'application/json',
+                responseSchema: {
+                  type: 'OBJECT',
+                  properties: {
+                    score: {
+                      type: 'INTEGER',
+                      description: 'Note globale sur 100 attribuée à la réponse du candidat.',
+                    },
+                    critique: {
+                      type: 'STRING',
+                      description: 'Synthèse explicative des points forts et faiblesses identifiés dans la réponse du candidat.',
+                    },
+                    suggestions: {
+                      type: 'STRING',
+                      description: 'Conseils de révision ciblés et constructifs pour corriger les lacunes détectées.',
+                    },
+                  },
+                  required: ['score', 'critique', 'suggestions'],
+                },
+              },
+            }),
+          },
+        );
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Erreur API Gemini:', errorText);
+          throw new Error(`API Gemini a répondu avec le statut ${response.status}`);
+        }
+
+        const responseData = await response.json();
+        const textResponse = responseData.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (!textResponse) {
+          throw new Error('Réponse vide reçue de Gemini');
+        }
+
+        parsedResult = JSON.parse(textResponse);
+
+      } else {
+        // --- UNIVERSAL OPENAI-COMPATIBLE API ---
+        const baseUrl = aiSettings?.apiUrl || 'https://api.openai.com/v1';
+        const endpoint = baseUrl.endsWith('/') ? `${baseUrl}chat/completions` : `${baseUrl}/chat/completions`;
+
+        const response = await fetch(endpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
           },
           body: JSON.stringify({
-            contents: [
-              {
-                parts: [{ text: prompt }],
+            model: activeModel,
+            messages: [
+              { 
+                role: 'system', 
+                content: "Tu es un expert en évaluation qui doit absolument retourner un JSON strict avec les clés: 'score' (nombre), 'critique' (chaine), 'suggestions' (chaine)." 
               },
+              { 
+                role: 'user', 
+                content: prompt 
+              }
             ],
-            generationConfig: {
-              responseMimeType: 'application/json',
-              responseSchema: {
-                type: 'OBJECT',
-                properties: {
-                  score: {
-                    type: 'INTEGER',
-                    description:
-                      'Note globale sur 100 attribuée à la réponse du candidat.',
-                  },
-                  critique: {
-                    type: 'STRING',
-                    description:
-                      'Synthèse explicative des points forts et faiblesses identifiés dans la réponse du candidat.',
-                  },
-                  suggestions: {
-                    type: 'STRING',
-                    description:
-                      'Conseils de révision ciblés et constructifs pour corriger les lacunes détectées.',
-                  },
-                },
-                required: ['score', 'critique', 'suggestions'],
-              },
-            },
+            response_format: { type: 'json_object' }
           }),
-        },
-      );
+        });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Erreur API Gemini:', errorText);
-        throw new Error(
-          `API Gemini a répondu avec le statut ${response.status}`,
-        );
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Erreur API (OpenAI format):', errorText);
+          throw new Error(`API AI a répondu avec le statut ${response.status}`);
+        }
+
+        const responseData = await response.json();
+        const textResponse = responseData.choices?.[0]?.message?.content;
+
+        if (!textResponse) {
+          throw new Error('Réponse vide reçue de l\'API IA');
+        }
+
+        parsedResult = JSON.parse(textResponse);
       }
 
-      const responseData = await response.json();
-      const textResponse =
-        responseData.candidates?.[0]?.content?.parts?.[0]?.text;
-
-      if (!textResponse) {
-        throw new Error('Réponse vide reçue de Gemini');
-      }
-
-      const parsedResult: ResultatEvaluation = JSON.parse(textResponse);
       return parsedResult;
+
     } catch (error: any) {
       const msg = error?.message || 'Erreur inconnue';
       console.error("[AiService] Erreur lors de l'évaluation IA :", msg);
-      // Retourner l'erreur pour diagnostic plutôt que de tomber silencieusement en mode simulé
       return {
         score: 0,
-        critique: `Erreur API Gemini : ${msg}`,
-        suggestions: 'Vérifiez votre clé API et le modèle sélectionné dans Admin → Paramètres Système → Configuration IA.',
+        critique: `Erreur API IA : ${msg}`,
+        suggestions: 'Vérifiez votre clé API, le modèle et l\'URL de base dans Admin → Paramètres Système → Configuration IA.',
       };
     }
   }

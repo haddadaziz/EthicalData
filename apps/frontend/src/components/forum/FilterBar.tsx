@@ -41,11 +41,11 @@ export default function FilterBar({
     onNewDiscussion,
 }: FilterBarProps) {
     return (
-        <div className="bg-white border border-slate-200/80 rounded-3xl p-4 md:p-5 space-y-4 shadow-sm text-left">
+        <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-4 md:p-5 space-y-4 shadow-sm text-left">
             <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4">
                 <button
                     onClick={onNewDiscussion}
-                    className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-600/20 transition-all cursor-pointer shrink-0"
+                    className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl text-xs flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(37,99,235,0.3)] hover:shadow-[0_0_20px_rgba(37,99,235,0.5)] transition-all cursor-pointer shrink-0"
                 >
                     <Plus className="w-4 h-4" />
                     <span>Nouvelle Discussion</span>
@@ -58,12 +58,12 @@ export default function FilterBar({
                         placeholder="Rechercher un sujet, un mot-clé ou un auteur..."
                         value={searchQuery}
                         onChange={(e) => onSearchChange(e.target.value)}
-                        className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200/80 focus:border-blue-600 rounded-2xl text-slate-950 text-xs font-semibold outline-none transition-all"
+                        className="w-full pl-11 pr-4 py-3 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-2xl text-white text-xs font-semibold outline-none transition-all"
                     />
                     {searchQuery && (
                         <button
                             onClick={() => onSearchChange('')}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-950 p-1"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-1 cursor-pointer"
                         >
                             <X className="w-4 h-4" />
                         </button>
@@ -74,7 +74,7 @@ export default function FilterBar({
                     <button
                         type="button"
                         onClick={() => setProviderFilterDropdownOpen(!providerFilterDropdownOpen)}
-                        className="w-full flex items-center gap-2 px-4 py-3 bg-slate-50 border border-slate-200/80 focus:border-blue-600 rounded-2xl text-slate-955 text-xs font-bold outline-none cursor-pointer hover:bg-slate-100 transition-all md:min-w-[170px]"
+                        className="w-full flex items-center gap-2 px-4 py-3 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-2xl text-white text-xs font-bold outline-none cursor-pointer hover:bg-slate-900 transition-all md:min-w-[170px]"
                     >
                         {selectedProviderFilter && getProviderLogo(fournisseurs.find((f: Fournisseur) => f.id === selectedProviderFilter)?.slug || '') && (
                             <img src={getProviderLogo(fournisseurs.find((f: Fournisseur) => f.id === selectedProviderFilter)?.slug || '')} alt="" className="w-4 h-4 object-contain rounded shrink-0" />
@@ -88,20 +88,20 @@ export default function FilterBar({
                     {providerFilterDropdownOpen && (
                         <>
                             <div className="fixed inset-0 z-40" onClick={() => setProviderFilterDropdownOpen(false)} />
-                            <div className="absolute left-0 md:left-auto md:right-0 mt-1.5 z-50 w-full md:w-64 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden animate-fadeIn">
+                            <div className="absolute left-0 md:left-auto md:right-0 mt-1.5 z-50 w-full md:w-64 bg-[#080d1a] border border-slate-800 rounded-2xl shadow-2xl shadow-black overflow-hidden animate-fadeIn">
                                 <button
                                     type="button"
                                     onClick={() => { onProviderChange(''); setProviderFilterDropdownOpen(false); }}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
-                                        !selectedProviderFilter ? 'bg-slate-100 text-slate-955' : 'text-slate-600'
+                                    className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-[#020617] cursor-pointer ${
+                                        !selectedProviderFilter ? 'bg-[#020617] text-white' : 'text-slate-400'
                                     }`}
                                 >
-                                    <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                    <div className="w-7 h-7 rounded-lg bg-slate-900 flex items-center justify-center shrink-0 border border-slate-800">
                                         <Award className="w-4 h-4 text-slate-500" />
                                     </div>
                                     <span className="truncate">Tous les constructeurs</span>
                                 </button>
-                                <div className="border-t border-slate-100" />
+                                <div className="border-t border-slate-800" />
                                 <div className="max-h-48 overflow-y-auto">
                                     {fournisseurs.map((f: Fournisseur) => {
                                         const logo = getProviderLogo(f.slug || f.nom || '');
@@ -110,14 +110,14 @@ export default function FilterBar({
                                                 key={f.id}
                                                 type="button"
                                                 onClick={() => { onProviderChange(f.id); setProviderFilterDropdownOpen(false); }}
-                                                className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
-                                                    selectedProviderFilter === f.id ? 'bg-slate-100 text-slate-955' : 'text-slate-650'
+                                                className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-[#020617] cursor-pointer ${
+                                                    selectedProviderFilter === f.id ? 'bg-[#020617] text-white' : 'text-slate-400'
                                                 }`}
                                             >
                                                 {logo ? (
-                                                    <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0" />
+                                                    <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0 bg-white" />
                                                 ) : (
-                                                    <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                                    <div className="w-7 h-7 rounded-lg bg-slate-900 flex items-center justify-center shrink-0 border border-slate-800">
                                                         <Award className="w-4 h-4 text-slate-500" />
                                                     </div>
                                                 )}
@@ -136,10 +136,10 @@ export default function FilterBar({
                         type="button"
                         disabled={!selectedProviderFilter}
                         onClick={() => setCertFilterDropdownOpen(!certFilterDropdownOpen)}
-                        className={`w-full flex items-center gap-2 px-4 py-3 border focus:border-blue-600 rounded-2xl text-slate-955 text-xs font-bold outline-none transition-all md:min-w-[190px] text-left ${
+                        className={`w-full flex items-center gap-2 px-4 py-3 border rounded-2xl text-xs font-bold outline-none transition-all md:min-w-[190px] text-left ${
                             !selectedProviderFilter 
-                                ? 'bg-slate-100 border-slate-200/50 opacity-60 cursor-not-allowed' 
-                                : 'bg-slate-50 border-slate-200 cursor-pointer hover:bg-slate-100'
+                                ? 'bg-slate-900 border-slate-800 opacity-60 cursor-not-allowed text-slate-600' 
+                                : 'bg-[#020617] border-slate-800 cursor-pointer hover:bg-slate-900 focus:border-cyan-500 text-white'
                         }`}
                     >
                         {selectedProviderFilter && selectedCert && (
@@ -147,7 +147,7 @@ export default function FilterBar({
                                 const activeCertObj = certifications.find((c: Certification) => String(c.id) === String(selectedCert));
                                 const logo = getCertificateBadgeLogo(activeCertObj);
                                 return logo ? (
-                                    <img src={logo} alt="" className="w-4.5 h-4.5 object-contain rounded shrink-0" />
+                                    <img src={logo} alt="" className="w-4.5 h-4.5 object-contain rounded shrink-0 bg-white" />
                                 ) : null;
                             })()
                         )}
@@ -168,20 +168,20 @@ export default function FilterBar({
                     {certFilterDropdownOpen && selectedProviderFilter && (
                         <>
                             <div className="fixed inset-0 z-40" onClick={() => setCertFilterDropdownOpen(false)} />
-                            <div className="absolute left-0 md:left-auto md:right-0 mt-1.5 z-50 w-full md:w-72 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden animate-fadeIn">
+                            <div className="absolute left-0 md:left-auto md:right-0 mt-1.5 z-50 w-full md:w-72 bg-[#080d1a] border border-slate-800 rounded-2xl shadow-2xl shadow-black overflow-hidden animate-fadeIn">
                                 <button
                                     type="button"
                                     onClick={() => { onCertChange(''); setCertFilterDropdownOpen(false); }}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
-                                        !selectedCert ? 'bg-slate-100 text-slate-955' : 'text-slate-650'
+                                    className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-[#020617] cursor-pointer ${
+                                        !selectedCert ? 'bg-[#020617] text-white' : 'text-slate-400'
                                     }`}
                                 >
-                                    <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                    <div className="w-7 h-7 rounded-lg bg-slate-900 flex items-center justify-center shrink-0 border border-slate-800">
                                         <Award className="w-4 h-4 text-slate-500" />
                                     </div>
                                     <span className="truncate">Toutes les certifications</span>
                                 </button>
-                                <div className="border-t border-slate-100" />
+                                <div className="border-t border-slate-800" />
                                 <div className="max-h-48 overflow-y-auto">
                                     {certifications
                                         .filter(c => String(c.fournisseur?.id) === String(selectedProviderFilter) || String(c.fournisseurId) === String(selectedProviderFilter) || String(c.fournisseur?.slug) === String(selectedProviderFilter))
@@ -192,14 +192,14 @@ export default function FilterBar({
                                                     key={c.id}
                                                     type="button"
                                                     onClick={() => { onCertChange(c.id); setCertFilterDropdownOpen(false); }}
-                                                    className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
-                                                        String(selectedCert) === String(c.id) ? 'bg-slate-100 text-slate-955' : 'text-slate-600'
+                                                    className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-[#020617] cursor-pointer ${
+                                                        String(selectedCert) === String(c.id) ? 'bg-[#020617] text-white' : 'text-slate-400'
                                                     }`}
                                                 >
                                                     {logo ? (
-                                                        <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0" />
+                                                        <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0 bg-white" />
                                                     ) : (
-                                                        <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                                        <div className="w-7 h-7 rounded-lg bg-slate-900 flex items-center justify-center shrink-0 border border-slate-800">
                                                             <Award className="w-4 h-4 text-slate-500" />
                                                         </div>
                                                     )}
@@ -222,8 +222,8 @@ export default function FilterBar({
                         key={theme}
                         onClick={() => onThemeChange(theme)}
                         className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${selectedTheme === theme
-                            ? 'bg-slate-950 text-white shadow-md'
-                            : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200/60'
+                            ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.3)]'
+                            : 'bg-[#020617] text-slate-400 hover:text-white hover:bg-slate-900 border border-slate-800'
                             }`}
                     >
                         {theme}

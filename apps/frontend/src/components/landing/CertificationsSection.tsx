@@ -88,7 +88,7 @@ export function CertificationsSection({ realCertifications, courses, cleanTitle 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         
         <AnimatedSection className="text-center max-w-2xl mx-auto mb-16">
-          <span className="text-xs font-bold text-red-500 uppercase tracking-widest">Offres phares</span>
+          <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest">Offres phares</span>
           <h2 className="text-3xl font-black text-white mt-3 uppercase tracking-tight">Certifications</h2>
           <p className="text-sm text-slate-400 mt-4 leading-relaxed font-semibold">
             Sélectionnez votre parcours, entraînez-vous sur nos simulateurs et décrochez votre certification internationale.
@@ -102,10 +102,10 @@ export function CertificationsSection({ realCertifications, courses, cleanTitle 
         >
           {catalogCourses.length > itemsPerPage && (
             <>
-              <button onClick={goPrev} className="absolute -left-4 lg:-left-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 lg:w-12 lg:h-12 bg-[#080d1a] border border-red-500 text-red-500 hover:bg-red-950/30 hover:scale-110 rounded-full flex items-center justify-center transition-all shadow-md cursor-pointer">
+              <button onClick={goPrev} className="absolute -left-4 lg:-left-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 lg:w-12 lg:h-12 bg-[#080d1a] border border-cyan-500 text-cyan-400 hover:bg-blue-950/30 hover:scale-110 rounded-full flex items-center justify-center transition-all shadow-md cursor-pointer">
                 <ChevronLeft className="w-5 h-5 lg:w-6 lg:h-6 ml-[-2px]" />
               </button>
-              <button onClick={goNext} className="absolute -right-4 lg:-right-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 lg:w-12 lg:h-12 bg-[#080d1a] border border-red-500 text-red-500 hover:bg-red-950/30 hover:scale-110 rounded-full flex items-center justify-center transition-all shadow-md cursor-pointer">
+              <button onClick={goNext} className="absolute -right-4 lg:-right-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 lg:w-12 lg:h-12 bg-[#080d1a] border border-cyan-500 text-cyan-400 hover:bg-blue-950/30 hover:scale-110 rounded-full flex items-center justify-center transition-all shadow-md cursor-pointer">
                 <ChevronRight className="w-5 h-5 lg:w-6 lg:h-6 mr-[-2px]" />
               </button>
             </>
@@ -158,7 +158,7 @@ export function CertificationsSection({ realCertifications, courses, cleanTitle 
         <AnimatedSection className="flex justify-center mt-12">
           <Link 
             href="/certifications"
-            className="px-8 py-3.5 bg-red-600 hover:bg-red-700 text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-red-600/20 transition-all cursor-pointer flex items-center gap-3 hover:scale-105 active:scale-95 group"
+            className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-blue-600/20 transition-all cursor-pointer flex items-center gap-3 hover:scale-105 active:scale-95 group"
           >
             <span>Voir tout le catalogue des certifications</span>
             <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />

@@ -178,9 +178,9 @@ export default function ApprendrePage() {
 
     if (loading) {
         return (
-            <div className="min-h-[70vh] flex flex-col items-center justify-center gap-4 text-slate-600">
-                <span className="w-10 h-10 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin" />
-                <p className="text-xs font-bold uppercase tracking-widest text-blue-600">Chargement du cours...</p>
+            <div className="min-h-[70vh] flex flex-col items-center justify-center gap-4 text-slate-400">
+                <span className="w-10 h-10 border-4 border-slate-800 border-t-cyan-500 rounded-full animate-spin" />
+                <p className="text-xs font-bold uppercase tracking-widest text-cyan-500">Chargement du cours...</p>
             </div>
         );
     }
@@ -188,30 +188,30 @@ export default function ApprendrePage() {
     if (!cours) return null;
 
     return (
-        <div className={`relative ${focusMode ? 'fixed inset-0 z-50 bg-white' : ''}`}>
+        <div className={`relative ${focusMode ? 'fixed inset-0 z-50 bg-[#020617]' : ''}`}>
             <ConfettiExplosion active={showConfetti} />
 
             {/* Reading progress bar */}
-            <div className="fixed top-0 left-0 right-0 h-1 z-50 bg-slate-100">
-                <div className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 transition-all duration-300"
+            <div className="fixed top-0 left-0 right-0 h-1 z-50 bg-slate-800/50">
+                <div className="h-full bg-gradient-to-r from-blue-600 via-cyan-500 to-teal-400 transition-all duration-300"
                     style={{ width: `${readingProgress}%` }} />
             </div>
 
-            <div className={`min-h-[80vh] flex flex-col lg:flex-row gap-0 bg-slate-50 rounded-3xl overflow-hidden border border-slate-200/80 shadow-sm relative ${focusMode ? 'max-w-4xl mx-auto mt-8' : ''}`}>
+            <div className={`min-h-[80vh] flex flex-col lg:flex-row gap-0 bg-[#080d1a] rounded-3xl overflow-hidden border border-slate-800 shadow-sm relative ${focusMode ? 'max-w-4xl mx-auto mt-8' : ''}`}>
                 {/* Sidebar */}
-                <aside className={`w-full lg:w-80 shrink-0 bg-white border-b lg:border-b-0 lg:border-r border-slate-200/80 flex flex-col ${focusMode ? 'lg:w-64' : ''}`}>
-                    <div className="p-5 border-b border-slate-100 space-y-3">
+                <aside className={`w-full lg:w-80 shrink-0 bg-[#080d1a] border-b lg:border-b-0 lg:border-r border-slate-800 flex flex-col ${focusMode ? 'lg:w-64' : ''}`}>
+                    <div className="p-5 border-b border-slate-800 space-y-3">
                         <button onClick={() => router.push(`/dashboard/cours?tab=${fromParam}`)}
-                            className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
+                            className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 hover:text-white transition-colors cursor-pointer">
                             <ChevronLeft className="w-3.5 h-3.5" /> Retour
                         </button>
 
                         <div>
-                            <h2 className="text-sm font-black text-slate-900 leading-tight line-clamp-2">{cours.titre}</h2>
+                            <h2 className="text-sm font-black text-white leading-tight line-clamp-2">{cours.titre}</h2>
                             <p className="text-[10px] font-semibold text-slate-400 mt-1">{cours.certification?.nom || ''}</p>
                             {cours.formateur && (
-                                <div className="flex items-center gap-1.5 mt-2 text-[10px] text-slate-500 font-semibold">
-                                    <div className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[8px] font-black shrink-0">
+                                <div className="flex items-center gap-1.5 mt-2 text-[10px] text-slate-400 font-semibold">
+                                    <div className="w-5 h-5 rounded-full bg-blue-950/30 text-cyan-400 border border-blue-900/30 flex items-center justify-center text-[8px] font-black shrink-0">
                                         {cours.formateur.avatar ? (
                                             <img src={cours.formateur.avatar} alt="" className="w-full h-full object-cover rounded-full" />
                                         ) : (
@@ -227,13 +227,13 @@ export default function ApprendrePage() {
                         <div className="space-y-1.5">
                             <div className="flex items-center justify-between text-[10px] font-bold">
                                 <span className="text-slate-500">Progression</span>
-                                <span className={`${progressionGlobale === 100 ? 'text-emerald-600' : 'text-blue-600'}`}>
+                                <span className={`${progressionGlobale === 100 ? 'text-emerald-500' : 'text-cyan-400'}`}>
                                     {completedCount}/{totalModules} modules
                                 </span>
                             </div>
-                            <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div className="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700/50">
                                 <motion.div
-                                    className={`h-full rounded-full transition-all duration-700 ${progressionGlobale === 100 ? 'bg-emerald-500' : 'bg-blue-600'}`}
+                                    className={`h-full rounded-full transition-all duration-700 ${progressionGlobale === 100 ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-blue-600 shadow-[0_0_10px_rgba(37,99,235,0.5)]'}`}
                                     initial={{ width: 0 }}
                                     animate={{ width: `${progressionGlobale}%` }}
                                 />
@@ -253,25 +253,25 @@ export default function ApprendrePage() {
                                     onClick={() => { setActiveModuleId(m.id); if (contentRef.current) contentRef.current.scrollTop = 0; setReadingProgress(0); }}
                                     whileTap={{ scale: 0.98 }}
                                     className={`w-full text-left p-3 rounded-xl transition-all cursor-pointer flex items-start gap-3 group relative ${isActive
-                                        ? 'bg-blue-50 border border-blue-200/60 shadow-xs'
-                                        : 'hover:bg-slate-50 border border-transparent'
+                                        ? 'bg-blue-950/20 border border-blue-900/50 shadow-sm'
+                                        : 'hover:bg-[#020617]/50 border border-transparent'
                                     }`}>
                                     <span className={`mt-0.5 shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black
-                                        ${isCompleted ? 'bg-emerald-100 text-emerald-600' :
-                                            isActive ? 'bg-blue-100 text-blue-600' :
-                                                'bg-slate-100 text-slate-400'}`}>
+                                        ${isCompleted ? 'bg-emerald-950/30 text-emerald-500 border border-emerald-900/30' :
+                                            isActive ? 'bg-blue-950/40 text-cyan-400 border border-blue-900/40' :
+                                                'bg-slate-800 text-slate-500 border border-slate-700'}`}>
                                         {isCompleted ? <CheckCircle className="w-3.5 h-3.5" /> : idx + 1}
                                     </span>
                                     <div className="min-w-0 flex-1">
-                                        <span className={`text-xs font-bold block truncate ${isActive ? 'text-slate-900' : 'text-slate-600'}`}>
+                                        <span className={`text-xs font-bold block truncate ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'}`}>
                                             {m.titre}
                                         </span>
                                         <div className="flex items-center gap-2 mt-0.5">
-                                            <span className="text-[9px] text-slate-400 font-semibold flex items-center gap-0.5">
+                                            <span className="text-[9px] text-slate-500 font-semibold flex items-center gap-0.5">
                                                 <Clock className="w-2.5 h-2.5" /> {m.dureeEstimee || '?'}min
                                             </span>
                                             {m.ressources?.length > 0 && (
-                                                <span className="text-[9px] text-slate-400 font-semibold">
+                                                <span className="text-[9px] text-slate-500 font-semibold">
                                                     {m.ressources.length} {m.ressources.length > 1 ? 'ress.' : 'ress.'}
                                                 </span>
                                             )}
@@ -282,10 +282,10 @@ export default function ApprendrePage() {
                         })}
                     </nav>
 
-                    <div className="p-4 border-t border-slate-100">
+                    <div className="p-4 border-t border-slate-800">
                         {isAllCompleted ? (
-                            <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl p-3 text-center">
-                                <div className="flex items-center justify-center gap-2 text-emerald-700 text-xs font-black">
+                            <div className="bg-emerald-950/30 border border-emerald-900/50 rounded-xl p-3 text-center">
+                                <div className="flex items-center justify-center gap-2 text-emerald-500 text-xs font-black">
                                     <Award className="w-4 h-4" /> Cours terminé !
                                 </div>
                             </div>
@@ -304,17 +304,17 @@ export default function ApprendrePage() {
                 </aside>
 
                 {/* Contenu principal */}
-                <main className="flex-1 flex flex-col min-w-0 max-w-full">
+                <main className="flex-1 flex flex-col min-w-0 max-w-full relative">
                     {activeModule ? (
                         <>
                             {/* En-tête du module */}
-                            <div className="sticky top-0 z-10 bg-white/90 border-b border-slate-200/80 px-6 py-4 flex items-center justify-between gap-4">
+                            <div className="sticky top-0 z-10 bg-[#080d1a]/90 backdrop-blur-md border-b border-slate-800 px-6 py-4 flex items-center justify-between gap-4">
                                 <div className="min-w-0">
                                     <div className="flex items-center gap-2">
-                                        <span className="w-6 h-6 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-[10px] font-black">
+                                        <span className="w-6 h-6 rounded-lg bg-blue-950/30 text-cyan-400 border border-blue-900/30 flex items-center justify-center text-[10px] font-black">
                                             {activeIndex + 1}
                                         </span>
-                                        <h1 className="text-sm font-black text-slate-900 truncate">{activeModule.titre}</h1>
+                                        <h1 className="text-sm font-black text-white truncate">{activeModule.titre}</h1>
                                     </div>
                                     <div className="flex items-center gap-3 text-[10px] text-slate-400 font-semibold mt-0.5">
                                         <span className="flex items-center gap-1">
@@ -327,22 +327,22 @@ export default function ApprendrePage() {
                                             </span>
                                         )}
                                         {readingProgress > 0 && readingProgress < 100 && (
-                                            <span className="text-blue-500 font-black">{Math.round(readingProgress)}%</span>
+                                            <span className="text-cyan-400 font-black">{Math.round(readingProgress)}%</span>
                                         )}
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <button onClick={() => navigateModule('prev')}
                                         disabled={activeIndex <= 0}
-                                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                                        className="p-2 text-slate-500 hover:text-white hover:bg-slate-800 rounded-lg transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                                         title="Module précédent (←)">
                                         <ArrowLeft className="w-4 h-4" />
                                     </button>
                                     <button onClick={handleComplete}
                                         disabled={completing || activeProgression?.completed}
                                         className={`shrink-0 px-4 py-2 text-[11px] font-black rounded-xl transition-all cursor-pointer disabled:opacity-60 flex items-center gap-1.5 ${activeProgression?.completed
-                                            ? 'bg-emerald-100 text-emerald-700'
-                                            : 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow-md'
+                                            ? 'bg-emerald-950/30 text-emerald-500 border border-emerald-900/50'
+                                            : 'bg-blue-600 hover:bg-blue-700 text-white shadow-[0_0_15px_rgba(37,99,235,0.2)]'
                                         }`}>
                                         {completing ? (
                                             <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -354,7 +354,7 @@ export default function ApprendrePage() {
                                     </button>
                                     <button onClick={() => navigateModule('next')}
                                         disabled={activeIndex >= modules.length - 1}
-                                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                                        className="p-2 text-slate-500 hover:text-white hover:bg-slate-800 rounded-lg transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                                         title="Module suivant (→)">
                                         <ArrowRight className="w-4 h-4" />
                                     </button>
@@ -366,7 +366,7 @@ export default function ApprendrePage() {
                                 className="flex-1 overflow-y-auto p-6 space-y-8">
                                 {activeModule.videoUrl && (
                                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                                        className="aspect-video bg-slate-900 rounded-2xl overflow-hidden shadow-sm">
+                                        className="aspect-video bg-black border border-slate-800 rounded-2xl overflow-hidden shadow-sm">
                                         <iframe src={activeModule.videoUrl} title={activeModule.titre}
                                             className="w-full h-full"
                                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -376,24 +376,24 @@ export default function ApprendrePage() {
 
                                 {activeModule.contenu ? (
                                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-                                        className="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8">
+                                        className="bg-[#020617] border border-slate-800 rounded-2xl p-6 md:p-8">
                                         <div className="prose prose-sm max-w-none
-                                            prose-headings:text-slate-900 prose-headings:font-black
-                                            prose-p:text-slate-600 prose-p:font-medium prose-p:leading-relaxed
-                                            prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
-                                            prose-strong:text-slate-900
-                                            prose-code:text-blue-600 prose-code:bg-blue-50 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-xs
-                                            prose-pre:bg-slate-900 prose-pre:text-slate-100 prose-pre:rounded-xl prose-pre:shadow-md
-                                            prose-li:text-slate-600 prose-li:font-medium
-                                            prose-blockquote:border-l-blue-500 prose-blockquote:bg-blue-50/50 prose-blockquote:rounded-r-lg prose-blockquote:py-1 prose-blockquote:px-4 prose-blockquote:text-slate-700 prose-blockquote:font-medium
-                                            prose-table:border-collapse prose-table:border prose-table:border-slate-200 prose-th:bg-slate-50 prose-th:text-slate-700 prose-th:font-bold prose-th:text-xs
-                                            prose-td:border prose-td:border-slate-200 prose-td:text-sm"
+                                            prose-headings:text-white prose-headings:font-black
+                                            prose-p:text-slate-400 prose-p:font-medium prose-p:leading-relaxed
+                                            prose-a:text-cyan-400 prose-a:no-underline hover:prose-a:underline
+                                            prose-strong:text-white
+                                            prose-code:text-cyan-300 prose-code:bg-blue-950/30 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-xs
+                                            prose-pre:bg-[#080d1a] prose-pre:text-slate-300 prose-pre:border prose-pre:border-slate-800 prose-pre:rounded-xl prose-pre:shadow-md
+                                            prose-li:text-slate-400 prose-li:font-medium
+                                            prose-blockquote:border-l-red-500 prose-blockquote:bg-blue-950/20 prose-blockquote:rounded-r-lg prose-blockquote:py-1 prose-blockquote:px-4 prose-blockquote:text-slate-300 prose-blockquote:font-medium
+                                            prose-table:border-collapse prose-table:border prose-table:border-slate-800 prose-th:bg-slate-900 prose-th:text-slate-300 prose-th:font-bold prose-th:text-xs
+                                            prose-td:border prose-td:border-slate-800 prose-td:text-sm"
                                             dangerouslySetInnerHTML={{ __html: renderMarkdown(activeModule.contenu) }} />
                                     </motion.div>
                                 ) : (
-                                    <div className="bg-white border border-slate-200/80 rounded-2xl p-12 text-center">
-                                        <BookOpen className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-                                        <p className="text-sm font-semibold text-slate-400">Aucun contenu pour ce module.</p>
+                                    <div className="bg-[#020617] border border-slate-800 rounded-2xl p-12 text-center">
+                                        <BookOpen className="w-10 h-10 text-slate-700 mx-auto mb-3" />
+                                        <p className="text-sm font-semibold text-slate-500">Aucun contenu pour ce module.</p>
                                     </div>
                                 )}
 
@@ -401,32 +401,32 @@ export default function ApprendrePage() {
                                 {activeModule.ressources?.length > 0 && (
                                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
                                         className="space-y-3">
-                                        <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
-                                            <FileText className="w-4 h-4 text-blue-600" />
+                                        <h3 className="text-sm font-black text-white flex items-center gap-2">
+                                            <FileText className="w-4 h-4 text-cyan-400" />
                                             Ressources ({activeModule.ressources.length})
                                         </h3>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                             {activeModule.ressources.map((r, i) => (
                                                 <motion.div key={r.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 + 0.3 }}
-                                                    className="bg-white border border-slate-200/80 rounded-xl p-4 flex items-start gap-3 hover:border-slate-300 hover:shadow-sm transition-all duration-200 group">
+                                                    className="bg-[#020617] border border-slate-800 rounded-xl p-4 flex items-start gap-3 hover:border-slate-700 hover:shadow-[0_0_15px_rgba(255,255,255,0.05)] transition-all duration-200 group">
                                                     <span className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 text-[10px] font-black uppercase
-                                                        ${r.type === 'PDF' ? 'bg-red-50 text-red-500' :
-                                                            r.type === 'VIDEO' ? 'bg-purple-50 text-purple-500' :
-                                                            r.type === 'SLIDE' ? 'bg-amber-50 text-amber-500' :
-                                                            r.type === 'DATASET' ? 'bg-green-50 text-green-500' :
-                                                            r.type === 'LIEN_EXTERNE' ? 'bg-blue-50 text-blue-500' :
-                                                            r.type === 'EXERCICE' ? 'bg-indigo-50 text-indigo-500' :
-                                                            'bg-slate-100 text-slate-500'}`}>
+                                                        ${r.type === 'PDF' ? 'bg-blue-950/40 text-cyan-400' :
+                                                            r.type === 'VIDEO' ? 'bg-purple-950/40 text-purple-500' :
+                                                            r.type === 'SLIDE' ? 'bg-amber-950/40 text-amber-500' :
+                                                            r.type === 'DATASET' ? 'bg-green-950/40 text-green-500' :
+                                                            r.type === 'LIEN_EXTERNE' ? 'bg-blue-950/40 text-blue-500' :
+                                                            r.type === 'EXERCICE' ? 'bg-indigo-950/40 text-indigo-500' :
+                                                            'bg-slate-800 text-slate-400'}`}>
                                                         {r.type === 'PDF' ? 'PDF' : r.type === 'VIDEO' ? 'VID' : r.type === 'SLIDE' ? 'SLD' : r.type === 'DATASET' ? 'DAT' : r.type === 'LIEN_EXTERNE' ? 'WEB' : r.type === 'EXERCICE' ? 'EXO' : 'RES'}
                                                     </span>
                                                     <div className="flex-1 min-w-0">
-                                                        <h4 className="text-[13px] font-bold text-slate-900 truncate">{r.titre}</h4>
+                                                        <h4 className="text-[13px] font-bold text-white truncate">{r.titre}</h4>
                                                         {r.description && (
-                                                            <p className="text-[11px] text-slate-500 font-medium mt-0.5 line-clamp-2">{r.description}</p>
+                                                            <p className="text-[11px] text-slate-400 font-medium mt-0.5 line-clamp-2">{r.description}</p>
                                                         )}
                                                         <div className="flex items-center gap-3 mt-2">
                                                             <a href={r.url} target="_blank" rel="noopener noreferrer"
-                                                                className="inline-flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 transition-colors">
+                                                                className="inline-flex items-center gap-1 text-[10px] font-bold text-cyan-400 hover:text-cyan-300 transition-colors">
                                                                 {r.type === 'LIEN_EXTERNE' ? (
                                                                     <><ExternalLink className="w-3 h-3" /> Ouvrir</>
                                                                 ) : (
@@ -434,7 +434,7 @@ export default function ApprendrePage() {
                                                                 )}
                                                             </a>
                                                             {r.taille && (
-                                                                <span className="text-[9px] text-slate-400 font-semibold">{formatSize(r.taille)}</span>
+                                                                <span className="text-[9px] text-slate-500 font-semibold">{formatSize(r.taille)}</span>
                                                             )}
                                                         </div>
                                                     </div>
@@ -445,21 +445,21 @@ export default function ApprendrePage() {
                                 )}
 
                                 {/* Navigation inférieure */}
-                                <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                                <div className="flex items-center justify-between pt-4 border-t border-slate-800">
                                     <button onClick={() => navigateModule('prev')}
                                         disabled={activeIndex <= 0}
-                                        className="px-4 py-2.5 text-slate-600 hover:text-slate-900 bg-white border border-slate-200 hover:border-slate-300 text-xs font-black rounded-xl transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed inline-flex items-center gap-1.5">
+                                        className="px-4 py-2.5 text-slate-400 hover:text-white bg-[#020617] border border-slate-800 hover:border-slate-700 text-xs font-black rounded-xl transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed inline-flex items-center gap-1.5">
                                         <ChevronLeft className="w-4 h-4" /> Précédent
                                     </button>
                                     {activeIndex < modules.length - 1 ? (
                                         <div className="flex items-center gap-2">
                                             <button onClick={() => { navigateModule('next'); if (contentRef.current) contentRef.current.scrollTop = 0; }}
-                                                className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-2 shadow-sm hover:shadow-md">
+                                                className="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-2 shadow-sm hover:shadow-md">
                                                 Suivant <ChevronRight className="w-4 h-4" />
                                             </button>
                                             <button onClick={handleCompleteAndNext}
                                                 disabled={completingNext || activeProgression?.completed}
-                                                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-2 shadow-sm hover:shadow-md disabled:opacity-50">
+                                                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-2 shadow-[0_0_15px_rgba(37,99,235,0.2)] disabled:opacity-50">
                                                 {completingNext ? (
                                                     <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                                 ) : (
@@ -471,14 +471,14 @@ export default function ApprendrePage() {
                                     ) : isAllCompleted ? (
                                         <div className="flex items-center gap-3">
                                             <button onClick={() => router.push('/dashboard/cours')}
-                                                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-2">
+                                                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-2 shadow-[0_0_15px_rgba(37,99,235,0.2)]">
                                                 <BookOpen className="w-4 h-4" /> Voir mes cours
                                             </button>
                                         </div>
                                     ) : (
                                         <button onClick={handleComplete}
                                             disabled={completing || activeProgression?.completed}
-                                            className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black rounded-xl transition-all cursor-pointer disabled:opacity-60 inline-flex items-center gap-2 shadow-sm hover:shadow-md">
+                                            className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black rounded-xl transition-all cursor-pointer disabled:opacity-60 inline-flex items-center gap-2 shadow-sm hover:shadow-[0_0_15px_rgba(16,185,129,0.2)]">
                                             {completing ? (
                                                 <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                             ) : (
@@ -491,22 +491,23 @@ export default function ApprendrePage() {
                                 {/* Célébration fin de cours */}
                                 {isAllCompleted && activeIndex === modules.length - 1 && (
                                     <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: "spring", duration: 0.6 }}
-                                        className="bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 rounded-2xl p-8 text-white text-center space-y-4 shadow-xl">
-                                        <motion.div animate={{ rotate: [0, -10, 10, -10, 0] }} transition={{ duration: 1, repeat: Infinity, repeatDelay: 2 }}>
-                                            <Trophy className="w-16 h-16 mx-auto text-amber-300" />
+                                        className="bg-[#020617] border border-emerald-900/50 rounded-2xl p-8 text-white text-center space-y-4 shadow-[0_0_20px_rgba(16,185,129,0.15)] relative overflow-hidden">
+                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-emerald-900/10 blur-[100px] pointer-events-none" />
+                                        <motion.div animate={{ rotate: [0, -10, 10, -10, 0] }} transition={{ duration: 1, repeat: Infinity, repeatDelay: 2 }} className="relative z-10">
+                                            <Trophy className="w-16 h-16 mx-auto text-amber-500 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
                                         </motion.div>
-                                        <h2 className="text-2xl font-black">Félicitations !</h2>
-                                        <p className="text-base text-emerald-100 font-medium max-w-lg mx-auto">
-                                            Vous avez terminé tous les modules de <strong>{cours.titre}</strong>.
+                                        <h2 className="text-2xl font-black relative z-10">Félicitations !</h2>
+                                        <p className="text-base text-slate-400 font-medium max-w-lg mx-auto relative z-10">
+                                            Vous avez terminé tous les modules de <strong className="text-white">{cours.titre}</strong>.
                                         </p>
-                                        <div className="flex flex-wrap items-center justify-center gap-3">
+                                        <div className="flex flex-wrap items-center justify-center gap-3 relative z-10">
                                             <button onClick={() => router.push('/dashboard/cours')}
-                                                className="px-6 py-2.5 bg-white/20 hover:bg-white/30 text-white text-sm font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-2 shadow-md">
+                                                className="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-sm font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-2 shadow-md">
                                                 <BookOpen className="w-4 h-4" /> Voir mes cours
                                             </button>
                                             {courseSimulation && (
                                                 <button onClick={() => router.push(`/dashboard/practice?course=${cours.slug}`)}
-                                                    className="px-6 py-2.5 bg-white text-emerald-700 text-sm font-black rounded-xl hover:bg-emerald-50 transition-all cursor-pointer inline-flex items-center gap-2 shadow-md">
+                                                    className="px-6 py-2.5 bg-emerald-600 text-white hover:bg-emerald-700 text-sm font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
                                                     <Award className="w-4 h-4" /> Passer la simulation
                                                 </button>
                                             )}
@@ -518,8 +519,8 @@ export default function ApprendrePage() {
                     ) : (
                         <div className="flex-1 flex items-center justify-center">
                             <div className="text-center p-12">
-                                <BookOpen className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                                <p className="text-sm font-bold text-slate-400">Sélectionnez un module pour commencer.</p>
+                                <BookOpen className="w-12 h-12 text-slate-800 mx-auto mb-4" />
+                                <p className="text-sm font-bold text-slate-500">Sélectionnez un module pour commencer.</p>
                             </div>
                         </div>
                     )}
@@ -590,24 +591,24 @@ function renderMarkdown(text: string): string {
             }
         }
 
-        // Inline resource card: {{ressource:Titre:Type:URL}}
+                // Inline resource card: {{ressource:Titre:Type:URL}}
         if (/^\{\{ressource:/.test(line.trim())) {
             const match = line.trim().match(/\{\{ressource:(.+?):(.+?):(.+?)\}\}/);
             if (match) {
                 const [, resTitle, resType, resUrl] = match;
                 const colors: Record<string, string> = {
-                    PDF: 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100 hover:border-red-300',
-                    VIDEO: 'bg-purple-50 border-purple-200 text-purple-600 hover:bg-purple-100 hover:border-purple-300',
-                    SLIDE: 'bg-amber-50 border-amber-200 text-amber-600 hover:bg-amber-100 hover:border-amber-300',
-                    DATASET: 'bg-green-50 border-green-200 text-green-600 hover:bg-green-100 hover:border-green-300',
-                    LIEN_EXTERNE: 'bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-100 hover:border-blue-300',
-                    EXERCICE: 'bg-indigo-50 border-indigo-200 text-indigo-600 hover:bg-indigo-100 hover:border-indigo-300',
+                    PDF: 'bg-blue-950/20 border-blue-900/50 text-cyan-400 hover:bg-blue-950/40',
+                    VIDEO: 'bg-purple-950/20 border-purple-900/50 text-purple-500 hover:bg-purple-950/40',
+                    SLIDE: 'bg-amber-950/20 border-amber-900/50 text-amber-500 hover:bg-amber-950/40',
+                    DATASET: 'bg-green-950/20 border-green-900/50 text-green-500 hover:bg-green-950/40',
+                    LIEN_EXTERNE: 'bg-blue-950/20 border-blue-900/50 text-blue-500 hover:bg-blue-950/40',
+                    EXERCICE: 'bg-indigo-950/20 border-indigo-900/50 text-indigo-500 hover:bg-indigo-950/40',
                 };
                 const icons: Record<string, string> = { PDF: '📄', VIDEO: '▶️', SLIDE: '📊', DATASET: '🗄️', LIEN_EXTERNE: '🔗', EXERCICE: '💻' };
                 const label = resType === 'LIEN_EXTERNE' ? 'Ouvrir' : resType === 'EXERCICE' ? "Faire l'exercice" : 'Télécharger';
                 html.push(`<div class="my-4 inline-block">
                     <a href="${resUrl}" target="_blank" rel="noopener noreferrer"
-                        class="inline-flex items-center gap-3 px-4 py-3 rounded-xl border ${colors[resType] || 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 hover:border-slate-300'} transition-all duration-200 shadow-xs hover:shadow-sm no-underline !text-inherit">
+                        class="inline-flex items-center gap-3 px-4 py-3 rounded-xl border ${colors[resType] || 'bg-slate-900 border-slate-700 text-slate-400 hover:bg-slate-800'} transition-all duration-200 shadow-sm hover:shadow-md no-underline !text-inherit">
                         <span class="text-lg">${icons[resType] || '📎'}</span>
                         <div class="flex flex-col">
                             <span class="text-xs font-bold">${resTitle}</span>
@@ -644,7 +645,7 @@ function renderMarkdown(text: string): string {
 
         const nlMatch = line.match(/^(\d+)\.\s+(.+)/);
         if (nlMatch) {
-            html.push(`<p class="flex items-baseline gap-2"><span class="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px] font-black shrink-0 mt-0.5">${nlMatch[1]}</span><span>${processInline(nlMatch[2])}</span></p>`);
+            html.push(`<p class="flex items-baseline gap-2"><span class="w-5 h-5 rounded-full bg-blue-950/30 text-cyan-400 border border-blue-900/30 flex items-center justify-center text-[10px] font-black shrink-0 mt-0.5">${nlMatch[1]}</span><span>${processInline(nlMatch[2])}</span></p>`);
             continue;
         }
 
@@ -663,7 +664,7 @@ function processInline(text: string): string {
         .replace(/`([^`]+)`/g, '<code>$1</code>')
         .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
         .replace(/✅/g, '<span class="text-emerald-500">✅</span>')
-        .replace(/❌/g, '<span class="text-red-500">❌</span>');
+        .replace(/❌/g, '<span class="text-cyan-400">❌</span>');
 }
 
 function formatSize(bytes: number): string {

@@ -61,22 +61,22 @@ export function Navbar() {
 
         {/* Navigation PC : Capsule Pill Flottante Ultra Stylée */}
         <nav className={`hidden md:flex items-center gap-1 rounded-full px-3 py-1.5 transition-all duration-300 ${scrolled ? 'bg-slate-950/60 border border-slate-900' : 'bg-transparent border-0'}`}>
-          <a href="/#about" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-red-500 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
+          <a href="/#about" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
             Qui Sommes-Nous
           </a>
-          <Link href="/certifications" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-red-500 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
+          <Link href="/certifications" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
             Certifications
           </Link>
-          <a href="/#services" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-red-500 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
+          <a href="/#services" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
             Nos Services
           </a>
-          <a href="/#testimonials" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-red-500 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
+          <a href="/#testimonials" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
             Avis
           </a>
-          <a href="/#faq" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-red-500 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
+          <a href="/#faq" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
             FAQ
           </a>
-          <a href="/#contact" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-red-500 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
+          <a href="/#contact" className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
             Contact
           </a>
         </nav>
@@ -91,18 +91,18 @@ export function Navbar() {
           ) : isConnected ? (
             <a
               href={isAdmin ? "/admin" : "/dashboard"}
-              className="px-3 py-2 md:px-5 md:py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white text-[10px] md:text-xs font-black uppercase tracking-wider rounded-lg md:rounded-xl transition-all shadow-md shadow-red-600/30 cursor-pointer hover:scale-105 active:scale-95"
+              className="px-3 py-2 md:px-5 md:py-2.5 bg-gradient-to-r from-blue-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white text-[10px] md:text-xs font-black uppercase tracking-wider rounded-lg md:rounded-xl transition-all shadow-md shadow-blue-600/30 cursor-pointer hover:scale-105 active:scale-95"
             >
               Mon Espace
             </a>
           ) : (
             <>
-              <a href="/login" className={`hidden md:inline-flex px-4 py-2 text-xs font-black uppercase tracking-wider transition-colors cursor-pointer ${scrolled ? 'text-slate-300 hover:text-red-500' : 'text-white/80 hover:text-white'}`}>
+              <a href="/login" className={`hidden md:inline-flex px-4 py-2 text-xs font-black uppercase tracking-wider transition-colors cursor-pointer ${scrolled ? 'text-slate-300 hover:text-cyan-400' : 'text-white/80 hover:text-white'}`}>
                 Connexion
               </a>
               <Link
                 href="/register"
-                className="px-3 py-2 md:px-5 md:py-2.5 text-[10px] md:text-xs font-black uppercase tracking-wider rounded-lg md:rounded-xl transition-all hover:scale-105 active:scale-95 cursor-pointer bg-red-600 hover:bg-red-700 text-white shadow-md shadow-red-600/20"
+                className="px-3 py-2 md:px-5 md:py-2.5 text-[10px] md:text-xs font-black uppercase tracking-wider rounded-lg md:rounded-xl transition-all hover:scale-105 active:scale-95 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20"
               >
                 S&apos;inscrire
               </Link>
@@ -139,7 +139,7 @@ export function Navbar() {
               {!isConnected && (
                 <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-slate-800">
                   <a href="/login" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-center text-slate-300 hover:text-white bg-slate-900/50 rounded-xl font-black uppercase tracking-wider">Connexion</a>
-                  <a href="/register" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-center text-white bg-red-600 hover:bg-red-700 rounded-xl font-black uppercase tracking-wider">S&apos;inscrire</a>
+                  <a href="/register" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-center text-white bg-blue-600 hover:bg-blue-700 rounded-xl font-black uppercase tracking-wider">S&apos;inscrire</a>
                 </div>
               )}
             </nav>

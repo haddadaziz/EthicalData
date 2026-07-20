@@ -299,9 +299,9 @@ export default function PracticePage() {
 
     if (loading || loadingQuestions) {
         return (
-            <div className="min-h-[50vh] flex flex-col items-center justify-center text-slate-600 gap-4">
-                <span className="w-10 h-10 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin" />
-                <p className="text-xs font-bold uppercase tracking-widest text-blue-600">Chargement du simulateur...</p>
+            <div className="min-h-[50vh] flex flex-col items-center justify-center text-slate-400 gap-4">
+                <span className="w-10 h-10 border-4 border-slate-800 border-t-cyan-500 rounded-full animate-spin" />
+                <p className="text-xs font-bold uppercase tracking-widest text-cyan-500">Chargement du simulateur...</p>
             </div>
         );
     }
@@ -309,16 +309,16 @@ export default function PracticePage() {
     if (!certSlug && !courseSlug) {
         return (
             <div className="space-y-6 text-left animate-fadeIn">
-                <div className="flex items-center gap-2 mb-6 bg-white border border-slate-200/80 rounded-2xl p-1.5 w-fit shadow-xs">
+                <div className="flex items-center gap-2 mb-6 bg-[#080d1a] border border-slate-800 rounded-2xl p-1.5 w-fit shadow-xs">
                     <button
                         onClick={() => setMode('certification')}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${mode === 'certification' ? 'bg-slate-950 text-white shadow-sm' : 'text-slate-500 hover:text-slate-950'}`}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${mode === 'certification' ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.2)]' : 'text-slate-400 hover:text-white'}`}
                     >
                         Certifications
                     </button>
                     <button
                         onClick={() => setMode('cours')}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${mode === 'cours' ? 'bg-slate-950 text-white shadow-sm' : 'text-slate-500 hover:text-slate-950'}`}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${mode === 'cours' ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.2)]' : 'text-slate-400 hover:text-white'}`}
                     >
                         Mes cours
                     </button>
@@ -327,10 +327,10 @@ export default function PracticePage() {
                 {mode === 'certification' ? (
                     <div className="space-y-8">
                         {/* Barre de Recherche et Filtres */}
-                        <div className="bg-white border border-slate-200/80 rounded-3xl p-6 space-y-6 shadow-sm">
+                        <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 space-y-6 shadow-sm">
                             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                                 <div className="relative max-w-md w-full">
-                                    <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-500">
                                         <Search className="w-4 h-4" />
                                     </span>
                                     <input
@@ -338,18 +338,18 @@ export default function PracticePage() {
                                         placeholder="Rechercher par nom ou code d'examen..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-xl text-slate-900 placeholder-slate-400 transition-all text-sm outline-none font-semibold"
+                                        className="w-full pl-10 pr-4 py-2.5 bg-black/50 border border-slate-700 focus:border-cyan-500 rounded-xl text-white placeholder-slate-500 transition-all text-sm outline-none font-semibold"
                                     />
                                 </div>
                                 <div className="flex items-center justify-between md:justify-start gap-3 w-full md:w-auto shrink-0">
-                                    <div className="text-xs text-slate-500 font-bold shrink-0">
+                                    <div className="text-xs text-slate-400 font-bold shrink-0">
                                         {filteredCerts.length} disponible{filteredCerts.length > 1 ? 's' : ''}
                                     </div>
                                 </div>
                             </div>
 
                             {/* Filtres par Niveau */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-slate-100 pt-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-slate-800 pt-4">
                                 <div className="space-y-2.5 text-left">
                                     <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Par Niveau</span>
                                     <div className="flex flex-wrap gap-2">
@@ -364,8 +364,8 @@ export default function PracticePage() {
                                                 onClick={() => setSelectedLevel(niv.val as any)}
                                                 className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                                                     selectedLevel === niv.val
-                                                        ? 'bg-slate-950 text-white shadow-sm'
-                                                        : 'bg-slate-50 border border-slate-200/80 hover:border-slate-300 text-slate-600'
+                                                        ? 'bg-blue-600 text-white shadow-[0_0_10px_rgba(37,99,235,0.2)]'
+                                                        : 'bg-[#020617] border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white'
                                                 }`}
                                             >
                                                 {niv.label}
@@ -390,7 +390,7 @@ export default function PracticePage() {
                         </div>
 
                         {filteredCerts.length === 0 ? (
-                            <div className="p-12 text-center bg-white border border-slate-200/80 rounded-3xl text-slate-500 font-semibold shadow-sm">
+                            <div className="p-12 text-center bg-[#080d1a] border border-slate-800 rounded-3xl text-slate-400 font-semibold shadow-sm">
                                 Aucune certification ne correspond aux critères sélectionnés.
                             </div>
                         ) : (
@@ -403,11 +403,11 @@ export default function PracticePage() {
                                 />
 
                                 {totalPages > 1 && (
-                                    <div className="p-6 border-t border-slate-100 flex items-center justify-between bg-white border border-slate-200/80 rounded-3xl mt-6 shadow-sm">
+                                    <div className="p-6 border-t border-slate-800 flex items-center justify-between bg-[#080d1a] rounded-3xl mt-6 shadow-sm">
                                         <button
                                             onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                                             disabled={currentPage === 1}
-                                            className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-955 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-slate-50 shadow-xs"
+                                            className="px-4 py-2 border border-slate-700 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:border-slate-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-[#020617] shadow-xs"
                                         >
                                             <ArrowLeft className="w-3.5 h-3.5" />
                                             <span>Précédent</span>
@@ -421,8 +421,8 @@ export default function PracticePage() {
                                                         key={pageNum}
                                                         onClick={() => setCurrentPage(pageNum)}
                                                         className={`w-8 h-8 rounded-xl text-xs font-bold flex items-center justify-center transition-all cursor-pointer shrink-0 ${currentPage === pageNum
-                                                            ? 'bg-slate-950 text-white shadow-md'
-                                                            : 'bg-white text-slate-500 hover:bg-slate-100 hover:text-slate-955 border border-slate-200/50'
+                                                            ? 'bg-blue-600 text-white shadow-md'
+                                                            : 'bg-[#020617] text-slate-400 hover:bg-slate-800 hover:text-white border border-slate-800'
                                                             }`}
                                                     >
                                                         {pageNum}
@@ -434,7 +434,7 @@ export default function PracticePage() {
                                         <button
                                             onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                                             disabled={currentPage === totalPages}
-                                            className="px-4 py-2 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-655 hover:text-slate-955 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-slate-50 shadow-xs"
+                                            className="px-4 py-2 border border-slate-700 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:border-slate-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-[#020617] shadow-xs"
                                         >
                                             <span>Suivant</span>
                                             <ArrowRight className="w-3.5 h-3.5" />
@@ -447,26 +447,26 @@ export default function PracticePage() {
                 ) : (
                     <div className="space-y-4">
                         {/* Filtre En cours / Terminés */}
-                        <div className="flex items-center gap-2 bg-white border border-slate-200/80 rounded-2xl p-1.5 w-fit shadow-xs">
+                        <div className="flex items-center gap-2 bg-[#080d1a] border border-slate-800 rounded-2xl p-1.5 w-fit shadow-xs">
                             <button onClick={() => setCourseFilter('all')}
-                                className={`px-4 py-2 rounded-xl text-xs font-bold tracking-wider transition-all cursor-pointer ${courseFilter === 'all' ? 'bg-slate-950 text-white shadow-sm' : 'text-slate-500 hover:text-slate-950'}`}>
+                                className={`px-4 py-2 rounded-xl text-xs font-bold tracking-wider transition-all cursor-pointer ${courseFilter === 'all' ? 'bg-blue-600 text-white shadow-[0_0_10px_rgba(37,99,235,0.2)]' : 'text-slate-400 hover:text-white'}`}>
                                 Tous
                             </button>
                             <button onClick={() => setCourseFilter('in-progress')}
-                                className={`px-4 py-2 rounded-xl text-xs font-bold tracking-wider transition-all cursor-pointer ${courseFilter === 'in-progress' ? 'bg-slate-950 text-white shadow-sm' : 'text-slate-500 hover:text-slate-950'}`}>
+                                className={`px-4 py-2 rounded-xl text-xs font-bold tracking-wider transition-all cursor-pointer ${courseFilter === 'in-progress' ? 'bg-blue-600 text-white shadow-[0_0_10px_rgba(37,99,235,0.2)]' : 'text-slate-400 hover:text-white'}`}>
                                 En cours
                             </button>
                             <button onClick={() => setCourseFilter('completed')}
-                                className={`px-4 py-2 rounded-xl text-xs font-bold tracking-wider transition-all cursor-pointer ${courseFilter === 'completed' ? 'bg-slate-950 text-white shadow-sm' : 'text-slate-500 hover:text-slate-950'}`}>
+                                className={`px-4 py-2 rounded-xl text-xs font-bold tracking-wider transition-all cursor-pointer ${courseFilter === 'completed' ? 'bg-blue-600 text-white shadow-[0_0_10px_rgba(37,99,235,0.2)]' : 'text-slate-400 hover:text-white'}`}>
                                 Terminés
                             </button>
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             {inscriptions.length === 0 ? (
-                                <div className="col-span-full p-12 text-center bg-white border border-slate-200/80 rounded-3xl">
-                                    <p className="text-sm font-semibold text-slate-500">Vous n'êtes inscrit à aucun cours.</p>
-                                    <button onClick={() => router.push('/dashboard/cours')} className="mt-4 px-5 py-2.5 bg-slate-950 text-white font-bold rounded-xl text-xs">
+                                <div className="col-span-full p-12 text-center bg-[#080d1a] border border-slate-800 rounded-3xl">
+                                    <p className="text-sm font-semibold text-slate-400">Vous n'êtes inscrit à aucun cours.</p>
+                                    <button onClick={() => router.push('/dashboard/cours')} className="mt-4 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs">
                                         Explorer les cours
                                     </button>
                                 </div>
@@ -488,24 +488,24 @@ export default function PracticePage() {
                                         const totalModules = course.modules?.length || 0;
                                         const isCompleted = completedCount >= totalModules && totalModules > 0;
                                         return (
-                                            <div key={course.id} className="bg-white border border-slate-200/90 hover:border-slate-350 hover:shadow-xl rounded-3xl p-6 sm:p-7 flex flex-col justify-between group transition-all duration-300 text-left space-y-5">
+                                            <div key={course.id} className="bg-[#080d1a] border border-slate-800 hover:border-slate-700 hover:shadow-xl rounded-3xl p-6 sm:p-7 flex flex-col justify-between group transition-all duration-300 text-left space-y-5">
                                                 <div className="flex items-start gap-4">
                                                     {course.imageUrl && (
-                                                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shrink-0 bg-slate-100 border border-slate-200">
+                                                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shrink-0 bg-[#020617] border border-slate-700">
                                                             <img src={course.imageUrl} alt={course.titre} className="w-full h-full object-cover" />
                                                         </div>
                                                     )}
                                                     <div className="space-y-2 flex-1 min-w-0">
                                                         <div className="flex items-center gap-2">
-                                                            <h3 className="font-extrabold text-slate-950 text-base sm:text-lg leading-snug group-hover:text-blue-600 transition-colors truncate">{course.titre}</h3>
+                                                            <h3 className="font-extrabold text-white text-base sm:text-lg leading-snug group-hover:text-cyan-400 transition-colors truncate">{course.titre}</h3>
                                                             {isCompleted && (
-                                                                <span className="shrink-0 px-2 py-0.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[9px] font-black rounded-lg">Terminé</span>
+                                                                <span className="shrink-0 px-2 py-0.5 bg-emerald-950/30 border border-emerald-900/50 text-emerald-500 text-[9px] font-black rounded-lg">Terminé</span>
                                                             )}
                                                         </div>
-                                                        <p className="text-xs text-slate-500 font-medium line-clamp-2 leading-relaxed">{course.description}</p>
-                                                        <div className="flex items-center gap-3 text-[10px] font-bold text-slate-400">
+                                                        <p className="text-xs text-slate-400 font-medium line-clamp-2 leading-relaxed">{course.description}</p>
+                                                        <div className="flex items-center gap-3 text-[10px] font-bold text-slate-500">
                                                             {!isCompleted && totalModules > 0 && (
-                                                                <span className="flex items-center gap-1 text-blue-600">
+                                                                <span className="flex items-center gap-1 text-cyan-400">
                                                                     <Clock className="w-3 h-3" />
                                                                     {completedCount}/{totalModules} modules
                                                                 </span>
@@ -517,7 +517,7 @@ export default function PracticePage() {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="border-t border-slate-100 pt-4">
+                                                <div className="border-t border-slate-800 pt-4">
                                                     {isCompleted ? (
                                                         <button onClick={() => router.push(`/dashboard/practice?course=${course.slug}`)}
                                                             className="w-full px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm hover:shadow-md">
@@ -526,7 +526,7 @@ export default function PracticePage() {
                                                         </button>
                                                     ) : (
                                                         <button onClick={() => router.push(`/dashboard/cours/${course.id}/apprendre?from=mes-cours`)}
-                                                            className="w-full px-5 py-2.5 bg-slate-950 hover:bg-slate-900 text-white font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm hover:shadow-md">
+                                                            className="w-full px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(37,99,235,0.3)] hover:shadow-[0_0_20px_rgba(37,99,235,0.5)]">
                                                             <BookOpen className="w-3.5 h-3.5" />
                                                             <span>Continuer le cours</span>
                                                         </button>
@@ -584,7 +584,7 @@ export default function PracticePage() {
                         <button
                             onClick={() => setCurrentIdx(prev => Math.max(0, prev - 1))}
                             disabled={currentIdx === 0}
-                            className="flex items-center gap-2 px-5 py-3 border border-slate-200 rounded-2xl hover:border-slate-350 text-slate-600 hover:text-slate-950 transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer text-xs uppercase font-bold tracking-wider bg-white shadow-sm"
+                            className="flex items-center gap-2 px-5 py-3 border border-slate-800 rounded-2xl hover:border-slate-700 text-slate-400 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer text-xs uppercase font-bold tracking-wider bg-[#080d1a] shadow-sm"
                         >
                             <ArrowLeft className="w-4 h-4" />
                             <span>Précédent</span>
@@ -593,7 +593,7 @@ export default function PracticePage() {
                         {currentIdx < questions.length - 1 ? (
                             <button
                                 onClick={() => setCurrentIdx(prev => prev + 1)}
-                                className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-950 font-black rounded-2xl transition-all cursor-pointer text-xs uppercase tracking-widest shadow-sm hover:shadow-md"
+                                className="flex items-center gap-2 px-6 py-3 bg-[#080d1a] hover:bg-slate-800 border border-slate-800 text-white font-black rounded-2xl transition-all cursor-pointer text-xs uppercase tracking-widest shadow-sm hover:shadow-md"
                             >
                                 <span>Suivant</span>
                                 <ArrowRight className="w-4 h-4" />
@@ -601,7 +601,7 @@ export default function PracticePage() {
                         ) : (
                             <button
                                 onClick={handleFinishExam}
-                                className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl transition-all cursor-pointer text-xs uppercase tracking-widest shadow-md hover:shadow-lg"
+                                className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl transition-all cursor-pointer text-xs uppercase tracking-widest shadow-[0_0_15px_rgba(37,99,235,0.3)] hover:shadow-lg"
                             >
                                 <span>Soumettre le test</span>
                                 <Check className="w-4 h-4" />
@@ -612,23 +612,23 @@ export default function PracticePage() {
 
                 {/* Panneau de droite : Chronomètre & Grille */}
                 <div className="space-y-6">
-                    <div className="bg-white shadow-sm border border-slate-200/80 rounded-3xl p-6 text-center space-y-4">
-                        <div className="flex items-center justify-center gap-2.5 text-slate-950">
-                            <Clock className="w-5 h-5 text-blue-600" />
+                    <div className="bg-[#080d1a] shadow-sm border border-slate-800 rounded-3xl p-6 text-center space-y-4">
+                        <div className="flex items-center justify-center gap-2.5 text-white">
+                            <Clock className="w-5 h-5 text-cyan-400" />
                             <span className="text-2xl font-black tabular-nums">{formatTime(timeLeft)}</span>
                         </div>
 
                         <div className="flex gap-2">
                             <button
                                 onClick={() => setIsPaused(!isPaused)}
-                                className="flex-1 py-2.5 border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-950 rounded-xl text-xs font-bold transition-all cursor-pointer uppercase tracking-wider bg-white shadow-sm"
+                                className="flex-1 py-2.5 border border-slate-700 hover:border-slate-600 text-slate-400 hover:text-white rounded-xl text-xs font-bold transition-all cursor-pointer uppercase tracking-wider bg-[#020617] shadow-sm"
                             >
                                 {isPaused ? 'Reprendre' : 'Pause'}
                             </button>
                         </div>
                     </div>
 
-                    <div className="bg-white shadow-sm border border-slate-200/80 rounded-3xl p-6 space-y-4">
+                    <div className="bg-[#080d1a] shadow-sm border border-slate-800 rounded-3xl p-6 space-y-4">
                         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Grille des questions</p>
 
                         <div className="grid grid-cols-5 gap-2.5">
@@ -642,17 +642,17 @@ export default function PracticePage() {
                                         key={q.id}
                                         onClick={() => setCurrentIdx(idx)}
                                         className={`h-9 rounded-xl border text-xs font-bold transition-all cursor-pointer relative flex items-center justify-center ${isSelected
-                                            ? 'border-red-600 bg-red-50 text-red-600 font-extrabold ring-2 ring-red-100'
+                                            ? 'border-blue-600 bg-blue-950/30 text-cyan-400 font-extrabold ring-2 ring-red-900/50'
                                             : isFlagged
                                                 ? 'border-amber-500 bg-amber-500/10 text-amber-500'
                                                 : isAnswered
-                                                    ? 'border-slate-200 bg-slate-50 text-slate-700'
-                                                    : 'border-slate-200/80 bg-transparent text-slate-500 hover:border-slate-300'
+                                                    ? 'border-slate-700 bg-[#020617] text-slate-300'
+                                                    : 'border-slate-800 bg-transparent text-slate-500 hover:border-slate-700'
                                             }`}
                                     >
                                         {idx + 1}
                                         {isFlagged && (
-                                            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-500 rounded-full border-2 border-white" />
+                                            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-500 rounded-full border-2 border-[#080d1a]" />
                                         )}
                                     </button>
                                 );
@@ -696,7 +696,7 @@ export default function PracticePage() {
                     <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 rounded-3xl p-6 md:p-8 text-white space-y-6 shadow-xl relative overflow-hidden text-left">
                         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border-b border-white/10 pb-6">
                             <div className="space-y-1">
-                                <span className="px-3 py-1 bg-red-500/20 border border-red-500/30 text-red-400 font-extrabold text-[10px] rounded-full uppercase tracking-wider">
+                                <span className="px-3 py-1 bg-blue-500/20 border border-cyan-500/30 text-cyan-300 font-extrabold text-[10px] rounded-full uppercase tracking-wider">
                                     Analyse d'Éligibilité par IA
                                 </span>
                                 <h3 className="text-xl font-black text-white">
@@ -725,7 +725,7 @@ export default function PracticePage() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     {readinessData.planRevision.map((etape: string, idx: number) => (
                                         <div key={idx} className="p-3.5 bg-white/5 border border-white/10 rounded-2xl flex items-start gap-3 text-xs text-slate-200 font-medium">
-                                            <span className="w-5 h-5 rounded-lg bg-red-600 text-white font-black text-[10px] flex items-center justify-center shrink-0 mt-0.5">
+                                            <span className="w-5 h-5 rounded-lg bg-blue-600 text-white font-black text-[10px] flex items-center justify-center shrink-0 mt-0.5">
                                                 {idx + 1}
                                             </span>
                                             <span>{etape}</span>
@@ -739,7 +739,7 @@ export default function PracticePage() {
 
                 {/* Liste de Correction */}
                 <div className="space-y-6">
-                    <h2 className="text-sm font-black text-slate-500 uppercase tracking-widest">Rapport de Correction Détaillé</h2>
+                    <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest">Rapport de Correction Détaillé</h2>
 
                     <div className="space-y-6">
                         {questions.map((q, idx) => {
@@ -752,24 +752,24 @@ export default function PracticePage() {
                                 <div
                                     key={q.id}
                                     className={`border rounded-3xl p-6 sm:p-8 space-y-5 text-left transition-all ${isCorrect
-                                        ? 'border-emerald-500/15 bg-emerald-500/[0.01]'
-                                        : 'border-blue-500/15 bg-blue-500/[0.01]'
+                                        ? 'border-emerald-900/50 bg-emerald-950/10'
+                                        : 'border-blue-900/50 bg-blue-950/10'
                                         }`}
                                 >
-                                    <div className="flex justify-between items-center border-b border-slate-100 pb-3">
-                                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Question {idx + 1} • {q.categorie || "Général"}</span>
+                                    <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+                                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Question {idx + 1} • {q.categorie || "Général"}</span>
                                         {isOpen ? (
                                             <span className={`text-[9px] px-2.5 py-1 rounded-lg font-black uppercase tracking-wider flex items-center gap-1.5 ${isCorrect
-                                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                                                : 'bg-blue-50 text-blue-700 border border-blue-100'
+                                                ? 'bg-emerald-950/40 text-emerald-500 border border-emerald-900/50'
+                                                : 'bg-rose-950/40 text-rose-500 border border-rose-900/50'
                                                 }`}>
                                                 {isCorrect ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
                                                 {aiFeedback ? `Score IA : ${aiFeedback.score}/100` : "IA non évaluée"}
                                             </span>
                                         ) : (
                                             <span className={`text-[9px] px-2.5 py-1 rounded-lg font-black uppercase tracking-wider flex items-center gap-1.5 ${isCorrect
-                                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                                                : 'bg-blue-50 text-blue-700 border border-blue-100'
+                                                ? 'bg-emerald-950/40 text-emerald-500 border border-emerald-900/50'
+                                                : 'bg-rose-950/40 text-rose-500 border border-rose-900/50'
                                                 }`}>
                                                 {isCorrect ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
                                                 {isCorrect ? 'Correct' : 'Incorrect'}
@@ -777,30 +777,30 @@ export default function PracticePage() {
                                         )}
                                     </div>
 
-                                    <h3 className="font-extrabold text-slate-950 text-sm sm:text-base leading-snug">{q.enonce}</h3>
+                                    <h3 className="font-extrabold text-white text-sm sm:text-base leading-snug">{q.enonce}</h3>
 
                                     {/* Réponse ouverte */}
                                     {isOpen ? (
                                         <div className="space-y-3">
-                                            <div className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-1">
-                                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Votre Réponse :</span>
-                                                <p className="text-xs text-slate-800 font-medium whitespace-pre-wrap">{userAnswer || "Aucune réponse saisie."}</p>
+                                            <div className="p-4 bg-[#020617] border border-slate-800 rounded-2xl space-y-1">
+                                                <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest block">Votre Réponse :</span>
+                                                <p className="text-xs text-slate-300 font-medium whitespace-pre-wrap">{userAnswer || "Aucune réponse saisie."}</p>
                                             </div>
 
                                             {/* Évaluation IA */}
                                             {aiFeedback && (
-                                                <div className="p-5 bg-blue-50/40 border border-blue-100 rounded-2xl space-y-3.5 text-xs text-left">
-                                                    <div className="flex items-center justify-between border-b border-blue-200/50 pb-2">
-                                                        <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest">Analyse Éducative IA (Gemini)</span>
-                                                        <span className="text-[10px] font-black text-blue-700 bg-blue-50 border border-blue-200/60 px-2.5 py-0.5 rounded-full">{aiFeedback.score}/100</span>
+                                                <div className="p-5 bg-blue-950/20 border border-blue-900/30 rounded-2xl space-y-3.5 text-xs text-left">
+                                                    <div className="flex items-center justify-between border-b border-blue-900/50 pb-2">
+                                                        <span className="text-[9px] font-black text-cyan-400 uppercase tracking-widest">Analyse Éducative IA (Gemini)</span>
+                                                        <span className="text-[10px] font-black text-cyan-300 bg-blue-950/40 border border-blue-900/50 px-2.5 py-0.5 rounded-full">{aiFeedback.score}/100</span>
                                                     </div>
                                                     <div className="space-y-3">
-                                                        <p className="text-slate-700 leading-relaxed font-semibold">
-                                                            <strong className="text-slate-950 block font-bold uppercase text-[9px] tracking-wider mb-1">Critique détaillée :</strong>
+                                                        <p className="text-slate-300 leading-relaxed font-semibold">
+                                                            <strong className="text-white block font-bold uppercase text-[9px] tracking-wider mb-1">Critique détaillée :</strong>
                                                             {aiFeedback.critique}
                                                         </p>
-                                                        <p className="text-slate-700 leading-relaxed font-semibold">
-                                                            <strong className="text-slate-950 block font-bold uppercase text-[9px] tracking-wider mb-1">Suggestions d'amélioration :</strong>
+                                                        <p className="text-slate-300 leading-relaxed font-semibold">
+                                                            <strong className="text-white block font-bold uppercase text-[9px] tracking-wider mb-1">Suggestions d'amélioration :</strong>
                                                             {aiFeedback.suggestions}
                                                         </p>
                                                     </div>
@@ -808,9 +808,9 @@ export default function PracticePage() {
                                             )}
 
                                             {/* Corrigé type */}
-                                            <div className="p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl space-y-1.5 text-xs leading-relaxed">
-                                                <p className="font-bold text-emerald-600 uppercase tracking-wider text-[9px]">Corrigé Type Officiel :</p>
-                                                <p className="text-slate-800 font-semibold">{q.reponseCorrecte}</p>
+                                            <div className="p-4 bg-emerald-950/20 border border-emerald-900/30 rounded-2xl space-y-1.5 text-xs leading-relaxed">
+                                                <p className="font-bold text-emerald-500 uppercase tracking-wider text-[9px]">Corrigé Type Officiel :</p>
+                                                <p className="text-slate-300 font-semibold">{q.reponseCorrecte}</p>
                                             </div>
                                         </div>
                                     ) : (
@@ -820,20 +820,20 @@ export default function PracticePage() {
                                                     const wasSelected = userAnswer === opt.lettre;
                                                     const isOptionCorrect = q.reponseCorrecte === opt.lettre;
 
-                                                    let style = "border-slate-200 bg-slate-50/20 text-slate-500";
+                                                    let style = "border-slate-800 bg-[#020617] text-slate-400";
                                                     if (wasSelected && !isOptionCorrect) {
-                                                        style = "border-blue-500/30 bg-blue-500/5 text-blue-600";
+                                                        style = "border-cyan-500/30 bg-blue-500/10 text-cyan-400";
                                                     } else if (isOptionCorrect) {
-                                                        style = "border-emerald-500/30 bg-emerald-500/5 text-emerald-700";
+                                                        style = "border-emerald-500/30 bg-emerald-500/10 text-emerald-500";
                                                     }
 
                                                     return (
                                                         <div key={opt.id} className={`p-4 border rounded-2xl flex items-center gap-3 ${style}`}>
                                                             <span className={`w-7 h-7 rounded-lg border font-bold text-xs flex items-center justify-center shrink-0 ${isOptionCorrect
-                                                                ? 'border-emerald-450 bg-emerald-500/15 text-emerald-600'
+                                                                ? 'border-emerald-500 bg-emerald-950/50 text-emerald-500'
                                                                 : wasSelected
-                                                                    ? 'border-blue-450 bg-blue-500/15 text-blue-600'
-                                                                    : 'border-slate-200 bg-white text-slate-500'
+                                                                    ? 'border-cyan-500 bg-blue-950/50 text-cyan-400'
+                                                                    : 'border-slate-700 bg-slate-800 text-slate-400'
                                                                 }`}>
                                                                 {opt.lettre}
                                                             </span>
@@ -844,9 +844,9 @@ export default function PracticePage() {
                                             </div>
 
                                             {q.explication && (
-                                                <div className="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-1.5 text-xs leading-relaxed">
-                                                    <p className="font-bold text-blue-600 uppercase tracking-wider text-[9px]">Explication pédagogique :</p>
-                                                    <p className="text-slate-600 font-semibold">{q.explication}</p>
+                                                <div className="mt-4 p-4 bg-[#020617] border border-slate-800 rounded-2xl space-y-1.5 text-xs leading-relaxed">
+                                                    <p className="font-bold text-cyan-400 uppercase tracking-wider text-[9px]">Explication pédagogique :</p>
+                                                    <p className="text-slate-300 font-semibold">{q.explication}</p>
                                                 </div>
                                             )}
                                         </>
@@ -868,66 +868,66 @@ export default function PracticePage() {
         <div className="max-w-2xl mx-auto space-y-8 text-left relative overflow-hidden">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-blue-600/5 blur-3xl pointer-events-none" />
 
-            <div className="bg-white shadow-sm border border-slate-200/80 rounded-[32px] p-8 sm:p-12 space-y-6 relative z-10 text-center">
+            <div className="bg-[#080d1a] shadow-sm border border-slate-800 rounded-[32px] p-8 sm:p-12 space-y-6 relative z-10 text-center">
 
                 {mode === 'cours' && selectedCourse ? (
                     <>
                         <div className="flex justify-center">
-                            <div className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center">
-                                <FileText className="w-8 h-8 text-blue-600" />
+                            <div className="w-20 h-20 rounded-full bg-blue-950/30 border border-blue-900/30 flex items-center justify-center">
+                                <FileText className="w-8 h-8 text-cyan-400" />
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block">Simulation de Cours</span>
-                            <h2 className="text-2xl font-black text-slate-950 leading-snug">{selectedCourse.titre}</h2>
+                            <span className="text-[10px] font-black text-cyan-400 uppercase tracking-widest block">Simulation de Cours</span>
+                            <h2 className="text-2xl font-black text-white leading-snug">{selectedCourse.titre}</h2>
 
                             {courseStatus && !courseStatus.inscrit && (
-                                <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-2xl">
-                                    <p className="text-xs font-bold text-amber-700">Vous n'êtes pas inscrit à ce cours.</p>
-                                    <button onClick={() => router.push(`/dashboard/cours/${selectedCourse.id}`)} className="mt-2 px-4 py-2 bg-amber-600 text-white font-bold rounded-xl text-xs">
+                                <div className="mt-4 p-4 bg-amber-950/30 border border-amber-900/50 rounded-2xl">
+                                    <p className="text-xs font-bold text-amber-500">Vous n'êtes pas inscrit à ce cours.</p>
+                                    <button onClick={() => router.push(`/dashboard/cours/${selectedCourse.id}`)} className="mt-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs">
                                         Rejoindre le cours
                                     </button>
                                 </div>
                             )}
                             {courseStatus && courseStatus.inscrit && !courseStatus.completed && (
-                                <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-2xl">
-                                    <p className="text-xs font-bold text-blue-700">Vous devez d'abord terminer tous les modules du cours pour accéder à sa simulation.</p>
-                                    <p className="text-xs text-blue-500 font-semibold mt-1">Progression : {courseStatus.progression}% ({courseStatus.completedCount}/{courseStatus.totalModules} modules)</p>
-                                    <button onClick={() => router.push(`/dashboard/cours/${selectedCourse.id}/apprendre`)} className="mt-2 px-4 py-2 bg-blue-600 text-white font-bold rounded-xl text-xs">
+                                <div className="mt-4 p-4 bg-blue-950/30 border border-blue-900/50 rounded-2xl">
+                                    <p className="text-xs font-bold text-cyan-400">Vous devez d'abord terminer tous les modules du cours pour accéder à sa simulation.</p>
+                                    <p className="text-xs text-cyan-300 font-semibold mt-1">Progression : {courseStatus.progression}% ({courseStatus.completedCount}/{courseStatus.totalModules} modules)</p>
+                                    <button onClick={() => router.push(`/dashboard/cours/${selectedCourse.id}/apprendre`)} className="mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs">
                                         Continuer le cours
                                     </button>
                                 </div>
                             )}
                             {!courseSimulation && courseStatus?.inscrit && (
-                                <div className="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
-                                    <p className="text-xs font-bold text-slate-600">Le formateur n'a pas encore créé de simulation pour ce cours.</p>
+                                <div className="mt-4 p-4 bg-[#020617] border border-slate-800 rounded-2xl">
+                                    <p className="text-xs font-bold text-slate-400">Le formateur n'a pas encore créé de simulation pour ce cours.</p>
                                 </div>
                             )}
                         </div>
 
                         {courseStatus?.inscrit && courseStatus?.completed && courseSimulation && questions.length > 0 && (
                             <>
-                                <div className="grid grid-cols-3 gap-4 py-4 border-y border-slate-200/80 my-4 text-xs">
+                                <div className="grid grid-cols-3 gap-4 py-4 border-y border-slate-800 my-4 text-xs">
                                     <div className="space-y-1">
-                                        <p className="text-slate-500 font-bold uppercase text-[9px] tracking-wider">Questions</p>
-                                        <p className="font-extrabold text-slate-950">{questions.length} questions</p>
+                                        <p className="text-slate-400 font-bold uppercase text-[9px] tracking-wider">Questions</p>
+                                        <p className="font-extrabold text-white">{questions.length} questions</p>
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="text-slate-500 font-bold uppercase text-[9px] tracking-wider">Durée</p>
-                                        <p className="font-extrabold text-slate-950">{questions.length * 2} minutes</p>
+                                        <p className="text-slate-400 font-bold uppercase text-[9px] tracking-wider">Durée</p>
+                                        <p className="font-extrabold text-white">{questions.length * 2} minutes</p>
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="text-slate-500 font-bold uppercase text-[9px] tracking-wider">Seuil</p>
-                                        <p className="font-extrabold text-slate-950">80% de réussite</p>
+                                        <p className="text-slate-400 font-bold uppercase text-[9px] tracking-wider">Seuil</p>
+                                        <p className="font-extrabold text-white">80% de réussite</p>
                                     </div>
                                 </div>
                                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                     <button onClick={handleStartExam} disabled={questions.length === 0}
-                                        className="flex-1 py-3.5 bg-white hover:bg-slate-100 text-slate-950 font-black rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                                        className="flex-1 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow-[0_0_15px_rgba(37,99,235,0.3)] disabled:opacity-50 disabled:cursor-not-allowed">
                                         Démarrer l'Examen
                                     </button>
                                     <button onClick={() => router.push('/dashboard')}
-                                        className="px-6 py-3.5 border border-slate-200/80 hover:border-slate-200 text-slate-600 hover:text-slate-950 rounded-xl text-xs font-bold transition-all cursor-pointer uppercase tracking-wider">
+                                        className="px-6 py-3.5 border border-slate-700 hover:border-slate-600 text-slate-400 hover:text-white rounded-xl text-xs font-bold transition-all cursor-pointer uppercase tracking-wider bg-[#020617]">
                                         Annuler
                                     </button>
                                 </div>
@@ -942,39 +942,39 @@ export default function PracticePage() {
                                     {getCertificateBadgeLogo(currentCert) ? (
                                         <img src={getCertificateBadgeLogo(currentCert)} alt={currentCert.nom} className="max-h-full max-w-full object-contain filter drop-shadow-md" />
                                     ) : (
-                                        <HelpCircle className="w-12 h-12 text-blue-600" />
+                                        <HelpCircle className="w-12 h-12 text-cyan-400" />
                                     )}
                                 </div>
                             </div>
                         )}
                         <div className="space-y-2">
-                            <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block">Simulateur Officiel</span>
-                            <h2 className="text-2xl font-black text-slate-950 leading-snug">{currentCert?.nom || 'Chargement...'}</h2>
-                            <p className="text-xs text-slate-450 font-semibold max-w-sm mx-auto leading-relaxed mt-2">
+                            <span className="text-[10px] font-black text-cyan-400 uppercase tracking-widest block">Simulateur Officiel</span>
+                            <h2 className="text-2xl font-black text-white leading-snug">{currentCert?.nom || 'Chargement...'}</h2>
+                            <p className="text-xs text-slate-400 font-semibold max-w-sm mx-auto leading-relaxed mt-2">
                                 Cet examen blanc reproduit fidèlement la structure de l'examen de certification réel.
                             </p>
                         </div>
-                        <div className="grid grid-cols-3 gap-4 py-4 border-y border-slate-200/80 my-4 text-xs">
+                        <div className="grid grid-cols-3 gap-4 py-4 border-y border-slate-800 my-4 text-xs">
                             <div className="space-y-1">
-                                <p className="text-slate-500 font-bold uppercase text-[9px] tracking-wider">Questions</p>
-                                <p className="font-extrabold text-slate-950">{questions.length} questions</p>
+                                <p className="text-slate-400 font-bold uppercase text-[9px] tracking-wider">Questions</p>
+                                <p className="font-extrabold text-white">{questions.length} questions</p>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-slate-500 font-bold uppercase text-[9px] tracking-wider">Durée</p>
-                                <p className="font-extrabold text-slate-950">{questions.length * 2} minutes</p>
+                                <p className="text-slate-400 font-bold uppercase text-[9px] tracking-wider">Durée</p>
+                                <p className="font-extrabold text-white">{questions.length * 2} minutes</p>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-slate-500 font-bold uppercase text-[9px] tracking-wider">Seuil</p>
-                                <p className="font-extrabold text-slate-950">80% de réussite</p>
+                                <p className="text-slate-400 font-bold uppercase text-[9px] tracking-wider">Seuil</p>
+                                <p className="font-extrabold text-white">80% de réussite</p>
                             </div>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <button onClick={handleStartExam} disabled={questions.length === 0}
-                                className="flex-1 py-3.5 bg-white hover:bg-slate-100 text-slate-950 font-black rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                                className="flex-1 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow-[0_0_15px_rgba(37,99,235,0.3)] disabled:opacity-50 disabled:cursor-not-allowed">
                                 Démarrer l'Examen
                             </button>
                             <button onClick={() => router.push('/dashboard')}
-                                className="px-6 py-3.5 border border-slate-200/80 hover:border-slate-200 text-slate-600 hover:text-slate-950 rounded-xl text-xs font-bold transition-all cursor-pointer uppercase tracking-wider">
+                                className="px-6 py-3.5 border border-slate-700 hover:border-slate-600 text-slate-400 hover:text-white rounded-xl text-xs font-bold transition-all cursor-pointer uppercase tracking-wider bg-[#020617]">
                                 Annuler
                             </button>
                         </div>

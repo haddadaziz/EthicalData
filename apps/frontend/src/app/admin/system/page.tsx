@@ -51,8 +51,9 @@ export default function SystemSettingsPage() {
   });
 
   const [ai, setAi] = useState({
-    activeModel: 'gemini-2.5-flash',
+    activeModel: 'gemini-1.5-flash',
     apiKey: '',
+    apiUrl: '',
     customPrompt: '',
     maxTokens: 2048,
   });
@@ -414,34 +415,50 @@ export default function SystemSettingsPage() {
                   <Sparkles className="w-5 h-5 text-purple-600" />
                 </div>
                 <div>
-                  <h3 className="text-base font-black text-slate-900 tracking-tight">Configuration IA (Gemini)</h3>
-                  <p className="text-xs text-slate-500 font-semibold">Gérez les modèles de langage et le prompt système pour la notation et l'assistant IA.</p>
+                  <h3 className="text-base font-black text-slate-900 tracking-tight">Configuration IA Universelle</h3>
+                  <p className="text-xs text-slate-500 font-semibold">Gérez les modèles de langage (Gemini, OpenAI, etc.) et le prompt système pour la notation et l'assistant IA.</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-700">Modèle actif *</label>
-                  <select
+                  <input
+                    list="ai-models"
                     value={ai.activeModel}
                     onChange={(e) => setAi({ ...ai, activeModel: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-bold outline-none cursor-pointer hover:bg-slate-100 transition-all"
-                  >
+                    placeholder="ex: gpt-4o, gemini-1.5-flash, llama-3"
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-bold outline-none transition-all"
+                  />
+                  <datalist id="ai-models">
                     <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-                    <option value="gemini-2.5-flash">Gemini 2.5 Flash (Recommandé)</option>
-                    <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                    <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash</option>
                     <option value="gpt-4o-mini">GPT-4o Mini</option>
                     <option value="gpt-4o">GPT-4o</option>
-                  </select>
+                    <option value="claude-3-5-sonnet-20240620">Claude 3.5 Sonnet</option>
+                    <option value="llama3-70b-8192">Llama 3 70B (Groq)</option>
+                  </datalist>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Clé d'API Google Gemini (laisse vide pour utiliser la variable d'env)</label>
+                  <label className="text-xs font-bold text-slate-700">URL de Base API (Optionnel)</label>
+                  <input
+                    type="url"
+                    value={ai.apiUrl || ''}
+                    onChange={(e) => setAi({ ...ai, apiUrl: e.target.value })}
+                    placeholder="ex: https://api.openai.com/v1"
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-semibold outline-none transition-all"
+                  />
+                  <p className="text-[10px] text-slate-400 font-medium">Laissez vide pour Google Gemini natif.</p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700">Clé d'API (OpenAI, Gemini, Groq...)</label>
                   <input
                     type="password"
                     value={ai.apiKey}
                     onChange={(e) => setAi({ ...ai, apiKey: e.target.value })}
-                    placeholder="••••••••••••••••••••••••"
+                    placeholder="sk-... ou AIza..."
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-semibold outline-none transition-all"
                   />
                 </div>

@@ -28,7 +28,7 @@ export function EventsSection() {
             
             <div className="flex items-start gap-6">
               {/* Date Badge */}
-              <div className="w-20 h-24 rounded-xl bg-red-600 text-white flex flex-col items-center justify-center shrink-0 shadow-lg shadow-red-600/20">
+              <div className="w-20 h-24 rounded-xl bg-blue-600 text-white flex flex-col items-center justify-center shrink-0 shadow-lg shadow-blue-600/20">
                 <span className="text-3xl font-black leading-none">31</span>
                 <span className="text-xs font-bold uppercase tracking-widest mt-1">Mai</span>
               </div>
@@ -54,7 +54,7 @@ export function EventsSection() {
             <div className="pt-2">
               <button 
                 onClick={() => window.location.href = '/register'}
-                className="px-8 py-3.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold uppercase tracking-widest rounded-full transition-all cursor-pointer shadow-[0_0_15px_rgba(220,38,38,0.3)] hover:shadow-[0_0_25px_rgba(220,38,38,0.5)] flex items-center gap-3 w-fit"
+                className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold uppercase tracking-widest rounded-full transition-all cursor-pointer shadow-[0_0_15px_rgba(37,99,235,0.3)] hover:shadow-[0_0_25px_rgba(37,99,235,0.5)] flex items-center gap-3 w-fit"
               >
                 S'inscrire <ArrowRight className="w-4 h-4" />
               </button>
@@ -64,9 +64,9 @@ export function EventsSection() {
           {/* Colonne de Droite : Autres événements (Minimaliste) */}
           <div className="w-full lg:w-7/12 flex flex-col justify-start">
             
-            <div className="group cursor-pointer border-b border-white/10 pb-8 hover:border-red-500/50 transition-colors duration-300">
+            <div className="group cursor-pointer border-b border-white/10 pb-8 hover:border-cyan-500/50 transition-colors duration-300">
               <div className="space-y-3">
-                <span className="text-sm font-bold text-slate-400 group-hover:text-red-400 transition-colors">12 mai</span>
+                <span className="text-sm font-bold text-slate-400 group-hover:text-cyan-300 transition-colors">12 mai</span>
                 <h3 className="text-xl font-bold text-white leading-tight group-hover:text-white transition-colors max-w-lg">
                   AWS Certified Solutions Architect - Associate
                 </h3>

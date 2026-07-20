@@ -66,7 +66,7 @@ export function FournisseurModal({
             {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200/80">
             <div className="flex items-center gap-2">
-              <Briefcase className="w-5 h-5 text-red-600" />
+              <Briefcase className="w-5 h-5 text-cyan-500" />
               <h3 className="font-extrabold text-sm text-slate-950 uppercase tracking-wider">Gérer les Fournisseurs</h3>
             </div>
             <button
@@ -96,7 +96,7 @@ export function FournisseurModal({
                 value={fournNom}
                 onChange={(e) => setFournNom(e.target.value)}
                 placeholder="Nom du fournisseur (ex: Microsoft)"
-                className="flex-1 px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
+                className="flex-1 px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all"
                 disabled={fournLoading}
               />
               <button

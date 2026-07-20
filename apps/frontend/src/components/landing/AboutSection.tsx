@@ -35,7 +35,7 @@ export function AboutSection() {
             { end: 100, label: "Mission Pentest" }
           ].map((stat, i) => (
             <div key={i} className="text-center">
-              <p className="text-4xl sm:text-5xl font-black text-red-600 mb-1 drop-shadow-[0_0_8px_rgba(239,68,68,0.2)]">
+              <p className="text-4xl sm:text-5xl font-black text-cyan-500 mb-1 drop-shadow-[0_0_8px_rgba(239,68,68,0.2)]">
                 <AnimatedNumber end={stat.end} />
               </p>
               <p className="text-[11px] sm:text-xs text-white font-extrabold uppercase tracking-widest">{stat.label}</p>

@@ -86,18 +86,20 @@ export default function CourseViewPage() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-slate-50">
-                <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full" />
+            <div className="flex items-center justify-center min-h-screen bg-[#020617] relative overflow-hidden">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-600/10 rounded-full blur-[100px]" />
+                <div className="animate-spin w-8 h-8 border-4 border-[#080d1a] border-t-cyan-500 rounded-full relative z-10" />
             </div>
         );
     }
 
     if (error || !cours) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 gap-4">
-                <p className="text-sm text-slate-500 font-semibold">{error || 'Cours introuvable.'}</p>
+            <div className="flex flex-col items-center justify-center min-h-screen bg-[#020617] gap-4 relative overflow-hidden">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-600/10 rounded-full blur-[100px]" />
+                <p className="text-sm text-slate-400 font-semibold relative z-10">{error || 'Cours introuvable.'}</p>
                 <button onClick={() => router.push('/dashboard/courses')}
-                    className="px-4 py-2 text-xs font-black text-white bg-blue-600 rounded-xl cursor-pointer hover:bg-blue-700 transition-all">
+                    className="px-4 py-2 text-xs font-black text-white bg-blue-600 rounded-xl cursor-pointer hover:bg-blue-700 transition-all shadow-[0_0_15px_rgba(37,99,235,0.3)] relative z-10">
                     Retour aux cours
                 </button>
             </div>
@@ -108,16 +110,16 @@ export default function CourseViewPage() {
     const embedUrl = activeModule?.videoUrl ? getVideoEmbedUrl(activeModule.videoUrl) : null;
 
     return (
-        <div className="min-h-screen bg-slate-50 flex">
+        <div className="min-h-screen bg-[#020617] flex">
             {/* Sidebar */}
-            <aside className="w-72 shrink-0 bg-white border-r border-slate-200 flex flex-col">
-                <div className="p-5 border-b border-slate-100">
+            <aside className="w-72 shrink-0 bg-[#080d1a] border-r border-slate-800 flex flex-col">
+                <div className="p-5 border-b border-slate-800">
                     <button onClick={() => router.push('/dashboard/courses')}
-                        className="flex items-center gap-1.5 text-xs text-slate-400 font-bold cursor-pointer hover:text-slate-600 transition-colors mb-3">
-                        <ChevronLeft className="w-3.5 h-3.5" />
+                        className="flex items-center gap-1.5 text-xs text-slate-400 font-bold cursor-pointer hover:text-white transition-colors mb-3 group">
+                        <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
                         Retour
                     </button>
-                    <h1 className="text-sm font-black text-slate-800 leading-tight">{cours.titre}</h1>
+                    <h1 className="text-sm font-black text-white leading-tight">{cours.titre}</h1>
                     {cours.description && (
                         <p className="text-[11px] text-slate-400 font-semibold mt-1 line-clamp-2">{cours.description}</p>
                     )}

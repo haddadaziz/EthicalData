@@ -42,7 +42,7 @@ export const CertificationCard = ({
         onMouseMove={handleMouseMove}
         className="relative block w-full group cursor-pointer select-none transition-all duration-500 ease-out hover:scale-[1.03] hover:-translate-y-2"
       >
-        <div className="relative w-full h-[400px] rounded-2xl overflow-hidden bg-[#0a0f1d] border border-slate-800 transition-all duration-500 shadow-xl group-hover:shadow-[0_20px_40px_-15px_rgba(220,38,38,0.4)] group-hover:border-red-500/50">
+        <div className="relative w-full h-[400px] rounded-2xl overflow-hidden bg-[#0a0f1d] border border-slate-800 transition-all duration-500 shadow-xl group-hover:shadow-[0_20px_40px_-15px_rgba(37,99,235,0.4)] group-hover:border-cyan-500/50">
           
           {/* Spotlight Effect */}
           <motion.div
@@ -68,7 +68,7 @@ export const CertificationCard = ({
           {/* Code Examen Badge */}
           {codeExamen && (
             <div className="absolute top-5 left-5 z-30">
-              <div className="bg-slate-900/80 text-white font-bold uppercase text-[10px] tracking-widest px-3 py-1.5 rounded-md border border-slate-700/50 shadow-lg flex items-center group-hover:bg-red-600 group-hover:border-red-500 transition-colors duration-300">
+              <div className="bg-slate-900/80 text-white font-bold uppercase text-[10px] tracking-widest px-3 py-1.5 rounded-md border border-slate-700/50 shadow-lg flex items-center group-hover:bg-blue-600 group-hover:border-cyan-500 transition-colors duration-300">
                 {codeExamen}
               </div>
             </div>
@@ -81,7 +81,7 @@ export const CertificationCard = ({
                 <img
                   src={logo}
                   alt="Badge"
-                  className="w-full h-auto object-contain drop-shadow-[0_15px_25px_rgba(0,0,0,0.8)] group-hover:drop-shadow-[0_20px_30px_rgba(220,38,38,0.3)] transition-all duration-500"
+                  className="w-full h-auto object-contain drop-shadow-[0_15px_25px_rgba(0,0,0,0.8)] group-hover:drop-shadow-[0_20px_30px_rgba(37,99,235,0.3)] transition-all duration-500"
                   loading="lazy"
                   decoding="async"
                 />
@@ -99,7 +99,7 @@ export const CertificationCard = ({
               <h3 className="text-sm md:text-base font-bold text-slate-200 group-hover:text-white leading-snug line-clamp-2 transition-colors duration-300">
                 {cleanTitle(nom, codeExamen || "")}
               </h3>
-              <div className="w-fit px-4 py-2 bg-red-600/10 border border-red-600/30 rounded-lg flex items-center justify-center text-red-400 group-hover:bg-red-600 group-hover:text-white group-hover:border-red-600 transition-all duration-300 text-[11px] font-black uppercase tracking-widest shadow-lg">
+              <div className="w-fit px-4 py-2 bg-blue-600/10 border border-blue-600/30 rounded-lg flex items-center justify-center text-cyan-300 group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-all duration-300 text-[11px] font-black uppercase tracking-widest shadow-lg">
                 Explorer
               </div>
             </div>

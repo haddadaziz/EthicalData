@@ -84,7 +84,7 @@ export function CertificationsGrid({
               {/* Examen code overlay */}
               {cert.codeExamen && (
                 <div className="absolute top-3 left-3 z-30 pointer-events-none">
-                  <div className="bg-slate-900/80 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-700/50 shadow-sm flex items-center group-hover:bg-red-600 group-hover:border-red-500 transition-colors">
+                  <div className="bg-slate-900/80 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-700/50 shadow-sm flex items-center group-hover:bg-blue-600 group-hover:border-cyan-500 transition-colors">
                     {cert.codeExamen}
                   </div>
                 </div>

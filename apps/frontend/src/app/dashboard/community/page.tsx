@@ -472,15 +472,15 @@ export default function CommunityPage() {
             />
 
             {loading ? (
-                <div className="p-16 text-center text-slate-400 bg-white border border-slate-200/80 rounded-3xl">
-                    <span className="w-10 h-10 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin inline-block mb-3" />
-                    <p className="text-xs font-bold uppercase tracking-widest text-blue-600">Chargement de la communauté...</p>
+                <div className="p-16 text-center text-slate-400 bg-[#080d1a] border border-slate-800 rounded-3xl">
+                    <span className="w-10 h-10 border-4 border-blue-950 border-t-cyan-500 rounded-full animate-spin inline-block mb-3" />
+                    <p className="text-xs font-bold uppercase tracking-widest text-cyan-400">Chargement de la communauté...</p>
                 </div>
             ) : filteredSujets.length === 0 ? (
-                <div className="p-16 text-center bg-white border border-slate-200/80 rounded-3xl space-y-3">
-                    <MessageSquare className="w-10 h-10 text-slate-300 mx-auto" />
-                    <h3 className="font-extrabold text-slate-950 text-base">Aucune discussion trouvée</h3>
-                    <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                <div className="p-16 text-center bg-[#080d1a] border border-slate-800 rounded-3xl space-y-3">
+                    <MessageSquare className="w-10 h-10 text-slate-600 mx-auto" />
+                    <h3 className="font-extrabold text-white text-base">Aucune discussion trouvée</h3>
+                    <p className="text-xs text-slate-400 max-w-sm mx-auto">
                         Soyez le premier à lancer un échange sur ce sujet en cliquant sur "Nouvelle Discussion".
                     </p>
                 </div>
