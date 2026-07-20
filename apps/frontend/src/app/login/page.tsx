@@ -230,9 +230,7 @@ export default function LoginPage() {
                 >
                     <div className="flex flex-col items-center mb-6">
                         <div className="flex items-center justify-center mb-4 group-hover/card:scale-105 transition-transform duration-300">
-                            <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.1)] border border-slate-200">
-                                <img src="/favicon_ethical_data.png" alt="Ethical Data Security" className="w-10 h-10 object-contain" />
-                            </div>
+                            <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-10 w-auto object-contain" />
                         </div>
                         <h1 className="text-lg font-bold text-white tracking-tight">Connexion</h1>
                         <p className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-wider">
