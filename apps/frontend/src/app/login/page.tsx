@@ -59,9 +59,9 @@ export default function LoginPage() {
 
         const initParticles = () => {
             particles = [];
-            const particleCount = Math.min(Math.floor((canvas.width * canvas.height) / 15000), 75);
+            const particleCount = Math.min(Math.floor((canvas.width * canvas.height) / 10000), 120);
             for (let i = 0; i < particleCount; i++) {
-                const radius = Math.random() * 1.3 + 0.8;
+                const radius = Math.random() * 1.8 + 1.2;
                 const x = Math.random() * canvas.width;
                 const y = Math.random() * canvas.height;
                 const targetVy = -(Math.random() * 0.25 + 0.05);
@@ -229,8 +229,10 @@ export default function LoginPage() {
                     className="w-full max-w-[400px] bg-[#080d1a]/90 border border-slate-800 rounded-[28px] shadow-xl p-6 sm:p-8 relative z-10 hover:border-slate-700 hover:shadow-2xl transition-all duration-500 group/card"
                 >
                     <div className="flex flex-col items-center mb-6">
-                        <div className="flex items-center justify-center mb-2 group-hover/card:scale-105 transition-transform duration-300">
-                            <img src="/favicon_ethical_data.png" alt="Ethical Data Security" className="w-10 h-10 object-contain" />
+                        <div className="flex items-center justify-center mb-4 group-hover/card:scale-105 transition-transform duration-300">
+                            <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.1)] border border-slate-200">
+                                <img src="/favicon_ethical_data.png" alt="Ethical Data Security" className="w-10 h-10 object-contain" />
+                            </div>
                         </div>
                         <h1 className="text-lg font-bold text-white tracking-tight">Connexion</h1>
                         <p className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-wider">
