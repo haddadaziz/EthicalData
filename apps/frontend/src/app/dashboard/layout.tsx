@@ -235,20 +235,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const { title, subtitle } = getPageTitleAndSubtitle();
 
     return (
-        <div className="h-screen bg-slate-50 text-slate-800 flex relative overflow-hidden font-sans">
+        <div className="h-screen bg-[#020617] text-slate-300 flex relative overflow-hidden font-sans">
 
-            {/* Halos d'arrière-plan */}
-            {viewMode === 'FORMATEUR' ? (
-                <>
-                    <div className="absolute top-[-20%] left-[-10%] w-[55%] h-[55%] bg-indigo-500/[0.03] rounded-full blur-[140px] pointer-events-none z-0" />
-                    <div className="absolute bottom-[-20%] right-[-10%] w-[55%] h-[55%] bg-violet-600/[0.02] rounded-full blur-[140px] pointer-events-none z-0" />
-                </>
-            ) : (
-                <>
-                    <div className="absolute top-[-20%] left-[-10%] w-[55%] h-[55%] bg-blue-500/2 rounded-full blur-[140px] pointer-events-none z-0" />
-                    <div className="absolute bottom-[-20%] right-[-10%] w-[55%] h-[55%] bg-blue-600/[0.01] rounded-full blur-[140px] pointer-events-none z-0" />
-                </>
-            )}
+            {/* Arrière-plan Grille Cyber */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none z-0" />
+            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-red-600/[0.05] rounded-full blur-[130px] pointer-events-none z-0" />
+
 
             {/* Sidebar Mobile */}
             <AnimatePresence>
@@ -266,19 +258,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             animate={{ x: 0 }}
                             exit={{ x: -280 }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className={`fixed top-0 bottom-0 left-0 z-50 w-[280px] flex flex-col border-r h-screen transform-gpu will-change-transform ${
-                                viewMode === 'FORMATEUR'
-                                    ? 'bg-slate-50/95 border-indigo-100/80'
-                                    : 'bg-white border-slate-200/80'
-                            }`}
+                            className="fixed top-0 bottom-0 left-0 z-50 w-[280px] flex flex-col border-r h-screen transform-gpu will-change-transform bg-[#080d1a] border-slate-800"
                         >
-                            <div className="h-20 flex items-center justify-between px-6 border-b border-slate-200/80">
+                            <div className="h-20 flex items-center justify-between px-6 border-b border-slate-800">
                                 <div className="flex items-center gap-3">
                                     <div className="flex items-center justify-center">
-                                        <img src="/logos/ethicaldata_main_logo.png" alt="Ethical Data Security" className="h-8 w-auto object-contain" />
+                                        <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-8 w-auto object-contain" />
                                     </div>
                                 </div>
-                                <button onClick={() => setSidebarOpen(false)} className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-650 cursor-pointer">
+                                <button onClick={() => setSidebarOpen(false)} className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 cursor-pointer">
                                     <X className="w-5 h-5" />
                                 </button>
                             </div>
@@ -297,17 +285,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                                     onClick={() => toggleMenu(item.name)}
                                                     className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-sm font-extrabold transition-all cursor-pointer ${
                                                         isExpanded
-                                                            ? viewMode === 'FORMATEUR'
-                                                                ? 'bg-indigo-50 text-indigo-650'
-                                                                : 'bg-blue-50 text-blue-600'
-                                                            : 'text-slate-600 hover:text-slate-955 hover:bg-slate-50'
+                                                            ? 'bg-red-950/20 text-red-500'
+                                                            : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
                                                     }`}
                                                 >
                                                     <div className="flex items-center gap-3 min-w-0">
-                                                        <Icon className={`w-5 h-5 ${isExpanded ? (viewMode === 'FORMATEUR' ? 'text-indigo-600' : 'text-blue-600') : 'text-slate-400 group-hover:text-slate-600 transition-colors'}`} />
+                                                        <Icon className={`w-5 h-5 ${isExpanded ? 'text-red-600' : 'text-slate-500 group-hover:text-slate-400 transition-colors'}`} />
                                                         <span className="truncate">{item.name}</span>
                                                     </div>
-                                                    <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+                                                    <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
                                                 </button>
                                             ) : (
                                                 <Link
@@ -315,13 +301,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                                     onClick={() => setSidebarOpen(false)}
                                                     className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-extrabold transition-all ${
                                                         isActive 
-                                                            ? viewMode === 'FORMATEUR'
-                                                                ? 'bg-indigo-50 text-indigo-650 border border-indigo-100/90 shadow-2xs'
-                                                                : 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs'
-                                                            : 'text-slate-600 hover:text-slate-955 hover:bg-slate-50 cursor-pointer'
+                                                            ? 'bg-red-950/30 text-red-500 border-l-4 border-red-600 shadow-2xs'
+                                                            : 'text-slate-400 hover:text-white hover:bg-slate-800/50 cursor-pointer'
                                                     }`}
                                                 >
-                                                    <Icon className={`w-5 h-5 ${isActive ? (viewMode === 'FORMATEUR' ? 'text-indigo-600' : 'text-blue-600') : 'text-slate-400 group-hover:text-slate-600 transition-colors'}`} />
+                                                    <Icon className={`w-5 h-5 ${isActive ? 'text-red-600' : 'text-slate-500 group-hover:text-slate-400 transition-colors'}`} />
                                                     <span>{item.name}</span>
                                                 </Link>
                                             )}
@@ -347,13 +331,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                                                             onClick={() => setSidebarOpen(false)}
                                                                             className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
                                                                                 isSubActive
-                                                                                    ? viewMode === 'FORMATEUR'
-                                                                                        ? 'bg-indigo-50 text-indigo-650 border border-indigo-100/90 shadow-2xs font-extrabold'
-                                                                                        : 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs font-extrabold'
-                                                                                    : 'text-slate-500 hover:text-slate-955 hover:bg-slate-50/80 cursor-pointer'
+                                                                                    ? 'bg-red-950/20 text-red-500 border-l-4 border-red-600 shadow-2xs font-extrabold'
+                                                                                    : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 cursor-pointer'
                                                                             }`}
                                                                         >
-                                                                            <SubIcon className={`w-4 h-4 shrink-0 ${isSubActive ? (viewMode === 'FORMATEUR' ? 'text-indigo-600' : 'text-blue-600') : 'text-slate-400 group-hover:text-slate-600 transition-colors'}`} />
+                                                                            <SubIcon className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-red-600' : 'text-slate-500 group-hover:text-slate-400 transition-colors'}`} />
                                                                             <span className="truncate flex-1">{sub.name}</span>
                                                                         </Link>
                                                                     );
@@ -368,8 +350,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                 })}
                             </nav>
 
-                            <div className="p-4 border-t border-slate-200/80 bg-slate-50/40">
-                                <button onClick={handleLogout} className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold text-rose-500 hover:bg-rose-50 hover:text-rose-700 transition-all cursor-pointer">
+                            <div className="p-4 border-t border-slate-800 bg-[#080d1a]">
+                                <button onClick={handleLogout} className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold text-red-500 hover:bg-red-950/30 hover:text-red-400 transition-all cursor-pointer">
                                     <LogOut className="w-5 h-5" />
                                     <span>Déconnexion</span>
                                 </button>
@@ -381,16 +363,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             {/* Sidebar Desktop Fixe et Élégante */}
             {!isMobile && (
-                <aside className={`hidden xl:flex flex-col relative z-10 shrink-0 sticky top-0 h-screen shadow-sm w-[280px] overflow-y-auto overflow-x-hidden border-r transition-all duration-300 ${
-                    viewMode === 'FORMATEUR'
-                        ? 'bg-slate-50/90 border-indigo-100/70 shadow-indigo-100/20'
-                        : 'bg-white border-slate-200/80'
-                }`}>
+                <aside className="hidden xl:flex flex-col relative z-10 shrink-0 sticky top-0 h-screen w-[280px] overflow-y-auto overflow-x-hidden border-r transition-all duration-300 bg-[#080d1a] border-slate-800">
                     {/* Logo Brand */}
-                    <div className="h-20 flex items-center px-6 border-b border-slate-200/80">
+                    <div className="h-20 flex items-center px-6 border-b border-slate-800">
                         <Link href="/" className="flex items-center group cursor-pointer">
                             <div className="flex items-center justify-center group-hover:scale-105 transition-transform">
-                                <img src="/logos/ethicaldata_main_logo.png" alt="Ethical Data Security" className="h-9 w-auto object-contain" />
+                                <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-9 w-auto object-contain" />
                             </div>
                         </Link>
                     </div>
@@ -410,29 +388,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                             onClick={() => toggleMenu(item.name)}
                                             className={`w-full flex items-center justify-between gap-3 px-4 py-3.5 rounded-xl text-sm font-extrabold transition-all duration-200 group relative cursor-pointer ${
                                                 isExpanded
-                                                    ? viewMode === 'FORMATEUR'
-                                                        ? 'bg-indigo-50 text-indigo-650 shadow-sm'
-                                                        : 'bg-blue-100 text-blue-700 shadow-sm'
-                                                    : 'text-slate-600 hover:text-slate-955 hover:bg-slate-50'
+                                                    ? 'bg-red-950/20 text-red-500 shadow-sm'
+                                                    : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
                                             }`}
                                         >
                                             <div className="flex items-center gap-3 min-w-0">
-                                                <Icon className={`w-5 h-5 shrink-0 ${isExpanded ? (viewMode === 'FORMATEUR' ? 'text-indigo-650' : 'text-blue-700') : 'text-slate-400 group-hover:text-indigo-600 transition-colors'}`} />
+                                                <Icon className={`w-5 h-5 shrink-0 ${isExpanded ? 'text-red-500' : 'text-slate-500 group-hover:text-red-500 transition-colors'}`} />
                                                 <span className="truncate">{item.name}</span>
                                             </div>
-                                            <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${isExpanded ? 'rotate-180 text-blue-700' : ''}`} />
+                                            <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform duration-300 ${isExpanded ? 'rotate-180 text-red-500' : ''}`} />
                                         </button>
                                     ) : (
                                         <Link
                                             href={item.href || '#'}
                                             className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-extrabold transition-all duration-200 group relative ${isActive
-                                                ? viewMode === 'FORMATEUR'
-                                                    ? 'bg-indigo-50 text-indigo-650 border border-indigo-100/90 shadow-2xs shadow-indigo-100/10'
-                                                    : 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs'
-                                                : 'text-slate-600 hover:text-slate-955 hover:bg-slate-50 cursor-pointer'
+                                                ? 'bg-red-950/30 text-red-500 border-l-4 border-red-600 shadow-2xs shadow-red-900/10'
+                                                : 'text-slate-400 hover:text-white hover:bg-slate-800/50 cursor-pointer'
                                                 }`}
                                         >
-                                            <Icon className={`w-5 h-5 shrink-0 ${isActive ? (viewMode === 'FORMATEUR' ? 'text-indigo-655' : 'text-blue-600') : 'text-slate-400 group-hover:text-indigo-600 transition-colors'}`} />
+                                            <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-red-600' : 'text-slate-500 group-hover:text-red-500 transition-colors'}`} />
                                             <span className="truncate flex-1">{item.name}</span>
                                         </Link>
                                     )}
@@ -457,13 +431,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                                                     href={sub.href!}
                                                                     className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all group ${
                                                                         isSubActive
-                                                                            ? viewMode === 'FORMATEUR'
-                                                                                ? 'bg-indigo-50 text-indigo-650 border border-indigo-100/90 shadow-2xs font-extrabold'
-                                                                                : 'bg-blue-50 text-blue-600 border border-blue-100/90 shadow-2xs font-extrabold'
-                                                                            : 'text-slate-500 hover:text-slate-955 hover:bg-slate-50/80 cursor-pointer'
+                                                                            ? 'bg-red-950/20 text-red-500 border-l-4 border-red-600 shadow-2xs font-extrabold'
+                                                                            : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 cursor-pointer'
                                                                     }`}
                                                                 >
-                                                                    <SubIcon className={`w-4 h-4 shrink-0 ${isSubActive ? (viewMode === 'FORMATEUR' ? 'text-indigo-600' : 'text-blue-600') : 'text-slate-400 group-hover:text-indigo-600 transition-colors'}`} />
+                                                                    <SubIcon className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-red-600' : 'text-slate-500 group-hover:text-red-500 transition-colors'}`} />
                                                                     <span className="truncate flex-1">{sub.name}</span>
                                                                 </Link>
                                                             );
@@ -479,14 +451,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     </nav>
 
                     {/* Déconnexion en bas */}
-                    <div className={`p-4 border-t transition-colors duration-300 ${
-                        viewMode === 'FORMATEUR'
-                            ? 'border-indigo-100/60 bg-indigo-50/20'
-                            : 'border-slate-200/80 bg-slate-50/50'
-                    }`}>
+                    <div className="p-4 border-t transition-colors duration-300 border-slate-800 bg-[#080d1a]">
                         <button
                             onClick={handleLogout}
-                            className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-all cursor-pointer group"
+                            className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold text-red-500 hover:bg-red-950/30 hover:text-red-400 transition-all cursor-pointer group"
                         >
                             <LogOut className="w-5.5 h-5.5 shrink-0 group-hover:translate-x-0.5 transition-transform" />
                             <span>Déconnexion</span>
@@ -499,24 +467,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="flex-1 flex flex-col h-screen overflow-y-auto relative z-10">
 
                 {/* Header Premium (Sans bouton Hamburger sur PC) */}
-                <header className={`py-5 md:py-6 border-b bg-white/80 flex items-center justify-between px-8 md:px-12 sticky top-0 z-40 transition-all duration-300 ${
-                    viewMode === 'FORMATEUR'
-                        ? 'border-indigo-100/40 shadow-xs shadow-indigo-100/5'
-                        : 'border-slate-200/50'
-                }`}>
+                <header className="py-5 md:py-6 border-b bg-[#080d1a]/80 backdrop-blur-xl flex items-center justify-between px-8 md:px-12 sticky top-0 z-40 transition-all duration-300 border-slate-800">
 
                     {/* Gauche : Titre Dynamique (Bouton Hamburger uniquement sur Mobile) */}
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => setSidebarOpen(true)}
-                            className="p-3 bg-slate-50 border border-slate-200 hover:border-blue-600 text-slate-600 hover:text-blue-600 rounded-xl transition-all duration-200 cursor-pointer shadow-sm flex items-center justify-center xl:hidden"
+                            className="p-3 bg-[#020617] border border-slate-800 hover:border-red-600 text-slate-400 hover:text-red-500 rounded-xl transition-all duration-200 cursor-pointer shadow-sm flex items-center justify-center xl:hidden"
                             aria-label="Ouvrir le menu"
                         >
                             <Menu className="w-5 h-5" />
                         </button>
 
                         <div className="flex flex-col text-left justify-center">
-                            <h1 className="text-xl md:text-2xl font-black text-slate-955 tracking-tight leading-none mb-2">{title}</h1>
+                            <h1 className="text-xl md:text-2xl font-black text-white tracking-tight leading-none mb-2">{title}</h1>
                             <p className="text-xs text-slate-400 font-bold hidden md:block leading-none">{subtitle}</p>
                         </div>
                     </div>
@@ -531,18 +495,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                     isSwitching 
                                         ? 'opacity-50 cursor-not-allowed scale-[0.98]' 
                                         : 'cursor-pointer hover:shadow-md'
-                                } ${
-                                    viewMode === 'FORMATEUR'
-                                        ? 'bg-gradient-to-r from-indigo-50 to-violet-50/50 border-indigo-200 hover:border-indigo-400 text-indigo-750 shadow-indigo-100/50'
-                                        : 'bg-gradient-to-r from-blue-50 to-sky-50/50 border-blue-200 hover:border-blue-400 text-blue-750 shadow-blue-100/50'
-                                }`}
+                                } bg-[#020617] border-slate-800 hover:border-red-600 text-slate-300`}
                                 title={viewMode === 'FORMATEUR' ? "Basculer en Espace Apprenant" : "Basculer en Espace Formateur"}
                             >
-                                <div className="relative w-5 h-5 flex items-center justify-center bg-white rounded-lg shadow-3xs p-0.5 group-hover:scale-110 transition-transform duration-300">
+                                <div className="relative w-5 h-5 flex items-center justify-center bg-[#080d1a] border border-slate-800 rounded-lg shadow-3xs p-0.5 group-hover:scale-110 transition-transform duration-300">
                                     {viewMode === 'FORMATEUR' ? (
-                                        <img src="/images/formateur.png" alt="Formateur" className="w-full h-full object-contain" />
+                                        <img src="/images/formateur.png" alt="Formateur" className="w-full h-full object-contain brightness-0 invert" />
                                     ) : (
-                                        <img src="/images/apprenant.png" alt="Apprenant" className="w-full h-full object-contain" />
+                                        <img src="/images/apprenant.png" alt="Apprenant" className="w-full h-full object-contain brightness-0 invert" />
                                     )}
                                 </div>
 
@@ -566,29 +526,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                         <Link
                             href="/dashboard/profile"
-                            className="flex items-center gap-3 p-1.5 hover:bg-slate-100/80 rounded-2xl transition-all cursor-pointer group"
+                            className="flex items-center gap-3 p-1.5 hover:bg-slate-800/50 rounded-2xl transition-all cursor-pointer group"
                             title="Voir et modifier mon profil"
                         >
                             <div className="flex flex-col text-right justify-center hidden sm:flex">
-                                <span className="text-xs font-black text-slate-950 leading-none mb-1 group-hover:text-blue-600 transition-colors">
+                                <span className="text-xs font-black text-white leading-none mb-1 group-hover:text-red-500 transition-colors">
                                     {userFirstName} {userLastName}
                                 </span>
-                                <span className="text-[9px] font-black text-blue-600 uppercase tracking-wider leading-none">
+                                <span className="text-[9px] font-black text-red-500 uppercase tracking-wider leading-none">
                                     {viewMode === 'FORMATEUR' ? 'Formateur' : 'Apprenant'}
                                 </span>
                             </div>
 
                             {/* Avatar Stylisé avec photo de profil */}
                             <div className="relative shrink-0">
-                                <div className="absolute inset-0 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-2xl blur-md opacity-20 group-hover:opacity-40 transition-opacity" />
+                                <div className="absolute inset-0 bg-gradient-to-tr from-red-600 to-red-900 rounded-2xl blur-md opacity-20 group-hover:opacity-40 transition-opacity" />
                                 {userAvatar ? (
                                     <img
                                         src={userAvatar}
                                         alt={`${userFirstName} ${userLastName}`}
-                                        className="relative w-10 h-10 rounded-2xl object-cover border border-slate-200/80 shadow-md transition-transform duration-200 group-hover:scale-105"
+                                        className="relative w-10 h-10 rounded-2xl object-cover border border-slate-800 shadow-md transition-transform duration-200 group-hover:scale-105"
                                     />
                                 ) : (
-                                    <div className="relative w-10 h-10 bg-gradient-to-tr from-slate-950 to-slate-900 border border-slate-800 rounded-2xl flex items-center justify-center text-white font-black text-xs shadow-md transition-transform duration-200 group-hover:scale-105">
+                                    <div className="relative w-10 h-10 bg-gradient-to-tr from-slate-900 to-[#020617] border border-slate-800 rounded-2xl flex items-center justify-center text-white font-black text-xs shadow-md transition-transform duration-200 group-hover:scale-105">
                                         {userFirstName ? userFirstName[0].toUpperCase() : 'U'}
                                     </div>
                                 )}

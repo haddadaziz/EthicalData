@@ -239,32 +239,34 @@ export default function StudentDashboard() {
         const mySessions = myAppointments.filter(rdv => rdv.formateur.id.toString() === me?.id?.toString() && rdv.statut === 'CONFIRME');
 
         return (
-            <div className="space-y-8 text-slate-950 text-left font-sans pb-10">
+            <div className="space-y-8 text-slate-300 text-left font-sans pb-10">
                 {/* Message de bienvenue simple */}
-                <h2 className="text-xl md:text-2xl font-black text-slate-955 tracking-tight">
+                <h2 className="text-xl md:text-2xl font-black text-white tracking-tight">
                     Bienvenue dans votre espace formateur
                 </h2>
 
                 {/* GRILLE STATISTIQUES FORMATEUR (DESIGN PREMIUM) */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* STAT CARD 1: COURS CRÉÉS */}
-                    <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs flex items-center justify-between gap-4">
-                        <div className="space-y-1">
-                            <span className="text-2xl font-black text-slate-900 block leading-tight">{trainerTotalCourses}</span>
+                    <div className="bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-6 shadow-xl flex items-center justify-between gap-4 relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-gradient-to-br from-red-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <div className="space-y-1 relative z-10">
+                            <span className="text-2xl font-black text-white block leading-tight">{trainerTotalCourses}</span>
                             <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Cours créés</span>
                         </div>
-                        <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
+                        <div className="w-12 h-12 rounded-2xl bg-red-950/30 border border-red-900/30 flex items-center justify-center text-red-500 relative z-10 shadow-[0_0_15px_rgba(220,38,38,0.15)]">
                             <BookMarked className="w-6 h-6" />
                         </div>
                     </div>
 
                     {/* STAT CARD 2: SÉANCES DE COACHING */}
-                    <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs flex items-center justify-between gap-4">
-                        <div className="space-y-1">
-                            <span className="text-2xl font-black text-slate-900 block leading-tight">{mySessions.length}</span>
-                            <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Séances de coaching confirmées</span>
+                    <div className="bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-6 shadow-xl flex items-center justify-between gap-4 relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-gradient-to-br from-red-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <div className="space-y-1 relative z-10">
+                            <span className="text-2xl font-black text-white block leading-tight">{mySessions.length}</span>
+                            <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Séances confirmées</span>
                         </div>
-                        <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
+                        <div className="w-12 h-12 rounded-2xl bg-red-950/30 border border-red-900/30 flex items-center justify-center text-red-500 relative z-10 shadow-[0_0_15px_rgba(220,38,38,0.15)]">
                             <CalendarCheck className="w-6 h-6" />
                         </div>
                     </div>
@@ -276,31 +278,31 @@ export default function StudentDashboard() {
                     {/* COLONNE DE GAUCHE (8 COLS) */}
                     <div className="lg:col-span-8 flex flex-col justify-between">
                         {!hasPublishedCourses ? (
-                            <div className="bg-white border border-dashed border-slate-200 rounded-3xl p-8 shadow-xs flex-1 flex flex-col items-center justify-center text-center space-y-5">
-                                <BookMarked className="w-12 h-12 text-slate-200" />
+                            <div className="bg-[#080d1a]/90 border border-dashed border-slate-800 rounded-3xl p-8 shadow-xl flex-1 flex flex-col items-center justify-center text-center space-y-5">
+                                <BookMarked className="w-12 h-12 text-slate-700" />
                                 <div className="space-y-1.5 max-w-sm">
-                                    <p className="text-sm font-black text-slate-400">Aucun cours publié</p>
-                                    <p className="text-xs text-slate-400 font-medium">Créez et publiez votre premier cours pour le voir apparaître ici.</p>
+                                    <p className="text-sm font-black text-slate-300">Aucun cours publié</p>
+                                    <p className="text-xs text-slate-500 font-medium">Créez et publiez votre premier cours pour le voir apparaître ici.</p>
                                 </div>
                                 <button
                                     onClick={() => router.push('/dashboard/courses')}
-                                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-2xl transition-all cursor-pointer shadow-md shadow-blue-600/20"
+                                    className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs rounded-2xl transition-all cursor-pointer shadow-md shadow-red-600/20"
                                 >
                                     Créer mon premier cours
                                 </button>
                             </div>
                         ) : (
                             /* DERNIERS COURS PUBLIÉS */
-                            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 md:p-8 shadow-xs flex-1 space-y-6">
+                            <div className="bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-xl flex-1 space-y-6">
                                 <Link
                                     href="/dashboard/courses"
-                                    className="flex items-center justify-between border-b border-slate-100 pb-4 group"
+                                    className="flex items-center justify-between border-b border-slate-800 pb-4 group"
                                 >
                                     <div className="space-y-0.5">
-                                        <h3 className="text-base font-black text-slate-955 tracking-tight">Derniers Cours Publiés</h3>
-                                        <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Vos deux dernières formations mises en ligne</p>
+                                        <h3 className="text-base font-black text-white tracking-tight">Derniers Cours Publiés</h3>
+                                        <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Vos deux dernières formations mises en ligne</p>
                                     </div>
-                                    <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-slate-500 transition-colors shrink-0" />
+                                    <ChevronRight className="w-5 h-5 text-slate-600 group-hover:text-slate-400 transition-colors shrink-0" />
                                 </Link>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -308,27 +310,27 @@ export default function StudentDashboard() {
                                         .filter(c => c.statut === 'PUBLIE')
                                         .slice(0, 2)
                                         .map(c => (
-                                            <div key={c.id} className="p-4 bg-slate-50 border border-slate-100 rounded-2xl space-y-3">
+                                            <div key={c.id} className="p-4 bg-[#020617] border border-slate-800/80 rounded-2xl space-y-3">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="px-2 py-0.5 bg-blue-50 text-blue-700 font-extrabold text-[8px] rounded-full uppercase tracking-wider border border-blue-100">
+                                                    <span className="px-2 py-0.5 bg-red-950/20 text-red-500 font-extrabold text-[8px] rounded-full uppercase tracking-wider border border-red-900/30">
                                                         {c.certification?.codeExamen || 'COURS'}
                                                     </span>
-                                                    <span className="text-[10px] font-extrabold text-slate-800 truncate">{c.titre}</span>
+                                                    <span className="text-[10px] font-extrabold text-white truncate">{c.titre}</span>
                                                 </div>
-                                                <div className="space-y-1.5 pl-1 border-l-2 border-slate-200">
+                                                <div className="space-y-1.5 pl-1 border-l-2 border-slate-800">
                                                     {(c.modules || []).slice(0, 3).map((m: any) => (
-                                                        <div key={m.id} className="text-xs font-bold text-slate-650 flex items-center justify-between gap-2">
+                                                        <div key={m.id} className="text-xs font-bold text-slate-400 flex items-center justify-between gap-2">
                                                             <span className="truncate">• {m.titre}</span>
-                                                            <span className="text-[9px] text-slate-400 shrink-0">{m.dureeEstimee}{m.dureeEstimee ? 'm' : ''}</span>
+                                                            <span className="text-[9px] text-slate-500 shrink-0">{m.dureeEstimee}{m.dureeEstimee ? 'm' : ''}</span>
                                                         </div>
                                                     ))}
                                                     {(c.modules || []).length > 3 && (
-                                                        <span className="text-[10px] text-blue-600 font-extrabold block pt-1">
+                                                        <span className="text-[10px] text-red-500 font-extrabold block pt-1">
                                                             + {(c.modules || []).length - 3} autres modules...
                                                         </span>
                                                     )}
                                                     {(!c.modules || c.modules.length === 0) && (
-                                                        <span className="text-[10px] text-slate-400 font-semibold italic">Aucun module pour l&apos;instant</span>
+                                                        <span className="text-[10px] text-slate-500 font-semibold italic">Aucun module pour l&apos;instant</span>
                                                     )}
                                                 </div>
                                             </div>
@@ -347,25 +349,25 @@ export default function StudentDashboard() {
                         />
 
                         {/* PROCHAINES SESSIONS DU FORMATEUR */}
-                        <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs space-y-4">
-                            <h3 className="text-sm font-black text-slate-955 border-b border-slate-100 pb-3 flex items-center gap-2">
-                                <Clock className="w-4 h-4 text-indigo-600" />
+                        <div className="bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+                            <h3 className="text-sm font-black text-white border-b border-slate-800 pb-3 flex items-center gap-2">
+                                <Clock className="w-4 h-4 text-red-500" />
                                 <span>Prochaines Sessions</span>
                             </h3>
 
                             {myAppointments.filter(rdv => rdv.formateur.id.toString() === me?.id?.toString() && rdv.statut === 'CONFIRME').length === 0 ? (
-                                <p className="text-xs text-slate-400 font-bold italic py-4">Aucune session réservée pour aujourd'hui.</p>
+                                <p className="text-xs text-slate-500 font-bold italic py-4">Aucune session réservée pour aujourd'hui.</p>
                             ) : (
                                 <div className="space-y-3">
                                     {myAppointments
                                         .filter(rdv => rdv.formateur.id.toString() === me?.id?.toString() && rdv.statut === 'CONFIRME')
                                         .slice(0, 3)
                                         .map((rdv) => (
-                                            <div key={rdv.id} className="p-3 bg-slate-50 border border-slate-100 rounded-2xl text-left space-y-1">
-                                                <span className="text-[9px] font-black text-indigo-600 uppercase bg-indigo-50 px-2 py-0.5 rounded w-fit block">
+                                            <div key={rdv.id} className="p-3 bg-[#020617] border border-slate-800/80 rounded-2xl text-left space-y-1">
+                                                <span className="text-[9px] font-black text-red-500 uppercase bg-red-950/20 border border-red-900/30 px-2 py-0.5 rounded w-fit block">
                                                     {rdv.type.replace(/_/g, ' ')}
                                                 </span>
-                                                <span className="text-xs font-bold text-slate-800 block">
+                                                <span className="text-xs font-bold text-white block">
                                                     {rdv.candidat.prenom} {rdv.candidat.nom}
                                                 </span>
                                                 <span className="text-[10px] text-slate-400 font-semibold block">
@@ -383,16 +385,16 @@ export default function StudentDashboard() {
     }
 
     return (
-        <div className="space-y-8 text-slate-900 text-left font-sans selection:bg-blue-600 selection:text-white pb-10">
+        <div className="space-y-8 text-slate-300 text-left font-sans selection:bg-red-600 selection:text-white pb-10">
 
             {/* BARRE D'EN-TÊTE ACTION & SÉLECTEUR DE CERTIFICATION D'EXAMEN */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/60">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
                 <div className="space-y-1">
-                    <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+                    <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
                         Analyse Personnalisée de l&apos;Examen
                     </h1>
-                    <p className="text-xs font-bold text-slate-500">
-                        Examen blanc évalué : <span className="text-slate-900 font-extrabold">{selectedCert?.nom || (targetedCerts.length === 0 ? 'Aucune certification visée' : 'Microsoft Azure Fundamentals (AZ-900)')}</span>
+                    <p className="text-xs font-bold text-slate-400">
+                        Examen blanc évalué : <span className="text-white font-extrabold">{selectedCert?.nom || (targetedCerts.length === 0 ? 'Aucune certification visée' : 'Microsoft Azure Fundamentals (AZ-900)')}</span>
                     </p>
                 </div>
 
@@ -403,7 +405,7 @@ export default function StudentDashboard() {
                             <button
                                 type="button"
                                 onClick={() => setCertDropdownOpen(!certDropdownOpen)}
-                                className="w-full flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 focus:border-blue-600 rounded-2xl text-slate-955 text-xs font-bold outline-none cursor-pointer hover:bg-slate-50 transition-all sm:min-w-[220px]"
+                                className="w-full flex items-center gap-2 px-4 py-2.5 bg-[#080d1a] border border-slate-800 focus:border-red-600 rounded-2xl text-white text-xs font-bold outline-none cursor-pointer hover:bg-slate-800/50 transition-all sm:min-w-[220px]"
                             >
                                 {selectedCert && getCertificateBadgeLogo(selectedCert) && (
                                     <img src={getCertificateBadgeLogo(selectedCert)} alt="" className="w-5 h-5 object-contain rounded shrink-0" />
@@ -416,13 +418,13 @@ export default function StudentDashboard() {
                                         : 'Sélectionner une certification'
                                     }
                                 </span>
-                                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${certDropdownOpen ? 'rotate-180' : ''}`} />
+                                <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${certDropdownOpen ? 'rotate-180' : ''}`} />
                             </button>
 
                             {certDropdownOpen && (
                                 <>
                                     <div className="fixed inset-0 z-40" onClick={() => setCertDropdownOpen(false)} />
-                                    <div className="absolute left-0 sm:left-auto sm:right-0 mt-1.5 z-50 w-full sm:w-72 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden animate-fadeIn">
+                                    <div className="absolute left-0 sm:left-auto sm:right-0 mt-1.5 z-50 w-full sm:w-72 bg-[#080d1a] border border-slate-800 rounded-2xl shadow-xl overflow-hidden animate-fadeIn">
                                         <div className="max-h-64 overflow-y-auto">
                                             {targetedCerts.map(c => {
                                                 const logo = getCertificateBadgeLogo(c);
@@ -434,14 +436,14 @@ export default function StudentDashboard() {
                                                         key={c.id}
                                                         type="button"
                                                         onClick={() => { handleSelectCert(c); setCertDropdownOpen(false); }}
-                                                        className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
-                                                            selectedCert?.id === c.id ? 'bg-slate-100 text-slate-955' : 'text-slate-650'
+                                                        className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-800/50 cursor-pointer ${
+                                                            selectedCert?.id === c.id ? 'bg-slate-800/80 text-white' : 'text-slate-400'
                                                         }`}
                                                     >
                                                         {logo ? (
                                                             <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0" />
                                                         ) : (
-                                                            <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                                            <div className="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center shrink-0">
                                                                 <Award className="w-4 h-4 text-slate-500" />
                                                             </div>
                                                         )}
@@ -457,9 +459,9 @@ export default function StudentDashboard() {
                     ) : (
                         <Link 
                             href="/dashboard/certifications"
-                            className="px-3.5 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-extrabold rounded-xl text-xs transition-all border border-blue-200/80 cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                            className="px-3.5 py-2 bg-red-950/20 hover:bg-red-950/40 text-red-500 font-extrabold rounded-xl text-xs transition-all border border-red-900/50 cursor-pointer flex items-center gap-1.5 shadow-2xs"
                         >
-                            <Target className="w-3.5 h-3.5 text-blue-600" />
+                            <Target className="w-3.5 h-3.5 text-red-500" />
                             <span>Ajouter un objectif visé</span>
                         </Link>
                     )}
@@ -470,44 +472,45 @@ export default function StudentDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
 
                 {/* GAUCHE : SCORE FINAL DONUT GAUGE OU INVITATION À VISER UNE CERTIF */}
-                <div className="lg:col-span-4 bg-white border border-slate-200/90 rounded-3xl p-7 flex flex-col items-center justify-between text-center shadow-2xs relative overflow-hidden">
+                <div className="lg:col-span-4 bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-7 flex flex-col items-center justify-between text-center shadow-xl relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-red-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     {!selectedCert ? (
-                        <div className="my-auto space-y-4 flex flex-col items-center justify-center">
-                            <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0">
+                        <div className="my-auto space-y-4 flex flex-col items-center justify-center relative z-10">
+                            <div className="w-12 h-12 rounded-2xl bg-amber-950/30 border border-amber-900/30 flex items-center justify-center text-amber-500 shrink-0 shadow-[0_0_15px_rgba(245,158,11,0.15)]">
                                 <AlertTriangle className="w-6 h-6" />
                             </div>
                             <div className="space-y-1.5">
-                                <h3 className="font-black text-slate-950 text-sm leading-snug">
+                                <h3 className="font-black text-white text-sm leading-snug">
                                     Veuillez viser un certificat pour obtenir votre readiness score
                                 </h3>
-                                <p className="text-xs text-slate-500 font-medium">
+                                <p className="text-xs text-slate-400 font-medium">
                                     Sélectionnez une certification cible dans le catalogue pour démarrer l&apos;analyse.
                                 </p>
                             </div>
                             <Link
                                 href="/dashboard/certifications"
-                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer inline-flex items-center gap-1.5"
+                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer inline-flex items-center gap-1.5"
                             >
                                 <Target className="w-3.5 h-3.5 text-white" />
                                 <span>Choisir une certif</span>
                             </Link>
                         </div>
                     ) : (readinessData?.totalTentatives || 0) === 0 ? (
-                        <div className="my-auto space-y-4 flex flex-col items-center justify-center">
-                            <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0">
+                        <div className="my-auto space-y-4 flex flex-col items-center justify-center relative z-10">
+                            <div className="w-12 h-12 rounded-2xl bg-amber-950/30 border border-amber-900/30 flex items-center justify-center text-amber-500 shrink-0 shadow-[0_0_15px_rgba(245,158,11,0.15)]">
                                 <AlertTriangle className="w-6 h-6" />
                             </div>
                             <div className="space-y-1.5">
-                                <h3 className="font-black text-slate-950 text-sm leading-snug">
+                                <h3 className="font-black text-white text-sm leading-snug">
                                     Veuillez passer une simulation pour obtenir votre readiness score
                                 </h3>
-                                <p className="text-xs text-slate-500 font-medium">
+                                <p className="text-xs text-slate-400 font-medium">
                                     Effectuez votre premier examen blanc sur {selectedCert.nom} pour lancer l&apos;analyse de l&apos;IA.
                                 </p>
                             </div>
                             <Link
                                 href={`/dashboard/practice?cert=${selectedCert.slug}`}
-                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer inline-flex items-center gap-1.5"
+                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer inline-flex items-center gap-1.5"
                             >
                                 <Target className="w-3.5 h-3.5 text-white" />
                                 <span>S&apos;entraîner</span>
@@ -515,25 +518,25 @@ export default function StudentDashboard() {
                         </div>
                     ) : (
                         <>
-                            <div className="w-full space-y-1">
-                                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Score & Éligibilité Officielles</span>
+                            <div className="w-full space-y-1 relative z-10">
+                                <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">Score & Éligibilité Officielles</span>
                             </div>
 
                             {/* GAUGES CIRCULAIRE BLEUE PRO */}
-                            <div className="relative w-44 h-44 my-4 flex items-center justify-center">
+                            <div className="relative w-44 h-44 my-4 flex items-center justify-center relative z-10">
                                 <svg className="w-full h-full -rotate-90">
                                     <circle 
                                         cx="88" 
                                         cy="88" 
                                         r="70" 
-                                        className="stroke-slate-100 fill-none" 
+                                        className="stroke-slate-800 fill-none" 
                                         strokeWidth="12" 
                                     />
                                     <motion.circle
                                         cx="88"
                                         cy="88"
                                         r="70"
-                                        className={`fill-none ${isReady ? 'stroke-emerald-500' : isAlmostReady ? 'stroke-amber-500' : 'stroke-blue-600'}`}
+                                        className={`fill-none ${isReady ? 'stroke-emerald-500' : isAlmostReady ? 'stroke-amber-500' : 'stroke-red-600'}`}
                                         strokeWidth="12"
                                         strokeDasharray={2 * Math.PI * 70}
                                         initial={{ strokeDashoffset: 2 * Math.PI * 70 }}
@@ -544,22 +547,22 @@ export default function StudentDashboard() {
                                 </svg>
 
                                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                                    <span className="text-3xl font-black text-slate-950 tracking-tight">{readinessScore}%</span>
+                                    <span className="text-3xl font-black text-white tracking-tight">{readinessScore}%</span>
                                     <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider mt-0.5">Readiness Score</span>
                                 </div>
                             </div>
 
-                            <div className="w-full space-y-3">
+                            <div className="w-full space-y-3 relative z-10">
                                 <div className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-extrabold ${
-                                    isReady ? 'bg-emerald-50 border border-emerald-200 text-emerald-700' :
-                                    isAlmostReady ? 'bg-amber-50 border border-amber-200 text-amber-700' :
-                                    'bg-rose-50 border border-rose-200 text-rose-700'
+                                    isReady ? 'bg-emerald-950/30 border border-emerald-900/50 text-emerald-500' :
+                                    isAlmostReady ? 'bg-amber-950/30 border border-amber-900/50 text-amber-500' :
+                                    'bg-red-950/30 border border-red-900/50 text-red-500'
                                 }`}>
                                     <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
                                     <span>{isReady ? "Prêt pour l'examen" : isAlmostReady ? "Presque Prêt" : "À renforcer"}</span>
                                 </div>
-                                <p className="text-xs font-extrabold text-slate-400">
-                                    Seuil de réussite conseillé : <span className="text-slate-700 font-black">80%</span>
+                                <p className="text-xs font-extrabold text-slate-500">
+                                    Seuil de réussite conseillé : <span className="text-white font-black">80%</span>
                                 </p>
                             </div>
                         </>
@@ -567,39 +570,39 @@ export default function StudentDashboard() {
                 </div>
 
                 {/* DROITE : ANALYSE DE L'IA (8 COLS) SANS LOGO ET SANS TUTOR */}
-                <div className="lg:col-span-8 bg-white border border-slate-200/90 border-l-4 border-l-blue-600 rounded-3xl p-7 text-left space-y-6 shadow-2xs flex flex-col justify-between">
+                <div className="lg:col-span-8 bg-[#080d1a]/90 border border-slate-800 border-l-4 border-l-red-600 rounded-3xl p-7 text-left space-y-6 shadow-xl flex flex-col justify-between">
                     
                     {/* Titre sans logo ni tutor */}
                     <div className="flex items-center justify-between">
-                        <h2 className="text-lg font-black text-slate-950 tracking-tight">
+                        <h2 className="text-lg font-black text-white tracking-tight">
                             Analyse de l&apos;IA
                         </h2>
-                        <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">
+                        <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 bg-slate-800 px-2.5 py-1 rounded-lg">
                             {selectedCert ? `${readinessData?.totalTentatives || 0} tentative(s) analysée(s)` : 'En attente d\'objectif'}
                         </span>
                     </div>
 
                     {!selectedCert ? (
-                        <div className="bg-slate-50 border border-dashed border-slate-200 rounded-2xl p-6 text-center space-y-3 my-auto">
-                            <p className="text-xs font-bold text-slate-700 max-w-md mx-auto">
+                        <div className="bg-[#020617] border border-dashed border-slate-800 rounded-2xl p-6 text-center space-y-3 my-auto relative z-10">
+                            <p className="text-xs font-bold text-slate-400 max-w-md mx-auto">
                                 Veuillez viser un certificat pour obtenir des recommandations de l&apos;intelligence artificielle
                             </p>
                             <Link
                                 href="/dashboard/certifications"
-                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer shadow-2xs"
+                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer shadow-2xs"
                             >
                                 <Target className="w-3.5 h-3.5 text-white" />
                                 <span>Voir le catalogue des certifications</span>
                             </Link>
                         </div>
                     ) : (readinessData?.totalTentatives || 0) === 0 ? (
-                        <div className="bg-slate-50 border border-dashed border-slate-200 rounded-2xl p-6 text-center space-y-3 my-auto">
-                            <p className="text-xs font-bold text-slate-700 max-w-md mx-auto">
+                        <div className="bg-[#020617] border border-dashed border-slate-800 rounded-2xl p-6 text-center space-y-3 my-auto relative z-10">
+                            <p className="text-xs font-bold text-slate-400 max-w-md mx-auto">
                                 Veuillez passer une simulation afin d&apos;obtenir des recommandations de l&apos;intelligence artificielle
                             </p>
                             <Link
                                 href={`/dashboard/practice?cert=${selectedCert.slug || selectedCert.id}`}
-                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer shadow-2xs"
+                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer shadow-2xs"
                             >
                                 <Play className="w-3 h-3 fill-white text-white" />
                                 <span>Lancer un premier entraînement</span>
@@ -637,20 +640,20 @@ export default function StudentDashboard() {
                                     <ul className="space-y-2 text-xs font-bold text-slate-800">
                                         {(readinessData?.lacunes && readinessData.lacunes.length > 0) ? (
                                             readinessData.lacunes.map((lac: string, i: number) => (
-                                                <li key={i} className="flex items-start gap-2">
+                                                <li key={i} className="flex items-start gap-2 text-white">
                                                     <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0 mt-1.5" />
                                                     <span>{lac}</span>
                                                 </li>
                                             ))
                                         ) : (
-                                            <li className="text-xs text-slate-400 font-semibold italic">Aucune lacune critique détectée !</li>
+                                            <li className="text-xs text-slate-500 font-semibold italic">Aucune lacune critique détectée !</li>
                                         )}
                                     </ul>
                                 </div>
                             </div>
 
                             {/* Encart Conseil IA Dynamique issu du Backend */}
-                            <div className="bg-blue-50/70 border border-blue-100/90 rounded-2xl p-4 text-xs font-semibold text-blue-950 leading-relaxed italic text-left">
+                            <div className="bg-red-950/20 border border-red-900/40 rounded-2xl p-4 text-xs font-semibold text-red-100 leading-relaxed italic text-left relative z-10">
                                 &ldquo;{readinessData?.conseil || `${firstName}, vous avez de très bonnes bases.`}&rdquo;
                             </div>
                         </>
@@ -659,32 +662,32 @@ export default function StudentDashboard() {
             </div>
 
             {/* GRILLE 2 : PLAN DE RÉVISION PERSONNALISÉ (TIMELINE HORIZONTALE INTERACTIVE AVEC POPUPS FLOTTANTS) */}
-            <div className="bg-white border border-slate-200/90 rounded-3xl shadow-2xs text-left relative p-6 sm:p-7 z-10">
+            <div className="bg-[#080d1a]/90 border border-slate-800 rounded-3xl shadow-xl text-left relative p-6 sm:p-7 z-10">
                 
                 {/* En-tête de Section */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
                     <div>
-                        <h2 className="text-lg font-black text-slate-950 tracking-tight">
+                        <h2 className="text-lg font-black text-white tracking-tight">
                             Plan de Révision Personnalisé
                         </h2>
-                        <p className="text-xs text-slate-500 font-semibold mt-0.5">
+                        <p className="text-xs text-slate-400 font-semibold mt-0.5">
                             Recommandations d&apos;apprentissage générées par l&apos;IA d&apos;après vos derniers résultats
                         </p>
                     </div>
-                    <span className="text-xs font-extrabold text-slate-500 bg-slate-50 border border-slate-200/80 px-3 py-1.5 rounded-xl shrink-0 self-start sm:self-center">
-                        Estimé : <strong className="text-slate-900">{getTotalEstTime(readinessData?.planRevision || ["Révisez le Module 4 : Gestion des Coûts & Tarification Cloud.", "Consultez les fiches mémo et supports PDF de révision rapide.", "Effectuez une simulation ciblée de 20 questions chrono pour valider vos acquis."])} de travail</strong>
+                    <span className="text-xs font-extrabold text-slate-400 bg-[#020617] border border-slate-800 px-3 py-1.5 rounded-xl shrink-0 self-start sm:self-center">
+                        Estimé : <strong className="text-white">{getTotalEstTime(readinessData?.planRevision || ["Révisez le Module 4 : Gestion des Coûts & Tarification Cloud.", "Consultez les fiches mémo et supports PDF de révision rapide.", "Effectuez une simulation ciblée de 20 questions chrono pour valider vos acquis."])} de travail</strong>
                     </span>
                 </div>
 
                 {/* Timeline horizontale interactive */}
-                <div className="py-8 px-4 relative flex flex-col items-center justify-center bg-slate-50/[0.01]">
+                <div className="py-8 px-4 relative flex flex-col items-center justify-center bg-[#020617]/[0.01]">
                     <div className="w-full max-w-xl relative py-6">
                         {/* Ligne horizontale de connexion arrière-plan */}
-                        <div className="absolute left-6 right-6 top-[44px] h-1 bg-slate-100 rounded-full z-0" />
+                        <div className="absolute left-6 right-6 top-[44px] h-1 bg-slate-800 rounded-full z-0" />
                         
                         {/* Ligne horizontale active */}
                         <div 
-                            className="absolute left-6 top-[44px] h-1 bg-gradient-to-r from-blue-600 to-indigo-500 rounded-full transition-all duration-500 ease-out z-0" 
+                            className="absolute left-6 top-[44px] h-1 bg-gradient-to-r from-red-600 to-red-900 rounded-full transition-all duration-500 ease-out z-0" 
                             style={{ 
                                 width: activeStep !== null 
                                     ? `calc(${(activeStep / (((readinessData?.planRevision || [1, 2, 3]).length) - 1)) * 100}% - 12px)`
@@ -712,30 +715,30 @@ export default function StudentDashboard() {
                                                 onClick={() => setActiveStep(activeStep === idx ? null : idx)}
                                                 className={`step-btn w-14 h-14 rounded-full border-4 font-black text-base flex items-center justify-center transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-md cursor-pointer relative z-30 ${
                                                     isActive
-                                                        ? 'border-blue-600 bg-blue-600 text-white ring-8 ring-blue-50'
-                                                        : 'border-white bg-slate-50 text-slate-700 hover:border-blue-500 hover:text-blue-600 hover:bg-white hover:shadow-lg'
+                                                        ? 'border-red-600 bg-red-600 text-white ring-8 ring-red-950/50'
+                                                        : 'border-[#020617] bg-slate-800 text-slate-400 hover:border-red-500 hover:text-red-500 hover:bg-[#080d1a] hover:shadow-[0_0_15px_rgba(220,38,38,0.2)]'
                                                 }`}
                                                 title={`Étape ${idx + 1} - Cliquer pour les détails`}
                                             >
                                                 {idx + 1}
                                             </button>
-                                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2 bg-white px-2 py-0.5 rounded-md border border-slate-200/50 shadow-3xs relative z-30">
+                                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-2 bg-[#080d1a] px-2 py-0.5 rounded-md border border-slate-800 shadow-3xs relative z-30">
                                                 Étape 0{idx + 1}
                                             </span>
 
                                             {/* Popover flottant absolu s'affichant au-dessus du numéro sans décaler la page */}
                                             {isActive && (
                                                 <div 
-                                                    className="tooltip-card absolute bottom-[85px] left-1/2 -translate-x-1/2 w-[280px] sm:w-[320px] bg-white border border-slate-200/90 rounded-3xl shadow-xl p-5 z-40 text-left animate-fadeIn"
+                                                    className="tooltip-card absolute bottom-[85px] left-1/2 -translate-x-1/2 w-[280px] sm:w-[320px] bg-[#080d1a] border border-slate-800 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] p-5 z-40 text-left animate-fadeIn"
                                                     onClick={(e) => e.stopPropagation()}
                                                 >
                                                     {/* Triangle indicateur vers le bas */}
-                                                    <div className="absolute bottom-[-8px] left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-r border-b border-slate-200/90 rotate-45 z-10" />
+                                                    <div className="absolute bottom-[-8px] left-1/2 -translate-x-1/2 w-4 h-4 bg-[#080d1a] border-r border-b border-slate-800 rotate-45 z-10" />
                                                     
                                                     {/* Bouton de fermeture croix */}
                                                     <button
                                                         onClick={() => setActiveStep(null)}
-                                                        className="absolute right-4 top-4 p-1.5 text-slate-400 hover:text-slate-950 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer z-50"
+                                                        className="absolute right-4 top-4 p-1.5 text-slate-500 hover:text-white rounded-lg hover:bg-slate-800 transition-colors cursor-pointer z-50"
                                                         title="Fermer"
                                                     >
                                                         <X className="w-4 h-4 cursor-pointer pointer-events-none" />
@@ -747,13 +750,13 @@ export default function StudentDashboard() {
                                                                 <StepIcon className="w-4 h-4" />
                                                             </div>
                                                             <div>
-                                                                <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest block">Étape {idx + 1} sur {steps.length}</span>
-                                                                <h3 className="text-xs font-black text-slate-950 leading-tight">{metadata.title}</h3>
+                                                                <span className="text-[9px] font-black text-red-500 uppercase tracking-widest block">Étape {idx + 1} sur {steps.length}</span>
+                                                                <h3 className="text-xs font-black text-white leading-tight">{metadata.title}</h3>
                                                             </div>
                                                         </div>
                                                         
-                                                        <div className="p-3 bg-slate-50 border border-slate-100 rounded-2xl space-y-1">
-                                                            <p className="text-xs text-slate-950 font-extrabold leading-normal">
+                                                        <div className="p-3 bg-[#020617] border border-slate-800 rounded-2xl space-y-1">
+                                                            <p className="text-xs text-slate-300 font-extrabold leading-normal">
                                                                 {stepText}
                                                             </p>
                                                             <p className="text-[10px] text-slate-500 font-semibold leading-normal">
@@ -761,14 +764,14 @@ export default function StudentDashboard() {
                                                             </p>
                                                         </div>
                                                         
-                                                        <div className="flex flex-col gap-2 pt-2 border-t border-slate-100">
+                                                        <div className="flex flex-col gap-2 pt-2 border-t border-slate-800">
                                                             <div className="flex items-center justify-between text-[10px] font-extrabold text-slate-500">
-                                                                <span>Estimation : <strong className="text-slate-900">{metadata.estTime}</strong></span>
+                                                                <span>Estimation : <strong className="text-white">{metadata.estTime}</strong></span>
                                                             </div>
                                                             <div className="flex items-center gap-2 w-full">
                                                                 <button
                                                                     onClick={() => setActiveStep(null)}
-                                                                    className="flex-1 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold rounded-lg cursor-pointer text-[10px] text-center"
+                                                                    className="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-extrabold rounded-lg cursor-pointer text-[10px] text-center"
                                                                 >
                                                                     Fermer
                                                                 </button>
@@ -797,14 +800,14 @@ export default function StudentDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 {/* CARTE 1 : BESOIN D'AIDE ? (RDV EXPERT) */}
-                <div className="bg-white border border-slate-200/90 rounded-3xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-2xs hover:shadow-md transition-shadow text-left">
+                <div className="bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-xl hover:shadow-[0_0_20px_rgba(220,38,38,0.1)] transition-shadow text-left group">
                     <div className="flex items-center gap-4">
-                        <div className="w-11 h-11 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0">
+                        <div className="w-11 h-11 rounded-2xl bg-blue-950/20 border border-blue-900/40 flex items-center justify-center text-blue-500 shrink-0">
                             <Calendar className="w-5 h-5" />
                         </div>
                         <div className="space-y-0.5">
-                            <h3 className="font-black text-slate-950 text-base">Besoin d&apos;aide ?</h3>
-                            <p className="text-xs text-slate-500 font-medium">
+                            <h3 className="font-black text-white text-base">Besoin d&apos;aide ?</h3>
+                            <p className="text-xs text-slate-400 font-medium">
                                 Réservez une session de 15 min avec un expert certifié.
                             </p>
                         </div>
@@ -812,21 +815,21 @@ export default function StudentDashboard() {
 
                     <Link
                         href="/dashboard/appointments"
-                        className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer shrink-0 text-center"
+                        className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer shrink-0 text-center"
                     >
                         Prendre RDV
                     </Link>
                 </div>
 
                 {/* CARTE 2 : STUDY GROUP (COMMUNAUTÉ) */}
-                <div className="bg-white border border-slate-200/90 rounded-3xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-2xs hover:shadow-md transition-shadow text-left">
+                <div className="bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-xl hover:shadow-[0_0_20px_rgba(220,38,38,0.1)] transition-shadow text-left group">
                     <div className="flex items-center gap-4">
-                        <div className="w-11 h-11 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+                        <div className="w-11 h-11 rounded-2xl bg-emerald-950/20 border border-emerald-900/40 flex items-center justify-center text-emerald-500 shrink-0">
                             <Users className="w-5 h-5" />
                         </div>
                         <div className="space-y-0.5">
-                            <h3 className="font-black text-slate-950 text-base">Study Group</h3>
-                            <p className="text-xs text-slate-500 font-medium">
+                            <h3 className="font-black text-white text-base">Study Group</h3>
+                            <p className="text-xs text-slate-400 font-medium">
                                 Rejoignez 4 autres élèves qui préparent le même examen.
                             </p>
                         </div>
@@ -834,7 +837,7 @@ export default function StudentDashboard() {
 
                     <Link
                         href="/dashboard/community"
-                        className="px-4 py-2.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 font-extrabold text-xs rounded-xl transition-all cursor-pointer shrink-0 text-center"
+                        className="px-4 py-2.5 bg-[#020617] border border-slate-800 hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer shrink-0 text-center"
                     >
                         Rejoindre
                     </Link>
@@ -851,17 +854,17 @@ export default function StudentDashboard() {
             <div className="space-y-4 pt-4 text-left">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-xl font-black text-slate-950 tracking-tight">
+                        <h2 className="text-xl font-black text-white tracking-tight">
                             Vos Examens & Certifications Visés {targetedCerts.length > 0 ? `(${targetedCerts.length})` : ''}
                         </h2>
-                        <p className="text-xs text-slate-500 font-medium mt-0.5">
+                        <p className="text-xs text-slate-400 font-medium mt-0.5">
                             Vos objectifs de préparation actifs. Ajoutez d&apos;autres certifications depuis le catalogue.
                         </p>
                     </div>
 
                     <Link
                         href="/dashboard/certifications"
-                        className="text-xs font-extrabold text-blue-600 hover:text-blue-700 transition-colors inline-flex items-center gap-1 cursor-pointer"
+                        className="text-xs font-extrabold text-red-500 hover:text-red-400 transition-colors inline-flex items-center gap-1 cursor-pointer"
                     >
                         <span>Gérer mes objectifs ({certs.length} disponibles)</span>
                         <ChevronRight className="w-4 h-4" />
@@ -876,20 +879,20 @@ export default function StudentDashboard() {
                             return (
                                 <div 
                                     key={cert.id || idx} 
-                                    className="bg-white border border-slate-200/80 rounded-3xl p-4 flex flex-col justify-between group transition-all duration-300 hover:shadow-lg hover:border-slate-350 text-left"
+                                    className="bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-4 flex flex-col justify-between group transition-all duration-300 hover:shadow-xl hover:shadow-[0_0_20px_rgba(220,38,38,0.1)] hover:border-slate-700 text-left"
                                 >
                                     {/* Visual Box (Landing Page Style) */}
                                     <div 
                                         onClick={() => setSelectedCertModal(cert)} 
-                                        className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-2xs transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-md bg-white border border-slate-100 cursor-pointer shrink-0"
+                                        className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-2xs transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-md bg-[#020617] border border-slate-800 cursor-pointer shrink-0"
                                     >
                                         {/* Background Template */}
-                                        <img src="/images/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
+                                        <img src="/images/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0 opacity-50 mix-blend-screen" />
 
                                         {/* Examen code overlay */}
                                         {cert.codeExamen && (
                                             <div className="absolute top-3 left-3 z-30">
-                                                <div className="bg-slate-955 text-white font-black uppercase text-[8px] tracking-widest px-2 py-0.5 rounded-md border border-slate-800 shadow-sm flex items-center group-hover:bg-blue-600 group-hover:border-blue-500 transition-colors">
+                                                <div className="bg-[#020617] text-white font-black uppercase text-[8px] tracking-widest px-2 py-0.5 rounded-md border border-slate-800 shadow-sm flex items-center group-hover:bg-red-600 group-hover:border-red-500 transition-colors">
                                                     {cert.codeExamen}
                                                 </div>
                                             </div>
@@ -901,8 +904,8 @@ export default function StudentDashboard() {
                                                 {badgeLogo ? (
                                                     <img src={badgeLogo} alt={cert.nom} className="max-w-full max-h-full object-contain filter drop-shadow-xl" />
                                                 ) : (
-                                                    <div className="w-12 h-12 bg-white/95 rounded-full flex items-center justify-center border border-slate-200 shadow-sm">
-                                                        <Award className="w-6 h-6 text-slate-400" />
+                                                    <div className="w-12 h-12 bg-[#080d1a]/95 rounded-full flex items-center justify-center border border-slate-800 shadow-sm">
+                                                        <Award className="w-6 h-6 text-slate-500" />
                                                     </div>
                                                 )}
                                             </div>
@@ -914,7 +917,7 @@ export default function StudentDashboard() {
                                         <div className="space-y-1">
                                             <h3 
                                                 onClick={() => setSelectedCertModal(cert)} 
-                                                className="text-xs font-black text-slate-950 leading-snug line-clamp-2 cursor-pointer hover:text-blue-600 transition-colors"
+                                                className="text-xs font-black text-white leading-snug line-clamp-2 cursor-pointer hover:text-red-500 transition-colors"
                                             >
                                                 {cert.nom}
                                             </h3>
@@ -923,11 +926,11 @@ export default function StudentDashboard() {
                                             </p>
                                         </div>
 
-                                        <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
+                                        <div className="pt-3 border-t border-slate-800 flex items-center gap-2">
                                             <button
                                                 type="button"
                                                 onClick={() => setSelectedCertModal(cert)}
-                                                className="flex-1 py-2 bg-slate-950 hover:bg-slate-900 text-white font-black rounded-xl text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md"
+                                                className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md"
                                             >
                                                 <span>Consulter</span>
                                             </button>
@@ -938,19 +941,19 @@ export default function StudentDashboard() {
                         })}
                     </div>
                 ) : (
-                    <div className="bg-slate-50/80 border border-dashed border-slate-200/90 rounded-3xl p-10 text-center space-y-4">
-                        <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto border border-blue-100">
-                            <Target className="w-7 h-7 text-blue-600" />
+                    <div className="bg-[#020617] border border-dashed border-slate-800 rounded-3xl p-10 text-center space-y-4">
+                        <div className="w-14 h-14 rounded-2xl bg-red-950/20 text-red-500 flex items-center justify-center mx-auto border border-red-900/30 shadow-[0_0_15px_rgba(220,38,38,0.15)]">
+                            <Target className="w-7 h-7 text-red-500" />
                         </div>
                         <div className="space-y-1.5 max-w-md mx-auto">
-                            <h3 className="font-extrabold text-slate-950 text-base">Aucune certification visée</h3>
-                            <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                            <h3 className="font-extrabold text-white text-base">Aucune certification visée</h3>
+                            <p className="text-xs text-slate-400 font-semibold leading-relaxed">
                                 Vous n&apos;avez pas encore sélectionné de certification à préparer. Parcourez notre catalogue et ajoutez vos certifications cibles pour débloquer votre analyse d&apos;éligibilité.
                             </p>
                         </div>
                         <Link
                             href="/dashboard/certifications"
-                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer"
+                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer"
                         >
                             <BookOpen className="w-4 h-4 text-white" />
                             <span>Accéder au Catalogue des Certifications</span>
@@ -963,7 +966,7 @@ export default function StudentDashboard() {
             <AnimatePresence>
                 {selectedCertModal && (
                     <div 
-                        className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-955/50 overflow-y-auto"
+                        className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-[#020617]/80 backdrop-blur-sm overflow-y-auto"
                         onClick={(e) => { if (e.target === e.currentTarget) setSelectedCertModal(null); }}
                     >
                         <motion.div 
@@ -971,7 +974,7 @@ export default function StudentDashboard() {
                             animate={{ opacity: 1, y: 0 }} 
                             exit={{ opacity: 0, y: 20 }} 
                             transition={{ duration: 0.2 }}
-                            className="bg-white rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden my-auto"
+                            className="bg-[#080d1a] border border-slate-800 rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden my-auto"
                         >
                             <CertDetailModal 
                                 cert={selectedCertModal} 

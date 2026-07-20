@@ -15,18 +15,18 @@ export default function CertHistoryCard({ item, cert, index, onCertClick, format
     const isWarning = item.score >= 65 && item.score < 80;
 
     return (
-        <div className="p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors">
+        <div className="p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-800/40 transition-colors">
             <div className="flex items-center gap-4">
                 <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-xs shrink-0 ${
-                    isPassed ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-                    isWarning ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-                    'bg-rose-50 text-rose-700 border border-rose-200'
+                    isPassed ? 'bg-emerald-950/30 text-emerald-500 border border-emerald-900/50' :
+                    isWarning ? 'bg-amber-950/30 text-amber-500 border border-amber-900/50' :
+                    'bg-red-950/30 text-red-500 border border-red-900/50'
                 }`}>
                     {item.score}%
                 </div>
 
                 <div className="space-y-0.5">
-                    <h3 className="font-extrabold text-slate-950 text-sm">
+                    <h3 className="font-extrabold text-white text-sm">
                         {item.certificationName || cert?.nom || "Simulation d'Examen Blanc"}
                     </h3>
                     <div className="flex items-center gap-3 text-xs text-slate-400 font-semibold">
@@ -40,16 +40,16 @@ export default function CertHistoryCard({ item, cert, index, onCertClick, format
 
             <div className="flex items-center gap-3 self-end sm:self-center shrink-0">
                 <span className={`text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-lg border ${
-                    isPassed ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                    isWarning ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                    'bg-rose-50 text-rose-700 border-rose-200'
+                    isPassed ? 'bg-emerald-950/30 text-emerald-500 border-emerald-900/50' :
+                    isWarning ? 'bg-amber-950/30 text-amber-500 border-amber-900/50' :
+                    'bg-red-950/30 text-red-500 border-red-900/50'
                 }`}>
                     {isPassed ? 'RÉUSSI' : isWarning ? 'À PEAUFINER' : 'À RENFORCER'}
                 </span>
 
                 <Link
                     href={`/dashboard/practice${(item.certificationSlug || cert?.slug) ? `?cert=${item.certificationSlug || cert?.slug}` : ''}`}
-                    className="px-3.5 py-1.5 bg-slate-950 hover:bg-slate-900 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer inline-flex items-center gap-1.5"
+                    className="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer inline-flex items-center gap-1.5"
                 >
                     <Play className="w-3 h-3 fill-white text-white" />
                     <span>Refaire</span>

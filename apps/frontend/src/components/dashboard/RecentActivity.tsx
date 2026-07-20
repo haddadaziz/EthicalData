@@ -20,13 +20,13 @@ export default function RecentActivity({ history, certifications, onCertClick }:
     const selectedCert = certifications?.[0] || null;
 
     return (
-        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-7 shadow-2xs space-y-5 text-left">
+        <div className="bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-6 sm:p-7 shadow-xl space-y-5 text-left">
             <div className="flex items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-lg font-black text-slate-950 tracking-tight">
+                    <h2 className="text-lg font-black text-white tracking-tight">
                         Dernières Tentatives d&apos;Examens Blancs
                     </h2>
-                    <p className="text-xs text-slate-500 font-semibold mt-0.5">
+                    <p className="text-xs text-slate-400 font-semibold mt-0.5">
                         {selectedCert
                             ? `Historique des simulations pour ${selectedCert.codeExamen || selectedCert.nom}`
                             : "Veuillez viser un certificat pour consulter vos tentatives"
@@ -34,13 +34,13 @@ export default function RecentActivity({ history, certifications, onCertClick }:
                     </p>
                 </div>
 
-                <span className="text-xs font-extrabold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-xl shrink-0">
+                <span className="text-xs font-extrabold text-red-500 bg-red-950/20 border border-red-900/40 px-3 py-1.5 rounded-xl shrink-0">
                     {history.length} tentative(s) enregistrée(s)
                 </span>
             </div>
 
             {history.length > 0 ? (
-                <div className="divide-y divide-slate-100 border border-slate-100 rounded-2xl overflow-hidden">
+                <div className="divide-y divide-slate-800 border border-slate-800 rounded-2xl overflow-hidden bg-[#020617]">
                     {history.slice(0, 5).map((attempt: any, idx: number) => (
                         <CertHistoryCard
                             key={attempt.id || idx}
@@ -53,22 +53,22 @@ export default function RecentActivity({ history, certifications, onCertClick }:
                     ))}
                 </div>
             ) : (
-                <div className="bg-slate-50/80 border border-dashed border-slate-200 rounded-2xl p-8 text-center space-y-3">
-                    <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
+                <div className="bg-[#020617] border border-dashed border-slate-800 rounded-2xl p-8 text-center space-y-3">
+                    <div className="w-12 h-12 rounded-2xl bg-red-950/20 text-red-500 border border-red-900/30 shadow-[0_0_15px_rgba(220,38,38,0.15)] flex items-center justify-center mx-auto">
                         {selectedCert ? (
-                            <Play className="w-6 h-6 fill-blue-600 text-blue-600" />
+                            <Play className="w-6 h-6 fill-red-500 text-red-500" />
                         ) : (
-                            <Target className="w-6 h-6 text-blue-600" />
+                            <Target className="w-6 h-6 text-red-500" />
                         )}
                     </div>
                     <div className="space-y-1">
-                        <h3 className="font-extrabold text-slate-950 text-sm">
+                        <h3 className="font-extrabold text-white text-sm">
                             {selectedCert
                                 ? `Aucune tentative effectuée pour ${selectedCert.codeExamen || selectedCert.nom}`
                                 : "Veuillez viser un certificat pour consulter vos tentatives"
                             }
                         </h3>
-                        <p className="text-xs text-slate-500 font-medium max-w-md mx-auto">
+                        <p className="text-xs text-slate-400 font-medium max-w-md mx-auto">
                             {selectedCert
                                 ? "Lancez votre premier examen blanc sur ce simulateur interactif pour générer votre analyse d'éligibilité."
                                 : "Sélectionnez votre première certification cible dans le catalogue pour effectuer vos simulations et consulter votre historique."
@@ -77,7 +77,7 @@ export default function RecentActivity({ history, certifications, onCertClick }:
                     </div>
                     <Link
                         href={selectedCert ? `/dashboard/practice?cert=${selectedCert.slug}` : "/dashboard/certifications"}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer"
                     >
                         {selectedCert ? (
                             <>
