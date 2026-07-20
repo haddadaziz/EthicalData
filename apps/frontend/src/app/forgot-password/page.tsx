@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { apiFetch } from '../../lib/api';
 import { useRouter } from 'next/navigation';
@@ -13,6 +13,152 @@ export default function ForgotPasswordPage() {
     const [loading, setLoading] = useState(false);
     const [sent, setSent] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    const mouseRef = useRef({ x: 0, y: 0, active: false });
+
+    useEffect(() => {
+        document.title = "Mot de passe oublié - Ethical Data Security";
+    }, []);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        let animationId: number;
+        let particles: Array<{
+            x: number;
+            y: number;
+            vx: number;
+            vy: number;
+            radius: number;
+            alpha: number;
+            targetVx: number;
+            targetVy: number;
+        }> = [];
+
+        const handleResize = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initParticles();
+        };
+
+        const initParticles = () => {
+            particles = [];
+            const particleCount = Math.min(Math.floor((canvas.width * canvas.height) / 10000), 120);
+            for (let i = 0; i < particleCount; i++) {
+                const radius = Math.random() * 1.8 + 1.2;
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const targetVy = -(Math.random() * 0.25 + 0.05);
+                const targetVx = (Math.random() * 0.2 - 0.1);
+                particles.push({
+                    x,
+                    y,
+                    vx: targetVx,
+                    vy: targetVy,
+                    radius,
+                    alpha: Math.random() * 0.2 + 0.15,
+                    targetVx,
+                    targetVy
+                });
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        handleResize();
+
+        const handleMouseMove = (e: MouseEvent) => {
+            mouseRef.current.x = e.clientX;
+            mouseRef.current.y = e.clientY;
+            mouseRef.current.active = true;
+        };
+
+        const handleMouseLeave = () => {
+            mouseRef.current.active = false;
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseleave', handleMouseLeave);
+
+        const repelRadius = 160;
+        const maxConnectionDist = 130;
+
+        const render = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const m = mouseRef.current;
+
+            particles.forEach((p) => {
+                p.x += p.vx;
+                p.y += p.vy;
+
+                if (p.y < 0) {
+                    p.y = canvas.height;
+                    p.x = Math.random() * canvas.width;
+                }
+                if (p.x < 0) p.x = canvas.width;
+                if (p.x > canvas.width) p.x = 0;
+
+                if (m.active) {
+                    const dx = p.x - m.x;
+                    const dy = p.y - m.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < repelRadius && dist > 0) {
+                        const force = (1 - dist / repelRadius) * 2.5;
+                        p.vx += (dx / dist) * force;
+                        p.vy += (dy / dist) * force;
+                    }
+                }
+
+                p.vx += (p.targetVx - p.vx) * 0.05;
+                p.vy += (p.targetVy - p.vy) * 0.05;
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(6, 182, 212, ${p.alpha})`;
+                ctx.shadowColor = '#06b6d4';
+                ctx.shadowBlur = 8;
+                ctx.fill();
+                ctx.restore();
+            });
+
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const p1 = particles[i];
+                    const p2 = particles[j];
+                    const dx = p1.x - p2.x;
+                    const dy = p1.y - p2.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < maxConnectionDist) {
+                        const alpha = (1 - dist / maxConnectionDist) * 0.15;
+                        ctx.strokeStyle = `rgba(6, 182, 212, ${alpha})`;
+                        ctx.lineWidth = 0.6;
+                        ctx.beginPath();
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            animationId = requestAnimationFrame(render);
+        };
+
+        render();
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            window.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseleave', handleMouseLeave);
+            cancelAnimationFrame(animationId);
+        };
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -36,13 +182,18 @@ export default function ForgotPasswordPage() {
             
             <header className="w-full max-w-7xl mx-auto flex items-center justify-between z-20 px-2 sm:px-4 py-2 mt-2">
                 <Link href="/" className="flex items-center hover:opacity-80 transition-opacity cursor-pointer">
-                    <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-6 sm:h-8 w-auto object-contain" />
+                    <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-9 sm:h-12 w-auto object-contain" />
                 </Link>
             </header>
 
-            {/* Static Background Pattern (No Canvas to keep it simple but matching the dark theme) */}
+            {/* Static Background Pattern */}
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none z-0" />
             <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/[0.05] rounded-full blur-[130px] pointer-events-none z-0" />
+
+            <canvas
+                ref={canvasRef}
+                className="absolute inset-0 w-full h-full pointer-events-none z-0"
+            />
 
             <div className="flex-1 flex items-center justify-center relative z-10 my-auto py-6">
                 <motion.div
@@ -120,13 +271,18 @@ export default function ForgotPasswordPage() {
                                 </button>
                             </form>
 
-                            <div className="text-center pt-4 border-t border-slate-800">
+                            <div className="mt-5 pt-4 border-t border-slate-800 flex flex-col items-center gap-2 text-center">
                                 <Link
                                     href="/login"
-                                    className="text-[10px] text-slate-400 hover:text-white font-black uppercase tracking-widest transition-colors cursor-pointer inline-flex items-center gap-1.5"
+                                    className="text-xs text-slate-400 hover:text-white font-bold transition-colors cursor-pointer"
                                 >
-                                    <ArrowLeft className="w-3.5 h-3.5" />
-                                    <span>Retour à la connexion</span>
+                                    Retour à la connexion
+                                </Link>
+                                <Link
+                                    href="/"
+                                    className="text-[11px] text-slate-500 hover:text-cyan-400 font-bold tracking-wide uppercase transition-colors cursor-pointer flex items-center gap-1 mt-1"
+                                >
+                                    <span>← Retourner à l&apos;accueil</span>
                                 </Link>
                             </div>
                         </div>

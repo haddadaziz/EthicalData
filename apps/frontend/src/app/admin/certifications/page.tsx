@@ -155,14 +155,14 @@ export default function AdminCertificationsPage() {
   };
 
   return (
-    <div className="space-y-8 pb-20">
+        <div className="space-y-8 pb-20 bg-[#020617]">
       
       {/* Container Principal */}
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Filters */}
-        <div className="bg-white border border-slate-200/80 rounded-3xl overflow-hidden shadow-sm">
-          <div className="p-6 border-b border-slate-200/80 space-y-4">
+        <div className="bg-[#080d1a] border border-slate-800 rounded-3xl overflow-hidden shadow-sm">
+          <div className="p-6 border-b border-slate-800 space-y-4">
             <div className="flex flex-col md:flex-row md:items-center gap-3">
               <div className="relative flex-1 max-w-sm">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
@@ -173,14 +173,14 @@ export default function AdminCertificationsPage() {
                   placeholder="Rechercher..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 placeholder-slate-400 transition-all text-sm outline-none font-semibold"
+                  className="w-full pl-10 pr-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 focus:bg-slate-900/50 text-white placeholder:text-slate-500 transition-all text-sm outline-none font-semibold rounded-xl"
                 />
               </div>
 
               <select
                 value={selectedLevel}
                 onChange={(e) => setSelectedLevel(e.target.value)}
-                className="px-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-xs font-bold outline-none transition-all cursor-pointer"
+                className="px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 rounded-xl text-white text-xs font-bold outline-none transition-all cursor-pointer"
               >
                 <option value="TOUS">Tous les niveaux</option>
                 <option value="DEBUTANT">Débutant</option>
@@ -192,7 +192,7 @@ export default function AdminCertificationsPage() {
                 <button
                   type="button"
                   onClick={() => setProviderDropdownOpen(!providerDropdownOpen)}
-                  className="flex items-center gap-2.5 px-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-xs font-bold outline-none cursor-pointer hover:bg-slate-100 transition-all min-w-[200px]"
+                  className="flex items-center gap-2.5 px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 rounded-xl text-white text-xs font-bold outline-none cursor-pointer hover:bg-slate-800/50 transition-all min-w-[200px]"
                 >
                   {selectedProvider !== 'TOUS' && getProviderLogo(selectedProvider) && (
                     <img src={getProviderLogo(selectedProvider)} alt="" className="w-5 h-5 object-contain rounded shrink-0" />
@@ -206,19 +206,19 @@ export default function AdminCertificationsPage() {
                 {providerDropdownOpen && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setProviderDropdownOpen(false)} />
-                    <div className="absolute top-full left-0 mt-1.5 z-50 w-72 bg-white border border-slate-200/80 rounded-2xl shadow-xl overflow-hidden">
+                    <div className="absolute top-full left-0 mt-1.5 z-50 w-72 bg-[#080d1a] border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
                       <button
                         onClick={() => { setSelectedProvider('TOUS'); setProviderDropdownOpen(false); }}
-                        className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
-                          selectedProvider === 'TOUS' ? 'bg-slate-100 text-slate-950' : 'text-slate-600'
+                        className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-800/30 cursor-pointer ${
+                          selectedProvider === 'TOUS' ? 'bg-slate-900/50 text-white' : 'text-slate-400'
                         }`}
                       >
-                        <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
-                          <Award className="w-4 h-4 text-slate-500" />
+                        <div className="w-7 h-7 rounded-lg bg-slate-900/50 flex items-center justify-center shrink-0">
+                          <Award className="w-4 h-4 text-slate-400" />
                         </div>
                         <span className="truncate">Tous les constructeurs</span>
                       </button>
-                      <div className="border-t border-slate-100" />
+                      <div className="border-t border-slate-800" />
                       <div className="max-h-64 overflow-y-auto">
                         {fournisseurs.map((f: any) => {
                           const logo = getProviderLogo(f.slug || f.nom || '');
@@ -226,15 +226,15 @@ export default function AdminCertificationsPage() {
                             <button
                               key={f.id}
                               onClick={() => { setSelectedProvider(f.slug); setProviderDropdownOpen(false); }}
-                              className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${
-                                selectedProvider === f.slug ? 'bg-slate-100 text-slate-950' : 'text-slate-600'
+                              className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-800/30 cursor-pointer ${
+                                selectedProvider === f.slug ? 'bg-slate-900/50 text-white' : 'text-slate-400'
                               }`}
                             >
                               {logo ? (
                                 <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0" />
                               ) : (
-                                <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
-                                  <Award className="w-4 h-4 text-slate-500" />
+                                <div className="w-7 h-7 rounded-lg bg-slate-900/50 flex items-center justify-center shrink-0">
+                                  <Award className="w-4 h-4 text-slate-400" />
                                 </div>
                               )}
                               <span className="block truncate font-bold">{f.nom}</span>

@@ -591,61 +591,61 @@ export default function AdminCommunityPage() {
   }, [signalementStatusFilter, pendingSignalements, resolvedSignalements]);
 
   return (
-    <div className="space-y-10 text-slate-800 text-left">
+    <div className="space-y-10 bg-[#020617] text-slate-300 text-left">
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-6 flex items-center justify-between shadow-sm">
+        <div className="bg-[#080d1a] border border-slate-800 rounded-2xl p-6 flex items-center justify-between shadow-sm">
           <div>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Discussions Total</p>
-            <p className="text-3xl font-black text-slate-950 mt-2">{stats?.totalSujets ?? 0}</p>
+            <p className="text-3xl font-black text-white mt-2">{stats?.totalSujets ?? 0}</p>
           </div>
-          <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center text-slate-700">
+          <div className="w-12 h-12 bg-[#020617] border border-slate-800 rounded-xl flex items-center justify-center text-slate-400">
             <MessageSquare className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-6 flex items-center justify-between shadow-sm">
+        <div className="bg-[#080d1a] border border-slate-800 rounded-2xl p-6 flex items-center justify-between shadow-sm">
           <div>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Commentaires</p>
-            <p className="text-3xl font-black text-slate-950 mt-2">{stats?.totalCommentaires ?? 0}</p>
+            <p className="text-3xl font-black text-white mt-2">{stats?.totalCommentaires ?? 0}</p>
           </div>
-          <div className="w-12 h-12 bg-blue-50 border border-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+          <div className="w-12 h-12 bg-blue-950/30 border border-blue-800/50 rounded-xl flex items-center justify-center text-cyan-400">
             <MessageCircle className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-6 flex items-center justify-between shadow-sm">
+        <div className="bg-[#080d1a] border border-slate-800 rounded-2xl p-6 flex items-center justify-between shadow-sm">
           <div>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Likes</p>
-            <p className="text-3xl font-black text-slate-950 mt-2">{stats?.totalLikes ?? 0}</p>
+            <p className="text-3xl font-black text-white mt-2">{stats?.totalLikes ?? 0}</p>
           </div>
-          <div className="w-12 h-12 bg-rose-50 border border-rose-100 rounded-xl flex items-center justify-center text-rose-600">
+          <div className="w-12 h-12 bg-rose-950/30 border border-rose-800/50 rounded-xl flex items-center justify-center text-rose-400">
             <Heart className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-6 flex items-center justify-between shadow-sm">
+        <div className="bg-[#080d1a] border border-slate-800 rounded-2xl p-6 flex items-center justify-between shadow-sm">
           <div>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Signalements en Attente</p>
-            <p className={`text-3xl font-black mt-2 ${(stats?.signalementsPending ?? 0) > 0 ? 'text-rose-600' : 'text-slate-950'}`}>
+            <p className={`text-3xl font-black mt-2 ${(stats?.signalementsPending ?? 0) > 0 ? 'text-rose-400' : 'text-white'}`}>
               {stats?.signalementsPending ?? 0}
             </p>
           </div>
-          <div className={`w-12 h-12 rounded-xl flex items-center justify-center border ${(stats?.signalementsPending ?? 0) > 0 ? 'bg-rose-50 border-rose-100 text-rose-600 animate-pulse' : 'bg-slate-50 border-slate-100 text-slate-400'}`}>
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center border ${(stats?.signalementsPending ?? 0) > 0 ? 'bg-rose-950/30 border-rose-800/50 text-rose-400 animate-pulse' : 'bg-[#020617] border-slate-800 text-slate-400'}`}>
             <ShieldAlert className="w-6 h-6" />
           </div>
         </div>
       </div>
 
-      <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+      <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 shadow-sm space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
           <div className="flex gap-2">
             <button
               onClick={() => setMainTab('SIGNALEMENTS')}
               className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
                 mainTab === 'SIGNALEMENTS'
                   ? 'bg-slate-950 text-white shadow-md'
-                  : 'bg-slate-50 border border-slate-200/80 hover:bg-slate-100 text-slate-600'
+                  : 'bg-[#020617] border border-slate-800 hover:bg-slate-800/50 text-slate-400'
               }`}
             >
               <Flag className="w-4 h-4" />
@@ -657,7 +657,7 @@ export default function AdminCommunityPage() {
               className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
                 mainTab === 'SUJETS'
                   ? 'bg-slate-950 text-white shadow-md'
-                  : 'bg-slate-50 border border-slate-200/80 hover:bg-slate-100 text-slate-600'
+                  : 'bg-[#020617] border border-slate-800 hover:bg-slate-800/50 text-slate-400'
               }`}
             >
               <MessageSquare className="w-4 h-4" />
@@ -675,7 +675,7 @@ export default function AdminCommunityPage() {
                 placeholder="Rechercher par titre ou contenu..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200/80 focus:border-red-600 rounded-xl text-slate-950 text-xs font-semibold outline-none"
+                className="w-full pl-9 pr-3 py-2 bg-[#020617] border border-slate-800 focus:border-blue-600 focus:bg-slate-900/50 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold outline-none"
               />
             </div>
           )}
@@ -688,8 +688,8 @@ export default function AdminCommunityPage() {
                 onClick={() => setSignalementStatusFilter('PENDING')}
                 className={`px-4 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all flex items-center gap-2 ${
                   signalementStatusFilter === 'PENDING'
-                    ? 'bg-rose-50 text-rose-700 border border-rose-200 shadow-sm'
-                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200/60'
+                    ? 'bg-rose-950/30 text-rose-400 border border-rose-800/50 shadow-sm'
+                    : 'bg-[#020617] text-slate-400 hover:bg-slate-800/50 border border-slate-800'
                 }`}
               >
                 <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
@@ -700,8 +700,8 @@ export default function AdminCommunityPage() {
                 onClick={() => setSignalementStatusFilter('RESOLVED')}
                 className={`px-4 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all flex items-center gap-2 ${
                   signalementStatusFilter === 'RESOLVED'
-                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm'
-                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200/60'
+                    ? 'bg-emerald-950/30 text-emerald-400 border border-emerald-800/50 shadow-sm'
+                    : 'bg-[#020617] text-slate-400 hover:bg-slate-800/50 border border-slate-800'
                 }`}
               >
                 <CheckCircle className="w-3.5 h-3.5" />
@@ -711,11 +711,11 @@ export default function AdminCommunityPage() {
 
             {loading ? (
               <div className="p-12 text-center text-slate-400">
-                <span className="w-8 h-8 border-3 border-blue-100 border-t-blue-600 rounded-full animate-spin inline-block mb-2" />
-                <p className="text-xs font-bold uppercase text-blue-600">Chargement des signalements...</p>
+                <span className="w-8 h-8 border-3 border-blue-800/50 border-t-cyan-400 rounded-full animate-spin inline-block mb-2" />
+                <p className="text-xs font-bold uppercase text-cyan-400">Chargement des signalements...</p>
               </div>
             ) : displayedSignalements.length === 0 ? (
-              <div className="p-12 text-center text-slate-500 font-semibold bg-slate-50/50 rounded-2xl border border-slate-100">
+              <div className="p-12 text-center text-slate-400 font-semibold bg-[#020617] rounded-2xl border border-slate-800">
                 Aucun signalement {signalementStatusFilter === 'PENDING' ? 'en attente' : 'traité'}.
               </div>
             ) : (
@@ -741,11 +741,11 @@ export default function AdminCommunityPage() {
           <div>
             {loading ? (
               <div className="p-12 text-center text-slate-400">
-                <span className="w-8 h-8 border-3 border-blue-100 border-t-blue-600 rounded-full animate-spin inline-block mb-2" />
-                <p className="text-xs font-bold uppercase text-blue-600">Chargement des sujets...</p>
+                <span className="w-8 h-8 border-3 border-blue-800/50 border-t-cyan-400 rounded-full animate-spin inline-block mb-2" />
+                <p className="text-xs font-bold uppercase text-cyan-400">Chargement des sujets...</p>
               </div>
             ) : filteredSujets.length === 0 ? (
-              <div className="p-12 text-center text-slate-500 font-semibold bg-slate-50/50 rounded-2xl border border-slate-100">
+              <div className="p-12 text-center text-slate-400 font-semibold bg-[#020617] rounded-2xl border border-slate-800">
                 Aucune publication trouvée.
               </div>
             ) : (

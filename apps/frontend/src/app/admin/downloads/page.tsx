@@ -69,10 +69,10 @@ export default function AdminDownloadsPage() {
     };
 
     return (
-        <div className="space-y-6 text-slate-800">
+        <div className="space-y-6 bg-[#020617] text-slate-300">
 
             {/* Filtres */}
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-wrap items-center gap-3">
+            <div className="bg-[#080d1a] border border-slate-800 rounded-2xl p-4 flex flex-wrap items-center gap-3">
                 <div className="relative flex-1 min-w-[200px] max-w-xs">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
                         <Search className="w-4 h-4" />
@@ -82,12 +82,12 @@ export default function AdminDownloadsPage() {
                         placeholder="Rechercher par ressource..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-blue-600 rounded-xl text-sm outline-none font-medium"
+                        className="w-full pl-10 pr-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 focus:bg-slate-900/50 text-white placeholder:text-slate-500 rounded-xl text-sm outline-none font-medium"
                     />
                 </div>
                 <div className="relative w-full sm:w-52">
                     <button type="button" onClick={() => setTypeDropdownOpen(!typeDropdownOpen)}
-                        className="flex items-center gap-2.5 px-4 py-2.5 bg-slate-50 border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-xs font-bold outline-none cursor-pointer hover:bg-slate-100 transition-all w-full">
+                        className="flex items-center gap-2.5 px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 rounded-xl text-white text-xs font-bold outline-none cursor-pointer hover:bg-slate-800/50 transition-all w-full">
                         <span className="flex-1 text-left truncate">
                             {typeFilter === '' ? 'Tous les types' : typeLabel(typeFilter)}
                         </span>
@@ -97,19 +97,19 @@ export default function AdminDownloadsPage() {
                     {typeDropdownOpen && (
                         <>
                             <div className="fixed inset-0 z-40" onClick={() => setTypeDropdownOpen(false)} />
-                            <div className="absolute top-full left-0 mt-1.5 z-50 w-full bg-white border border-slate-200/80 rounded-2xl shadow-xl overflow-hidden">
+                            <div className="absolute top-full left-0 mt-1.5 z-50 w-full bg-[#080d1a] border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
                                 <button onClick={() => { setTypeFilter(''); setTypeDropdownOpen(false); }}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${typeFilter === '' ? 'bg-slate-100 text-slate-950' : 'text-slate-600'}`}>
-                                    <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
-                                        <Filter className="w-4 h-4 text-slate-500" />
+                                    className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-800/30 cursor-pointer ${typeFilter === '' ? 'bg-slate-900/50 text-white' : 'text-slate-400'}`}>
+                                    <div className="w-7 h-7 rounded-lg bg-slate-900/50 flex items-center justify-center shrink-0">
+                                        <Filter className="w-4 h-4 text-slate-400" />
                                     </div>
                                     <span className="truncate">Tous les types</span>
                                 </button>
-                                <div className="border-t border-slate-100" />
+                                <div className="border-t border-slate-800" />
                                 {['PDF', 'VIDEO', 'SLIDE', 'EXERCICE', 'LIEN_EXTERNE', 'DATASET'].map((t) => (
                                     <button key={t} onClick={() => { setTypeFilter(t); setTypeDropdownOpen(false); }}
-                                        className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-50 cursor-pointer ${typeFilter === t ? 'bg-slate-100 text-slate-950' : 'text-slate-600'}`}>
-                                        <span className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                                        className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-800/30 cursor-pointer ${typeFilter === t ? 'bg-slate-900/50 text-white' : 'text-slate-400'}`}>
+                                        <span className="w-7 h-7 rounded-lg bg-slate-900/50 flex items-center justify-center shrink-0">
                                             {typeIcon(t)}
                                         </span>
                                         <span>{typeLabel(t)}</span>
@@ -126,44 +126,44 @@ export default function AdminDownloadsPage() {
 
             {/* Table */}
             {loading ? (
-                <div className="min-h-[40vh] flex flex-col items-center justify-center text-slate-600 gap-4">
-                    <span className="w-10 h-10 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin" />
+                <div className="min-h-[40vh] flex flex-col items-center justify-center text-slate-400 gap-4">
+                    <span className="w-10 h-10 border-4 border-blue-800/50 border-t-cyan-400 rounded-full animate-spin" />
                 </div>
             ) : history.length === 0 ? (
-                <div className="p-12 text-center bg-white border border-slate-200/80 rounded-2xl text-slate-500">
+                <div className="p-12 text-center bg-[#080d1a] border border-slate-800 rounded-2xl text-slate-400">
                     <p className="text-sm font-bold">Aucun téléchargement trouvé.</p>
                 </div>
             ) : (
-                <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden">
+                <div className="bg-[#080d1a] border border-slate-800 rounded-2xl overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead>
-                                <tr className="border-b border-slate-100 bg-slate-50/50">
-                                    <th className="px-5 py-3.5 text-[10px] font-black uppercase tracking-wider text-slate-500">Date</th>
-                                    <th className="px-5 py-3.5 text-[10px] font-black uppercase tracking-wider text-slate-500">Utilisateur</th>
-                                    <th className="px-5 py-3.5 text-[10px] font-black uppercase tracking-wider text-slate-500">Ressource</th>
-                                    <th className="px-5 py-3.5 text-[10px] font-black uppercase tracking-wider text-slate-500">Type</th>
-                                    <th className="px-5 py-3.5 text-[10px] font-black uppercase tracking-wider text-slate-500">Certification</th>
-                                    <th className="px-5 py-3.5 text-[10px] font-black uppercase tracking-wider text-slate-500">IP</th>
-                                    <th className="px-5 py-3.5 text-[10px] font-black uppercase tracking-wider text-slate-500"></th>
+                                <tr className="border-b border-slate-800 bg-slate-900/50">
+                                    <th className="px-5 py-3.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Date</th>
+                                    <th className="px-5 py-3.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Utilisateur</th>
+                                    <th className="px-5 py-3.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Ressource</th>
+                                    <th className="px-5 py-3.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Type</th>
+                                    <th className="px-5 py-3.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Certification</th>
+                                    <th className="px-5 py-3.5 text-[10px] font-black uppercase tracking-wider text-slate-400">IP</th>
+                                    <th className="px-5 py-3.5 text-[10px] font-black uppercase tracking-wider text-slate-400"></th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100">
+                            <tbody className="divide-y divide-slate-800">
                                 {history.map((h: any) => (
-                                    <tr key={h.id} className="hover:bg-slate-50/50 transition-colors">
+                                    <tr key={h.id} className="hover:bg-slate-800/30 transition-colors">
                                         <td className="px-5 py-4">
-                                            <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                            <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
                                                 <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                                                 {formatDate(h.date)}
                                             </span>
                                         </td>
                                         <td className="px-5 py-4">
                                             <div className="flex items-center gap-2.5">
-                                                <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
-                                                    <User className="w-3.5 h-3.5 text-slate-500" />
+                                                <div className="w-7 h-7 rounded-lg bg-slate-900/50 flex items-center justify-center shrink-0">
+                                                    <User className="w-3.5 h-3.5 text-slate-400" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-xs font-bold text-slate-900">
+                                                    <p className="text-xs font-bold text-white">
                                                         {h.utilisateur?.prenom} {h.utilisateur?.nom}
                                                     </p>
                                                     <p className="text-[9px] text-slate-400 font-semibold">{h.utilisateur?.email}</p>
@@ -172,18 +172,18 @@ export default function AdminDownloadsPage() {
                                         </td>
                                         <td className="px-5 py-4">
                                             <div className="flex items-center gap-2.5 max-w-[250px]">
-                                                <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0 text-slate-500">
+                                                <div className="w-7 h-7 rounded-lg bg-slate-900/50 flex items-center justify-center shrink-0 text-slate-400">
                                                     {typeIcon(h.ressource?.type)}
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <p className="text-xs font-bold text-slate-900 truncate">{h.ressource?.titre}</p>
+                                                    <p className="text-xs font-bold text-white truncate">{h.ressource?.titre}</p>
                                                     <p className="text-[9px] font-bold text-slate-400 mt-0.5">{typeLabel(h.ressource?.type)}</p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-5 py-4">
                                             {h.ressource?.certification ? (
-                                                <span className="text-[10px] font-bold text-blue-600">
+                                                <span className="text-[10px] font-bold text-cyan-400">
                                                     {h.ressource.certification.codeExamen || h.ressource.certification.nom}
                                                 </span>
                                             ) : (
@@ -196,7 +196,7 @@ export default function AdminDownloadsPage() {
                                         <td className="px-5 py-4">
                                             <button
                                                 onClick={() => window.open(h.ressource?.url, '_blank')}
-                                                className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-all cursor-pointer"
+                                                className="p-1.5 rounded-lg hover:bg-slate-800/50 text-slate-400 hover:text-white transition-all cursor-pointer"
                                                 title="Télécharger à nouveau"
                                             >
                                                 <Download className="w-3.5 h-3.5" />
@@ -210,11 +210,11 @@ export default function AdminDownloadsPage() {
 
                     {/* Pagination */}
                     {totalPages > 1 && (
-                        <div className="flex items-center justify-between p-4 border-t border-slate-100">
+                        <div className="flex items-center justify-between p-4 border-t border-slate-800">
                             <button
                                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                                 disabled={page === 1}
-                                className="px-3 py-1.5 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1"
+                                className="px-3 py-1.5 border border-slate-800 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:border-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1"
                             >
                                 <ChevronLeft className="w-3.5 h-3.5" /> Précédent
                             </button>
@@ -228,7 +228,7 @@ export default function AdminDownloadsPage() {
                                             className={`w-8 h-8 rounded-xl text-xs font-black transition-all cursor-pointer ${
                                                 page === pageNum
                                                     ? 'bg-slate-950 text-white shadow-md'
-                                                    : 'bg-transparent text-slate-500 hover:bg-slate-50'
+                                                    : 'bg-transparent text-slate-400 hover:bg-slate-800/30'
                                             }`}
                                         >
                                             {pageNum}
@@ -239,7 +239,7 @@ export default function AdminDownloadsPage() {
                             <button
                                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                                 disabled={page === totalPages}
-                                className="px-3 py-1.5 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-950 hover:border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1"
+                                className="px-3 py-1.5 border border-slate-800 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:border-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1"
                             >
                                 Suivant <ChevronRight className="w-3.5 h-3.5" />
                             </button>

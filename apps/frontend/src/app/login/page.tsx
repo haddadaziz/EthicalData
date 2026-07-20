@@ -212,7 +212,7 @@ export default function LoginPage() {
             
             <header className="w-full max-w-7xl mx-auto flex items-center justify-between z-20 px-2 sm:px-4 py-2 mt-2">
                 <Link href="/" className="flex items-center hover:opacity-80 transition-opacity cursor-pointer">
-                    <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-6 sm:h-8 w-auto object-contain" />
+                    <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-9 sm:h-12 w-auto object-contain" />
                 </Link>
             </header>
 

@@ -135,8 +135,8 @@ export default function RegisterPage() {
                 ctx.save();
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(220, 38, 38, ${p.alpha})`;
-                ctx.shadowColor = '#dc2626';
+                ctx.fillStyle = `rgba(6, 182, 212, ${p.alpha})`;
+                ctx.shadowColor = '#06b6d4';
                 ctx.shadowBlur = 8;
                 ctx.fill();
                 ctx.restore();
@@ -152,7 +152,7 @@ export default function RegisterPage() {
 
                     if (dist < maxConnectionDist) {
                         const alpha = (1 - dist / maxConnectionDist) * 0.15;
-                        ctx.strokeStyle = `rgba(220, 38, 38, ${alpha})`;
+                        ctx.strokeStyle = `rgba(6, 182, 212, ${alpha})`;
                         ctx.lineWidth = 0.6;
                         ctx.beginPath();
                         ctx.moveTo(p1.x, p1.y);
@@ -222,19 +222,19 @@ export default function RegisterPage() {
     };
 
     return (
-        <main className="min-h-screen w-screen bg-[#020617] flex flex-col justify-between p-4 sm:p-6 selection:bg-red-600 selection:text-white relative overflow-hidden">
+        <main className="min-h-screen w-screen bg-[#020617] flex flex-col justify-between p-4 sm:p-6 selection:bg-cyan-600 selection:text-white relative overflow-hidden">
             
             {/* BARRE SUPÉRIEURE ÉPURÉE */}
             <header className="w-full max-w-7xl mx-auto flex items-center justify-between z-20 px-2 sm:px-4 py-2 mt-2">
                 <Link href="/" className="flex items-center hover:opacity-80 transition-opacity cursor-pointer">
-                    <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-6 sm:h-8 w-auto object-contain" />
+                    <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-9 sm:h-12 w-auto object-contain" />
                 </Link>
             </header>
 
 
             {/* Grille d'arrière-plan claire */}
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none z-0" />
-            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-red-600/[0.05] rounded-full blur-[130px] pointer-events-none z-0" />
+            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/[0.05] rounded-full blur-[130px] pointer-events-none z-0" />
 
             <canvas
                 ref={canvasRef}
@@ -278,7 +278,7 @@ export default function RegisterPage() {
                                     value={prenom}
                                     onChange={(e) => setPrenom(e.target.value)}
                                     placeholder="Jean"
-                                    className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 hover:border-slate-700 focus:border-red-600 focus:bg-[#020617] focus:ring-4 focus:ring-red-600/5 rounded-xl text-white placeholder-slate-500 transition-all text-xs outline-none font-semibold"
+                                    className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 hover:border-slate-700 focus:border-cyan-500/50 focus:bg-[#020617] focus:ring-4 focus:ring-cyan-500/10 rounded-xl text-white placeholder-slate-500 transition-all text-xs outline-none font-semibold"
                                 />
                             </div>
 
@@ -290,7 +290,7 @@ export default function RegisterPage() {
                                     value={nom}
                                     onChange={(e) => setNom(e.target.value)}
                                     placeholder="Dupont"
-                                    className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 hover:border-slate-700 focus:border-red-600 focus:bg-[#020617] focus:ring-4 focus:ring-red-600/5 rounded-xl text-white placeholder-slate-500 transition-all text-xs outline-none font-semibold"
+                                    className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 hover:border-slate-700 focus:border-cyan-500/50 focus:bg-[#020617] focus:ring-4 focus:ring-cyan-500/10 rounded-xl text-white placeholder-slate-500 transition-all text-xs outline-none font-semibold"
                                 />
                             </div>
                         </div>
@@ -304,7 +304,7 @@ export default function RegisterPage() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="nom@exemple.com"
-                                    className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 hover:border-slate-700 focus:border-red-600 focus:bg-[#020617] focus:ring-4 focus:ring-red-600/5 rounded-xl text-white placeholder-slate-500 transition-all text-xs outline-none font-semibold"
+                                    className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 hover:border-slate-700 focus:border-cyan-500/50 focus:bg-[#020617] focus:ring-4 focus:ring-cyan-500/10 rounded-xl text-white placeholder-slate-500 transition-all text-xs outline-none font-semibold"
                                 />
                             </div>
                         </div>
@@ -318,7 +318,7 @@ export default function RegisterPage() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="••••••••"
-                                    className="w-full pl-4 pr-10 py-2.5 bg-[#020617] border border-slate-800 hover:border-slate-700 focus:border-red-600 focus:bg-[#020617] focus:ring-4 focus:ring-red-600/5 rounded-xl text-white placeholder-slate-500 transition-all text-xs outline-none font-semibold"
+                                    className="w-full pl-4 pr-10 py-2.5 bg-[#020617] border border-slate-800 hover:border-slate-700 focus:border-cyan-500/50 focus:bg-[#020617] focus:ring-4 focus:ring-cyan-500/10 rounded-xl text-white placeholder-slate-500 transition-all text-xs outline-none font-semibold"
                                 />
                                 <button
                                     type="button"
@@ -346,7 +346,7 @@ export default function RegisterPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all focus:outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4 shadow-md"
+                            className="w-full py-3.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all focus:outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4 shadow-lg shadow-cyan-900/20"
                         >
                             {loading ? (
                                 <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -365,7 +365,7 @@ export default function RegisterPage() {
                         </Link>
                         <Link
                             href="/"
-                            className="text-[11px] text-slate-500 hover:text-red-500 font-bold tracking-wide uppercase transition-colors cursor-pointer flex items-center gap-1 mt-1"
+                            className="text-[11px] text-slate-500 hover:text-cyan-400 font-bold tracking-wide uppercase transition-colors cursor-pointer flex items-center gap-1 mt-1"
                         >
                             <span>← Retourner à l&apos;accueil</span>
                         </Link>
