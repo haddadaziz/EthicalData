@@ -225,7 +225,10 @@ export default function RegisterPage() {
         <main className="min-h-screen w-screen bg-[#020617] flex flex-col justify-between p-4 sm:p-6 selection:bg-red-600 selection:text-white relative overflow-hidden">
             
             {/* BARRE SUPÉRIEURE ÉPURÉE */}
-            <header className="w-full max-w-7xl mx-auto flex items-center justify-between z-20 px-2 sm:px-4 py-2">
+            <header className="w-full max-w-7xl mx-auto flex items-center justify-between z-20 px-2 sm:px-4 py-2 mt-2">
+                <Link href="/" className="flex items-center hover:opacity-80 transition-opacity cursor-pointer">
+                    <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-6 sm:h-8 w-auto object-contain" />
+                </Link>
             </header>
 
 
@@ -247,9 +250,6 @@ export default function RegisterPage() {
                     className="w-full max-w-[400px] bg-[#080d1a]/90 border border-slate-800 rounded-[28px] shadow-xl p-6 sm:p-8 relative z-10 hover:border-slate-700 hover:shadow-2xl transition-all duration-500 group/card"
                 >
                     <div className="flex flex-col items-center mb-5">
-                        <div className="flex items-center justify-center mb-4 group-hover/card:scale-105 transition-transform duration-300">
-                            <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-10 w-auto object-contain" />
-                        </div>
                         <h1 className="text-lg font-bold text-white tracking-tight">Inscription</h1>
                         <p className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-wider">
                             Créez votre accès étudiant
