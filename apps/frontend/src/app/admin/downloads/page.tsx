@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
@@ -79,7 +79,7 @@ export default function AdminDownloadsPage() {
                     </span>
                     <input
                         type="text"
-                        placeholder="Rechercher par ressource..."
+                        placeholder="Rechercher ..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         className="w-full pl-10 pr-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 focus:bg-slate-900/50 text-white placeholder:text-slate-500 rounded-xl text-sm outline-none font-medium"

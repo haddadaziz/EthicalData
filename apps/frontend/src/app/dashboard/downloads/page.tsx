@@ -46,7 +46,7 @@ export default function DownloadsPage() {
     }, [downloadHistory]);
 
     // Pagination
-    const ITEMS_PER_PAGE = 6;
+    const ITEMS_PER_PAGE = 8;
     const [currentPage, setCurrentPage] = useState(1);
 
     // Filtres ressources générales
@@ -177,7 +177,7 @@ export default function DownloadsPage() {
                         <Search className="w-4 h-4" />
                     </span>
                     <input type="text"
-                        placeholder={activeTab === 'mes-cours' ? "Rechercher un cours..." : "Rechercher une ressource..."}
+                        placeholder="Rechercher ..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full pl-10 pr-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-xl text-sm outline-none font-medium text-white transition-colors" />
@@ -228,7 +228,7 @@ export default function DownloadsPage() {
                             className="flex items-center gap-2.5 px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-xl text-white text-xs font-bold outline-none cursor-pointer hover:bg-slate-900 transition-all w-full">
                             {(() => {
                                 const cert = selectedCertFilter !== 'TOUS' ? certs.find(c => c.id === selectedCertFilter) : null;
-                                return cert?.image ? <img src={cert.image} alt="" className="w-5 h-5 object-contain rounded shrink-0 bg-white" /> : null;
+                                return cert?.image ? <img src={cert.image} alt="" className="w-5 h-5 object-contain rounded shrink-0" /> : null;
                             })()}
                             <span className="flex-1 text-left truncate">
                                 {selectedCertFilter === 'TOUS' ? 'Toutes certifications' : (certs.find(c => c.id === selectedCertFilter)?.codeExamen || certs.find(c => c.id === selectedCertFilter)?.nom || 'Sélectionner')}
@@ -252,7 +252,7 @@ export default function DownloadsPage() {
                                         <button key={c.id || `cert-${idx}`} onClick={() => { setSelectedCertFilter(c.id); setCertDropdownOpen(false); }}
                                             className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-slate-900 cursor-pointer ${selectedCertFilter === c.id ? 'bg-[#020617] text-white' : 'text-slate-400'}`}>
                                             {c.image ? (
-                                                <img src={c.image} alt="" className="w-7 h-7 object-contain rounded shrink-0 bg-white" />
+                                                <img src={c.image} alt="" className="w-7 h-7 object-contain rounded shrink-0" />
                                             ) : (
                                                 <div className="w-7 h-7 rounded-lg bg-slate-900 flex items-center justify-center shrink-0 border border-slate-800">
                                                     <Puzzle className="w-3.5 h-3.5 text-slate-400" />
@@ -488,7 +488,7 @@ export default function DownloadsPage() {
 
                                         <div className="border-t border-slate-800 p-3">
                                             <button onClick={(e) => { e.stopPropagation(); setSelectedCourse(insc); }}
-                                                className="w-full py-2.5 bg-[#020617] hover:bg-slate-900 text-white border border-slate-800 text-[11px] font-black rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5">
+                                                className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white border border-transparent text-[11px] font-black rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-[0_0_10px_rgba(37,99,235,0.3)]">
                                                 <FolderOpen className="w-3.5 h-3.5" /> Voir les ressources
                                             </button>
                                         </div>

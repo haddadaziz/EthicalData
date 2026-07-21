@@ -65,7 +65,7 @@ export default function AdminHealthPage() {
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-[#080d1a] p-6 md:p-8 rounded-3xl border border-slate-800 shadow-sm">
                 <div>
                     <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-3">
-                        <Activity className="w-7 h-7 text-red-600" />
+                        <Activity className="w-7 h-7 text-red-400" />
                         <span>Monitoring & Santé du Système</span>
                     </h1>
                     <p className="text-xs text-slate-400 font-medium mt-1">

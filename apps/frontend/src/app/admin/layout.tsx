@@ -25,6 +25,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
+  const [customTitle, setCustomTitle] = useState<string>('');
+  const [formateurId, setFormateurId] = useState<string>('');
+  const [formateurName, setFormateurName] = useState<string>('');
+
+  useEffect(() => {
+    const handleSetTitle = (e: any) => {
+      if (e.detail) {
+        setCustomTitle(e.detail.title || '');
+        setFormateurId(e.detail.formateurId || '');
+        setFormateurName(e.detail.formateurName || '');
+      }
+    };
+    window.addEventListener('setAdminHeaderTitle' as any, handleSetTitle);
+    return () => window.removeEventListener('setAdminHeaderTitle' as any, handleSetTitle);
+  }, []);
 
   const toggleMenu = (name: string) => {
     setExpandedMenu((prev) => (prev === name ? null : name));
@@ -119,7 +134,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!authorized) {
     return (
       <div className="min-h-screen bg-[#020617] flex flex-col items-center justify-center text-slate-500 gap-4 relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-600/10 rounded-full blur-[100px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-blue-600 to-cyan-600/10 rounded-full blur-[100px]" />
         <span className="w-10 h-10 border-4 border-[#080d1a] border-t-cyan-500 rounded-full animate-spin relative z-10" />
         <p className="text-xs font-bold uppercase tracking-widest text-cyan-400 relative z-10 animate-pulse">Chargement sécurisé...</p>
       </div>
@@ -165,6 +180,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
     if (pathname === '/admin/system') {
       return { title: 'Configuration Système', subtitle: 'Gérez les paramètres globaux, la sécurité, l\'IA et les intégrations' };
+    }
+    if (pathname.startsWith('/admin/courses/') && pathname !== '/admin/courses') {
+      return {
+        title: customTitle || 'Consultation de Cours',
+        subtitle: formateurName ? `Créé par ${formateurName}` : 'Détails du cours d\'administration'
+      };
     }
     return { title: 'Administration', subtitle: 'Ethical Data' };
   };
@@ -354,7 +375,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                               : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
                       }`}
                     >
-                      {isParentActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-600 rounded-r-full block group-hover:hidden" />}
+                      {isParentActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-r-full block group-hover:hidden" />}
                       <div className="flex items-center min-w-0">
                         <Icon className={`w-6 h-6 shrink-0 mx-auto group-hover:mx-0 ${isExpanded ? 'text-cyan-400' : isParentActive ? 'text-cyan-400 group-hover:text-slate-500' : 'text-slate-500 hover:text-cyan-400 transition-colors'}`} />
                         <span className="truncate opacity-0 w-0 group-hover:w-auto group-hover:opacity-100 group-hover:ml-3 transition-all duration-300">{item.name}</span>
@@ -372,7 +393,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                           : 'text-slate-400 hover:text-white hover:bg-slate-800/50 cursor-pointer'
                         }`}
                     >
-                      {isActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-600 rounded-r-full" />}
+                      {isActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-r-full" />}
                       <Icon className={`w-6 h-6 shrink-0 mx-auto group-hover:mx-0 ${isActive ? 'text-cyan-500' : 'text-slate-500 hover:text-cyan-400 transition-colors'}`} />
                       <span className="truncate opacity-0 w-0 group-hover:w-auto group-hover:opacity-100 group-hover:ml-3 transition-all duration-300">{item.name}</span>
                     </Link>
@@ -450,9 +471,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </aside>
       )}
 
-      <div className="flex-1 flex flex-col h-screen overflow-y-auto relative z-10">
+      <div className="flex-1 flex flex-col h-screen overflow-y-auto relative z-10 min-w-0" style={{ scrollbarGutter: 'stable', overflowAnchor: 'none' }}>
 
-        <header className="py-5 md:py-6 border-b bg-[#080d1a]/80 backdrop-blur-xl flex items-center justify-between px-8 md:px-12 sticky top-0 z-40 transition-all duration-300 border-slate-800">
+        <header className="py-5 md:py-6 border-b bg-[#080d1a] flex items-center justify-between px-8 md:px-12 sticky top-0 z-40 border-slate-800">
 
           <div className="flex items-center gap-4">
             <button
@@ -465,7 +486,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
             <div className="flex flex-col text-left justify-center">
               <h1 className="text-xl md:text-2xl font-black text-white tracking-tight leading-none mb-2">{title}</h1>
-              <p className="text-xs text-slate-400 font-bold hidden md:block leading-none">{subtitle}</p>
+              {pathname.startsWith('/admin/courses/') && pathname !== '/admin/courses' && formateurId ? (
+                <p className="text-xs text-slate-400 font-bold hidden md:block leading-none">
+                  Créé par{" "}
+                  <Link 
+                    href={`/dashboard/profile/${formateurId}`}
+                    className="text-cyan-400 hover:text-cyan-355 hover:underline transition-colors cursor-pointer"
+                  >
+                    {formateurName}
+                  </Link>
+                </p>
+              ) : (
+                <p className="text-xs text-slate-400 font-bold hidden md:block leading-none">{subtitle}</p>
+              )}
             </div>
           </div>
 

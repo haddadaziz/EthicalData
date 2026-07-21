@@ -2,7 +2,7 @@ export const getProviderLogo = (slugOrName: string) => {
   const name = (slugOrName || '').toLowerCase();
   if (name.includes('microsoft')) return '/logos/microsoft.png';
   if (name.includes('aws') || name.includes('amazon')) return '/logos/aws.png';
-  if (name.includes('gcp') || name.includes('google')) return '/logos/gcp.svg';
+  if (name.includes('gcp') || name.includes('google') || name.includes('googlecloud')) return '/logos/googlecloud.webp';
   if (name.includes('cisco')) return '/logos/cisco.png';
   if (name.includes('comptia')) return '/logos/comptia.png';
   if (name.includes('fortinet')) return '/logos/fortinet.png';

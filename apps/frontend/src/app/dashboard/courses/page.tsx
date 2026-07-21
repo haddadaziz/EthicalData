@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-
+import { useRouter } from 'next/navigation';
+import { apiFetch } from '@/lib/api';
 import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/context/ConfirmContext';
 import { BookMarked, Globe, FilePen, Plus } from '@/components/icons';
@@ -17,6 +18,7 @@ const CourseEditor = dynamic(
 export default function CoursesPage() {
     const { showToast } = useToast();
     const { confirm } = useConfirm();
+    const router = useRouter();
     
     const {
         cours,
@@ -33,10 +35,30 @@ export default function CoursesPage() {
     const [isCreating, setIsCreating] = useState(false);
     const [editingCours, setEditingCours] = useState<any | null>(null);
     const [activeTab, setActiveTab] = useState<'TOUS' | 'PUBLIE' | 'BROUILLON'>('TOUS');
+    const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
     useEffect(() => {
-        fetchInitialData();
-    }, [fetchInitialData]);
+        apiFetch('/users/me/profile')
+            .then((profile) => {
+                if (profile && profile.roles) {
+                    const roles = profile.roles.map((r: any) => r.nom);
+                    if (roles.includes('FORMATEUR') || roles.includes('ADMIN') || roles.includes('SUPER_ADMIN')) {
+                        setIsAuthorized(true);
+                        fetchInitialData();
+                    } else {
+                        setIsAuthorized(false);
+                        router.push('/dashboard');
+                    }
+                } else {
+                    setIsAuthorized(false);
+                    router.push('/login');
+                }
+            })
+            .catch(() => {
+                setIsAuthorized(false);
+                router.push('/login');
+            });
+    }, [fetchInitialData, router]);
 
     const handleDeleteCours = async (coursId: string) => {
         const ok = await confirm({
@@ -90,66 +112,39 @@ export default function CoursesPage() {
     const totalPublies = cours.filter(c => c.statut === 'PUBLIE').length;
     const totalBrouillons = cours.filter(c => c.statut === 'BROUILLON').length;
 
-    const filteredCours = cours.filter(c =>
-        activeTab === 'TOUS' ? true : c.statut === activeTab
-    );
-
-    if (isCreating || editingCours) {
+    if (isAuthorized === null || (isAuthorized === true && loading)) {
         return (
-            <div className="space-y-8 pb-20">
-                <CourseEditor
-                    certs={certs}
-                    editingCours={editingCours}
-                    onClose={() => { setIsCreating(false); setEditingCours(null); }}
-                    showToast={showToast}
-                    onSave={async (data) => {
-                        try {
-                            if (editingCours) {
-                                await updateCours(editingCours.id, data);
-                                showToast("Cours mis à jour.", "success");
-                            } else {
-                                await createCours(data, 'BROUILLON');
-                                showToast("Cours créé.", "success");
-                            }
-                            setIsCreating(false);
-                            setEditingCours(null);
-                        } catch (err: any) {
-                            showToast(err.message || "Erreur.", "error");
-                        }
-                    }}
-                    onSaveDraft={async (data) => {
-                        try {
-                            if (editingCours) {
-                                await updateCours(editingCours.id, data, 'BROUILLON');
-                                showToast("Brouillon mis à jour.", "success");
-                            } else {
-                                await createCours(data, 'BROUILLON');
-                                showToast("Brouillon sauvegardé.", "success");
-                            }
-                            setIsCreating(false);
-                            setEditingCours(null);
-                        } catch (err: any) {
-                            showToast(err.message || "Erreur.", "error");
-                        }
-                    }}
-                    onPublish={async (data) => {
-                        try {
-                            if (editingCours) {
-                                await updateCours(editingCours.id, data, 'PUBLIE');
-                            } else {
-                                await createCours(data, 'PUBLIE');
-                            }
-                            showToast("Cours publié avec succès !", "success");
-                            setIsCreating(false);
-                            setEditingCours(null);
-                        } catch (err: any) {
-                            showToast(err.message || "Erreur.", "error");
-                        }
-                    }}
-                />
+            <div className="p-16 text-center text-slate-400 bg-[#080d1a] border border-slate-800 rounded-3xl max-w-5xl mx-auto">
+                <span className="w-10 h-10 border-4 border-blue-950 border-t-cyan-500 rounded-full animate-spin inline-block mb-3" />
+                <p className="text-xs font-bold uppercase tracking-widest text-cyan-400">Chargement de l'espace formateur...</p>
             </div>
         );
     }
+
+    if (!isAuthorized) {
+        return null;
+    }
+
+    if (error) {
+        return (
+            <div className="p-12 text-center bg-[#080d1a] border border-slate-800 rounded-3xl max-w-2xl mx-auto space-y-4 text-white">
+                <p className="text-sm font-black text-rose-500">{error}</p>
+                <p className="text-xs text-slate-400 font-medium">
+                    Si votre rôle a été récemment mis à jour, votre session active est peut-être obsolète. Veuillez vous déconnecter et vous reconnecter pour rafraîchir vos permissions.
+                </p>
+                <button
+                    onClick={() => router.push('/dashboard')}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl cursor-pointer"
+                >
+                    Retour au Tableau de Bord
+                </button>
+            </div>
+        );
+    }
+
+    const filteredCours = cours.filter(c =>
+        activeTab === 'TOUS' ? true : c.statut === activeTab
+    );
 
     return (
         <div className="space-y-8 pb-20">
@@ -209,7 +204,7 @@ export default function CoursesPage() {
                                 ))}
                             </div>
                             <button
-                                onClick={() => setIsCreating(true)}
+                                onClick={() => router.push('/dashboard/courses/new')}
                                 className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-2xl text-xs flex items-center gap-2 shadow-xs hover:shadow-[0_0_15px_rgba(37,99,235,0.3)] transition-all shrink-0 cursor-pointer"
                             >
                                 <Plus className="w-4 h-4" />
@@ -220,8 +215,8 @@ export default function CoursesPage() {
                         <CourseGrid
                             filteredCours={filteredCours}
                             activeTab={activeTab}
-                            onCreateNew={() => setIsCreating(true)}
-                            onEdit={(c) => setEditingCours(c)}
+                            onCreateNew={() => router.push('/dashboard/courses/new')}
+                            onEdit={(c) => router.push(`/dashboard/courses/${c.id}/edit`)}
                             onPublish={handlePublish}
                             onDelete={handleDeleteCours}
                         />

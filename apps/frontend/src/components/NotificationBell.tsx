@@ -134,7 +134,7 @@ export default function NotificationBell() {
       {/* Bouton Cloche */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2.5 hover:bg-white/10 rounded-2xl text-white transition-all cursor-pointer flex items-center justify-center"
+        className="relative p-2.5 rounded-2xl text-white border border-blue-600/60 hover:bg-blue-600/10 hover:border-blue-500 transition-all cursor-pointer flex items-center justify-center"
         title="Notifications"
       >
         <Bell className="w-5 h-5" />
@@ -153,14 +153,14 @@ export default function NotificationBell() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ duration: 0.2 }}
-            className="absolute right-0 mt-3 w-80 sm:w-96 bg-white border border-slate-200/90 rounded-3xl shadow-2xl z-50 overflow-hidden text-left"
+            className="absolute right-0 mt-3 w-80 sm:w-96 bg-[#080d1a] border border-slate-800 rounded-3xl shadow-2xl z-50 overflow-hidden text-left"
           >
             {/* En-tête du menu */}
-            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+            <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/40">
               <div className="flex items-center gap-2">
-                <h3 className="font-black text-slate-950 text-sm">Notifications</h3>
+                <h3 className="font-black text-white text-sm">Notifications</h3>
                 {unreadCount > 0 && (
-                  <span className="px-2 py-0.5 bg-rose-100 text-rose-700 text-[10px] font-black rounded-full">
+                  <span className="px-2 py-0.5 bg-rose-500/15 text-rose-300 text-[10px] font-black rounded-full">
                     {unreadCount} non lue{unreadCount > 1 ? 's' : ''}
                   </span>
                 )}
@@ -169,7 +169,7 @@ export default function NotificationBell() {
               {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllAsRead}
-                  className="text-[11px] font-bold text-slate-500 hover:text-cyan-500 flex items-center gap-1 cursor-pointer transition-colors"
+                  className="text-[11px] font-bold text-slate-400 hover:text-cyan-400 flex items-center gap-1 cursor-pointer transition-colors"
                 >
                   <CheckCheck className="w-3.5 h-3.5" />
                   <span>Tout marquer comme lu</span>
@@ -178,11 +178,11 @@ export default function NotificationBell() {
             </div>
 
             {/* Onglets Tout / Non lu */}
-            <div className="flex border-b border-slate-100 px-4 pt-2 gap-2 text-xs font-bold text-slate-500">
+            <div className="flex border-b border-slate-800 px-4 pt-2 gap-2 text-xs font-bold text-slate-400">
               <button
                 onClick={() => setFilter('ALL')}
                 className={`pb-2 border-b-2 transition-colors cursor-pointer ${
-                  filter === 'ALL' ? 'border-blue-600 text-slate-950 font-black' : 'border-transparent hover:text-slate-700'
+                  filter === 'ALL' ? 'border-blue-500 text-white font-black' : 'border-transparent hover:text-slate-200'
                 }`}
               >
                 Toutes ({notifications.length})
@@ -191,7 +191,7 @@ export default function NotificationBell() {
               <button
                 onClick={() => setFilter('UNREAD')}
                 className={`pb-2 border-b-2 transition-colors cursor-pointer ${
-                  filter === 'UNREAD' ? 'border-blue-600 text-slate-950 font-black' : 'border-transparent hover:text-slate-700'
+                  filter === 'UNREAD' ? 'border-blue-500 text-white font-black' : 'border-transparent hover:text-slate-200'
                 }`}
               >
                 Non lues ({unreadCount})
@@ -199,7 +199,7 @@ export default function NotificationBell() {
             </div>
 
             {/* Liste des Notifications */}
-            <div className="max-h-80 overflow-y-auto divide-y divide-slate-100">
+            <div className="max-h-80 overflow-y-auto divide-y divide-slate-800">
               {displayedNotifications.length === 0 ? (
                 <div className="p-8 text-center text-slate-400 font-medium text-xs">
                   Aucune notification {filter === 'UNREAD' ? 'non lue' : ''} pour le moment.
@@ -209,24 +209,24 @@ export default function NotificationBell() {
                   <div
                     key={notif.id}
                     onClick={() => handleNotificationClick(notif)}
-                    className={`p-4 hover:bg-slate-50 transition-colors cursor-pointer flex items-start gap-3 group relative ${
-                      !notif.lue ? 'bg-red-50/20' : ''
+                    className={`p-4 hover:bg-slate-800/40 transition-colors cursor-pointer flex items-start gap-3 group relative ${
+                      !notif.lue ? 'bg-rose-500/10' : ''
                     }`}
                   >
                     {/* Icône du type */}
-                    <div className="w-9 h-9 rounded-xl bg-slate-100 border border-slate-200/70 flex items-center justify-center shrink-0 mt-0.5">
+                    <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 mt-0.5">
                       {getNotifIcon(notif.type)}
                     </div>
 
                     {/* Contenu textuel */}
                     <div className="flex-1 min-w-0 space-y-0.5">
                       <div className="flex items-center justify-between gap-2">
-                        <h4 className={`text-xs truncate ${!notif.lue ? 'font-black text-slate-950' : 'font-bold text-slate-800'}`}>
+                        <h4 className={`text-xs truncate ${!notif.lue ? 'font-black text-white' : 'font-bold text-slate-200'}`}>
                           {notif.titre}
                         </h4>
-                        <span className="text-[10px] text-slate-400 font-semibold shrink-0">{formatTime(notif.dateCreation)}</span>
+                        <span className="text-[10px] text-slate-500 font-semibold shrink-0">{formatTime(notif.dateCreation)}</span>
                       </div>
-                      <p className="text-[11px] text-slate-600 line-clamp-2 font-medium leading-relaxed">
+                      <p className="text-[11px] text-slate-400 line-clamp-2 font-medium leading-relaxed">
                         {notif.message}
                       </p>
                     </div>

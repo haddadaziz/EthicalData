@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useConfirm } from '../../../context/ConfirmContext';
-import { Calendar, CalendarCheck, Clock, User, CheckCircle, Video, AlertCircle, RefreshCw, X, Sparkles, Send, Trash2, ShieldCheck, Compass, GraduationCap, Target, Briefcase, Filter, Award, Check, Plus } from '@/components/icons';
+import { Calendar, CalendarCheck, Clock, User, CheckCircle, Video, AlertCircle, RefreshCw, X, Sparkles, Send, Trash2, ShieldCheck, Compass, GraduationCap, Target, Briefcase, Filter, Award, Check, Plus, ArrowLeft, ArrowRight } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Formateur {
@@ -70,7 +70,7 @@ export default function AppointmentsPage() {
     const { confirm } = useConfirm();
     
     const [activeTab, setActiveTab] = useState<'BOOK' | 'MY_RDV'>('BOOK');
-    const [timeFilter, setTimeFilter] = useState<'TOUS' | 'A_VENIR' | 'PASSE'>('A_VENIR');
+    const [timeFilter, setTimeFilter] = useState<'A_VENIR' | 'PASSE'>('A_VENIR');
     const [creneaux, setCreneaux] = useState<Creneau[]>([]);
     const [myAppointments, setMyAppointments] = useState<RendezVous[]>([]);
     const [certs, setCerts] = useState<any[]>([]);
@@ -90,8 +90,8 @@ export default function AppointmentsPage() {
 
     // Filtres Étape 1 (Créneaux)
     const [selectedFormateurFilter, setSelectedFormateurFilter] = useState<string>('ALL');
-    const [selectedCertFilter, setSelectedCertFilter] = useState<string>('ALL');
     const [selectedDateFilter, setSelectedDateFilter] = useState<'ALL' | 'TODAY' | 'WEEK'>('ALL');
+    const [currentCreneauxPage, setCurrentCreneauxPage] = useState(1);
 
     // Étape 2 : Sélection dans la Modale de Réservation
     const [selectedCreneau, setSelectedCreneau] = useState<Creneau | null>(null);
@@ -293,6 +293,17 @@ export default function AppointmentsPage() {
 
         return true;
     });
+
+    // Pagination des créneaux
+    const CRENEAUX_PER_PAGE = 6;
+    const totalCreneauxPages = Math.ceil(filteredCreneaux.length / CRENEAUX_PER_PAGE);
+    const indexLastCreneau = currentCreneauxPage * CRENEAUX_PER_PAGE;
+    const indexFirstCreneau = indexLastCreneau - CRENEAUX_PER_PAGE;
+    const currentCreneaux = filteredCreneaux.slice(indexFirstCreneau, indexLastCreneau);
+
+    useEffect(() => {
+        setCurrentCreneauxPage(1);
+    }, [selectedDateFilter, selectedFormateurFilter]);
 
     const filteredMyAppointments = myAppointments.filter(rdv => {
         if (rdv.statut !== 'CONFIRME') return false;
@@ -567,7 +578,7 @@ export default function AppointmentsPage() {
                                     <span>Sélectionnez un créneau horaire disponible</span>
                                 </h2>
                                 <p className="text-xs text-slate-400 font-medium mt-1">
-                                    Filtrer par certification ou par créneau horaire pour trouver votre horaire idéal.
+                                    Filtrer par créneau horaire pour trouver votre horaire idéal.
                                 </p>
                             </div>
                             <span className="text-xs font-bold text-slate-400 shrink-0">
@@ -575,29 +586,9 @@ export default function AppointmentsPage() {
                             </span>
                         </div>
 
-                        {/* BARRE DE FILTRES INTELLIGENTE (CERTIFICATION + CRÉNEAU) */}
-                        <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-4 md:p-5 shadow-sm space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {/* FILTRE PAR CERTIFICATION */}
-                                <div className="space-y-1">
-                                    <label className="text-[11px] font-black text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                                        <Award className="w-3.5 h-3.5 text-cyan-400" />
-                                        <span>Filtre par Certification</span>
-                                    </label>
-                                    <select
-                                        value={selectedCertFilter}
-                                        onChange={(e) => setSelectedCertFilter(e.target.value)}
-                                        className="w-full p-3 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-2xl text-white text-xs font-bold outline-none cursor-pointer [color-scheme:dark]"
-                                    >
-                                        <option value="ALL">Toutes les certifications</option>
-                                        {certs.map((c) => (
-                                            <option key={c.id} value={c.codeExamen || c.nom}>
-                                                {c.codeExamen ? `[${c.codeExamen}] ${c.nom}` : c.nom}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-
+                        {/* BARRE DE FILTRES INTELLIGENTE */}
+                        <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-4 md:p-5 shadow-sm">
+                            <div className="max-w-md">
                                 {/* FILTRE PAR PÉRIODE / CRÉNEAU */}
                                 <div className="space-y-1">
                                     <label className="text-[11px] font-black text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
@@ -621,56 +612,87 @@ export default function AppointmentsPage() {
                         {filteredCreneaux.length === 0 ? (
                             <div className="p-12 text-center bg-[#080d1a] border border-slate-800 rounded-3xl space-y-3">
                                 <Calendar className="w-10 h-10 text-slate-600 mx-auto" />
-                                <h3 className="text-sm font-bold text-white">Aucun créneau correspondant à vos filtres</h3>
+                                <h3 className="text-sm font-bold text-white">Aucun créneau disponible</h3>
                                 <p className="text-xs text-slate-400 font-medium max-w-md mx-auto">
                                     Essayez de modifier vos options de filtres ou revenez ultérieurement pour découvrir de nouvelles disponibilités.
                                 </p>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {filteredCreneaux.map((c) => (
-                                    <div
-                                        key={c.id}
-                                        className="p-5 bg-[#080d1a] border border-slate-800 rounded-3xl space-y-4 shadow-sm hover:shadow-lg hover:border-slate-700 transition-all flex flex-col justify-between group"
-                                    >
-                                        <div className="space-y-3">
-                                            {/* INFO FORMATEUR */}
-                                            <div className="flex items-center gap-3 border-b border-slate-800 pb-3">
-                                                {c.formateur.avatar ? (
-                                                    <img src={c.formateur.avatar} alt={c.formateur.prenom} className="w-10 h-10 rounded-xl object-cover border border-slate-700" />
-                                                ) : (
-                                                    <div className="w-10 h-10 rounded-xl bg-[#020617] border border-slate-700 text-white font-black text-xs flex items-center justify-center">
-                                                        {c.formateur.prenom[0]}{c.formateur.nom[0]}
+                            <>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {currentCreneaux.map((c) => (
+                                        <div
+                                            key={c.id}
+                                            className="p-5 bg-[#080d1a] border border-slate-800 rounded-3xl space-y-4 shadow-sm hover:shadow-lg hover:border-slate-700 transition-all flex flex-col justify-between group"
+                                        >
+                                            <div className="space-y-3">
+                                                {/* INFO FORMATEUR */}
+                                                <div className="flex items-center gap-3 border-b border-slate-800 pb-3">
+                                                    {c.formateur.avatar ? (
+                                                        <img src={c.formateur.avatar} alt={c.formateur.prenom} className="w-10 h-10 rounded-xl object-cover border border-slate-700" />
+                                                    ) : (
+                                                        <div className="w-10 h-10 rounded-xl bg-[#020617] border border-slate-700 text-white font-black text-xs flex items-center justify-center">
+                                                            {c.formateur.prenom[0]}{c.formateur.nom[0]}
+                                                        </div>
+                                                    )}
+                                                    <div>
+                                                        <h4 className="text-xs font-black text-white">{c.formateur.prenom} {c.formateur.nom}</h4>
+                                                        <span className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">Formateur</span>
                                                     </div>
-                                                )}
-                                                <div>
-                                                    <h4 className="text-xs font-black text-white">{c.formateur.prenom} {c.formateur.nom}</h4>
-                                                    <span className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">Formateur</span>
+                                                </div>
+
+                                                {/* HORAIRE ET DATE DU CRÉNEAU */}
+                                                <div className="space-y-1.5 bg-[#020617] p-3 rounded-2xl border border-slate-800">
+                                                    <p className="text-xs font-extrabold text-white capitalize flex items-center gap-2">
+                                                        <Calendar className="w-4 h-4 text-cyan-400 shrink-0" />
+                                                        <span>{formatDate(c.dateDebut)}</span>
+                                                    </p>
+                                                    <p className="text-xs font-bold text-slate-400 flex items-center gap-2">
+                                                        <Clock className="w-4 h-4 text-slate-500 shrink-0" />
+                                                        <span>{formatTime(c.dateDebut)} - {formatTime(c.dateFin)}</span>
+                                                    </p>
                                                 </div>
                                             </div>
 
-                                            {/* HORAIRE ET DATE DU CRÉNEAU */}
-                                            <div className="space-y-1.5 bg-[#020617] p-3 rounded-2xl border border-slate-800">
-                                                <p className="text-xs font-extrabold text-white capitalize flex items-center gap-2">
-                                                    <Calendar className="w-4 h-4 text-cyan-400 shrink-0" />
-                                                    <span>{formatDate(c.dateDebut)}</span>
-                                                </p>
-                                                <p className="text-xs font-bold text-slate-400 flex items-center gap-2">
-                                                    <Clock className="w-4 h-4 text-slate-500 shrink-0" />
-                                                    <span>{formatTime(c.dateDebut)} - {formatTime(c.dateFin)}</span>
-                                                </p>
-                                            </div>
+                                            <button
+                                                onClick={() => setSelectedCreneau(c)}
+                                                className="w-full mt-2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-[0_0_15px_rgba(37,99,235,0.3)] hover:shadow-[0_0_20px_rgba(37,99,235,0.5)]"
+                                            >
+                                                <span>Sélectionner ce créneau</span>
+                                            </button>
                                         </div>
+                                    ))}
+                                </div>
 
-                                        <button
-                                            onClick={() => setSelectedCreneau(c)}
-                                            className="w-full mt-2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-[0_0_15px_rgba(37,99,235,0.3)] hover:shadow-[0_0_20px_rgba(37,99,235,0.5)]"
-                                        >
-                                            <span>Sélectionner ce créneau</span>
+                                {totalCreneauxPages > 1 && (
+                                    <div className="flex items-center justify-between mt-6 p-4 bg-[#080d1a] border border-slate-800 rounded-2xl shadow-sm">
+                                        <button onClick={() => setCurrentCreneauxPage((prev) => Math.max(1, prev - 1))}
+                                            disabled={currentCreneauxPage === 1}
+                                            className="px-4 py-2 border border-slate-800 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:border-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-[#020617] shadow-sm">
+                                            <ArrowLeft className="w-3.5 h-3.5" />
+                                            <span>Précédent</span>
+                                        </button>
+                                        <div className="flex items-center gap-1">
+                                            {Array.from({ length: totalCreneauxPages }).map((_, index) => {
+                                                const pageNum = index + 1;
+                                                const isActive = currentCreneauxPage === pageNum;
+                                                return (
+                                                    <button key={pageNum} onClick={() => setCurrentCreneauxPage(pageNum)}
+                                                        className={`w-9 h-9 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center ${isActive ? 'bg-blue-600 text-white shadow-[0_0_10px_rgba(37,99,235,0.3)]' : 'bg-transparent text-slate-400 hover:bg-[#020617] hover:text-white'}`}>
+                                                        {pageNum}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                        <button onClick={() => setCurrentCreneauxPage((prev) => Math.min(totalCreneauxPages, prev + 1))}
+                                            disabled={currentCreneauxPage === totalCreneauxPages}
+                                            className="px-4 py-2 border border-slate-800 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:border-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1.5 bg-[#020617] shadow-sm">
+                                            <span>Suivant</span>
+                                            <ArrowRight className="w-3.5 h-3.5" />
                                         </button>
                                     </div>
-                                ))}
-                            </div>
+                                )}
+                            </>
                         )}
                     </div>
                 </div>
@@ -684,7 +706,6 @@ export default function AppointmentsPage() {
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Période</span>
                         <div className="flex flex-wrap gap-2">
                             {[
-                                { val: 'TOUS', label: 'Tous' },
                                 { val: 'A_VENIR', label: 'À venir' },
                                 { val: 'PASSE', label: 'Passés' }
                             ].map((item) => (

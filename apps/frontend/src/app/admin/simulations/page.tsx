@@ -6,6 +6,7 @@ import { useToast } from '../../../context/ToastContext';
 import { useConfirm } from '../../../context/ConfirmContext';
 import { Search, Plus, Edit, Trash2, Award, BookOpen, Clock, Activity, ArrowLeft, ArrowRight, ChevronDown } from '@/components/icons';
 import { SimulationFormModal } from '../../../components/admin/simulations/SimulationFormModal';
+import { getCertificateBadgeLogo } from '../../../lib/certification-utils';
 
 interface CertificationInfo {
     id: string;
@@ -155,7 +156,7 @@ export default function AdminSimulationsPage() {
                             </span>
                             <input
                                 type="text"
-                                placeholder="Rechercher par titre..."
+                                placeholder="Rechercher ..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full pl-10 pr-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 focus:bg-slate-900/50 text-white placeholder:text-slate-500 transition-all text-xs outline-none font-bold rounded-2xl"
@@ -169,8 +170,8 @@ export default function AdminSimulationsPage() {
                                     onClick={() => setCertDropdownOpen(!certDropdownOpen)}
                                     className="flex items-center gap-2.5 px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 rounded-2xl text-white text-xs font-bold outline-none cursor-pointer hover:bg-slate-800/50 transition-all min-w-[200px]"
                                 >
-                                    {selectedCert && ((selectedCert as any).image || (selectedCert as any).badgeLogo) && (
-                                        <img src={(selectedCert as any).image || (selectedCert as any).badgeLogo} alt="" className="w-5 h-5 object-contain rounded shrink-0" />
+                                    {selectedCert && getCertificateBadgeLogo(selectedCert) && (
+                                        <img src={getCertificateBadgeLogo(selectedCert)} alt="" className="w-5 h-5 object-contain rounded shrink-0" />
                                     )}
                                     <span className="flex-1 text-left truncate">
                                         {selectedCertFilter === 'TOUS' ? 'Toutes les certifications' : selectedCert?.codeExamen || selectedCert?.nom || 'Sélectionner'}
@@ -196,7 +197,7 @@ export default function AdminSimulationsPage() {
                                             <div className="border-t border-slate-800" />
                                             <div className="max-h-64 overflow-y-auto">
                                                 {certifications.map(c => {
-                                                    const logo = (c as any).image || (c as any).badgeLogo || '';
+                                                    const logo = getCertificateBadgeLogo(c);
                                                     return (
                                                         <button
                                                             key={c.id}
@@ -235,7 +236,7 @@ export default function AdminSimulationsPage() {
                         </span>
                         <button
                             onClick={() => { setEditingSim(null); setIsFormModalOpen(true); }}
-                            className="flex items-center gap-2 px-5 py-2.5 bg-slate-950 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold cursor-pointer transition-all shadow-md hover:shadow-lg active:scale-95"
+                            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg shadow-blue-600/20 rounded-2xl text-xs font-bold cursor-pointer transition-all active:scale-95"
                         >
                             <Plus className="w-4 h-4" />
                             <span>Nouvelle simulation</span>
@@ -262,9 +263,9 @@ export default function AdminSimulationsPage() {
                     <>
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
                             {currentSimulations.map((sim) => (
-                                <div key={sim.id} className="bg-[#080d1a] border border-slate-800 rounded-2xl p-4 flex flex-col group transition-all duration-300 hover:shadow-lg hover:border-slate-700">
+                                <div key={sim.id} onClick={() => { setEditingSim(sim); setIsFormModalOpen(true); }} className="bg-[#080d1a] border border-slate-800 rounded-2xl p-4 flex flex-col group transition-all duration-300 hover:shadow-lg hover:border-slate-700 cursor-pointer">
                                     <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-300 bg-[#080d1a] border border-slate-800">
-                                        <img src="/images/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none" />
+                                        <img src="/images/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0 opacity-50 mix-blend-screen pointer-events-none" />
 
                                         <div className="absolute top-3 left-3 z-30 flex flex-col gap-1 pointer-events-none">
                                             {sim.certification?.codeExamen && (
@@ -275,14 +276,22 @@ export default function AdminSimulationsPage() {
                                             <div className={`px-2 py-0.5 rounded-md text-[8px] font-extrabold uppercase tracking-wider w-fit shadow-sm ${getStatutBadge(sim.statut)}`}>
                                                 {sim.statut === 'PUBLIE' ? 'Publié' : 'Brouillon'}
                                             </div>
-                                            <div className="bg-blue-600 text-white font-extrabold uppercase text-[8px] tracking-wider px-2 py-0.5 rounded-md border border-blue-500/50 shadow-sm w-fit hover:bg-blue-700 transition-colors">
+                                            <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-extrabold uppercase text-[8px] tracking-wider px-2 py-0.5 rounded-md border border-blue-500/50 shadow-sm w-fit hover:from-blue-500 hover:to-cyan-500 transition-colors">
                                                 {sim._count.questions} Question{sim._count.questions > 1 ? 's' : ''}
                                             </div>
                                         </div>
 
-                                        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 w-24 flex justify-center pointer-events-none">
-                                            <div className="w-14 h-14 bg-[#080d1a]/95 rounded-full flex items-center justify-center border border-slate-800 shadow-sm">
-                                                <Activity className="w-7 h-7 text-blue-600" />
+                                        <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+                                            <div className="w-32 h-32 lg:w-24 lg:h-24 flex items-center justify-center transition-transform duration-500 -translate-y-3 group-hover:-translate-y-5">
+                                                {(() => {
+                                                    const cert = certifications.find(c => c.id.toString() === sim.certificationId.toString()) || sim.certification;
+                                                    const logo = cert ? getCertificateBadgeLogo(cert) : '';
+                                                    return logo ? (
+                                                        <img src={logo} alt="" className="max-w-full max-h-full object-contain filter drop-shadow-xl" />
+                                                    ) : (
+                                                        <Activity className="w-8 h-8 text-cyan-400" />
+                                                    );
+                                                })()}
                                             </div>
                                         </div>
                                     </div>
@@ -294,14 +303,14 @@ export default function AdminSimulationsPage() {
 
                                         <div className="pt-3 border-t border-slate-800 flex items-center gap-2 mt-3">
                                             <button
-                                                onClick={() => { setEditingSim(sim); setIsFormModalOpen(true); }}
-                                                className="flex-1 py-2 bg-slate-950 hover:bg-slate-800 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                                                onClick={(e) => { e.stopPropagation(); setEditingSim(sim); setIsFormModalOpen(true); }}
+                                                className="flex-1 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg shadow-blue-600/20 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                                             >
                                                 <Edit className="w-3.5 h-3.5" />
                                                 <span>Gérer</span>
                                             </button>
                                             <button
-                                                onClick={() => handleDelete(sim)}
+                                                onClick={(e) => { e.stopPropagation(); handleDelete(sim); }}
                                                 className="flex-1 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-sm"
                                             >
                                                 <Trash2 className="w-3.5 h-3.5" />
@@ -332,7 +341,7 @@ export default function AdminSimulationsPage() {
                                             <button
                                                 key={pageNum}
                                                 onClick={() => setCurrentPage(pageNum)}
-                                                className={`w-9 h-9 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center ${isActive ? 'bg-slate-950 text-white shadow-md' : 'bg-transparent text-slate-400 hover:bg-slate-800/30 hover:text-white'}`}
+                                                className={`w-9 h-9 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center ${isActive ? 'bg-gradient-to-r from-blue-600 to-cyan-600 shadow-[0_0_15px_rgba(37,99,235,0.4)] text-white' : 'bg-transparent text-slate-400 hover:bg-slate-800/30 hover:text-white'}`}
                                             >
                                                 {pageNum}
                                             </button>

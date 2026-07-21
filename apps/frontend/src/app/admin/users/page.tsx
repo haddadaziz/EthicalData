@@ -56,15 +56,20 @@ export default function AdminUsersPage() {
     const [updateLoading, setUpdateLoading] = useState(false);
 
     const [currentUserRoles, setCurrentUserRoles] = useState<string[]>([]);
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
     const itemsPerPage = 6;
     const [currentPage, setCurrentPage] = useState(1);
 
-    const fetchUsers = async () => {
+    const fetchUsers = async (excludeId?: string | null) => {
+        const idToExclude = excludeId ?? currentUserId;
         setLoading(true);
         try {
             const data = await apiFetch('/users');
             const listUsers = Array.isArray(data) ? data : (data?.data || []);
-            setUsers(listUsers);
+            const filteredUsers = idToExclude
+                ? listUsers.filter((u: any) => String(u.id) !== String(idToExclude))
+                : listUsers;
+            setUsers(filteredUsers);
         } catch (err: any) {
             console.error("Erreur chargement utilisateurs:", err);
             showToast(err.message || "Erreur lors du chargement des utilisateurs.", "error");
@@ -78,8 +83,13 @@ export default function AdminUsersPage() {
             if (profile?.roles) {
                 setCurrentUserRoles(profile.roles.map((r: any) => r.nom));
             }
-        }).catch(() => {});
-        fetchUsers();
+            if (profile?.id) {
+                setCurrentUserId(profile.id);
+            }
+            fetchUsers(profile?.id || null);
+        }).catch(() => {
+            fetchUsers();
+        });
     }, []);
 
     const handleCreateUser = async (e: React.FormEvent) => {
@@ -227,7 +237,7 @@ export default function AdminUsersPage() {
                     return (
                         <div
                             key={user.id}
-                            className="bg-[#080d1a] border border-slate-800 hover:border-slate-700 hover:shadow-md rounded-3xl p-5 md:p-6 space-y-4 flex flex-col justify-between transition-all"
+                            className="bg-[#080d1a] border border-blue-900/40 rounded-3xl p-5 md:p-6 space-y-4 flex flex-col justify-between transition-all hover:shadow-lg hover:shadow-blue-900/30 hover:border-blue-600"
                         >
                             {/* En-tête de la Carte */}
                             <div className="space-y-3">
@@ -283,7 +293,7 @@ export default function AdminUsersPage() {
                             <div className="flex items-center gap-2 pt-2 border-t border-slate-800">
                                 <button
                                     onClick={() => handleOpenEditModal(user)}
-                                    className="flex-1 py-2 bg-slate-950 hover:bg-slate-800 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                                    className="flex-1 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                                 >
                                     <Edit className="w-3.5 h-3.5" />
                                     <span>Modifier</span>
@@ -321,7 +331,7 @@ export default function AdminUsersPage() {
                 <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
-                        className="flex items-center justify-center gap-2 px-5 py-2.5 bg-slate-950 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold cursor-pointer transition-all shadow-md hover:shadow-lg active:scale-95"
+                        className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white rounded-2xl text-xs font-bold cursor-pointer transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/30 active:scale-95"
                     >
                         <Plus className="w-4 h-4" />
                         <span>Ajouter un utilisateur</span>
@@ -331,7 +341,7 @@ export default function AdminUsersPage() {
                         <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
                         <input
                             type="text"
-                            placeholder="Rechercher par nom ou email..."
+                            placeholder="Rechercher ..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-11 pr-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 focus:bg-slate-900/50 text-white placeholder:text-slate-500 rounded-2xl text-xs font-semibold outline-none"
@@ -388,7 +398,7 @@ export default function AdminUsersPage() {
                                 <button
                                     key={pageNum}
                                     onClick={() => setCurrentPage(pageNum)}
-                                    className={`w-9 h-9 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center ${isActive ? 'bg-slate-950 text-white shadow-md' : 'bg-transparent text-slate-400 hover:bg-slate-800/30 hover:text-white'}`}
+                                    className={`w-9 h-9 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center ${isActive ? 'bg-gradient-to-r from-blue-600 to-cyan-600 shadow-[0_0_15px_rgba(37,99,235,0.4)] text-white' : 'bg-transparent text-slate-400 hover:bg-slate-800/30 hover:text-white'}`}
                                 >
                                     {pageNum}
                                 </button>
@@ -423,7 +433,7 @@ export default function AdminUsersPage() {
                         >
                             <button
                                 onClick={() => setIsCreateModalOpen(false)}
-                                className="absolute right-5 top-5 p-2 text-slate-400 hover:text-white rounded-2xl hover:bg-slate-800/50 transition-colors cursor-pointer"
+                                className="absolute right-5 top-5 p-2 text-slate-400 hover:text-rose-500 rounded-2xl hover:bg-rose-950/30 transition-colors cursor-pointer"
                             >
                                 <X className="w-5 h-5" />
                             </button>
@@ -481,7 +491,7 @@ export default function AdminUsersPage() {
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300"
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300 cursor-pointer"
                                         >
                                             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                         </button>
@@ -495,9 +505,9 @@ export default function AdminUsersPage() {
                                         onChange={(e) => setNewRole(e.target.value)}
                                         className="w-full p-3.5 bg-[#020617] border border-slate-800 focus:border-blue-600 focus:bg-slate-900/50 text-white placeholder:text-slate-500 rounded-2xl text-xs font-semibold outline-none cursor-pointer"
                                     >
-                                        <option value="APPRENANT">APPRENANT (Candidat)</option>
-                                        <option value="FORMATEUR">FORMATEUR (Accompagnement)</option>
-                                        <option value="ADMIN">ADMIN (Gestion contenu)</option>
+                                        <option value="APPRENANT">APPRENANT</option>
+                                        <option value="FORMATEUR">FORMATEUR</option>
+                                        <option value="ADMIN">ADMIN</option>
                                         <option value="SUPER_ADMIN">SUPER ADMIN</option>
                                     </select>
                                 </div>
@@ -506,7 +516,7 @@ export default function AdminUsersPage() {
                                     <button
                                         type="button"
                                         onClick={() => setIsCreateModalOpen(false)}
-                                        className="px-5 py-2.5 bg-slate-900/50 hover:bg-slate-800/50 text-slate-300 font-bold rounded-xl text-xs cursor-pointer"
+                                        className="px-5 py-2.5 bg-slate-900/50 hover:bg-rose-950/30 hover:text-rose-500 hover:border-rose-900/50 border border-transparent text-slate-400 font-bold rounded-xl text-xs cursor-pointer"
                                     >
                                         Annuler
                                     </button>
@@ -541,7 +551,7 @@ export default function AdminUsersPage() {
                         >
                             <button
                                 onClick={() => setSelectedUser(null)}
-                                className="absolute right-5 top-5 p-2 text-slate-400 hover:text-white rounded-2xl hover:bg-slate-800/50 transition-colors cursor-pointer"
+                                className="absolute right-5 top-5 p-2 text-slate-400 hover:text-rose-500 rounded-2xl hover:bg-rose-950/30 transition-colors cursor-pointer"
                             >
                                 <X className="w-5 h-5" />
                             </button>
@@ -607,9 +617,9 @@ export default function AdminUsersPage() {
                                         onChange={(e) => setEditRole(e.target.value)}
                                         className="w-full p-3.5 bg-[#020617] border border-slate-800 focus:border-blue-600 focus:bg-slate-900/50 text-white placeholder:text-slate-500 rounded-2xl text-xs font-semibold outline-none cursor-pointer"
                                     >
-                                        <option value="APPRENANT">APPRENANT (Candidat)</option>
-                                        <option value="FORMATEUR">FORMATEUR (Coach)</option>
-                                        <option value="ADMIN">ADMIN (Gestionnaire)</option>
+                                        <option value="APPRENANT">APPRENANT</option>
+                                        <option value="FORMATEUR">FORMATEUR</option>
+                                        <option value="ADMIN">ADMIN</option>
                                         <option value="SUPER_ADMIN">SUPER ADMIN</option>
                                     </select>
                                 </div>
@@ -631,7 +641,7 @@ export default function AdminUsersPage() {
                                     <button
                                         type="button"
                                         onClick={() => setSelectedUser(null)}
-                                        className="px-5 py-2.5 bg-slate-900/50 hover:bg-slate-800/50 text-slate-300 font-bold rounded-xl text-xs cursor-pointer"
+                                        className="px-5 py-2.5 bg-slate-900/50 hover:bg-rose-950/30 hover:text-rose-500 hover:border-rose-900/50 border border-transparent text-slate-400 font-bold rounded-xl text-xs cursor-pointer"
                                     >
                                         Annuler
                                     </button>

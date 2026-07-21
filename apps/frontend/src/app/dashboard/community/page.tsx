@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useConfirm } from '../../../context/ConfirmContext';
-import LearnerProfileModal from '../../../components/LearnerProfileModal';
 import { MessageSquare } from '@/components/icons';
 import { Sujet, DetailSujet } from '@/lib/types';
 import { getAuthorFullName } from '@/lib/forum-utils';
@@ -30,6 +29,7 @@ export default function CommunityPage() {
     const [selectedProviderFilter, setSelectedProviderFilter] = useState('');
     const [providerFilterDropdownOpen, setProviderFilterDropdownOpen] = useState(false);
     const [certFilterDropdownOpen, setCertFilterDropdownOpen] = useState(false);
+    const [showOnlyMyPosts, setShowOnlyMyPosts] = useState(false);
 
     useEffect(() => {
         setSelectedCert('');
@@ -339,12 +339,10 @@ export default function CommunityPage() {
         }));
     };
 
-    const [inspectedLearnerId, setInspectedLearnerId] = useState<string | null>(null);
-
     const handleOpenLearnerProfile = (learnerId?: string, e?: React.MouseEvent) => {
         if (e) e.stopPropagation();
         if (learnerId) {
-            setInspectedLearnerId(learnerId);
+            router.push(`/dashboard/profile/${learnerId}`);
         }
     };
 
@@ -409,6 +407,11 @@ export default function CommunityPage() {
 
     const filteredSujets = (Array.isArray(sujets) ? sujets : []).filter((s) => {
         if (!s) return false;
+
+        if (showOnlyMyPosts) {
+            const isOwner = !!((currentUserId && s.auteur?.id === currentUserId) || (currentUserEmail && s.auteur?.email === currentUserEmail));
+            if (!isOwner) return false;
+        }
         
         if (selectedProviderFilter && !selectedCert) {
             if (!s.certification) return false;
@@ -469,6 +472,8 @@ export default function CommunityPage() {
                 certFilterDropdownOpen={certFilterDropdownOpen}
                 setCertFilterDropdownOpen={setCertFilterDropdownOpen}
                 onNewDiscussion={() => setIsNewSubjectModalOpen(true)}
+                showOnlyMyPosts={showOnlyMyPosts}
+                onShowOnlyMyPostsChange={setShowOnlyMyPosts}
             />
 
             {loading ? (
@@ -547,10 +552,6 @@ export default function CommunityPage() {
                 loading={modalLoading}
             />
 
-            <LearnerProfileModal
-                learnerId={inspectedLearnerId}
-                onClose={() => setInspectedLearnerId(null)}
-            />
         </div>
     );
 }

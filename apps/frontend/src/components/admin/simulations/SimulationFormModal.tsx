@@ -6,6 +6,7 @@ import { X, Plus, Edit, Trash2, Activity, BookOpen, Award, Sparkles, Clock } fro
 import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/context/ConfirmContext';
 import { apiFetch } from '../../../lib/api';
+import { getCertificateBadgeLogo } from '../../../lib/certification-utils';
 
 interface CertificationInfo {
     id: string;
@@ -160,6 +161,7 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
             const body = { titre, description: description || undefined, duree: parseInt(duree), scoreMinimal: parseInt(scoreMinimal), certificationId: Number(certificationId), coursId: coursId ? Number(coursId) : undefined, statut };
             if (isEditing && editingSim) await apiFetch(`/simulations/${editingSim.id}`, { method: 'PATCH', body });
             else await apiFetch('/simulations', { method: 'POST', body });
+            showToast(isEditing ? 'Modification enregistrée avec succès' : 'Simulation créée avec succès', 'success');
             onSaved(); onClose();
         } catch (err: any) { setError(err.message || 'Erreur.'); }
         finally { setSaving(false); }
@@ -208,11 +210,11 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
     };
 
     const getTypeBadge = (type: string) => {
-        if (type === 'QCM') return 'bg-blue-100 text-blue-700';
+        if (type === 'QCM') return 'bg-blue-100 text-cyan-300';
         if (type === 'VRAI_FAUX') return 'bg-amber-100 text-amber-700';
         if (type === 'OUVERTE') return 'bg-emerald-100 text-emerald-700';
         if (type === 'CAS_PRATIQUE') return 'bg-purple-100 text-purple-700';
-        return 'bg-slate-100 text-slate-700';
+        return 'bg-slate-900/50 text-slate-300';
     };
 
     if (!isOpen) return null;
@@ -230,25 +232,25 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 8 }}
-                className="bg-slate-50 border border-slate-200/80 w-full max-w-5xl rounded-[32px] shadow-2xl relative z-10 flex flex-col md:max-h-[90vh] max-h-none overflow-visible md:overflow-hidden will-change-auto my-auto"
+                className="bg-[#020617] border border-slate-800/80 w-full max-w-5xl rounded-[32px] shadow-2xl relative z-10 flex flex-col md:max-h-[90vh] max-h-none overflow-visible md:overflow-hidden will-change-auto my-auto"
             >
                 {/* Header */}
-                <div className="p-6 border-b border-slate-200 flex items-center justify-between bg-white relative z-20">
+                <div className="p-6 border-b border-slate-800 flex items-center justify-between bg-[#080d1a] relative z-20">
                     <div className="flex items-center gap-2">
-                        <div className="w-10 h-10 rounded-xl bg-blue-50 border-blue-100 text-blue-600 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-xl bg-blue-950/30 border-blue-800/50 text-cyan-400 flex items-center justify-center">
                             {isEditing ? <Edit className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
                         </div>
                         <div className="text-left">
-                            <h2 className="text-xl font-black text-slate-950 leading-tight">
+                            <h2 className="text-xl font-black text-white leading-tight">
                                 {isEditing ? 'Modifier la simulation' : 'Nouvelle simulation'}
                             </h2>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-slate-400">
                                 {isEditing ? 'Modifiez les paramètres et gérez les questions.' : 'Configurez une nouvelle simulation et ajoutez ses questions.'}
                             </p>
                         </div>
                     </div>
                     <button onClick={() => { if (!saving && !qLoading) { onClose(); resetForm(); } }} disabled={saving || qLoading}
-                        className="p-2 hover:bg-slate-50 text-slate-500 hover:text-slate-950 rounded-xl transition-all cursor-pointer disabled:opacity-50">
+                        className="p-2 hover:bg-rose-950/30 text-slate-400 hover:text-rose-500 rounded-xl transition-all cursor-pointer disabled:opacity-50">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
@@ -261,16 +263,16 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                         )}
 
                         {/* Tabs */}
-                        <div className="flex items-center gap-2.5 border-b border-slate-200 pb-3 mb-6">
+                        <div className="flex items-center gap-2.5 border-b border-slate-800 pb-3 mb-6">
                             <button
                                 onClick={() => setActiveSection('DETAILS')}
-                                className={`px-4 py-2 rounded-xl text-[10px] font-bold flex items-center gap-1.5 transition-all cursor-pointer uppercase tracking-wider ${activeSection === 'DETAILS' ? 'bg-slate-950 text-white shadow-sm' : 'bg-white text-slate-500 hover:bg-slate-100 border border-slate-200/80'}`}
+                                className={`px-4 py-2 rounded-xl text-[10px] font-bold flex items-center gap-1.5 transition-all cursor-pointer uppercase tracking-wider ${activeSection === 'DETAILS' ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-600/20' : 'bg-[#080d1a] text-slate-400 hover:bg-slate-900/50 border border-slate-800/80'}`}
                             >
                                 Détails
                             </button>
                             <button
                                 onClick={() => { setActiveSection('QUESTIONS'); if (isEditing && editingSim && questionsList.length === 0) loadQuestions(editingSim.id); }}
-                                className={`px-4 py-2 rounded-xl text-[10px] font-bold flex items-center gap-1.5 transition-all cursor-pointer uppercase tracking-wider ${activeSection === 'QUESTIONS' ? 'bg-slate-950 text-white shadow-sm' : 'bg-white text-slate-500 hover:bg-slate-100 border border-slate-200/80'}`}
+                                className={`px-4 py-2 rounded-xl text-[10px] font-bold flex items-center gap-1.5 transition-all cursor-pointer uppercase tracking-wider ${activeSection === 'QUESTIONS' ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-600/20' : 'bg-[#080d1a] text-slate-400 hover:bg-slate-900/50 border border-slate-800/80'}`}
                             >
                                 Questions
                             </button>
@@ -279,24 +281,24 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                         {activeSection === 'DETAILS' && (
                             <div className="space-y-4">
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Titre *</label>
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Titre *</label>
                                     <input type="text" required value={titre} onChange={e => setTitre(e.target.value)}
                                         placeholder="Simulation AZ-900"
-                                        className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold" />
+                                        className="w-full px-4 py-2.5 bg-[#080d1a] shadow-sm border border-slate-800/80 focus:border-blue-600 rounded-xl text-white text-sm outline-none transition-all font-semibold" />
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Description</label>
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Description</label>
                                     <textarea value={description} onChange={e => setDescription(e.target.value)}
                                         placeholder="Description de la simulation..."
-                                        className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all resize-none h-16" />
+                                        className="w-full px-4 py-2.5 bg-[#080d1a] shadow-sm border border-slate-800/80 focus:border-blue-600 rounded-xl text-white text-sm outline-none transition-all resize-none h-16" />
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="space-y-1.5">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Certification *</label>
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Certification *</label>
                                         <select value={certificationId} onChange={e => setCertificationId(e.target.value)}
-                                            className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold cursor-pointer">
+                                            className="w-full px-4 py-2.5 bg-[#080d1a] shadow-sm border border-slate-800/80 focus:border-blue-600 rounded-xl text-white text-sm outline-none transition-all font-semibold cursor-pointer">
                                             <option value="">Sélectionner...</option>
                                             {certifications.map(c => (
                                                 <option key={c.id} value={c.id}>{c.codeExamen || c.nom}</option>
@@ -304,9 +306,9 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                                         </select>
                                     </div>
                                     <div className="space-y-1.5">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Cours (optionnel)</label>
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Cours (optionnel)</label>
                                         <select value={coursId} onChange={e => setCoursId(e.target.value)}
-                                            className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold cursor-pointer">
+                                            className="w-full px-4 py-2.5 bg-[#080d1a] shadow-sm border border-slate-800/80 focus:border-blue-600 rounded-xl text-white text-sm outline-none transition-all font-semibold cursor-pointer">
                                             <option value="">Aucun cours</option>
                                             {coursesList.map(c => (
                                                 <option key={c.id} value={c.id}>{c.titre}</option>
@@ -317,14 +319,14 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="space-y-1.5">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Durée (minutes)</label>
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Durée (minutes)</label>
                                         <input type="number" required min={1} value={duree} onChange={e => setDuree(e.target.value)}
-                                            className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold" />
+                                            className="w-full px-4 py-2.5 bg-[#080d1a] shadow-sm border border-slate-800/80 focus:border-blue-600 rounded-xl text-white text-sm outline-none transition-all font-semibold" />
                                     </div>
                                     <div className="space-y-1.5">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Score minimal</label>
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Score minimal</label>
                                         <input type="number" required min={0} max={100} value={scoreMinimal} onChange={e => setScoreMinimal(e.target.value)}
-                                            className="w-full px-4 py-2.5 bg-white shadow-sm border border-slate-200/80 focus:border-blue-600 rounded-xl text-slate-950 text-sm outline-none transition-all font-semibold" />
+                                            className="w-full px-4 py-2.5 bg-[#080d1a] shadow-sm border border-slate-800/80 focus:border-blue-600 rounded-xl text-white text-sm outline-none transition-all font-semibold" />
                                     </div>
                                 </div>
                             </div>
@@ -337,7 +339,7 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                                         {questionsList.length} question{questionsList.length > 1 ? 's' : ''}
                                     </h3>
                                     <button onClick={() => { resetQForm(); setEditingQ(null); setShowQuestionForm(true); }}
-                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-950 hover:bg-slate-800 text-white rounded-xl text-[10px] font-bold transition-all cursor-pointer">
+                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg shadow-blue-600/20 rounded-xl text-[10px] font-bold transition-all cursor-pointer">
                                         <Plus className="w-3.5 h-3.5" />
                                         <span>Ajouter</span>
                                     </button>
@@ -350,12 +352,12 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                                 ) : (
                                     <div className="space-y-1.5 max-h-72 overflow-y-auto">
                                         {questionsList.map((q, idx) => (
-                                            <div key={q.id} className="flex items-center gap-2 p-2.5 bg-white border border-slate-200/80 rounded-xl group hover:border-slate-300 transition-all">
+                                            <div key={q.id} className="flex items-center gap-2 p-2.5 bg-[#080d1a] border border-slate-800/80 rounded-xl group hover:border-slate-700 transition-all">
                                                 <span className="text-[9px] font-black text-slate-400 w-4 shrink-0">#{idx + 1}</span>
                                                 <span className={`px-1.5 py-0.5 rounded text-[8px] font-extrabold uppercase ${getTypeBadge(q.type)}`}>{q.type === 'VRAI_FAUX' ? 'V/F' : q.type === 'CAS_PRATIQUE' ? 'CAS' : q.type}</span>
-                                                <p className="flex-1 text-[11px] font-semibold text-slate-700 truncate min-w-0">{q.enonce}</p>
+                                                <p className="flex-1 text-[11px] font-semibold text-slate-300 truncate min-w-0">{q.enonce}</p>
                                                 <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                                                    <button onClick={() => handleEditQuestion(q)} className="p-1 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"><Edit className="w-3 h-3" /></button>
+                                                    <button onClick={() => handleEditQuestion(q)} className="p-1 hover:bg-slate-900/50 rounded-lg text-slate-400 hover:text-slate-300 transition-colors cursor-pointer"><Edit className="w-3 h-3" /></button>
                                                     <button onClick={() => handleDeleteQuestion(q.id)} className="p-1 hover:bg-rose-50 rounded-lg text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"><Trash2 className="w-3 h-3" /></button>
                                                 </div>
                                             </div>
@@ -364,29 +366,29 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                                 )}
 
                                 {questionsList.length > 0 && questionsList.length < 5 && (
-                                    <p className="text-[9px] text-amber-600 font-bold">⚠ Minimum 5 questions pour publier ({questionsList.length}/5).</p>
+                                    <p className="text-[9px] text-amber-400 font-bold">⚠ Minimum 5 questions pour publier ({questionsList.length}/5).</p>
                                 )}
                             </div>
                         )}
 
                         {/* Actions */}
-                        <div className="pt-6 border-t border-slate-200/80 flex justify-between gap-3 bg-slate-50 mt-6">
+                        <div className="pt-6 border-t border-slate-800/80 flex justify-between gap-3 bg-[#020617] mt-6">
                             <button type="button" onClick={() => { if (!saving) onClose(); }} disabled={saving}
-                                className="px-5 py-3 bg-slate-50 hover:bg-slate-100 text-slate-500 font-bold rounded-xl cursor-pointer transition-colors disabled:opacity-50 text-xs uppercase tracking-wider">Annuler</button>
+                                className="px-5 py-3 bg-slate-900/50 hover:bg-rose-950/30 hover:text-rose-500 hover:border-rose-900/50 border border-transparent text-slate-400 font-bold rounded-xl cursor-pointer transition-colors disabled:opacity-50 text-xs uppercase tracking-wider">Annuler</button>
                             <div className="flex items-center gap-2">
                                 {!isEditing ? (
                                     <button onClick={() => handleSave('BROUILLON')} disabled={saving || !titre || !certificationId}
-                                        className="px-4 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl cursor-pointer transition-all text-xs disabled:opacity-40 flex items-center gap-1.5">
+                                        className="px-4 py-3 bg-slate-900/50 hover:bg-rose-950/30 hover:text-rose-500 hover:border-rose-900/50 border border-transparent text-slate-400 font-bold rounded-xl cursor-pointer transition-all text-xs disabled:opacity-40 flex items-center gap-1.5">
                                         Brouillon
                                     </button>
                                 ) : (
                                     <button onClick={() => handleSave('BROUILLON')} disabled={saving || !titre || !certificationId}
-                                        className="px-4 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl cursor-pointer transition-all text-xs disabled:opacity-40 flex items-center gap-1.5">
+                                        className="px-4 py-3 bg-slate-900/50 hover:bg-rose-950/30 hover:text-rose-500 hover:border-rose-900/50 border border-transparent text-slate-400 font-bold rounded-xl cursor-pointer transition-all text-xs disabled:opacity-40 flex items-center gap-1.5">
                                         Enregistrer
                                     </button>
                                 )}
                                 <button onClick={() => handleSave('PUBLIE')} disabled={saving || !titre || !certificationId || questionsList.length < 5}
-                                    className="px-5 py-3 bg-white hover:bg-slate-100 text-slate-950 font-black rounded-xl cursor-pointer transition-all disabled:opacity-40 flex items-center gap-2 text-xs uppercase tracking-wider shadow-md">
+                                    className="px-5 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-600/20 font-black rounded-xl cursor-pointer transition-all disabled:opacity-40 flex items-center gap-2 text-xs uppercase tracking-wider">
                                     {saving ? <span className="w-3.5 h-3.5 border-2 border-slate-950/30 border-t-slate-950 rounded-full animate-spin" /> : null}
                                     Publier
                                 </button>
@@ -395,13 +397,13 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                     </div>
 
                     {/* DROITE : Prévisualisation */}
-                    <div className="p-5 md:p-8 w-full md:w-1/2 bg-gradient-to-tr from-slate-950 to-indigo-950/15 flex flex-col items-center justify-center border-t md:border-t-0 md:border-l border-slate-200/80 relative min-h-[400px] md:overflow-y-auto shrink-0">
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-blue-50 opacity-20 pointer-events-none" />
+                    <div className="p-5 md:p-8 w-full md:w-1/2 bg-gradient-to-tr from-slate-950 to-indigo-950/15 flex flex-col items-center justify-center border-t md:border-t-0 md:border-l border-slate-800/80 relative min-h-[400px] md:overflow-y-auto shrink-0">
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-blue-950/30 opacity-20 pointer-events-none" />
 
                         <div className="w-full max-w-xs space-y-5 relative z-10">
                             <div className="w-full max-w-xs flex flex-col group relative">
-                                <div className="relative w-full h-[340px] rounded-xl overflow-hidden shadow-lg border border-slate-200 bg-white">
-                                    <img src="/images/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
+                                <div className="relative w-full h-[340px] rounded-xl overflow-hidden shadow-lg border border-slate-800 bg-[#080d1a]">
+                                    <img src="/images/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0 opacity-50 mix-blend-screen pointer-events-none" />
 
                                     <div className="absolute top-4 left-4 z-30 flex flex-col gap-1">
                                         {selectedCert?.codeExamen && (
@@ -419,27 +421,34 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                                         </div>
                                     </div>
 
-                                    <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-20 w-28 flex justify-center">
-                                        <div className="w-16 h-16 bg-white/95 rounded-full flex items-center justify-center border border-slate-200 shadow-sm">
-                                            <Activity className="w-8 h-8 text-blue-600" />
+                                    <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+                                        <div className="w-32 h-32 lg:w-24 lg:h-24 flex items-center justify-center transition-transform duration-500 -translate-y-3 group-hover:-translate-y-5">
+                                            {(() => {
+                                                const logo = selectedCert ? getCertificateBadgeLogo(selectedCert) : '';
+                                                return logo ? (
+                                                    <img src={logo} alt="" className="max-w-full max-h-full object-contain filter drop-shadow-xl" />
+                                                ) : (
+                                                    <Activity className="w-8 h-8 text-cyan-400" />
+                                                );
+                                            })()}
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="mt-4 flex flex-col gap-1.5 px-1 text-left">
-                                    <h3 className="text-[13px] font-black text-slate-950 leading-snug line-clamp-2">
+                                    <h3 className="text-[13px] font-black text-white leading-snug line-clamp-2">
                                         {titre || 'Titre de la simulation'}
                                     </h3>
                                     <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                        <span className="text-[8px] px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded font-black uppercase flex items-center gap-1">
+                                        <span className="text-[8px] px-1.5 py-0.5 bg-slate-900/50 text-slate-400 rounded font-black uppercase flex items-center gap-1">
                                             <Clock className="w-2.5 h-2.5" />
                                             {duree || '60'}min
                                         </span>
-                                        <span className="text-[8px] px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded font-black uppercase">
+                                        <span className="text-[8px] px-1.5 py-0.5 bg-blue-950/30 text-cyan-400 rounded font-black uppercase">
                                             Score ≥ {scoreMinimal || '700'}
                                         </span>
                                         {selectedCourse && (
-                                            <span className="text-[8px] px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded font-black uppercase truncate max-w-[120px]">
+                                            <span className="text-[8px] px-1.5 py-0.5 bg-emerald-950/30 text-emerald-400 rounded font-black uppercase truncate max-w-[120px]">
                                                 {selectedCourse.titre}
                                             </span>
                                         )}
@@ -466,11 +475,11 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                             exit={{ opacity: 0, y: 8, scale: 0.97 }}
                             className="fixed inset-0 z-[70] flex items-start sm:items-center justify-center p-4 overflow-y-auto"
                         >
-                            <form onSubmit={handleSaveQuestion} className="bg-white border border-slate-200/80 w-full max-w-lg rounded-[32px] shadow-2xl p-6 space-y-4 my-auto max-h-none sm:max-h-[90vh] overflow-y-auto">
+                            <form onSubmit={handleSaveQuestion} className="bg-[#080d1a] border border-slate-800/80 w-full max-w-lg rounded-[32px] shadow-2xl p-6 space-y-4 my-auto max-h-none sm:max-h-[90vh] overflow-y-auto">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="text-lg font-black text-slate-950">{editingQ ? 'Modifier la question' : 'Nouvelle question'}</h3>
+                                    <h3 className="text-lg font-black text-white">{editingQ ? 'Modifier la question' : 'Nouvelle question'}</h3>
                                     <button type="button" onClick={() => { if (!qLoading) { setShowQuestionForm(false); setEditingQ(null); resetQForm(); } }} disabled={qLoading}
-                                        className="p-2 hover:bg-slate-50 text-slate-500 hover:text-slate-950 rounded-xl transition-all cursor-pointer disabled:opacity-50">
+                                        className="p-2 hover:bg-rose-950/30 text-slate-400 hover:text-rose-500 rounded-xl transition-all cursor-pointer disabled:opacity-50">
                                         <X className="w-4 h-4" />
                                     </button>
                                 </div>
@@ -479,9 +488,9 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
 
                                 <div className="grid grid-cols-2 gap-3">
                                     <div className="space-y-1">
-                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Type</label>
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Type</label>
                                         <select value={qType} onChange={e => { setQType(e.target.value); setQReponse(e.target.value === 'QCM' || e.target.value === 'VRAI_FAUX' ? 'A' : ''); }}
-                                            className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-blue-600 rounded-lg text-[11px] font-semibold outline-none">
+                                            className="w-full px-3 py-2 bg-[#080d1a] border border-slate-800 focus:border-blue-600 rounded-lg text-[11px] font-semibold outline-none">
                                             <option value="QCM">QCM</option>
                                             <option value="VRAI_FAUX">V/F</option>
                                             <option value="OUVERTE">Ouverte</option>
@@ -489,24 +498,24 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                                         </select>
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Catégorie</label>
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Catégorie</label>
                                         <input type="text" value={qCategorie} onChange={e => setQCategorie(e.target.value)} placeholder="IAM"
-                                            className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-blue-600 rounded-lg text-[11px] font-semibold outline-none" />
+                                            className="w-full px-3 py-2 bg-[#080d1a] border border-slate-800 focus:border-blue-600 rounded-lg text-[11px] font-semibold outline-none" />
                                     </div>
                                 </div>
 
                                 <div className="space-y-1">
-                                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Énoncé</label>
+                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Énoncé</label>
                                     <textarea required rows={2} value={qEnonce} onChange={e => setQEnonce(e.target.value)} placeholder="Saisissez la question..."
-                                        className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-blue-600 rounded-lg text-[11px] font-semibold outline-none resize-none" />
+                                        className="w-full px-3 py-2 bg-[#080d1a] border border-slate-800 focus:border-blue-600 rounded-lg text-[11px] font-semibold outline-none resize-none" />
                                 </div>
 
                                 {qType === 'QCM' && (
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2">
-                                            <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest shrink-0">Bonne réponse</label>
+                                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest shrink-0">Bonne réponse</label>
                                             <select value={qReponse} onChange={e => setQReponse(e.target.value)}
-                                                className="px-2 py-1 bg-white border border-slate-200 focus:border-blue-600 rounded-lg text-[10px] font-semibold outline-none">
+                                                className="px-2 py-1 bg-[#080d1a] border border-slate-800 focus:border-blue-600 rounded-lg text-[10px] font-semibold outline-none">
                                                 <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
                                             </select>
                                         </div>
@@ -516,9 +525,9 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
                                                 const setVal = lettre === 'A' ? setQOptA : lettre === 'B' ? setQOptB : lettre === 'C' ? setQOptC : setQOptD;
                                                 return (
                                                     <div key={lettre} className="space-y-0.5">
-                                                        <label className="text-[9px] font-black text-slate-500 pl-1">{lettre}</label>
+                                                        <label className="text-[9px] font-black text-slate-400 pl-1">{lettre}</label>
                                                         <input type="text" required value={val} onChange={e => setVal(e.target.value)} placeholder={`Option ${lettre}`}
-                                                            className="w-full px-2.5 py-1.5 bg-white border border-slate-200 focus:border-blue-600 rounded-lg text-[11px] font-semibold outline-none" />
+                                                            className="w-full px-2.5 py-1.5 bg-[#080d1a] border border-slate-800 focus:border-blue-600 rounded-lg text-[11px] font-semibold outline-none" />
                                                     </div>
                                                 );
                                             })}
@@ -528,9 +537,9 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
 
                                 {qType === 'VRAI_FAUX' && (
                                     <div className="space-y-1">
-                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Bonne réponse</label>
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Bonne réponse</label>
                                         <select value={qReponse} onChange={e => setQReponse(e.target.value)}
-                                            className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-blue-600 rounded-lg text-[11px] font-semibold outline-none">
+                                            className="w-full px-3 py-2 bg-[#080d1a] border border-slate-800 focus:border-blue-600 rounded-lg text-[11px] font-semibold outline-none">
                                             <option value="A">Vrai</option><option value="B">Faux</option>
                                         </select>
                                     </div>
@@ -538,23 +547,23 @@ export function SimulationFormModal({ isOpen, onClose, onSaved, editingSim, cert
 
                                 {(qType === 'OUVERTE' || qType === 'CAS_PRATIQUE') && (
                                     <div className="space-y-1">
-                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Grille de notation IA</label>
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Grille de notation IA</label>
                                         <textarea required rows={2} value={qGrille} onChange={e => setQGrille(e.target.value)} placeholder="Critères d'évaluation..."
-                                            className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-blue-600 rounded-lg text-[11px] font-semibold outline-none resize-none" />
+                                            className="w-full px-3 py-2 bg-[#080d1a] border border-slate-800 focus:border-blue-600 rounded-lg text-[11px] font-semibold outline-none resize-none" />
                                     </div>
                                 )}
 
                                 <div className="space-y-1">
-                                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Explication (opt.)</label>
+                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Explication (opt.)</label>
                                     <textarea rows={1} value={qExplication} onChange={e => setQExplication(e.target.value)} placeholder="Explication de la réponse..."
-                                        className="w-full px-3 py-2 bg-white border border-slate-200 focus:border-blue-600 rounded-lg text-[11px] font-semibold outline-none resize-none" />
+                                        className="w-full px-3 py-2 bg-[#080d1a] border border-slate-800 focus:border-blue-600 rounded-lg text-[11px] font-semibold outline-none resize-none" />
                                 </div>
 
-                                <div className="flex justify-end gap-2 pt-4 border-t border-slate-100">
+                                <div className="flex justify-end gap-2 pt-4 border-t border-slate-800">
                                     <button type="button" onClick={() => { if (!qLoading) { setShowQuestionForm(false); setEditingQ(null); resetQForm(); } }} disabled={qLoading}
-                                        className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-lg text-xs transition-all cursor-pointer disabled:opacity-50">Annuler</button>
+                                        className="px-4 py-2 bg-slate-900/50 hover:bg-rose-950/30 hover:text-rose-500 hover:border-rose-900/50 border border-transparent text-slate-400 font-bold rounded-lg text-xs transition-all cursor-pointer disabled:opacity-50">Annuler</button>
                                     <button type="submit" disabled={qLoading}
-                                        className="px-4 py-2 bg-slate-950 hover:bg-slate-800 text-white font-bold rounded-lg text-xs transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1.5">
+                                        className="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-600/20 font-bold rounded-lg text-xs transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1.5">
                                         {qLoading ? <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : editingQ ? 'Modifier' : 'Ajouter'}
                                     </button>
                                 </div>

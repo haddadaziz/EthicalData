@@ -61,6 +61,8 @@ export default function AdminCoachingPage() {
     const [editDateFin, setEditDateFin] = useState('');
     const [editLoading, setEditLoading] = useState(false);
 
+    const [formateurSearchQuery, setFormateurSearchQuery] = useState('');
+
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
@@ -245,6 +247,30 @@ export default function AdminCoachingPage() {
     const rdvAVenir = allRendezVous.filter(rdv => new Date(rdv.creneau.dateDebut) > now);
     const rdvPasses = allRendezVous.filter(rdv => new Date(rdv.creneau.dateDebut) <= now);
 
+    const filteredCreneaux = React.useMemo(() => {
+        return creneaux.filter(c => {
+            const query = formateurSearchQuery.toLowerCase().trim();
+            const fullName = `${c.formateur.prenom} ${c.formateur.nom}`.toLowerCase();
+            return !query || fullName.includes(query) || c.formateur.email.toLowerCase().includes(query);
+        });
+    }, [creneaux, formateurSearchQuery]);
+
+    const filteredRdvAVenir = React.useMemo(() => {
+        return rdvAVenir.filter(r => {
+            const query = formateurSearchQuery.toLowerCase().trim();
+            const fullName = `${r.formateur.prenom} ${r.formateur.nom}`.toLowerCase();
+            return !query || fullName.includes(query) || r.formateur.email.toLowerCase().includes(query);
+        });
+    }, [rdvAVenir, formateurSearchQuery]);
+
+    const filteredRdvPasses = React.useMemo(() => {
+        return rdvPasses.filter(r => {
+            const query = formateurSearchQuery.toLowerCase().trim();
+            const fullName = `${r.formateur.prenom} ${r.formateur.nom}`.toLowerCase();
+            return !query || fullName.includes(query) || r.formateur.email.toLowerCase().includes(query);
+        });
+    }, [rdvPasses, formateurSearchQuery]);
+
     if (loading) {
         return (
             <div className="p-16 text-center text-slate-400 bg-[#080d1a] border border-slate-800 rounded-3xl max-w-5xl mx-auto">
@@ -255,22 +281,56 @@ export default function AdminCoachingPage() {
     }
 
     return (
-        <div className="space-y-8 max-w-6xl mx-auto text-left bg-[#020617]">
+        <div className="space-y-8 max-w-6xl mx-auto text-left">
+            {/* Filters */}
+            <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex items-center gap-3 flex-wrap">
+                    {/* Filtre Principal (Créneaux ou RDV) sous forme d'onglets cliquables */}
+                    <div className="flex items-center gap-2 bg-[#020617] border border-slate-800 rounded-2xl p-1.5 w-fit shadow-xs">
+                        <button
+                            type="button"
+                            onClick={() => setTab('creneaux')}
+                            className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                                tab === 'creneaux' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+                            }`}
+                        >
+                            Créneaux Ouverts
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setTab('rdv')}
+                            className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                                tab === 'rdv' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+                            }`}
+                        >
+                            Rendez-vous
+                        </button>
+                    </div>
 
-            {/* Tabs */}
-            <div className="flex items-center gap-2 bg-[#080d1a] border border-slate-800 rounded-2xl p-1.5 w-fit shadow-xs">
-                <button
-                    onClick={() => setTab('creneaux')}
-className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${tab === 'creneaux' ? 'bg-slate-950 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
+                    {/* Recherche de Formateur */}
+                    <div className="relative max-w-xs w-full sm:w-64">
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 pointer-events-none">
+                            <Search className="w-3.5 h-3.5" />
+                        </span>
+                        <input
+                            type="text"
+                            placeholder="Rechercher un formateur..."
+                            value={formateurSearchQuery}
+                            onChange={(e) => setFormateurSearchQuery(e.target.value)}
+                            className="w-full pl-9 pr-3 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 focus:bg-slate-900/50 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold outline-none transition-all"
+                        />
+                    </div>
+                </div>
+
+                {tab === 'creneaux' && (
+                    <button
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold cursor-pointer transition-all shadow-md active:scale-95 uppercase tracking-wider font-black shrink-0"
                     >
-                        Créneaux Ouverts
-                </button>
-                <button
-                    onClick={() => setTab('rdv')}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${tab === 'rdv' ? 'bg-slate-950 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
-                >
-                    Rendez-vous
-                </button>
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Nouveau créneau</span>
+                    </button>
+                )}
             </div>
 
             {tab === 'creneaux' && (
@@ -290,28 +350,20 @@ className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider tran
                             <p className="text-2xl font-black text-slate-400">{rdvPasses.length}</p>
                         </div>
                     </div>
-
-                    {/* Créneaux grid */}
+                          {/* Créneaux grid */}
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">Créneaux Ouverts ({creneaux.length})</h2>
-                            <button
-                                onClick={() => setIsAddModalOpen(true)}
-                                className="flex items-center justify-center gap-2 px-5 py-2.5 bg-slate-950 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold cursor-pointer transition-all shadow-md hover:shadow-lg active:scale-95"
-                            >
-                                <Plus className="w-3 h-3" />
-                                <span>Nouveau créneau</span>
-                            </button>
+                            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">Créneaux Ouverts ({filteredCreneaux.length})</h2>
                         </div>
 
-                        {creneaux.length === 0 ? (
+                        {filteredCreneaux.length === 0 ? (
                             <div className="p-10 text-center bg-[#080d1a] border border-slate-800 rounded-3xl space-y-2">
-                                <Calendar className="w-8 h-8 text-slate-600 mx-auto" />
+                                <Calendar className="w-8 h-8 text-slate-400 mx-auto" />
                                 <p className="text-xs font-bold text-slate-400">Aucun créneau disponible pour le moment</p>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                                {creneaux.map((c) => (
+                                {filteredCreneaux.map((c) => (
                                     <div key={c.id} className="p-3 bg-[#080d1a] border border-slate-800 rounded-2xl shadow-sm hover:shadow-md hover:border-slate-700 transition-all flex flex-col justify-between">
                                         <div className="space-y-2">
                                             <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
@@ -343,7 +395,7 @@ className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider tran
                                         <div className="flex items-center gap-2 pt-2 border-t border-slate-800 mt-2">
                                             <button
                                                 onClick={() => openEditModal(c)}
-                                                className="flex-1 py-1.5 text-xs font-bold bg-slate-950 hover:bg-slate-800 text-white rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
+                                                className="flex-1 py-1.5 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
                                                 title="Gérer"
                                             >
                                                 <Edit className="w-3 h-3" />
@@ -370,19 +422,19 @@ className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider tran
                 <div className="space-y-6">
                     {/* À venir */}
                     <div className="space-y-3">
-                        <h3 className="text-xs font-black uppercase tracking-wider text-emerald-600 flex items-center gap-2">
+                        <h3 className="text-xs font-black uppercase tracking-wider text-emerald-400 flex items-center gap-2">
                             <Sparkles className="w-3.5 h-3.5" />
-                            <span>À venir ({rdvAVenir.length})</span>
+                            <span>À venir ({filteredRdvAVenir.length})</span>
                         </h3>
 
-                        {rdvAVenir.length === 0 ? (
+                        {filteredRdvAVenir.length === 0 ? (
                             <div className="p-8 text-center bg-[#080d1a] border border-slate-800 rounded-3xl space-y-2">
-                                <Clock className="w-8 h-8 text-slate-600 mx-auto" />
+                                <Clock className="w-8 h-8 text-slate-400 mx-auto" />
                                 <p className="text-xs font-bold text-slate-400">Aucun rendez-vous à venir</p>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 gap-4">
-                                {rdvAVenir.map((rdv) => (
+                                {filteredRdvAVenir.map((rdv) => (
                                     <RdvCard key={rdv.id} rdv={rdv} handleCancelRdv={handleCancelRdv} showToast={showToast} />
                                 ))}
                             </div>
@@ -391,19 +443,19 @@ className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider tran
 
                     {/* Historique */}
                     <div className="space-y-3">
-                        <h3 className="text-xs font-black uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                        <h3 className="text-xs font-black uppercase tracking-wider text-slate-400 flex items-center gap-2">
                             <Clock className="w-3.5 h-3.5" />
-                            <span>Historique ({rdvPasses.length})</span>
+                            <span>Historique ({filteredRdvPasses.length})</span>
                         </h3>
 
-                        {rdvPasses.length === 0 ? (
+                        {filteredRdvPasses.length === 0 ? (
                             <div className="p-8 text-center bg-[#080d1a] border border-slate-800 rounded-3xl space-y-2">
-                                <Calendar className="w-8 h-8 text-slate-600 mx-auto" />
+                                <Calendar className="w-8 h-8 text-slate-400 mx-auto" />
                                 <p className="text-xs font-bold text-slate-400">Aucun rendez-vous passé</p>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 gap-4">
-                                {rdvPasses.map((rdv) => (
+                                {filteredRdvPasses.map((rdv) => (
                                     <RdvCard key={rdv.id} rdv={rdv} handleCancelRdv={handleCancelRdv} showToast={showToast} />
                                 ))}
                             </div>

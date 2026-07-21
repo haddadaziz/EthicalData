@@ -148,7 +148,7 @@ export default function AdminProfilePage() {
     };
 
     const getPasswordStrength = (pass: string) => {
-        if (!pass) return { label: 'Non renseigné', color: 'bg-slate-200', level: 0 };
+        if (!pass) return { label: 'Non renseigné', color: 'bg-slate-800/50', level: 0 };
         if (pass.length < 6) return { label: 'Trop court', color: 'bg-rose-500', level: 1 };
         if (pass.length < 9) return { label: 'Moyen', color: 'bg-amber-500', level: 2 };
         return { label: 'Robuste', color: 'bg-emerald-500', level: 3 };
@@ -165,9 +165,9 @@ export default function AdminProfilePage() {
 
     if (loading || !profile) {
         return (
-            <div className="p-16 text-center bg-white border border-slate-200/60 rounded-3xl max-w-5xl mx-auto">
-                <span className="w-10 h-10 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin inline-block mb-3" />
-                <p className="text-xs font-bold uppercase tracking-widest text-blue-600">Chargement de votre profil...</p>
+            <div className="p-16 text-center bg-[#080d1a] border border-slate-800/60 rounded-3xl max-w-5xl mx-auto">
+                <span className="w-10 h-10 border-4 border-blue-900/30 border-t-blue-600 rounded-full animate-spin inline-block mb-3" />
+                <p className="text-xs font-bold uppercase tracking-widest text-cyan-400">Chargement de votre profil...</p>
             </div>
         );
     }
@@ -187,7 +187,7 @@ export default function AdminProfilePage() {
             >
                 {/* Décorations statiques optimisées */}
                 <div className="absolute -top-20 -right-20 w-80 h-80 bg-blue-500/15 rounded-full blur-2xl pointer-events-none" />
-                <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-blue-600/10 rounded-full blur-2xl pointer-events-none" />
+                <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-gradient-to-r from-blue-600 to-cyan-600/10 rounded-full blur-2xl pointer-events-none" />
 
                 <div className="flex flex-col lg:flex-row items-center gap-8 relative z-10">
                     {/* Avatar avec anneau lumineux */}
@@ -235,7 +235,7 @@ export default function AdminProfilePage() {
                                 <Mail className="w-3.5 h-3.5" />
                                 <span>{profile.email}</span>
                             </span>
-                            <span className="hidden md:inline text-slate-700">•</span>
+                            <span className="hidden md:inline text-slate-300">•</span>
                             <span>Membre depuis {formatDate(profile.dateInscription)}</span>
                         </p>
                         {profile.bio && (
@@ -262,7 +262,7 @@ export default function AdminProfilePage() {
                                 initial={{ opacity: 0, y: 16 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.4 + i * 0.08, duration: 0.4 }}
-                                className="bg-white/[0.06] hover:bg-white/[0.10] border border-white/[0.08] rounded-2xl p-4 text-center space-y-1.5 transition-all duration-200 group hover:-translate-y-0.5"
+                                className="bg-[#080d1a]/[0.06] hover:bg-[#080d1a]/[0.10] border border-white/[0.08] rounded-2xl p-4 text-center space-y-1.5 transition-all duration-200 group hover:-translate-y-0.5"
                             >
                                 <div className={`flex items-center justify-center ${stat.color} gap-1.5 group-hover:scale-110 transition-transform duration-300`}>
                                     {stat.icon}
@@ -282,13 +282,13 @@ export default function AdminProfilePage() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3, duration: 0.4 }}
-                    className="bg-slate-100/80 p-1.5 rounded-2xl inline-flex items-center gap-1"
+                    className="bg-slate-900/50 p-1.5 rounded-2xl inline-flex items-center gap-1"
                 >
                     <button
                         onClick={() => setActiveTab('INFO')}
                         className={`px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all duration-300 cursor-pointer ${activeTab === 'INFO'
-                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
-                            : 'text-slate-500 hover:text-slate-900 hover:bg-white/60'
+                            ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-600/25'
+                            : 'text-slate-400 hover:text-white hover:bg-[#080d1a]/60'
                             }`}
                     >
                         <User className="w-4 h-4" />
@@ -298,8 +298,8 @@ export default function AdminProfilePage() {
                     <button
                         onClick={() => setActiveTab('SECURITY')}
                         className={`px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all duration-300 cursor-pointer ${activeTab === 'SECURITY'
-                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
-                            : 'text-slate-500 hover:text-slate-900 hover:bg-white/60'
+                            ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-600/25'
+                            : 'text-slate-400 hover:text-white hover:bg-[#080d1a]/60'
                             }`}
                     >
                         <KeyRound className="w-4 h-4" />
@@ -316,22 +316,22 @@ export default function AdminProfilePage() {
                             exit={{ opacity: 0, x: 20 }}
                             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                             onSubmit={handleSaveInfo}
-                            className="bg-white border border-slate-200/60 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm hover:shadow-md transition-shadow duration-300"
+                            className="bg-[#080d1a] border border-slate-800/60 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm hover:shadow-md transition-shadow duration-300"
                         >
-                            <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-                                <div className="w-1 h-8 bg-blue-600 rounded-full" />
+                            <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
+                                <div className="w-1 h-8 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full" />
                                 <div>
-                                    <h3 className="text-base font-black text-slate-900 tracking-tight">Informations Générales</h3>
-                                    <p className="text-xs text-slate-500 font-medium">Configurez vos données publiques et vos informations de contact.</p>
+                                    <h3 className="text-base font-black text-white tracking-tight">Informations Générales</h3>
+                                    <p className="text-xs text-slate-400 font-medium">Configurez vos données publiques et vos informations de contact.</p>
                                 </div>
                             </div>
 
                             {/* Photo de profil */}
-                            <div className="space-y-3 p-5 bg-slate-50/60 border border-slate-200/40 rounded-2xl">
-                                <label className="text-xs font-bold text-slate-900 block">Photo de profil</label>
+                            <div className="space-y-3 p-5 bg-[#020617]/60 border border-slate-800/40 rounded-2xl">
+                                <label className="text-xs font-bold text-white block">Photo de profil</label>
                                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-                                    <label className="flex-1 cursor-pointer flex items-center justify-center gap-2 p-4 bg-white border-2 border-dashed border-slate-200 hover:border-blue-500 rounded-xl text-xs font-bold text-slate-600 hover:text-blue-600 transition-all duration-300 shadow-sm group">
-                                        <Upload className="w-4 h-4 text-blue-600 shrink-0 group-hover:scale-110 transition-transform" />
+                                    <label className="flex-1 cursor-pointer flex items-center justify-center gap-2 p-4 bg-[#080d1a] border-2 border-dashed border-slate-800 hover:border-blue-500 rounded-xl text-xs font-bold text-slate-400 hover:text-cyan-400 transition-all duration-300 shadow-sm group">
+                                        <Upload className="w-4 h-4 text-cyan-400 shrink-0 group-hover:scale-110 transition-transform" />
                                         <span>Téléverser un fichier</span>
                                         <input
                                             type="file"
@@ -345,42 +345,42 @@ export default function AdminProfilePage() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-1.5">
-                                    <label className="text-xs font-bold text-slate-700">Prénom *</label>
+                                    <label className="text-xs font-bold text-slate-300">Prénom *</label>
                                     <input
                                         type="text"
                                         required
                                         value={prenom}
                                         onChange={(e) => setPrenom(e.target.value)}
-                                        className="w-full p-3.5 bg-slate-50/80 border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-slate-950 text-xs font-semibold outline-none transition-all duration-200"
+                                        className="w-full p-3.5 bg-[#020617]/80 border border-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-slate-950 text-xs font-semibold outline-none transition-all duration-200"
                                     />
                                 </motion.div>
 
                                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="space-y-1.5">
-                                    <label className="text-xs font-bold text-slate-700">Nom *</label>
+                                    <label className="text-xs font-bold text-slate-300">Nom *</label>
                                     <input
                                         type="text"
                                         required
                                         value={nom}
                                         onChange={(e) => setNom(e.target.value)}
-                                        className="w-full p-3.5 bg-slate-50/80 border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-slate-950 text-xs font-semibold outline-none transition-all duration-200"
+                                        className="w-full p-3.5 bg-[#020617]/80 border border-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-slate-950 text-xs font-semibold outline-none transition-all duration-200"
                                     />
                                 </motion.div>
 
                                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-1.5">
-                                    <label className="text-xs font-bold text-slate-700">Adresse e-mail (Non modifiable)</label>
+                                    <label className="text-xs font-bold text-slate-300">Adresse e-mail (Non modifiable)</label>
                                     <div className="relative">
                                         <Mail className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
                                         <input
                                             type="email"
                                             disabled
                                             value={profile.email}
-                                            className="w-full pl-11 pr-4 py-3.5 bg-slate-100 border border-slate-200 rounded-xl text-slate-500 text-xs font-bold outline-none cursor-not-allowed"
+                                            className="w-full pl-11 pr-4 py-3.5 bg-slate-900/50 border border-slate-800 rounded-xl text-slate-400 text-xs font-bold outline-none cursor-not-allowed"
                                         />
                                     </div>
                                 </motion.div>
 
                                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="space-y-1.5">
-                                    <label className="text-xs font-bold text-slate-700">Téléphone (Optionnel)</label>
+                                    <label className="text-xs font-bold text-slate-300">Téléphone (Optionnel)</label>
                                     <div className="relative">
                                         <Phone className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
                                         <input
@@ -388,28 +388,28 @@ export default function AdminProfilePage() {
                                             placeholder="+212 600 000 000"
                                             value={telephone}
                                             onChange={(e) => setTelephone(e.target.value)}
-                                            className="w-full pl-11 pr-4 py-3.5 bg-slate-50/80 border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-slate-950 text-xs font-semibold outline-none transition-all duration-200"
+                                            className="w-full pl-11 pr-4 py-3.5 bg-[#020617]/80 border border-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-slate-950 text-xs font-semibold outline-none transition-all duration-200"
                                         />
                                     </div>
                                 </motion.div>
                             </div>
 
                             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="space-y-1.5">
-                                <label className="text-xs font-bold text-slate-700">Bio & Objectifs professionnels</label>
+                                <label className="text-xs font-bold text-slate-300">Bio & Objectifs professionnels</label>
                                 <textarea
                                     rows={4}
                                     placeholder="Présentez votre parcours, vos compétences ou vos missions..."
                                     value={bio}
                                     onChange={(e) => setBio(e.target.value)}
-                                    className="w-full p-3.5 bg-slate-50/80 border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-slate-950 text-xs font-semibold outline-none resize-none transition-all duration-200"
+                                    className="w-full p-3.5 bg-[#020617]/80 border border-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-slate-950 text-xs font-semibold outline-none resize-none transition-all duration-200"
                                 />
                             </motion.div>
 
-                            <div className="flex justify-end pt-4 border-t border-slate-100">
+                            <div className="flex justify-end pt-4 border-t border-slate-800">
                                 <button
                                     type="submit"
                                     disabled={infoLoading}
-                                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer transition-all duration-200 shadow-lg shadow-blue-600/20 disabled:opacity-50 hover:scale-[1.02] active:scale-[0.98]"
+                                    className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer transition-all duration-200 shadow-lg shadow-blue-600/20 disabled:opacity-50 hover:scale-[1.02] active:scale-[0.98]"
                                 >
                                     {infoLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                                     <span>Enregistrer les modifications</span>
@@ -426,19 +426,19 @@ export default function AdminProfilePage() {
                             exit={{ opacity: 0, x: -20 }}
                             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                             onSubmit={handleChangePassword}
-                            className="bg-white border border-slate-200/60 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm hover:shadow-md transition-shadow duration-300"
+                            className="bg-[#080d1a] border border-slate-800/60 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm hover:shadow-md transition-shadow duration-300"
                         >
-                            <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+                            <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
                                 <div className="w-1 h-8 bg-slate-900 rounded-full" />
                                 <div>
-                                    <h3 className="text-base font-black text-slate-900 tracking-tight">Mot de Passe</h3>
-                                    <p className="text-xs text-slate-500 font-medium">Modifiez votre mot de passe d'accès pour sécuriser votre compte.</p>
+                                    <h3 className="text-base font-black text-white tracking-tight">Mot de Passe</h3>
+                                    <p className="text-xs text-slate-400 font-medium">Modifiez votre mot de passe d'accès pour sécuriser votre compte.</p>
                                 </div>
                             </div>
 
                             <div className="space-y-5 max-w-md">
                                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-1.5">
-                                    <label className="text-xs font-bold text-slate-700">Ancien mot de passe *</label>
+                                    <label className="text-xs font-bold text-slate-300">Ancien mot de passe *</label>
                                     <div className="relative">
                                         <Lock className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
                                         <input
@@ -446,12 +446,12 @@ export default function AdminProfilePage() {
                                             required
                                             value={oldPassword}
                                             onChange={(e) => setOldPassword(e.target.value)}
-                                            className="w-full pl-11 pr-11 py-3.5 bg-slate-50/80 border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-slate-950 text-xs font-semibold outline-none transition-all duration-200"
+                                            className="w-full pl-11 pr-11 py-3.5 bg-[#020617]/80 border border-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-white text-xs font-semibold outline-none transition-all duration-200"
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowOldPassword(!showOldPassword)}
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300 transition-colors cursor-pointer"
                                         >
                                             {showOldPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                         </button>
@@ -459,7 +459,7 @@ export default function AdminProfilePage() {
                                 </motion.div>
 
                                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="space-y-1.5">
-                                    <label className="text-xs font-bold text-slate-700">Nouveau mot de passe *</label>
+                                    <label className="text-xs font-bold text-slate-300">Nouveau mot de passe *</label>
                                     <div className="relative">
                                         <Lock className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
                                         <input
@@ -468,12 +468,12 @@ export default function AdminProfilePage() {
                                             minLength={6}
                                             value={newPassword}
                                             onChange={(e) => setNewPassword(e.target.value)}
-                                            className="w-full pl-11 pr-11 py-3.5 bg-slate-50/80 border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-slate-950 text-xs font-semibold outline-none transition-all duration-200"
+                                            className="w-full pl-11 pr-11 py-3.5 bg-[#020617]/80 border border-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-white text-xs font-semibold outline-none transition-all duration-200"
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowNewPassword(!showNewPassword)}
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300 transition-colors cursor-pointer"
                                         >
                                             {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                         </button>
@@ -481,17 +481,17 @@ export default function AdminProfilePage() {
                                     {newPassword && (
                                         <div className="flex items-center gap-2 pt-1.5">
                                             <div className="flex gap-1 flex-1">
-                                                <div className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${passwordStrength.level >= 1 ? 'bg-rose-500' : 'bg-slate-200'}`} />
-                                                <div className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${passwordStrength.level >= 2 ? 'bg-amber-500' : 'bg-slate-200'}`} />
-                                                <div className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${passwordStrength.level >= 3 ? 'bg-emerald-500' : 'bg-slate-200'}`} />
+                                                <div className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${passwordStrength.level >= 1 ? 'bg-rose-500' : 'bg-slate-800/50'}`} />
+                                                <div className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${passwordStrength.level >= 2 ? 'bg-amber-500' : 'bg-slate-800/50'}`} />
+                                                <div className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${passwordStrength.level >= 3 ? 'bg-emerald-500' : 'bg-slate-800/50'}`} />
                                             </div>
-                                            <span className="text-[10px] font-extrabold text-slate-500 whitespace-nowrap">{passwordStrength.label}</span>
+                                            <span className="text-[10px] font-extrabold text-slate-400 whitespace-nowrap">{passwordStrength.label}</span>
                                         </div>
                                     )}
                                 </motion.div>
 
                                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-1.5">
-                                    <label className="text-xs font-bold text-slate-700">Confirmer le nouveau mot de passe *</label>
+                                    <label className="text-xs font-bold text-slate-300">Confirmer le nouveau mot de passe *</label>
                                     <div className="relative">
                                         <Lock className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
                                         <input
@@ -499,19 +499,19 @@ export default function AdminProfilePage() {
                                             required
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
-                                            className="w-full pl-11 pr-4 py-3.5 bg-slate-50/80 border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-slate-950 text-xs font-semibold outline-none transition-all duration-200"
+                                            className="w-full pl-11 pr-4 py-3.5 bg-[#020617]/80 border border-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-slate-950 text-xs font-semibold outline-none transition-all duration-200"
                                         />
                                     </div>
                                 </motion.div>
                             </div>
 
-                            <div className="flex justify-end pt-4 border-t border-slate-100">
+                            <div className="flex justify-end pt-4 border-t border-slate-800">
                                 <button
                                     type="submit"
                                     disabled={passwordLoading || !oldPassword || !newPassword}
-                                    className="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer transition-all duration-200 shadow-lg disabled:opacity-50 hover:scale-[1.02] active:scale-[0.98]"
+                                    className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer transition-all duration-200 shadow-lg shadow-blue-600/20 disabled:opacity-50 hover:scale-[1.02] active:scale-[0.98]"
                                 >
-                                    {passwordLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+                                    {passwordLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <KeyRound className="w-4 h-4" />}
                                     <span>Modifier le mot de passe</span>
                                 </button>
                             </div>

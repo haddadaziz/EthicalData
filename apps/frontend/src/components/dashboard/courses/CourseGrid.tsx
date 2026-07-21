@@ -98,19 +98,19 @@ export function CourseGrid({
           {/* Actions */}
           <div className="border-t border-slate-800 p-3 flex items-center gap-2">
             <button onClick={() => onEdit(c)}
-              className="flex-1 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-white text-[10px] font-black rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm">
+              className="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm">
               <FileText className="w-3 h-3" />
-              Modifier
+              <span>Modifier</span>
             </button>
             {c.statut === 'BROUILLON' && (
               <button onClick={() => onPublish(c.id)}
-                className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shadow-sm">
+                className="flex-1 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm">
                 <Send className="w-3 h-3" />
-                Publier
+                <span>Publier</span>
               </button>
             )}
             <button onClick={() => onDelete(c.id)}
-              className="p-2 text-cyan-400 hover:bg-blue-950/20 rounded-xl transition-all cursor-pointer"
+              className="p-2 text-rose-500 hover:text-rose-400 hover:bg-rose-950/30 rounded-xl transition-all cursor-pointer shrink-0"
               title="Supprimer">
               <Trash2 className="w-4 h-4" />
             </button>

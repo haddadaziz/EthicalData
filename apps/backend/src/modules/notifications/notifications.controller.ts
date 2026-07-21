@@ -20,10 +20,10 @@ import { Roles } from '../auth/decorators/roles.decorator';
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
-  // 0. Envoyer une notification à un groupe (SUPER_ADMIN uniquement)
+  // 0. Envoyer une notification à un groupe (SUPER_ADMIN / ADMIN)
   @Post('send')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('SUPER_ADMIN')
+  @Roles('SUPER_ADMIN', 'ADMIN')
   async sendToGroup(
     @Body()
     dto: {

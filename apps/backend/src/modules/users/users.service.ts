@@ -363,6 +363,31 @@ export class UsersService {
     });
     const obtainedCerts = Array.from(obtainedMap.values());
 
+    const targetCertIds = (user.preferences as any)?.targetCertifications || [];
+    const targetCertBigInts = targetCertIds.map((id: any) => {
+      try {
+        return BigInt(id);
+      } catch {
+        return null;
+      }
+    }).filter((id: any) => id !== null);
+
+    const targetedCerts = targetCertBigInts.length > 0
+      ? await this.prisma.certification.findMany({
+          where: {
+            id: { in: targetCertBigInts },
+            deletedAt: null,
+          },
+          select: {
+            id: true,
+            nom: true,
+            slug: true,
+            codeExamen: true,
+            image: true,
+          },
+        })
+      : [];
+
     return {
       id: user.id.toString(),
       prenom: user.prenom,
@@ -378,6 +403,10 @@ export class UsersService {
         likesCount: user._count.likesSujets,
       },
       obtainedCertifications: obtainedCerts,
+      targetedCertifications: targetedCerts.map((c) => ({
+        ...c,
+        id: c.id.toString(),
+      })),
     };
   }
 

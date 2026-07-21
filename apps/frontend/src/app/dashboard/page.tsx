@@ -151,6 +151,9 @@ export default function StudentDashboard() {
     const readinessScore = readinessData?.readinessScore ?? (stats.readinessScore || 78);
     const isReady = readinessScore >= 80;
     const isAlmostReady = readinessScore >= 65 && readinessScore < 80;
+    const badgeRed = readinessScore < 30;
+    const badgeOrange = readinessScore >= 30 && readinessScore < 70;
+    const badgeGreen = readinessScore >= 70;
 
     const filteredHistory = selectedCert
         ? (readinessData?.history
@@ -347,6 +350,7 @@ export default function StudentDashboard() {
                             onStartPractice={() => router.push('/dashboard/appointments')}
                             onBrowseCourses={() => router.push('/dashboard/courses')}
                             onGoToCommunity={() => router.push('/dashboard/community')}
+                            isTrainer={viewMode === 'FORMATEUR'}
                         />
 
                         {/* PROCHAINES SESSIONS DU FORMATEUR */}
@@ -537,7 +541,7 @@ export default function StudentDashboard() {
                                         cx="88"
                                         cy="88"
                                         r="70"
-                                        className={`fill-none ${isReady ? 'stroke-emerald-500' : isAlmostReady ? 'stroke-amber-500' : 'stroke-blue-500'}`}
+                                        className="fill-none stroke-blue-500"
                                         strokeWidth="12"
                                         strokeDasharray={2 * Math.PI * 70}
                                         initial={{ strokeDashoffset: 2 * Math.PI * 70 }}
@@ -555,12 +559,12 @@ export default function StudentDashboard() {
 
                             <div className="w-full space-y-3 relative z-10">
                                 <div className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-extrabold ${
-                                    isReady ? 'bg-emerald-950/30 border border-emerald-900/50 text-emerald-500' :
-                                    isAlmostReady ? 'bg-amber-950/30 border border-amber-900/50 text-amber-500' :
-                                    'bg-blue-950/30 border border-blue-900/50 text-cyan-400'
+                                    badgeGreen ? 'bg-emerald-950/30 border border-emerald-900/50 text-emerald-500' :
+                                    badgeOrange ? 'bg-amber-950/30 border border-amber-900/50 text-amber-500' :
+                                    'bg-rose-950/30 border border-rose-900/50 text-rose-500'
                                 }`}>
                                     <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-                                    <span>{isReady ? "Prêt pour l'examen" : isAlmostReady ? "Presque Prêt" : "À renforcer"}</span>
+                                    <span>{badgeGreen ? "Prêt pour l'examen" : badgeOrange ? "Presque Prêt" : "À renforcer"}</span>
                                 </div>
                                 <p className="text-xs font-extrabold text-slate-500">
                                     Seuil de réussite conseillé : <span className="text-white font-black">80%</span>
@@ -838,7 +842,7 @@ export default function StudentDashboard() {
 
                     <Link
                         href="/dashboard/community"
-                        className="px-4 py-2.5 bg-[#020617] border border-slate-800 hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer shrink-0 text-center"
+                        className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-2xs transition-all cursor-pointer shrink-0 text-center"
                     >
                         Rejoindre
                     </Link>
@@ -880,7 +884,7 @@ export default function StudentDashboard() {
                             return (
                                 <div 
                                     key={cert.id || idx} 
-                                    className="bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-4 flex flex-col justify-between group transition-all duration-300 hover:shadow-xl hover:shadow-[0_0_20px_rgba(37,99,235,0.1)] hover:border-slate-700 text-left"
+                                    className="bg-[#080d1a]/90 border border-blue-900/40 rounded-3xl p-4 flex flex-col justify-between group transition-all duration-300 hover:shadow-xl hover:shadow-blue-900/30 hover:border-blue-600 text-left"
                                 >
                                     {/* Visual Box (Landing Page Style) */}
                                     <div 

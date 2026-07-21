@@ -335,7 +335,7 @@ export default function PracticePage() {
                                     </span>
                                     <input
                                         type="text"
-                                        placeholder="Rechercher par nom ou code d'examen..."
+                                        placeholder="Rechercher ..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                         className="w-full pl-10 pr-4 py-2.5 bg-black/50 border border-slate-700 focus:border-cyan-500 rounded-xl text-white placeholder-slate-500 transition-all text-sm outline-none font-semibold"
@@ -421,7 +421,7 @@ export default function PracticePage() {
                                                         key={pageNum}
                                                         onClick={() => setCurrentPage(pageNum)}
                                                         className={`w-8 h-8 rounded-xl text-xs font-bold flex items-center justify-center transition-all cursor-pointer shrink-0 ${currentPage === pageNum
-                                                            ? 'bg-blue-600 text-white shadow-md'
+                                                            ? 'bg-gradient-to-r from-blue-600 to-cyan-600 shadow-[0_0_15px_rgba(37,99,235,0.4)] text-white'
                                                             : 'bg-[#020617] text-slate-400 hover:bg-slate-800 hover:text-white border border-slate-800'
                                                             }`}
                                                     >

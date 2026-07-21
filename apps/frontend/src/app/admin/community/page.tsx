@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useConfirm } from '../../../context/ConfirmContext';
-import LearnerProfileModal from '../../../components/LearnerProfileModal';
 import { MessageSquare, Heart, MessageCircle, Flag, ShieldAlert, CheckCircle, Trash2, Search, Eye, RotateCcw, X, ExternalLink } from '@/components/icons';
 import Link from 'next/link';
 
@@ -90,7 +90,7 @@ const AvatarDisplay = React.memo(function AvatarDisplay({ auteur, size = 'md', o
       src={auteur.avatar}
       alt={getAuthorFullName(auteur)}
       onClick={onClickAvatar}
-      className={`${s.container} object-cover border border-slate-200 shadow-md shrink-0 cursor-pointer hover:scale-105 transition-transform`}
+      className={`${s.container} object-cover border border-slate-800 shadow-md shrink-0 cursor-pointer hover:scale-105 transition-transform`}
     />
   ) : (
     <div
@@ -120,7 +120,7 @@ const SujetCard = React.memo(function SujetCard({ sujet, onInspect, onDelete, on
   return (
     <div
       onClick={handleCardClick}
-      className="bg-white border border-slate-200/80 hover:border-slate-300 rounded-3xl p-6 space-y-4 transition-all shadow-sm hover:shadow-md text-left cursor-pointer"
+      className="bg-[#080d1a] border border-slate-800/80 hover:border-slate-700 rounded-3xl p-6 space-y-4 transition-all shadow-sm hover:shadow-md text-left cursor-pointer"
     >
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
@@ -129,46 +129,39 @@ const SujetCard = React.memo(function SujetCard({ sujet, onInspect, onDelete, on
             <div className="flex items-center gap-2">
               <h4
                 onClick={openProfile}
-                className="text-xs font-black text-slate-950 hover:underline cursor-pointer"
+                className="text-xs font-black text-white hover:text-red-400 hover:underline cursor-pointer"
               >
                 {getAuthorFullName(sujet?.auteur)}
               </h4>
-              <span className="text-[9px] font-black text-slate-500 bg-slate-100 px-2 py-0.5 rounded uppercase">
+              <span className="text-[9px] font-black text-slate-400 bg-slate-900/50 px-2 py-0.5 rounded uppercase">
                 {sujet?.auteur?.role || 'APPRENANT'}
               </span>
             </div>
             <span className="text-[10px] text-slate-400 font-semibold">{formatDate(sujet.dateCreation)}</span>
           </div>
         </div>
-        <span className="text-[9px] font-black text-slate-500 bg-slate-100 px-2.5 py-1 rounded uppercase shrink-0">
+        <span className="text-[9px] font-black text-slate-400 bg-slate-900/50 px-2.5 py-1 rounded uppercase shrink-0">
           {sujet.theme}
         </span>
       </div>
 
-      <h3 className="font-extrabold text-slate-950 text-base">{sujet.titre}</h3>
-      <p className="text-xs text-slate-600 font-medium line-clamp-2">{sujet.contenu}</p>
+      <h3 className="font-extrabold text-white text-base">{sujet.titre}</h3>
+      <p className="text-xs text-slate-400 font-medium line-clamp-2">{sujet.contenu}</p>
 
-      <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3 flex-wrap">
+      <div className="pt-3 border-t border-slate-800 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 text-xs font-bold text-slate-500">
+          <span className="flex items-center gap-1.5 text-xs font-bold text-slate-400">
             <Heart className={`w-4 h-4 ${sujet.likesCount > 0 ? 'text-rose-500' : 'text-slate-400'}`} />
             {sujet.likesCount}
           </span>
-          <span className="flex items-center gap-1.5 text-xs font-bold text-slate-500">
+          <span className="flex items-center gap-1.5 text-xs font-bold text-slate-400">
             <MessageCircle className="w-4 h-4 text-blue-500" />
             {sujet.commentairesCount}
           </span>
-          <button
-            onClick={() => onInspect(sujet.id)}
-            className="px-3.5 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition-colors"
-          >
-            <Eye className="w-3.5 h-3.5 text-blue-600" />
-            <span>{sujet.commentairesCount} coms</span>
-          </button>
         </div>
         <button
           onClick={() => onDelete(sujet.id, sujet.titre)}
-          className="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer flex items-center gap-1 text-xs font-bold"
+          className="p-2 text-rose-500 hover:bg-rose-950/30 rounded-xl transition-colors cursor-pointer flex items-center gap-1 text-xs font-bold"
         >
           <Trash2 className="w-4 h-4" />
           <span>Supprimer</span>
@@ -201,21 +194,21 @@ const SignalementCard = React.memo(function SignalementCard({ sig, onResolve, on
     <div
       className={`border rounded-2xl p-6 space-y-4 text-left transition-colors ${
         sig.traite
-          ? 'bg-slate-50/70 border-slate-200/80 opacity-90'
-          : 'bg-rose-50/20 border-rose-200/70'
+          ? 'bg-[#020617]/70 border-slate-800/80 opacity-90'
+          : 'bg-rose-950/30 border-rose-800/50'
       }`}
     >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <span className={`text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md ${
-            sig.traite ? 'bg-slate-200 text-slate-700' : 'bg-rose-100 text-rose-700'
+            sig.traite ? 'bg-slate-800/50 text-slate-300' : 'bg-rose-100 text-rose-700'
           }`}>
             Motif : {sig.motif || 'Aucun motif spécifié'}
           </span>
 
           <span
             onClick={openSignaleurProfile}
-            className="text-[11px] font-bold text-slate-700 hover:text-red-600 hover:underline flex items-center gap-1.5 bg-white border border-slate-200 px-2.5 py-1 rounded-md transition-colors cursor-pointer"
+            className="text-[11px] font-bold text-slate-300 hover:text-red-400 hover:underline flex items-center gap-1.5 bg-[#080d1a] border border-slate-800 px-2.5 py-1 rounded-md transition-colors cursor-pointer"
           >
             <AvatarDisplay auteur={sig.signalePar} size="sm" />
             <span>Signalé par : {getAuthorFullName(sig.signalePar)}</span>
@@ -226,7 +219,7 @@ const SignalementCard = React.memo(function SignalementCard({ sig, onResolve, on
         <span className="text-[10px] text-slate-400 font-bold shrink-0">{formatDate(sig.dateCreation)}</span>
       </div>
 
-      <div className="bg-white border border-slate-200/80 rounded-xl p-4 space-y-3 shadow-sm">
+      <div className="bg-[#080d1a] border border-slate-800/80 rounded-xl p-4 space-y-3 shadow-sm">
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center gap-2">
             <div
@@ -234,27 +227,27 @@ const SignalementCard = React.memo(function SignalementCard({ sig, onResolve, on
               className="flex items-center gap-2 cursor-pointer"
             >
               <AvatarDisplay auteur={sig.sujet?.auteur} size="sm" />
-              <span className="font-extrabold text-slate-900 hover:text-red-600 hover:underline">
+              <span className="font-extrabold text-white hover:text-red-400 hover:underline">
                 Auteur : {getAuthorFullName(sig.sujet?.auteur)}
               </span>
             </div>
           </div>
 
-          <span className="text-[9px] font-black text-slate-500 bg-slate-100 px-2 py-0.5 rounded uppercase">
+          <span className="text-[9px] font-black text-slate-400 bg-slate-900/50 px-2 py-0.5 rounded uppercase">
             {sig.sujet.theme}
           </span>
         </div>
 
-        <h4 className="font-black text-slate-950 text-base">{sig.sujet.titre}</h4>
-        <p className="text-xs text-slate-600 font-medium whitespace-pre-wrap line-clamp-3">{sig.sujet.contenu}</p>
+        <h4 className="font-black text-white text-base">{sig.sujet.titre}</h4>
+        <p className="text-xs text-slate-400 font-medium whitespace-pre-wrap line-clamp-3">{sig.sujet.contenu}</p>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
         <button
           onClick={() => onInspect(sig.sujet.id)}
-          className="px-3.5 py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition-colors shadow-sm"
+          className="px-3.5 py-2 bg-[#080d1a] hover:bg-slate-800/70 border border-slate-800 text-slate-300 font-bold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition-colors shadow-sm"
         >
-          <Eye className="w-3.5 h-3.5 text-blue-600" />
+          <Eye className="w-3.5 h-3.5 text-cyan-400" />
           <span>Voir la publication complète ({sig.sujet.commentairesCount} coms)</span>
         </button>
 
@@ -262,7 +255,7 @@ const SignalementCard = React.memo(function SignalementCard({ sig, onResolve, on
           {!sig.traite ? (
             <button
               onClick={() => onResolve(sig.id, sig.type)}
-              className="px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition-colors"
+              className="px-4 py-2 bg-emerald-950/30 hover:bg-emerald-900/30 text-emerald-400 border border-emerald-800/50 font-bold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition-colors"
             >
               <CheckCircle className="w-4 h-4" />
               <span>Ignorer / Marquer comme traité</span>
@@ -270,7 +263,7 @@ const SignalementCard = React.memo(function SignalementCard({ sig, onResolve, on
           ) : (
             <button
               onClick={() => onUnresolve(sig.id, sig.type)}
-              className="px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-bold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition-colors"
+              className="px-4 py-2 bg-amber-950/30 hover:bg-amber-950/30 text-amber-400 border border-amber-800/50 font-bold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition-colors"
             >
               <RotateCcw className="w-4 h-4" />
               <span>Remettre en attente</span>
@@ -318,20 +311,20 @@ const InspectionModal = React.memo(function InspectionModal({ sujet, loading, on
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white border border-slate-200 rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden"
+        className="bg-[#080d1a] border border-slate-800 rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden"
       >
-        <div className="flex items-center justify-between px-6 md:px-8 pt-6 md:pt-8 pb-4 border-b border-slate-100 shrink-0">
+        <div className="flex items-center justify-between px-6 md:px-8 pt-6 md:pt-8 pb-4 border-b border-slate-800 shrink-0">
           <div className="flex items-center gap-3">
             {sujet && (
-              <span className="text-[10px] font-black text-slate-500 bg-slate-100 px-2.5 py-1 rounded uppercase">
+              <span className="text-[10px] font-black text-slate-400 bg-slate-900/50 px-2.5 py-1 rounded uppercase">
                 {sujet.theme}
               </span>
             )}
-            <h3 className="text-base font-black text-slate-950">Publication complète</h3>
+            <h3 className="text-base font-black text-white">Publication complète</h3>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-950 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
+            className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800/70 transition-colors cursor-pointer shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
@@ -340,8 +333,8 @@ const InspectionModal = React.memo(function InspectionModal({ sujet, loading, on
         <div className="flex-1 overflow-y-auto px-6 md:px-8 pb-6 md:pb-8 space-y-6 text-left">
           {loading || !sujet ? (
             <div className="py-20 text-center text-slate-400">
-              <span className="w-8 h-8 border-3 border-blue-100 border-t-blue-600 rounded-full animate-spin inline-block mb-3" />
-              <p className="text-xs font-bold uppercase text-blue-600">Chargement de la publication...</p>
+              <span className="w-8 h-8 border-3 border-blue-900/30 border-t-blue-600 rounded-full animate-spin inline-block mb-3" />
+              <p className="text-xs font-bold uppercase text-cyan-400">Chargement de la publication...</p>
             </div>
           ) : (
             <>
@@ -351,19 +344,19 @@ const InspectionModal = React.memo(function InspectionModal({ sujet, loading, on
                   className="flex items-center gap-2 cursor-pointer"
                 >
                   <AvatarDisplay auteur={sujet.auteur} size="md" />
-                  <span className="font-extrabold text-slate-950 hover:text-red-600 hover:underline">
+                  <span className="font-extrabold text-white hover:text-red-400 hover:underline">
                     {getAuthorFullName(sujet.auteur)}
                   </span>
                 </div>
                 <span className="text-slate-400 font-semibold">{formatDate(sujet.dateCreation)}</span>
               </div>
 
-              <h2 className="text-xl font-black text-slate-950">{sujet.titre}</h2>
-              <div className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs text-slate-700 font-medium whitespace-pre-wrap leading-relaxed">
+              <h2 className="text-xl font-black text-white">{sujet.titre}</h2>
+              <div className="p-4 bg-[#020617] border border-slate-800/80 rounded-2xl text-xs text-slate-300 font-medium whitespace-pre-wrap leading-relaxed">
                 {sujet.contenu}
               </div>
 
-              <div className="space-y-4 pt-4 border-t border-slate-100">
+              <div className="space-y-4 pt-4 border-t border-slate-800">
                 <h4 className="text-xs font-black text-slate-400 uppercase tracking-wider">
                   Commentaires ({sujet.commentaires?.length || 0})
                 </h4>
@@ -379,7 +372,7 @@ const InspectionModal = React.memo(function InspectionModal({ sujet, loading, on
                 )}
               </div>
 
-              <div className="flex justify-end pt-4 border-t border-slate-100 gap-3">
+              <div className="flex justify-end pt-4 border-t border-slate-800 gap-3">
                 <button
                   onClick={handleDelete}
                   className="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer transition-colors shadow-md"
@@ -402,14 +395,14 @@ const CommentRow = React.memo(function CommentRow({ comment, onOpenProfile, onDe
   onDelete: (id: string) => void;
 }) {
   return (
-    <div className="p-3.5 bg-slate-50/70 border border-slate-200/60 rounded-xl space-y-1.5 text-xs">
-      <div className="flex items-center justify-between font-bold text-slate-900">
+    <div className="p-3.5 bg-[#020617]/70 border border-slate-800/60 rounded-xl space-y-1.5 text-xs">
+      <div className="flex items-center justify-between font-bold text-white">
         <div
           onClick={() => comment?.auteur?.id && onOpenProfile(comment.auteur.id)}
           className="flex items-center gap-2 cursor-pointer"
         >
           <AvatarDisplay auteur={comment?.auteur} size="sm" />
-          <span className="hover:text-red-600 hover:underline">
+          <span className="hover:text-red-400 hover:underline">
             {getAuthorFullName(comment?.auteur)}
           </span>
         </div>
@@ -417,19 +410,20 @@ const CommentRow = React.memo(function CommentRow({ comment, onOpenProfile, onDe
           <span className="text-[10px] text-slate-400 font-normal">{formatDate(comment.dateCreation)}</span>
           <button
             onClick={() => onDelete(comment.id)}
-            className="p-1.5 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+            className="p-1.5 text-rose-400 hover:text-rose-600 hover:bg-rose-950/30 rounded-lg transition-colors cursor-pointer"
             title="Supprimer ce commentaire"
           >
             <Trash2 className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
-      <p className="text-slate-600 font-medium whitespace-pre-wrap">{comment.contenu}</p>
+      <p className="text-slate-400 font-medium whitespace-pre-wrap">{comment.contenu}</p>
     </div>
   );
 });
 
 export default function AdminCommunityPage() {
+  const router = useRouter();
   const { showToast } = useToast();
   const { confirm } = useConfirm();
   const [stats, setStats] = useState<AdminStats | null>(null);
@@ -442,22 +436,37 @@ export default function AdminCommunityPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [inspectedSujet, setInspectedSujet] = useState<any | null>(null);
   const [inspectLoading, setInspectLoading] = useState(false);
-  const [profileLearnerId, setProfileLearnerId] = useState<string | null>(null);
 
-  const isAnyModalOpen = !!(inspectedSujet || inspectLoading || profileLearnerId);
+  const isAnyModalOpen = !!(inspectedSujet || inspectLoading);
   const scrollPosRef = useRef(0);
   useEffect(() => {
+    const scrollContainers = document.querySelectorAll('.overflow-y-auto');
     if (isAnyModalOpen) {
       scrollPosRef.current = window.scrollY;
       document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
+      scrollContainers.forEach((el) => {
+        if (!el.closest('.fixed')) {
+          (el as HTMLElement).style.overflowY = 'hidden';
+        }
+      });
     } else {
       document.documentElement.style.overflow = '';
       document.body.style.overflow = '';
+      scrollContainers.forEach((el) => {
+        if (!el.closest('.fixed')) {
+          (el as HTMLElement).style.overflowY = '';
+        }
+      });
     }
     return () => {
       document.documentElement.style.overflow = '';
       document.body.style.overflow = '';
+      scrollContainers.forEach((el) => {
+        if (!el.closest('.fixed')) {
+          (el as HTMLElement).style.overflowY = '';
+        }
+      });
     };
   }, [isAnyModalOpen]);
 
@@ -564,16 +573,12 @@ export default function AdminCommunityPage() {
   }, [showToast]);
 
   const handleOpenProfile = useCallback((learnerId: string) => {
-    setProfileLearnerId(learnerId);
-  }, []);
+    router.push(`/dashboard/profile/${learnerId}`);
+  }, [router]);
 
   const handleCloseModal = useCallback(() => {
     setInspectedSujet(null);
     setInspectLoading(false);
-  }, []);
-
-  const closeProfileModal = useCallback(() => {
-    setProfileLearnerId(null);
   }, []);
 
   const filteredSujets = React.useMemo(() => {
@@ -672,7 +677,7 @@ export default function AdminCommunityPage() {
               </span>
               <input
                 type="text"
-                placeholder="Rechercher par titre ou contenu..."
+                placeholder="Rechercher ..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-9 pr-3 py-2 bg-[#020617] border border-slate-800 focus:border-blue-600 focus:bg-slate-900/50 text-white placeholder:text-slate-500 rounded-xl text-xs font-semibold outline-none"
@@ -775,8 +780,6 @@ export default function AdminCommunityPage() {
           onOpenProfile={handleOpenProfile}
         />
       )}
-
-      <LearnerProfileModal learnerId={profileLearnerId} onClose={closeProfileModal} />
     </div>
   );
 }

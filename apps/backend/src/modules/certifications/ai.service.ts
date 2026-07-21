@@ -27,8 +27,8 @@ export class AiService {
     reponseCandidat: string,
   ): Promise<ResultatEvaluation> {
     const aiSettings = await this.settingsService.getSetting('ai');
-    const apiKey = aiSettings?.apiKey || this.fallbackApiKey;
-    const activeModel = aiSettings?.activeModel || 'gemini-1.5-flash';
+    const apiKey = (aiSettings?.apiKey || this.fallbackApiKey).trim();
+    const activeModel = (aiSettings?.activeModel || 'gemini-2.5-flash').trim();
     const customPromptTemplate = aiSettings?.customPrompt || '';
 
     console.log(`[AiService] Model: ${activeModel}, Key set: ${!!apiKey}, Key prefix: ${apiKey?.substring(0, 10)}...`);
@@ -58,15 +58,13 @@ DÉTAILS DE LA QUESTION :
 - Énoncé de la question : "${enonce}"
 ${reponseCorrecte ? `- Corrigé officiel / Réponse attendue : "${reponseCorrecte}"` : ''}
 ${grilleNotation ? `- Critères d'évaluation additionnels : "${grilleNotation}"` : ''}
+- Réponse du candidat : "${reponseCandidat}"
 
-RÉPONSE DU CANDIDAT :
-"${reponseCandidat}"
-
-INSTRUCTIONS DE NOTATION :
-1. Attribuez un score entier entre 0 et 100.
-2. Soyez constructif. Si la réponse est très courte ou incomplète, pénalisez le score de manière proportionnelle mais juste.
-3. Rédigez une critique claire résumant ce qui est correct et ce qui manque.
-4. Rédigez des suggestions concrètes pour aider le candidat à réviser la notion si sa réponse est imparfaite.
+INSTRUCTIONS :
+1. Comparez la réponse du candidat au corrigé officiel et aux critères de notation (s'ils sont fournis).
+2. Attribuez une note globale sur 100 ("score").
+3. Rédigez une critique détaillée ("critique") expliquant ce qui est correct, ce qui manque et les erreurs éventuelles.
+4. Proposez des suggestions d'amélioration constructives ("suggestions") pour aider le candidat à s'améliorer.
 5. Vous devez obligatoirement formater votre réponse en JSON valide avec les clés "score", "critique" et "suggestions".`;
       }
 
@@ -116,7 +114,13 @@ INSTRUCTIONS DE NOTATION :
         if (!response.ok) {
           const errorText = await response.text();
           console.error('Erreur API Gemini:', errorText);
-          throw new Error(`API Gemini a répondu avec le statut ${response.status}`);
+          let extraMsg = '';
+          if (response.status === 404) {
+            extraMsg = ` - Le modèle "${activeModel}" est introuvable. Assurez-vous d'utiliser "gemini-2.5-flash" ou un nom valide.`;
+          } else if (response.status === 400 || response.status === 403) {
+            extraMsg = ` - La clé API est peut-être invalide ou incorrecte.`;
+          }
+          throw new Error(`API Gemini a répondu avec le statut ${response.status}${extraMsg} (Détail Google: ${errorText})`);
         }
 
         const responseData = await response.json();
@@ -158,7 +162,11 @@ INSTRUCTIONS DE NOTATION :
         if (!response.ok) {
           const errorText = await response.text();
           console.error('Erreur API (OpenAI format):', errorText);
-          throw new Error(`API AI a répondu avec le statut ${response.status}`);
+          let extraMsg = '';
+          if (response.status === 404) {
+            extraMsg = ` - L'endpoint "${endpoint}" est introuvable. Si vous utilisez Gemini, laissez le champ "URL de base" VIDE.`;
+          }
+          throw new Error(`API AI a répondu avec le statut ${response.status}${extraMsg}`);
         }
 
         const responseData = await response.json();

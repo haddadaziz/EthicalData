@@ -21,7 +21,7 @@ export class SimulationsService {
   async findAll() {
     const simulations = await this.prisma.simulation.findMany({
       include: {
-        certification: { select: { id: true, nom: true, codeExamen: true } },
+        certification: { select: { id: true, nom: true, codeExamen: true, image: true, slug: true } },
         cours: { select: { id: true, titre: true } },
         _count: { select: { questions: true, tentatives: true } },
       },
@@ -45,7 +45,7 @@ export class SimulationsService {
       where: { id: BigInt(id) },
       include: {
         certification: {
-          select: { id: true, nom: true, codeExamen: true, slug: true },
+          select: { id: true, nom: true, codeExamen: true, slug: true, image: true },
         },
         cours: { select: { id: true, titre: true } },
         questions: {

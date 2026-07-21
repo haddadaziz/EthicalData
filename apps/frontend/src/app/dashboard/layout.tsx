@@ -82,6 +82,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 setUserAvatar(profile.avatar || null);
                 if (profile.roles) {
                     const roles = profile.roles.map((r: any) => r.nom);
+                    const isExemptPath = pathname.startsWith('/dashboard/profile/');
+                    if ((roles.includes('SUPER_ADMIN') || roles.includes('ADMIN')) && !isExemptPath) {
+                        router.push('/admin');
+                        return;
+                    }
                     setUserRoles(roles);
                     const savedMode = localStorage.getItem('viewMode');
                     const isFormateur = roles.includes('FORMATEUR');
@@ -217,6 +222,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             return {
                 title: viewMode === 'FORMATEUR' ? 'Mon Profil Formateur' : 'Mon Profil Apprenant',
                 subtitle: 'Gérez vos informations personnelles et votre sécurité'
+            };
+        }
+        if (pathname.startsWith('/dashboard/profile/')) {
+            return {
+                title: 'Profil Utilisateur',
+                subtitle: 'Consultez les détails et statistiques de cet utilisateur'
             };
         }
         if (pathname === '/dashboard/settings') {
@@ -477,10 +488,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             )}
 
             {/* Contenu principal (h-screen fixe) */}
-            <div className="flex-1 flex flex-col h-screen overflow-y-auto relative z-10">
+            <div className="flex-1 flex flex-col h-screen overflow-y-auto relative z-10" style={{ scrollbarGutter: 'stable', overflowAnchor: 'none' }}>
 
                 {/* Header Premium (Sans bouton Hamburger sur PC) */}
-                <header className="py-5 md:py-6 border-b bg-[#080d1a]/80 backdrop-blur-xl flex items-center justify-between px-8 md:px-12 sticky top-0 z-40 transition-all duration-300 border-slate-800">
+                <header className="py-5 md:py-6 border-b bg-[#080d1a] flex items-center justify-between px-8 md:px-12 sticky top-0 z-40 border-slate-800">
 
                     {/* Gauche : Titre Dynamique (Bouton Hamburger uniquement sur Mobile) */}
                     <div className="flex items-center gap-4">
@@ -508,7 +519,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                     isSwitching 
                                         ? 'opacity-50 cursor-not-allowed scale-[0.98]' 
                                         : 'cursor-pointer hover:shadow-md'
-                                } bg-[#020617] border-slate-800 hover:border-blue-600 text-slate-300`}
+                                } bg-[#020617] border-blue-600 text-slate-300`}
                                 title={viewMode === 'FORMATEUR' ? "Basculer en Espace Apprenant" : "Basculer en Espace Formateur"}
                             >
                                 <div className="relative w-5 h-5 flex items-center justify-center bg-[#080d1a] border border-slate-800 rounded-lg shadow-3xs p-0.5 group-hover:scale-110 transition-transform duration-300">

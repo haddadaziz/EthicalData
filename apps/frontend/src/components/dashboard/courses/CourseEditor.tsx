@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { apiFetch } from '@/lib/api';
-import { Award, BookOpen, BookMarked, Clock, FileText, FilePen, Globe, Plus, Trash2, ChevronDown, ChevronUp, Upload, Link, FilePlus, Send, Save, X, Layers, PlusCircle, AlertTriangle, Crop, Play, HelpCircle, CheckCircle, AlertCircle } from '@/components/icons';
+import { Award, BookOpen, BookMarked, Clock, FileText, FilePen, Globe, Plus, Trash2, ChevronDown, ChevronUp, ChevronLeft, Upload, Link, FilePlus, Send, Save, X, Layers, PlusCircle, AlertTriangle, Crop, Play, HelpCircle, CheckCircle, AlertCircle } from '@/components/icons';
+
+// ... (keep rest of types)
+
 // ─────────────────────────────────────────
 // TYPES
 // ─────────────────────────────────────────
@@ -369,6 +372,11 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
         })();
     }, [coursId]);
 
+    useEffect(() => {
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = ''; };
+    }, []);
+
     const collectFormData = () => {
         if (!formRef.current) return null;
         const fd = new FormData(formRef.current);
@@ -431,15 +439,16 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
     ];
 
     return (
-        <div ref={overlayRef} onClick={handleOverlayClick} className="fixed inset-0 z-50 bg-slate-900/70 flex items-center justify-center p-4 md:p-6 text-left">
-            <div className="bg-white border border-slate-200 rounded-[28px] w-full max-w-5xl h-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+        <div className="w-full text-left">
+            <div className="bg-[#080d1a] border border-slate-800 rounded-3xl w-full min-h-[calc(100vh-130px)] flex flex-col shadow-xl overflow-hidden">
 
                 {/* HEADER */}
-                <header className="h-16 bg-slate-950 text-white flex items-center justify-between px-6 shrink-0">
+                <header className="h-16 bg-[#020617] border-b border-slate-800 text-white flex items-center justify-between px-6 shrink-0">
                     <div className="flex items-center gap-3">
                         <button type="button" onClick={handleCloseAttempt}
-                            className="p-1.5 hover:bg-slate-800 rounded-lg transition-all cursor-pointer text-slate-400 hover:text-white">
-                            <X className="w-4 h-4" />
+                            className="px-3.5 py-1.5 bg-[#080d1a] hover:bg-slate-900 text-slate-300 hover:text-white text-xs font-bold rounded-xl border border-slate-800 transition-all cursor-pointer flex items-center gap-1.5 shadow-xs">
+                            <ChevronLeft className="w-4 h-4 text-cyan-400" />
+                            <span>Retour aux cours</span>
                         </button>
                         <div className="h-5 w-px bg-white/10" />
                         <h1 className="text-xs font-black uppercase tracking-wider text-slate-200 truncate max-w-xs">
@@ -473,14 +482,14 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                     </div>
                 </header>
 
-                <div className="flex-1 flex overflow-hidden bg-slate-50">
+                <div className="flex-1 flex overflow-hidden bg-[#020617]">
                     {/* SIDEBAR */}
-                    <aside className="w-52 border-r border-slate-200 bg-white p-4 shrink-0 flex flex-col gap-1">
+                    <aside className="w-60 border-r border-slate-800 bg-[#080d1a] p-5 shrink-0 flex flex-col gap-1.5">
                         {SECTIONS.map(s => (
                             <button key={s.id} type="button" onClick={() => setActiveSection(s.id)}
-                                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left text-xs font-black transition-all cursor-pointer ${activeSection === s.id
-                                    ? 'bg-blue-50 text-blue-700 border border-blue-100'
-                                    : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                                className={`w-full flex items-center gap-2.5 px-3.5 py-3 rounded-xl text-left text-xs font-black transition-all cursor-pointer ${activeSection === s.id
+                                    ? 'bg-blue-600/10 text-cyan-400 border border-blue-900/40 shadow-xs'
+                                    : 'text-slate-400 hover:text-white hover:bg-slate-900/20'
                                     }`}>
                                 {s.icon}
                                 {s.label}
@@ -489,30 +498,30 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                     </aside>
 
                     {/* CONTENU */}
-                    <form ref={formRef} className="flex-1 overflow-y-auto p-6 md:p-8 bg-white space-y-6">
+                    <form ref={formRef} className="flex-1 overflow-y-auto p-6 lg:p-10 bg-[#020617] text-white space-y-8">
 
                         {/* ── ACCUEIL ── */}
                         <div className={activeSection === 'ACCUEIL' ? 'block space-y-5' : 'hidden'}>
-                            <div className="border-b border-slate-100 pb-3">
-                                <h2 className="text-sm font-black text-slate-900">Accueil du cours</h2>
+                            <div className="border-b border-slate-800 pb-3">
+                                <h2 className="text-sm font-black text-white">Accueil du cours</h2>
                                 <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
                                     Ces informations seront visibles par les apprenants sur la fiche du cours.
                                 </p>
                             </div>
 
                             <div className="space-y-1">
-                                <label className="text-xs font-black text-slate-800">Titre du cours *</label>
+                                <label className="text-xs font-black text-slate-300">Titre du cours *</label>
                                 <input type="text" name="titre" required
                                     defaultValue={editingCours?.titre}
                                     placeholder="Ex : Sécurité avancée Azure (AZ-500)"
-                                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-semibold outline-none transition-all" />
+                                    className="w-full px-4 py-2.5 bg-[#080d1a] border border-slate-800 focus:border-blue-600 text-white rounded-xl text-xs font-semibold outline-none transition-all" />
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="space-y-1">
-                                    <label className="text-xs font-black text-slate-800">Fournisseur</label>
+                                    <label className="text-xs font-black text-slate-300">Fournisseur</label>
                                     <select value={selectedProvider} onChange={e => setSelectedProvider(e.target.value)}
-                                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-bold outline-none cursor-pointer">
+                                        className="w-full px-4 py-2.5 bg-[#080d1a] border border-slate-800 focus:border-blue-600 text-white rounded-xl text-xs font-bold outline-none cursor-pointer">
                                         <option value="">Tous les fournisseurs</option>
                                         {providers.map(p => (
                                             <option key={p} value={p}>{p}</option>
@@ -520,10 +529,10 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                     </select>
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-xs font-black text-slate-800">Certification associée *</label>
+                                    <label className="text-xs font-black text-slate-300">Certification associée *</label>
                                     <select name="certificationId" required
                                         defaultValue={editingCours?.certificationId}
-                                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-bold outline-none cursor-pointer">
+                                        className="w-full px-4 py-2.5 bg-[#080d1a] border border-slate-800 focus:border-blue-600 text-white rounded-xl text-xs font-bold outline-none cursor-pointer">
                                         {filteredCerts.length === 0 ? (
                                             <option value="" disabled>Aucune certification</option>
                                         ) : (
@@ -536,30 +545,30 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                     </select>
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-xs font-black text-slate-800">Durée totale (minutes)</label>
+                                    <label className="text-xs font-black text-slate-300">Durée totale (minutes)</label>
                                     <input type="number" name="dureeEstimee" min={0}
                                         defaultValue={editingCours?.dureeEstimee || 60}
-                                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-bold outline-none transition-all" />
+                                        className="w-full px-4 py-2.5 bg-[#080d1a] border border-slate-800 focus:border-blue-600 text-white rounded-xl text-xs font-bold outline-none transition-all" />
                                 </div>
                             </div>
 
                             <div className="space-y-1">
-                                <label className="text-xs font-black text-slate-800">Description *</label>
+                                <label className="text-xs font-black text-slate-300">Description *</label>
                                 <textarea rows={4} name="description" required
                                     defaultValue={editingCours?.description}
                                     placeholder="Décrivez les objectifs généraux de ce cours..."
-                                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-semibold outline-none resize-none transition-all" />
+                                    className="w-full px-4 py-2.5 bg-[#080d1a] border border-slate-800 focus:border-blue-600 text-white rounded-xl text-xs font-semibold outline-none resize-none transition-all" />
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-1">
-                                    <label className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                                    <label className="text-xs font-black text-slate-300 flex items-center gap-1.5">
                                         <Upload className="w-3.5 h-3.5 text-slate-400" /> Image de couverture
                                     </label>
 
                                     {cropStage === 'idle' && (
                                         <div onClick={() => fileInputRef.current?.click()}
-                                            className="w-full h-32 border-2 border-dashed border-slate-200 hover:border-blue-300 rounded-xl flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all bg-slate-50 hover:bg-blue-50/30">
+                                            className="w-full h-32 border-2 border-dashed border-slate-800 hover:border-blue-500/50 rounded-xl flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all bg-[#080d1a] hover:bg-blue-950/20">
                                             <Upload className="w-6 h-6 text-slate-300" />
                                             <span className="text-[10px] font-bold text-slate-400">Cliquez pour uploader</span>
                                             <span className="text-[8px] text-slate-300 font-semibold">750×422px · .jpg .jpeg .gif .png · 5 Mo max</span>
@@ -569,7 +578,7 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                     {cropStage === 'uploaded' && uploadedImage && (
                                         <div className="space-y-3">
                                             <div ref={imageContainerRef}
-                                                className="relative w-full overflow-hidden rounded-xl border-2 border-blue-400 bg-slate-100 select-none"
+                                                className="relative w-full overflow-hidden rounded-xl border-2 border-blue-900/50 bg-[#020617] select-none"
                                                 style={{ maxHeight: '420px' }}>
                                                 <img ref={imageRef} src={uploadedImage} alt="Aperçu"
                                                     draggable={false} className="w-full block" />
@@ -615,13 +624,13 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
 
                                     {cropStage === 'cropped' && croppedImage && (
                                         <div className="space-y-2">
-                                            <div className="relative w-full aspect-[750/422] rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                                            <div className="relative w-full aspect-[750/422] rounded-xl overflow-hidden border border-slate-800 bg-[#080d1a]">
                                                 <img src={croppedImage} alt="Image recadrée"
                                                     className="w-full h-full object-cover" />
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <button type="button" onClick={handleResetCrop}
-                                                    className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold rounded-xl transition-all cursor-pointer">
+                                                    className="px-3 py-1.5 bg-[#020617] hover:bg-slate-900 border border-slate-800 text-slate-200 text-[10px] font-bold rounded-xl transition-all cursor-pointer">
                                                     Recadrer à nouveau
                                                 </button>
                                                 <button type="button" onClick={handleRemoveImage}
@@ -639,21 +648,21 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                         }} />
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                                    <label className="text-xs font-black text-slate-300 flex items-center gap-1.5">
                                         <Link className="w-3.5 h-3.5 text-slate-400" /> Vidéo de présentation (URL)
                                     </label>
                                     <input type="url" name="videoUrl"
                                         defaultValue={editingCours?.videoUrl}
                                         placeholder="https://youtube.com/..."
-                                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-semibold outline-none transition-all" />
+                                        className="w-full px-4 py-2.5 bg-[#080d1a] border border-slate-800 focus:border-blue-600 text-white rounded-xl text-xs font-semibold outline-none transition-all" />
                                 </div>
                             </div>
                         </div>
 
                         {/* ── PARTICIPANTS ── */}
                         <div className={activeSection === 'PARTICIPANTS' ? 'block space-y-6' : 'hidden'}>
-                            <div className="border-b border-slate-100 pb-3">
-                                <h2 className="text-sm font-black text-slate-900">Participants cibles</h2>
+                            <div className="border-b border-slate-800 pb-3">
+                                <h2 className="text-sm font-black text-white">Participants cibles</h2>
                                 <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
                                     Décrivez à qui s'adresse ce cours et ce que les apprenants vont acquérir.
                                 </p>
@@ -661,7 +670,7 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
 
                             {/* Objectifs */}
                             <div className="space-y-3">
-                                <label className="text-xs font-black text-slate-800">Objectifs d'apprentissage</label>
+                                <label className="text-xs font-black text-slate-300">Objectifs d'apprentissage</label>
                                 <div className="space-y-2">
                                     {objectifsKeys.map((key, i) => (
                                         <div key={key} className="flex items-center gap-3">
@@ -674,7 +683,7 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                                         if (s) s.innerText = (140 - t.value.length).toString();
                                                     }}
                                                     placeholder="Ex : Maîtriser le déploiement d'architectures hybrides"
-                                                    className="w-full pl-4 pr-12 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-semibold outline-none transition-all" />
+                                                    className="w-full pl-4 pr-12 py-2.5 bg-[#080d1a] border border-slate-800 focus:border-blue-600 text-white rounded-xl text-xs font-semibold outline-none transition-all" />
                                                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-bold text-slate-400 pointer-events-none">140</span>
                                             </div>
                                             {objectifsKeys.length > 1 && (
@@ -695,8 +704,8 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                             </div>
 
                             {/* Prérequis */}
-                            <div className="space-y-3 border-t border-slate-100 pt-5">
-                                <label className="text-xs font-black text-slate-800">Prérequis</label>
+                            <div className="space-y-3 border-t border-slate-800 pt-5">
+                                <label className="text-xs font-black text-slate-300">Prérequis</label>
                                 <div className="space-y-2">
                                     {prerequisKeys.map((key, i) => (
                                         <div key={key} className="flex items-center gap-3">
@@ -709,7 +718,7 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                                         if (s) s.innerText = (140 - t.value.length).toString();
                                                     }}
                                                     placeholder="Ex : Connaissances de base en administration réseau"
-                                                    className="w-full pl-4 pr-12 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-semibold outline-none transition-all" />
+                                                    className="w-full pl-4 pr-12 py-2.5 bg-[#080d1a] border border-slate-800 focus:border-blue-600 text-white rounded-xl text-xs font-semibold outline-none transition-all" />
                                                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-bold text-slate-400 pointer-events-none">140</span>
                                             </div>
                                             {prerequisKeys.length > 1 && (
@@ -730,8 +739,8 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                             </div>
 
                             {/* Public cible */}
-                            <div className="space-y-3 border-t border-slate-100 pt-5">
-                                <label className="text-xs font-black text-slate-800">Public cible</label>
+                            <div className="space-y-3 border-t border-slate-800 pt-5">
+                                <label className="text-xs font-black text-slate-300">Public cible</label>
                                 <div className="space-y-2">
                                     {publicCibleKeys.map((key, i) => (
                                         <div key={key} className="flex items-center gap-3">
@@ -744,7 +753,7 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                                         if (s) s.innerText = (140 - t.value.length).toString();
                                                     }}
                                                     placeholder="Ex : Administrateurs systèmes souhaitant passer AZ-500"
-                                                    className="w-full pl-4 pr-12 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-semibold outline-none transition-all" />
+                                                    className="w-full pl-4 pr-12 py-2.5 bg-[#080d1a] border border-slate-800 focus:border-blue-600 text-white rounded-xl text-xs font-semibold outline-none transition-all" />
                                                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-bold text-slate-400 pointer-events-none">140</span>
                                             </div>
                                             {publicCibleKeys.length > 1 && (
@@ -767,8 +776,8 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
 
                         {/* ── MODULES ── */}
                         <div className={activeSection === 'MODULES' ? 'block space-y-5' : 'hidden'}>
-                            <div className="border-b border-slate-100 pb-3">
-                                <h2 className="text-sm font-black text-slate-900">Modules du cours</h2>
+                            <div className="border-b border-slate-800 pb-3">
+                                <h2 className="text-sm font-black text-white">Modules du cours</h2>
                                 <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
                                     Gérez les chapitres de votre cours. Si le cours n'est pas encore créé, il le sera automatiquement à l'ajout du premier module.
                                 </p>
@@ -778,12 +787,12 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                         <p className="text-xs text-slate-400 italic text-center py-4">Aucun module pour l'instant.</p>
                                     ) : (
                                         modules.map((m, idx) => (
-                                            <div key={m.id} className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-100 rounded-2xl">
-                                                <span className="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 text-[10px] font-black flex items-center justify-center border border-blue-100 shrink-0">
+                                            <div key={m.id} className="flex items-center gap-3 p-4 bg-[#080d1a] border border-slate-800 rounded-2xl">
+                                                <span className="w-6 h-6 rounded-lg bg-blue-950/40 text-cyan-400 text-[10px] font-black flex items-center justify-center border border-blue-900/35 shrink-0">
                                                     {idx + 1}
                                                 </span>
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-xs font-black text-slate-800 truncate">{m.titre}</p>
+                                                    <p className="text-xs font-black text-slate-300 truncate">{m.titre}</p>
                                                     <p className="text-[10px] text-slate-400 font-bold flex items-center gap-1.5 flex-wrap">
                                                         {m.dureeEstimee && <span>{m.dureeEstimee} min</span>}
                                                         {m.contenu && <span className="text-blue-500">· Leçon</span>}
@@ -810,22 +819,22 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
 
                                     {/* Ajouter / Modifier un module */}
                                     {(addingModule || editingModule) && (
-                                        <div className="p-4 bg-blue-50 border border-blue-100 rounded-2xl space-y-3">
-                                            <p className="text-xs font-black text-blue-700">
+                                        <div className="p-4 bg-blue-950/20 border border-blue-900/40 rounded-2xl space-y-3">
+                                            <p className="text-xs font-black text-cyan-400">
                                                 {editingModule ? 'Modifier le module' : 'Nouveau module'}
                                             </p>
                                             <input type="text" value={moduleForm.titre}
                                                 onChange={e => setModuleForm(p => ({ ...p, titre: e.target.value }))}
                                                 placeholder="Titre du module"
-                                                className="w-full px-4 py-2.5 bg-white border border-blue-200 focus:border-blue-600 rounded-xl text-xs font-semibold outline-none" />
+                                                className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 rounded-xl text-xs font-semibold text-white outline-none" />
                                             <textarea rows={4} value={moduleForm.contenu}
                                                 onChange={e => setModuleForm(p => ({ ...p, contenu: e.target.value }))}
                                                 placeholder="Contenu du module (markdown ou texte)"
-                                                className="w-full px-4 py-2.5 bg-white border border-blue-200 focus:border-blue-600 rounded-xl text-xs font-semibold outline-none resize-none" />
+                                                className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 rounded-xl text-xs font-semibold text-white outline-none resize-none" />
                                             <input type="number" value={moduleForm.dureeEstimee}
                                                 onChange={e => setModuleForm(p => ({ ...p, dureeEstimee: Number(e.target.value) }))}
                                                 placeholder="Durée estimée (minutes)" min={1}
-                                                className="w-full px-4 py-2.5 bg-white border border-blue-200 focus:border-blue-600 rounded-xl text-xs font-bold outline-none" />
+                                                className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 rounded-xl text-xs font-bold text-white outline-none" />
                                             <div className="flex items-center gap-2">
                                                 <button type="button"
                                                     onClick={async () => {
@@ -862,7 +871,7 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                                     {editingModule ? 'Enregistrer' : 'Ajouter'}
                                                 </button>
                                                 <button type="button" onClick={() => { setAddingModule(false); setEditingModule(null); setModuleForm({ titre: '', dureeEstimee: 30, contenu: '' }); }}
-                                                    className="px-3 py-2.5 text-slate-500 text-xs font-bold cursor-pointer hover:text-slate-700">
+                                                    className="px-3 py-2.5 text-slate-400 text-xs font-bold cursor-pointer hover:text-slate-300">
                                                     Annuler
                                                 </button>
                                             </div>
@@ -871,7 +880,7 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
 
                                     {!addingModule && !editingModule && (
                                         <button type="button" onClick={() => setAddingModule(true)}
-                                            className="w-full py-3 border-2 border-dashed border-slate-200 hover:border-blue-300 text-slate-400 hover:text-blue-600 text-xs font-black rounded-2xl transition-all cursor-pointer flex items-center justify-center gap-2">
+                                            className="w-full py-3 border-2 border-dashed border-slate-800 hover:border-blue-500/50 text-slate-400 hover:text-white text-xs font-black rounded-2xl transition-all cursor-pointer flex items-center justify-center gap-2">
                                             <Plus className="w-4 h-4" />
                                             Ajouter un module
                                         </button>
@@ -881,8 +890,8 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
 
                         {/* ── SIMULATION ── */}
                         <div className={activeSection === 'SIMULATION' ? 'block space-y-5' : 'hidden'}>
-                            <div className="border-b border-slate-100 pb-3">
-                                <h2 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                            <div className="border-b border-slate-800 pb-3">
+                                <h2 className="text-sm font-black text-white flex items-center gap-2">
                                     <Play className="w-4 h-4 text-purple-600" />
                                     Simulation de fin de cours
                                 </h2>
@@ -897,9 +906,9 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                 </div>
                             ) : !courseSim ? (
                                 <div className="space-y-4">
-                                    <div className="p-6 bg-purple-50 border border-purple-100 rounded-2xl text-center">
-                                        <HelpCircle className="w-8 h-8 text-purple-300 mx-auto mb-2" />
-                                        <p className="text-xs font-bold text-slate-600 mb-1">
+                                    <div className="p-6 bg-[#080d1a] border border-slate-800 rounded-2xl text-center">
+                                        <HelpCircle className="w-8 h-8 text-purple-500/60 mx-auto mb-2" />
+                                        <p className="text-xs font-bold text-slate-300 mb-1">
                                             Aucune simulation configurée pour ce cours.
                                         </p>
                                         <p className="text-[10px] text-slate-400 font-semibold mb-4">
@@ -914,28 +923,28 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                             Créer la simulation
                                         </button>
                                     ) : (
-                                        <div className="p-4 bg-purple-50 border border-purple-100 rounded-2xl space-y-3">
-                                            <p className="text-xs font-black text-purple-700">Nouvelle simulation</p>
+                                        <div className="p-4 bg-purple-950/20 border border-purple-900/40 rounded-2xl space-y-3">
+                                            <p className="text-xs font-black text-cyan-400">Nouvelle simulation</p>
                                             <input type="text" value={simForm.titre}
                                                 onChange={e => setSimForm(p => ({ ...p, titre: e.target.value }))}
                                                 placeholder="Titre de la simulation"
-                                                className="w-full px-4 py-2.5 bg-white border border-purple-200 focus:border-purple-600 rounded-xl text-xs font-semibold outline-none" />
+                                                className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-xl text-xs font-semibold text-white outline-none" />
                                             <textarea rows={2} value={simForm.description}
                                                 onChange={e => setSimForm(p => ({ ...p, description: e.target.value }))}
                                                 placeholder="Description (optionnelle)"
-                                                className="w-full px-4 py-2.5 bg-white border border-purple-200 focus:border-purple-600 rounded-xl text-xs font-semibold outline-none resize-none" />
+                                                className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-xl text-xs font-semibold text-white outline-none resize-none" />
                                             <div className="grid grid-cols-2 gap-3">
                                                 <div className="space-y-1">
-                                                    <label className="text-[10px] font-bold text-slate-500">Durée (min)</label>
+                                                    <label className="text-[10px] font-bold text-slate-400">Durée (min)</label>
                                                     <input type="number" value={simForm.duree}
                                                         onChange={e => setSimForm(p => ({ ...p, duree: Number(e.target.value) }))} min={1}
-                                                        className="w-full px-4 py-2.5 bg-white border border-purple-200 focus:border-purple-600 rounded-xl text-xs font-bold outline-none" />
+                                                        className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-xl text-xs font-bold text-white outline-none" />
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <label className="text-[10px] font-bold text-slate-500">Score min. (%)</label>
+                                                    <label className="text-[10px] font-bold text-slate-400">Score min. (%)</label>
                                                     <input type="number" value={simForm.scoreMinimal}
                                                         onChange={e => setSimForm(p => ({ ...p, scoreMinimal: Number(e.target.value) }))} min={0} max={100}
-                                                        className="w-full px-4 py-2.5 bg-white border border-purple-200 focus:border-purple-600 rounded-xl text-xs font-bold outline-none" />
+                                                        className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-xl text-xs font-bold text-white outline-none" />
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-2">
@@ -967,7 +976,7 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                                     Créer
                                                 </button>
                                                 <button type="button" onClick={() => setCreatingSim(false)}
-                                                    className="px-3 py-2.5 text-slate-500 text-xs font-bold cursor-pointer hover:text-slate-700">
+                                                    className="px-3 py-2.5 text-slate-400 text-xs font-bold cursor-pointer hover:text-slate-300">
                                                     Annuler
                                                 </button>
                                             </div>
@@ -977,11 +986,11 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                             ) : (
                                 <div className="space-y-5">
                                     {/* Infos simulation */}
-                                    <div className="p-4 bg-purple-50 border border-purple-100 rounded-2xl flex items-center justify-between">
+                                    <div className="p-4 bg-[#080d1a] border border-slate-800 rounded-2xl flex items-center justify-between">
                                         <div>
-                                            <p className="text-xs font-black text-purple-800">{courseSim.titre}</p>
+                                            <p className="text-xs font-black text-purple-400">{courseSim.titre}</p>
                                             {courseSim.description && (
-                                                <p className="text-[10px] text-purple-600 font-semibold mt-0.5">{courseSim.description}</p>
+                                                <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{courseSim.description}</p>
                                             )}
                                             <p className="text-[10px] text-slate-400 font-bold mt-1">
                                                 {courseSim.duree} min · Score min. {courseSim.scoreMinimal}%
@@ -992,7 +1001,7 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                     {/* Questions */}
                                     <div>
                                         <div className="flex items-center justify-between mb-3">
-                                            <h3 className="text-xs font-black text-slate-700">
+                                            <h3 className="text-xs font-black text-slate-300">
                                                 Questions ({simQuestions.length})
                                             </h3>
                                             {!addingQuestion && !editingQuestion && (
@@ -1013,18 +1022,18 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
 
                                         <div className="space-y-2">
                                             {simQuestions.map((q, idx) => (
-                                                <div key={q.id} className="flex items-start gap-3 p-3 bg-slate-50 border border-slate-100 rounded-xl">
-                                                    <span className="w-5 h-5 rounded-lg bg-purple-50 text-purple-600 text-[9px] font-black flex items-center justify-center border border-purple-100 shrink-0 mt-0.5">
+                                                <div key={q.id} className="flex items-start gap-3 p-3 bg-[#080d1a] border border-slate-800 rounded-xl">
+                                                    <span className="w-5 h-5 rounded-lg bg-purple-950/40 text-purple-400 text-[9px] font-black flex items-center justify-center border border-purple-900/35 shrink-0 mt-0.5">
                                                         {idx + 1}
                                                     </span>
                                                     <div className="flex-1 min-w-0">
-                                                        <p className="text-xs font-bold text-slate-700">{q.enonce}</p>
+                                                        <p className="text-xs font-bold text-slate-300">{q.enonce}</p>
                                                         <p className="text-[10px] text-slate-400 font-semibold mt-0.5 flex items-center gap-2 flex-wrap">
                                                             <span className={q.type === 'QCM' ? 'text-blue-500' : q.type === 'VRAI_FAUX' ? 'text-emerald-500' : 'text-amber-500'}>
                                                                 {q.type}
                                                             </span>
                                                             {q.options?.length > 0 && <span>{q.options.length} options</span>}
-                                                            <span className="text-xs">· Rép: <strong className="text-slate-600">{q.reponseCorrecte}</strong></span>
+                                                            <span className="text-xs">· Rép: <strong className="text-slate-400">{q.reponseCorrecte}</strong></span>
                                                         </p>
                                                     </div>
                                                     <div className="flex items-center gap-1 shrink-0">
@@ -1062,18 +1071,18 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
 
                                         {/* Ajouter / Modifier question */}
                                         {(addingQuestion || editingQuestion) && (
-                                            <div className="p-4 bg-purple-50 border border-purple-100 rounded-2xl space-y-3 mt-3">
-                                                <p className="text-xs font-black text-purple-700">
+                                            <div className="p-4 bg-purple-950/20 border border-purple-900/40 rounded-2xl space-y-3 mt-3">
+                                                <p className="text-xs font-black text-cyan-400">
                                                     {editingQuestion ? 'Modifier la question' : 'Nouvelle question'}
                                                 </p>
                                                 <input type="text" value={qForm.enonce}
                                                     onChange={e => setQForm(p => ({ ...p, enonce: e.target.value }))}
                                                     placeholder="Énoncé de la question"
-                                                    className="w-full px-4 py-2.5 bg-white border border-purple-200 focus:border-purple-600 rounded-xl text-xs font-semibold outline-none" />
+                                                    className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-xl text-xs font-semibold text-white outline-none" />
                                                 <div className="space-y-1">
-                                                    <label className="text-[10px] font-bold text-slate-500">Type</label>
+                                                    <label className="text-[10px] font-bold text-slate-400">Type</label>
                                                     <select value={qForm.type} onChange={e => setQForm(p => ({ ...p, type: e.target.value, options: e.target.value === 'VRAI_FAUX' ? [{ lettre: 'V', texte: 'Vrai' }, { lettre: 'F', texte: 'Faux' }] : e.target.value === 'QCM' ? [{ lettre: 'A', texte: '' }, { lettre: 'B', texte: '' }] : [] }))}
-                                                        className="w-full px-4 py-2.5 bg-white border border-purple-200 focus:border-purple-600 rounded-xl text-xs font-bold outline-none cursor-pointer">
+                                                        className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-xl text-xs font-bold text-white outline-none cursor-pointer">
                                                         <option value="QCM">QCM (choix multiple)</option>
                                                         <option value="VRAI_FAUX">Vrai / Faux</option>
                                                         <option value="REDACTION">Rédaction</option>
@@ -1084,7 +1093,7 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                                     <div className="space-y-2">
                                                         {qForm.options.map((opt, oi) => (
                                                             <div key={oi} className="flex items-center gap-2">
-                                                                <span className="text-[10px] font-black text-slate-500 w-4 shrink-0">{opt.lettre}</span>
+                                                                <span className="text-[10px] font-black text-slate-400 w-4 shrink-0">{opt.lettre}</span>
                                                                 <input type="text" value={opt.texte}
                                                                     onChange={e => {
                                                                         const newOpts = [...qForm.options];
@@ -1092,7 +1101,7 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                                                         setQForm(p => ({ ...p, options: newOpts }));
                                                                     }}
                                                                     placeholder={`Option ${opt.lettre}`}
-                                                                    className="flex-1 px-3 py-2 bg-white border border-purple-200 focus:border-purple-600 rounded-lg text-xs font-semibold outline-none" />
+                                                                    className="flex-1 px-3 py-2 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-lg text-xs font-semibold text-white outline-none" />
                                                                 {oi === qForm.options.length - 1 && qForm.options.length < 6 && (
                                                                     <button type="button" onClick={() => {
                                                                         const nextLetter = String.fromCharCode(65 + qForm.options.length);
@@ -1116,17 +1125,17 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                                 )}
 
                                                 <div className="space-y-1">
-                                                    <label className="text-[10px] font-bold text-slate-500">Réponse correcte</label>
+                                                    <label className="text-[10px] font-bold text-slate-400">Réponse correcte</label>
                                                     {qForm.type === 'VRAI_FAUX' ? (
                                                         <select value={qForm.reponseCorrecte} onChange={e => setQForm(p => ({ ...p, reponseCorrecte: e.target.value }))}
-                                                            className="w-full px-4 py-2.5 bg-white border border-purple-200 focus:border-purple-600 rounded-xl text-xs font-bold outline-none cursor-pointer">
+                                                            className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-xl text-xs font-bold text-white outline-none cursor-pointer">
                                                             <option value="">Sélectionner...</option>
                                                             <option value="V">Vrai</option>
                                                             <option value="F">Faux</option>
                                                         </select>
                                                     ) : qForm.type === 'QCM' ? (
                                                         <select value={qForm.reponseCorrecte} onChange={e => setQForm(p => ({ ...p, reponseCorrecte: e.target.value }))}
-                                                            className="w-full px-4 py-2.5 bg-white border border-purple-200 focus:border-purple-600 rounded-xl text-xs font-bold outline-none cursor-pointer">
+                                                            className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-xl text-xs font-bold text-white outline-none cursor-pointer">
                                                             <option value="">Sélectionner...</option>
                                                             {qForm.options.filter(o => o.texte.trim()).map(o => (
                                                                 <option key={o.lettre} value={o.lettre}>{o.lettre}. {o.texte}</option>
@@ -1136,16 +1145,16 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                                         <input type="text" value={qForm.reponseCorrecte}
                                                             onChange={e => setQForm(p => ({ ...p, reponseCorrecte: e.target.value }))}
                                                             placeholder="Réponse attendue (ou mots-clés)"
-                                                            className="w-full px-4 py-2.5 bg-white border border-purple-200 focus:border-purple-600 rounded-xl text-xs font-semibold outline-none" />
+                                                            className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-xl text-xs font-semibold text-white outline-none" />
                                                     )}
                                                 </div>
 
                                                 <div className="space-y-1">
-                                                    <label className="text-[10px] font-bold text-slate-500">Explication (optionnelle)</label>
+                                                    <label className="text-[10px] font-bold text-slate-400">Explication (optionnelle)</label>
                                                     <textarea rows={2} value={qForm.explication}
                                                         onChange={e => setQForm(p => ({ ...p, explication: e.target.value }))}
                                                         placeholder="Expliquer pourquoi cette réponse est correcte..."
-                                                        className="w-full px-4 py-2.5 bg-white border border-purple-200 focus:border-purple-600 rounded-xl text-xs font-semibold outline-none resize-none" />
+                                                        className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-xl text-xs font-semibold text-white outline-none resize-none" />
                                                 </div>
 
                                                 <div className="flex items-center gap-2">
@@ -1181,7 +1190,7 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                                         {editingQuestion ? 'Enregistrer' : 'Ajouter'}
                                                     </button>
                                                     <button type="button" onClick={() => { setAddingQuestion(false); setEditingQuestion(null); setQForm({ enonce: '', type: 'QCM', reponseCorrecte: '', explication: '', options: [{ lettre: 'A', texte: '' }, { lettre: 'B', texte: '' }] }); }}
-                                                        className="px-3 py-2.5 text-slate-500 text-xs font-bold cursor-pointer hover:text-slate-700">
+                                                        className="px-3 py-2.5 text-slate-400 text-xs font-bold cursor-pointer hover:text-slate-300">
                                                         Annuler
                                                     </button>
                                                 </div>
@@ -1198,22 +1207,22 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
 
             {/* Confirmation de sortie avec modifications non sauvegardées */}
             {exitAction === 'prompt' && (
-                <div className="absolute inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/60"
+                <div className="absolute inset-0 z-[60] flex items-center justify-center p-4 bg-[#020617]/80 backdrop-blur-xs"
                     onClick={(e) => { if (e.target === e.currentTarget) setExitAction(null); }}>
-                    <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl space-y-6 text-left relative overflow-hidden">
+                    <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl space-y-6 text-left relative overflow-hidden">
                         <div className="flex items-start gap-3">
-                            <div className="w-12 h-12 rounded-2xl flex items-center justify-center border bg-amber-50 border-amber-100 text-amber-600 shrink-0">
+                            <div className="w-12 h-12 rounded-2xl flex items-center justify-center border bg-amber-950/20 border-amber-900/40 text-amber-500 shrink-0">
                                 <AlertTriangle className="w-6 h-6" />
                             </div>
                             <div className="space-y-1">
-                                <h3 className="text-lg font-black text-slate-950">Modifications non sauvegardées</h3>
-                                <p className="text-xs font-semibold text-slate-500">
+                                <h3 className="text-lg font-black text-white">Modifications non sauvegardées</h3>
+                                <p className="text-xs font-semibold text-slate-400">
                                     Vous avez des changements qui n'ont pas encore été enregistrés.
                                 </p>
                             </div>
                         </div>
 
-                        <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                        <p className="text-xs text-slate-300 font-medium leading-relaxed">
                             Que souhaitez-vous faire ? Vous pouvez enregistrer vos modifications en tant que brouillon,
                             ou les ignorer.
                         </p>
@@ -1225,11 +1234,11 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                 {saving ? 'Sauvegarde...' : 'Enregistrer'}
                             </button>
                             <button onClick={handleExitDiscard}
-                                className="w-full px-5 py-3 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-xl text-xs transition-all cursor-pointer">
+                                className="w-full px-5 py-3 bg-rose-950/30 hover:bg-rose-900/30 border border-rose-900/40 text-rose-500 font-bold rounded-xl text-xs transition-all cursor-pointer">
                                 Ne pas enregistrer
                             </button>
                             <button onClick={() => setExitAction(null)}
-                                className="w-full px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-all cursor-pointer">
+                                className="w-full px-5 py-3 bg-[#020617] hover:bg-slate-900 border border-slate-800 text-slate-300 font-bold rounded-xl text-xs transition-all cursor-pointer">
                                 Annuler
                             </button>
                         </div>

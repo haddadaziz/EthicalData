@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Search, X, Plus, ChevronDown, Award } from '@/components/icons';
+import { Search, X, Plus, ChevronDown, Award, User } from '@/components/icons';
 import { getProviderLogo, getCertificateBadgeLogo } from '@/lib/certification-utils';
 import { THEMES, Fournisseur, Certification } from '@/lib/types';
 
@@ -21,6 +21,8 @@ interface FilterBarProps {
     certFilterDropdownOpen: boolean;
     setCertFilterDropdownOpen: (v: boolean) => void;
     onNewDiscussion: () => void;
+    showOnlyMyPosts: boolean;
+    onShowOnlyMyPostsChange: (v: boolean) => void;
 }
 
 export default function FilterBar({
@@ -39,6 +41,8 @@ export default function FilterBar({
     certFilterDropdownOpen,
     setCertFilterDropdownOpen,
     onNewDiscussion,
+    showOnlyMyPosts,
+    onShowOnlyMyPostsChange,
 }: FilterBarProps) {
     return (
         <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-4 md:p-5 space-y-4 shadow-sm text-left">
@@ -55,7 +59,7 @@ export default function FilterBar({
                     <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
                     <input
                         type="text"
-                        placeholder="Rechercher un sujet, un mot-clé ou un auteur..."
+                        placeholder="Rechercher ..."
                         value={searchQuery}
                         onChange={(e) => onSearchChange(e.target.value)}
                         className="w-full pl-11 pr-4 py-3 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-2xl text-white text-xs font-semibold outline-none transition-all"
@@ -115,7 +119,7 @@ export default function FilterBar({
                                                 }`}
                                             >
                                                 {logo ? (
-                                                    <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0 bg-white" />
+                                                    <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0" />
                                                 ) : (
                                                     <div className="w-7 h-7 rounded-lg bg-slate-900 flex items-center justify-center shrink-0 border border-slate-800">
                                                         <Award className="w-4 h-4 text-slate-500" />
@@ -147,7 +151,7 @@ export default function FilterBar({
                                 const activeCertObj = certifications.find((c: Certification) => String(c.id) === String(selectedCert));
                                 const logo = getCertificateBadgeLogo(activeCertObj);
                                 return logo ? (
-                                    <img src={logo} alt="" className="w-4.5 h-4.5 object-contain rounded shrink-0 bg-white" />
+                                    <img src={logo} alt="" className="w-4.5 h-4.5 object-contain rounded shrink-0" />
                                 ) : null;
                             })()
                         )}
@@ -197,7 +201,7 @@ export default function FilterBar({
                                                     }`}
                                                 >
                                                     {logo ? (
-                                                        <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0 bg-white" />
+                                                        <img src={logo} alt="" className="w-7 h-7 object-contain rounded shrink-0" />
                                                     ) : (
                                                         <div className="w-7 h-7 rounded-lg bg-slate-900 flex items-center justify-center shrink-0 border border-slate-800">
                                                             <Award className="w-4 h-4 text-slate-500" />
@@ -216,19 +220,33 @@ export default function FilterBar({
                 </div>
             </div>
 
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-                {THEMES.map((theme) => (
-                    <button
-                        key={theme}
-                        onClick={() => onThemeChange(theme)}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${selectedTheme === theme
-                            ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.3)]'
-                            : 'bg-[#020617] text-slate-400 hover:text-white hover:bg-slate-900 border border-slate-800'
-                            }`}
-                    >
-                        {theme}
-                    </button>
-                ))}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+                    {THEMES.map((theme) => (
+                        <button
+                            key={theme}
+                            onClick={() => onThemeChange(theme)}
+                            className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${selectedTheme === theme
+                                ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.3)]'
+                                : 'bg-[#020617] text-slate-400 hover:text-white hover:bg-slate-900 border border-slate-800'
+                                }`}
+                        >
+                            {theme}
+                        </button>
+                    ))}
+                </div>
+
+                <button
+                    type="button"
+                    onClick={() => onShowOnlyMyPostsChange(!showOnlyMyPosts)}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer border flex items-center gap-1.5 self-start sm:self-auto ${showOnlyMyPosts
+                        ? 'bg-[#155e75] text-white border-[#155e75] shadow-[0_0_15px_rgba(21,94,117,0.3)]'
+                        : 'bg-[#020617] text-slate-400 hover:text-white hover:bg-slate-900 border-slate-800'
+                        }`}
+                >
+                    <User className="w-3.5 h-3.5" />
+                    <span>Mes publications</span>
+                </button>
             </div>
         </div>
     );

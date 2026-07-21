@@ -100,7 +100,7 @@ export default function SettingsPage() {
                             type="checkbox"
                             checked={notifReplies}
                             onChange={(e) => setNotifReplies(e.target.checked)}
-                            className="accent-red-600 w-5 h-5 cursor-pointer rounded bg-slate-800 border-slate-700 focus:ring-blue-600/20"
+                            className="accent-blue-600 w-5 h-5 cursor-pointer rounded bg-slate-800 border-slate-700 focus:ring-blue-600/20"
                         />
                     </label>
 
@@ -113,7 +113,7 @@ export default function SettingsPage() {
                             type="checkbox"
                             checked={notifLikes}
                             onChange={(e) => setNotifLikes(e.target.checked)}
-                            className="accent-red-600 w-5 h-5 cursor-pointer rounded bg-slate-800 border-slate-700 focus:ring-blue-600/20"
+                            className="accent-blue-600 w-5 h-5 cursor-pointer rounded bg-slate-800 border-slate-700 focus:ring-blue-600/20"
                         />
                     </label>
 
@@ -126,7 +126,7 @@ export default function SettingsPage() {
                             type="checkbox"
                             checked={notifSystem}
                             onChange={(e) => setNotifSystem(e.target.checked)}
-                            className="accent-red-600 w-5 h-5 cursor-pointer rounded bg-slate-800 border-slate-700 focus:ring-blue-600/20"
+                            className="accent-blue-600 w-5 h-5 cursor-pointer rounded bg-slate-800 border-slate-700 focus:ring-blue-600/20"
                         />
                     </label>
 
@@ -143,7 +143,7 @@ export default function SettingsPage() {
                             type="checkbox"
                             checked={showTargetedCerts}
                             onChange={(e) => setShowTargetedCerts(e.target.checked)}
-                            className="accent-red-600 w-5 h-5 cursor-pointer rounded bg-slate-800 border-slate-700 focus:ring-blue-600/20"
+                            className="accent-blue-600 w-5 h-5 cursor-pointer rounded bg-slate-800 border-slate-700 focus:ring-blue-600/20"
                         />
                     </label>
 
@@ -156,7 +156,7 @@ export default function SettingsPage() {
                             type="checkbox"
                             checked={showObtainedCerts}
                             onChange={(e) => setShowObtainedCerts(e.target.checked)}
-                            className="accent-red-600 w-5 h-5 cursor-pointer rounded bg-slate-800 border-slate-700 focus:ring-blue-600/20"
+                            className="accent-blue-600 w-5 h-5 cursor-pointer rounded bg-slate-800 border-slate-700 focus:ring-blue-600/20"
                         />
                     </label>
                 </div>

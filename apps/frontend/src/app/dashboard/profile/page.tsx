@@ -662,7 +662,7 @@ export default function ProfilePage() {
                                                 className="flex items-center gap-3 p-3 bg-[#020617] hover:bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl transition-all duration-200 group"
                                             >
                                                 {logo.endsWith('.svg') || logo.endsWith('.png') ? (
-                                                    <img src={logo} alt={cert.nom} className="w-9 h-9 object-contain group-hover:scale-105 transition-transform bg-white rounded-lg p-1" />
+                                                    <img src={logo} alt={cert.nom} className="w-9 h-9 object-contain group-hover:scale-105 transition-transform bg-slate-900 border border-slate-800/80 rounded-lg p-1" />
                                                 ) : (
                                                     <div className="w-9 h-9 rounded-xl bg-blue-950/30 border border-blue-900/50 flex items-center justify-center text-cyan-400 text-xs font-black">
                                                         {(cert.codeExamen || 'CERT').slice(0, 3)}

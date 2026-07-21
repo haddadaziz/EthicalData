@@ -255,7 +255,7 @@ export default function CertificationsPublicPage() {
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Rechercher par nom, code (AZ-900, ISO-27001...)"
+                                placeholder="Rechercher ..."
                                 className="w-full pl-10 pr-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 focus:bg-[#020617] text-white placeholder-slate-500 rounded-xl text-xs font-semibold outline-none transition-all shadow-sm"
                             />
                         </div>
@@ -492,7 +492,7 @@ export default function CertificationsPublicPage() {
                                             onClick={() => setCurrentPage(pageNum)}
                                             className={`w-9 h-9 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center ${
                                                 isActive
-                                                    ? 'bg-blue-600 text-white shadow-md'
+                                                    ? 'bg-gradient-to-r from-blue-600 to-cyan-600 shadow-[0_0_15px_rgba(37,99,235,0.4)] text-white'
                                                     : 'bg-transparent text-slate-500 hover:bg-[#020617] hover:text-white'
                                             }`}
                                         >

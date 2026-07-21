@@ -51,7 +51,7 @@ export default function SystemSettingsPage() {
   });
 
   const [ai, setAi] = useState({
-    activeModel: 'gemini-1.5-flash',
+    activeModel: 'gemini-2.5-flash',
     apiKey: '',
     apiUrl: '',
     customPrompt: '',
@@ -382,7 +382,7 @@ export default function SystemSettingsPage() {
                     value={rawBannedIps}
                     onChange={(e) => setRawBannedIps(e.target.value)}
                     placeholder="Ex: 192.168.1.100"
-                    className="w-full p-3 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-semibold outline-none transition-all resize-none font-mono"
+                    className="w-full p-3 bg-[#020617] border border-slate-800 focus:border-blue-600 focus:bg-[#080d1a] rounded-xl text-xs font-semibold outline-none transition-all resize-none font-mono"
                   />
                 </div>
               </div>
@@ -427,11 +427,11 @@ export default function SystemSettingsPage() {
                     list="ai-models"
                     value={ai.activeModel}
                     onChange={(e) => setAi({ ...ai, activeModel: e.target.value })}
-                    placeholder="ex: gpt-4o, gemini-1.5-flash, llama-3"
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-xl text-xs font-bold outline-none transition-all"
+                    placeholder="ex: gpt-4o, gemini-2.5-flash, llama-3"
+                    className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 focus:bg-[#080d1a] rounded-xl text-xs font-bold outline-none transition-all"
                   />
                   <datalist id="ai-models">
-                    <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                    <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
                     <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash</option>
                     <option value="gpt-4o-mini">GPT-4o Mini</option>
                     <option value="gpt-4o">GPT-4o</option>
@@ -495,7 +495,7 @@ export default function SystemSettingsPage() {
                 <button
                   type="submit"
                   disabled={saving.ai}
-                  className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer transition-all shadow-md disabled:opacity-50"
+                  className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer transition-all shadow-md disabled:opacity-50"
                 >
                   {saving.ai ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                   <span>Enregistrer la config IA</span>
@@ -657,7 +657,7 @@ export default function SystemSettingsPage() {
                 <hr className="border-slate-800" />
 
                 <div className="flex items-center">
-                  <label className="w-full flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors">
+                  <label className="w-full flex items-center justify-between p-3.5 bg-[#020617] border border-slate-800 rounded-xl cursor-pointer hover:bg-slate-800/70 transition-colors">
                     <div className="space-y-0.5 text-left">
                       <h4 className="text-xs font-bold text-white">Activer l'Authentification Unique (SSO)</h4>
                       <p className="text-[10px] text-slate-400 font-medium">Permet la connexion via Google/Microsoft Azure AD d'entreprise.</p>
@@ -676,7 +676,7 @@ export default function SystemSettingsPage() {
                 <button
                   type="submit"
                   disabled={saving.integrations}
-                  className="px-6 py-3 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer transition-all shadow-md disabled:opacity-50"
+                  className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer transition-all shadow-md disabled:opacity-50"
                 >
                   {saving.integrations ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                   <span>Enregistrer les intégrations</span>

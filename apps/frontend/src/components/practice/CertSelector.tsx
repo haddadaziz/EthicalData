@@ -15,9 +15,9 @@ export default function CertSelector({ certifications, certLogos, onSelect, form
       {certifications.map((cert) => (
         <div
           key={cert.id}
-          className="bg-[#080d1a] border border-slate-800 rounded-2xl p-4 flex flex-col justify-between group transition-all duration-300 hover:shadow-lg hover:border-slate-700 text-left"
+          className="bg-[#080d1a] border border-blue-900/40 rounded-2xl p-4 flex flex-col justify-between group transition-all duration-300 hover:shadow-lg hover:shadow-blue-900/30 hover:border-blue-600 text-left"
         >
-          <div onClick={() => onSelect(cert)} className="relative w-full aspect-[4/3] sm:aspect-auto sm:h-[240px] rounded-xl overflow-hidden shadow-sm transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-blue-900/30 group-hover:shadow-2xl bg-[#020617] border border-slate-700 cursor-pointer">
+          <div onClick={() => onSelect(cert)} className="relative w-full aspect-[4/3] sm:aspect-auto sm:h-[240px] rounded-xl overflow-hidden shadow-sm transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-blue-900/30 group-hover:shadow-2xl bg-[#020617] border border-blue-900/40 cursor-pointer">
             <img src="/images/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0" />
 
             {cert.codeExamen && (

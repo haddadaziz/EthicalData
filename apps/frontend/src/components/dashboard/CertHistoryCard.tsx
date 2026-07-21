@@ -11,16 +11,16 @@ interface CertHistoryCardProps {
 }
 
 export default function CertHistoryCard({ item, cert, index, onCertClick, formatDate }: CertHistoryCardProps) {
-    const isPassed = item.score >= 80;
-    const isWarning = item.score >= 65 && item.score < 80;
+    const badgeGreen = item.score >= 70;
+    const badgeOrange = item.score >= 30 && item.score < 70;
 
     return (
         <div className="p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-800/40 transition-colors">
             <div className="flex items-center gap-4">
                 <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-xs shrink-0 ${
-                    isPassed ? 'bg-emerald-950/30 text-emerald-500 border border-emerald-900/50' :
-                    isWarning ? 'bg-amber-950/30 text-amber-500 border border-amber-900/50' :
-                    'bg-blue-950/30 text-cyan-400 border border-blue-900/50'
+                    badgeGreen ? 'bg-emerald-950/30 text-emerald-500 border border-emerald-900/50' :
+                    badgeOrange ? 'bg-amber-950/30 text-amber-500 border border-amber-900/50' :
+                    'bg-rose-950/30 text-rose-500 border border-rose-900/50'
                 }`}>
                     {item.score}%
                 </div>
@@ -40,11 +40,11 @@ export default function CertHistoryCard({ item, cert, index, onCertClick, format
 
             <div className="flex items-center gap-3 self-end sm:self-center shrink-0">
                 <span className={`text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-lg border ${
-                    isPassed ? 'bg-emerald-950/30 text-emerald-500 border-emerald-900/50' :
-                    isWarning ? 'bg-amber-950/30 text-amber-500 border-amber-900/50' :
-                    'bg-blue-950/30 text-cyan-400 border-blue-900/50'
+                    badgeGreen ? 'bg-emerald-950/30 text-emerald-500 border-emerald-900/50' :
+                    badgeOrange ? 'bg-amber-950/30 text-amber-500 border border-amber-900/50' :
+                    'bg-rose-950/30 text-rose-500 border border-rose-900/50'
                 }`}>
-                    {isPassed ? 'RÉUSSI' : isWarning ? 'À PEAUFINER' : 'À RENFORCER'}
+                    {badgeGreen ? 'RÉUSSI' : badgeOrange ? 'À PEAUFINER' : 'À RENFORCER'}
                 </span>
 
                 <Link

@@ -22,12 +22,15 @@ export default function AdminDashboardPage() {
     const loadAdminData = async () => {
         setLoading(true);
         try {
-            const [usersData, certsData, coursData, rdvData] = await Promise.all([
+            const [meProfile, usersData, certsData, coursData, rdvData] = await Promise.all([
+                apiFetch('/users/me/profile').catch(() => null),
                 apiFetch('/users'),
                 apiFetch('/certifications'),
                 apiFetch('/cours'),
                 apiFetch('/appointments/all'),
             ]);
+
+            const currentUserId = meProfile?.id;
 
             setStats({
                 totalUsers: usersData.length,
@@ -37,7 +40,11 @@ export default function AdminDashboardPage() {
                 totalRdv: rdvData.length,
             });
 
-            setRecentUsers(usersData.slice(0, 6));
+            const filteredUsers = currentUserId
+                ? usersData.filter((u: any) => u.id !== currentUserId)
+                : usersData;
+
+            setRecentUsers(filteredUsers.slice(0, 6));
         } catch (err: any) {
             console.error("Erreur chargement stats admin:", err);
         } finally {
@@ -59,14 +66,14 @@ export default function AdminDashboardPage() {
     }
 
     return (
-        <div className="space-y-8 max-w-7xl mx-auto text-left pt-6 bg-[#020617]">
+        <div className="space-y-8 max-w-7xl mx-auto text-left pt-6 bg-[#020617] min-w-0 overflow-x-hidden">
 
             {/* CARTES KPI PRINCIPALES (GRID RESPONSIVE) */}
             <div className="space-y-4">
                 <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">Statistiques Globales</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 {/* Utilisateurs Totaux */}
-                <div className="p-6 bg-[#080d1a] border border-slate-800 rounded-3xl space-y-4 shadow-sm hover:shadow-md transition-all">
+                <div className="p-6 bg-[#080d1a] border border-blue-900/40 rounded-3xl space-y-4 shadow-sm hover:border-blue-600 hover:shadow-blue-900/30 transition-all">
                     <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Utilisateurs Inscrits</span>
                         <div className="w-9 h-9 rounded-2xl bg-blue-950/30 text-cyan-400 flex items-center justify-center">
@@ -80,7 +87,7 @@ export default function AdminDashboardPage() {
                 </div>
 
                 {/* Certifications */}
-                <div className="p-6 bg-[#080d1a] border border-slate-800 rounded-3xl space-y-4 shadow-sm hover:shadow-md transition-all">
+                <div className="p-6 bg-[#080d1a] border border-blue-900/40 rounded-3xl space-y-4 shadow-sm hover:border-blue-600 hover:shadow-blue-900/30 transition-all">
                     <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Certifications actives</span>
                         <div className="w-9 h-9 rounded-2xl bg-amber-950/30 text-amber-400 flex items-center justify-center">
@@ -94,7 +101,7 @@ export default function AdminDashboardPage() {
                 </div>
 
                 {/* Cours sur la plateforme */}
-                <div className="p-6 bg-[#080d1a] border border-slate-800 rounded-3xl space-y-4 shadow-sm hover:shadow-md transition-all">
+                <div className="p-6 bg-[#080d1a] border border-blue-900/40 rounded-3xl space-y-4 shadow-sm hover:border-blue-600 hover:shadow-blue-900/30 transition-all">
                     <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Cours sur la plateforme</span>
                         <div className="w-9 h-9 rounded-2xl bg-emerald-950/30 text-emerald-400 flex items-center justify-center">
@@ -108,10 +115,10 @@ export default function AdminDashboardPage() {
                 </div>
 
                 {/* Rendez-vous Coaching */}
-                <div className="p-6 bg-[#080d1a] border border-slate-800 rounded-3xl space-y-4 shadow-sm hover:shadow-md transition-all">
+                <div className="p-6 bg-[#080d1a] border border-blue-900/40 rounded-3xl space-y-4 shadow-sm hover:border-blue-600 hover:shadow-blue-900/30 transition-all">
                     <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rendez-vous Plannifiés</span>
-                        <div className="w-9 h-9 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                        <div className="w-9 h-9 rounded-2xl bg-purple-950/30 text-purple-400 flex items-center justify-center">
                             <Calendar className="w-4 h-4" />
                         </div>
                     </div>
@@ -131,7 +138,7 @@ export default function AdminDashboardPage() {
                     {/* Carte 1: Gestion Utilisateurs */}
                     <a
                         href="/admin/users"
-                        className="p-6 bg-[#080d1a] border border-slate-800 rounded-3xl space-y-3 hover:border-slate-700 hover:shadow-md transition-all group flex flex-col justify-between"
+                        className="p-6 bg-[#080d1a] border border-blue-900/40 rounded-3xl space-y-3 hover:border-blue-600 hover:shadow-blue-900/30 transition-all group flex flex-col justify-between"
                     >
                         <div className="flex items-center justify-between">
                             <div className="w-10 h-10 rounded-2xl bg-blue-950/30 text-cyan-400 flex items-center justify-center">
@@ -148,7 +155,7 @@ export default function AdminDashboardPage() {
                     {/* Carte 2: Gestion Formations */}
                     <a
                         href="/admin/certifications"
-                        className="p-6 bg-[#080d1a] border border-slate-800 rounded-3xl space-y-3 hover:border-slate-700 hover:shadow-md transition-all group flex flex-col justify-between"
+                        className="p-6 bg-[#080d1a] border border-blue-900/40 rounded-3xl space-y-3 hover:border-blue-600 hover:shadow-blue-900/30 transition-all group flex flex-col justify-between"
                     >
                         <div className="flex items-center justify-between">
                             <div className="w-10 h-10 rounded-2xl bg-amber-950/30 text-amber-400 flex items-center justify-center">
@@ -165,7 +172,7 @@ export default function AdminDashboardPage() {
                     {/* Carte 3: Forum & Modération */}
                     <a
                         href="/admin/community"
-                        className="p-6 bg-[#080d1a] border border-slate-800 rounded-3xl space-y-3 hover:border-slate-700 hover:shadow-md transition-all group flex flex-col justify-between"
+                        className="p-6 bg-[#080d1a] border border-blue-900/40 rounded-3xl space-y-3 hover:border-blue-600 hover:shadow-blue-900/30 transition-all group flex flex-col justify-between"
                     >
                         <div className="flex items-center justify-between">
                             <div className="w-10 h-10 rounded-2xl bg-rose-950/30 text-rose-400 flex items-center justify-center">
@@ -182,10 +189,10 @@ export default function AdminDashboardPage() {
                     {/* Carte 4: Planning & Coaching */}
                     <a
                         href="/admin/coaching"
-                        className="p-6 bg-[#080d1a] border border-slate-800 rounded-3xl space-y-3 hover:border-slate-700 hover:shadow-md transition-all group flex flex-col justify-between"
+                        className="p-6 bg-[#080d1a] border border-blue-900/40 rounded-3xl space-y-3 hover:border-blue-600 hover:shadow-blue-900/30 transition-all group flex flex-col justify-between"
                     >
                         <div className="flex items-center justify-between">
-                            <div className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                            <div className="w-10 h-10 rounded-2xl bg-purple-950/30 text-purple-400 flex items-center justify-center">
                                 <Calendar className="w-5 h-5" />
                             </div>
                             <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
@@ -207,7 +214,7 @@ export default function AdminDashboardPage() {
                     </div>
                     <a
                         href="/admin/users"
-                        className="px-4 py-2.5 bg-slate-950 hover:bg-slate-800 text-white font-bold rounded-xl transition-all text-xs flex items-center justify-center gap-1.5 self-end sm:self-auto shadow-sm"
+                        className="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold rounded-xl transition-all text-xs flex items-center justify-center gap-1.5 self-end sm:self-auto shadow-lg shadow-blue-600/20"
                     >
                         <span>Voir tous les utilisateurs</span>
                         <ArrowUpRight className="w-3.5 h-3.5 text-white/80" />
@@ -216,7 +223,7 @@ export default function AdminDashboardPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {recentUsers.map((user) => (
-                        <div key={user.id} onClick={() => router.push(`/dashboard/profile/${user.id}`)} className="p-4 bg-[#020617] border border-slate-800 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-slate-800/50 hover:border-slate-700 transition-all">
+                        <div key={user.id} onClick={() => router.push(`/dashboard/profile/${user.id}`)} className="p-4 bg-[#020617] border border-blue-900/40 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-slate-800/50 hover:border-blue-600 hover:shadow-blue-900/30 transition-all">
                             <div className="flex items-center gap-3">
                                 {user.avatar ? (
                                     <img src={user.avatar} alt={`${user.prenom} ${user.nom}`} className="w-10 h-10 rounded-xl object-cover shrink-0 shadow-sm" />

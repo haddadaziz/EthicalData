@@ -5,32 +5,57 @@ interface QuickActionsProps {
     onStartPractice: () => void;
     onBrowseCourses: () => void;
     onGoToCommunity: () => void;
+    isTrainer?: boolean;
 }
 
-export default function QuickActions({ onStartPractice, onBrowseCourses, onGoToCommunity }: QuickActionsProps) {
-    const actions = [
-        {
-            label: "Lancer une simulation",
-            sublabel: "Testez vos connaissances en conditions réelles",
-            onClick: onStartPractice,
-            hoverBg: 'hover:bg-blue-950/20 hover:border-blue-900/40',
-            hoverText: 'group-hover:text-cyan-400',
-        },
-        {
-            label: "Parcourir les cours",
-            sublabel: "Accédez aux modules de révision et fiches",
-            onClick: onBrowseCourses,
-            hoverBg: 'hover:bg-amber-950/20 hover:border-amber-900/40',
-            hoverText: 'group-hover:text-amber-500',
-        },
-        {
-            label: "Échanger avec la communauté",
-            sublabel: "Participez au forum d'entraide",
-            onClick: onGoToCommunity,
-            hoverBg: 'hover:bg-emerald-950/20 hover:border-emerald-900/40',
-            hoverText: 'group-hover:text-emerald-500',
-        },
-    ];
+export default function QuickActions({ onStartPractice, onBrowseCourses, onGoToCommunity, isTrainer }: QuickActionsProps) {
+    const actions = isTrainer
+        ? [
+            {
+                label: "Gérer mes disponibilités",
+                sublabel: "Ajoutez des créneaux de coaching pour les apprenants",
+                onClick: onStartPractice,
+                hoverBg: 'hover:bg-blue-950/20 hover:border-blue-900/40',
+                hoverText: 'group-hover:text-cyan-400',
+            },
+            {
+                label: "Créer / Gérer mes cours",
+                sublabel: "Mettez en ligne des formations et modules de révision",
+                onClick: onBrowseCourses,
+                hoverBg: 'hover:bg-blue-950/20 hover:border-blue-900/40',
+                hoverText: 'group-hover:text-cyan-400',
+            },
+            {
+                label: "Aider la communauté",
+                sublabel: "Répondez aux questions des apprenants sur le forum",
+                onClick: onGoToCommunity,
+                hoverBg: 'hover:bg-blue-950/20 hover:border-blue-900/40',
+                hoverText: 'group-hover:text-cyan-400',
+            },
+        ]
+        : [
+            {
+                label: "Lancer une simulation",
+                sublabel: "Testez vos connaissances en conditions réelles",
+                onClick: onStartPractice,
+                hoverBg: 'hover:bg-blue-950/20 hover:border-blue-900/40',
+                hoverText: 'group-hover:text-cyan-400',
+            },
+            {
+                label: "Parcourir les cours",
+                sublabel: "Accédez aux modules de révision et fiches",
+                onClick: onBrowseCourses,
+                hoverBg: 'hover:bg-blue-950/20 hover:border-blue-900/40',
+                hoverText: 'group-hover:text-cyan-400',
+            },
+            {
+                label: "Échanger avec la communauté",
+                sublabel: "Participez au forum d'entraide",
+                onClick: onGoToCommunity,
+                hoverBg: 'hover:bg-blue-950/20 hover:border-blue-900/40',
+                hoverText: 'group-hover:text-cyan-400',
+            },
+        ];
 
     return (
         <div className="bg-[#080d1a]/90 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">

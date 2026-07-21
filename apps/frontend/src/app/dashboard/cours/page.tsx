@@ -125,7 +125,7 @@ export default function LearnerCoursesPage() {
                 </span>
                 <input type="text" value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
-                    placeholder="Rechercher un cours..."
+                    placeholder="Rechercher ..."
                     className="w-full pl-10 pr-4 py-2.5 bg-[#080d1a] border border-slate-800 focus:border-blue-600 rounded-xl text-white placeholder-slate-500 text-sm outline-none font-semibold transition-all" />
             </div>
 
@@ -154,7 +154,7 @@ export default function LearnerCoursesPage() {
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {filteredDisponibles.map(c => (
-                                <div key={c.id} className="group bg-[#080d1a] border border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-blue-900/10 hover:border-slate-700 transition-all duration-300 flex flex-col">
+                                <div key={c.id} className="group bg-[#080d1a] border border-blue-900/50 shadow-[0_0_25px_rgba(30,58,138,0.05)] rounded-2xl overflow-hidden hover:shadow-[0_0_35px_rgba(30,58,138,0.2)] hover:border-blue-700/60 transition-all duration-300 flex flex-col">
                                     {/* Image */}
                                     <div className="relative aspect-[750/422] bg-[#020617] overflow-hidden">
                                         {c.imageUrl ? (
@@ -234,7 +234,7 @@ export default function LearnerCoursesPage() {
                             {filteredEnCours.map(insc => {
                                 const c = insc.cours;
                                 return (
-                                    <div key={insc.id} className="group bg-[#080d1a] border border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-blue-900/10 hover:border-slate-700 transition-all duration-300 flex flex-col">
+                                    <div key={insc.id} className="group bg-[#080d1a] border border-blue-900/50 shadow-[0_0_25px_rgba(30,58,138,0.05)] rounded-2xl overflow-hidden hover:shadow-[0_0_35px_rgba(30,58,138,0.2)] hover:border-blue-700/60 transition-all duration-300 flex flex-col">
                                         <div className="relative aspect-[750/422] bg-[#020617] overflow-hidden">
                                             {c.imageUrl ? (
                                                 <img src={c.imageUrl} alt={c.titre}
@@ -304,7 +304,7 @@ export default function LearnerCoursesPage() {
                             {filteredTermines.map(insc => {
                                 const c = insc.cours;
                                 return (
-                                    <div key={insc.id} className="group bg-[#080d1a] border border-emerald-900/40 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-emerald-900/10 transition-all duration-300 flex flex-col">
+                                    <div key={insc.id} className="group bg-[#080d1a] border border-emerald-900/50 shadow-[0_0_25px_rgba(16,185,129,0.05)] rounded-2xl overflow-hidden hover:shadow-[0_0_35px_rgba(16,185,129,0.2)] hover:border-emerald-700/60 transition-all duration-300 flex flex-col">
                                         <div className="relative aspect-[750/422] bg-[#020617] overflow-hidden">
                                             {c.imageUrl ? (
                                                 <img src={c.imageUrl} alt={c.titre}

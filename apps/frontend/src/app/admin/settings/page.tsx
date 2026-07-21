@@ -105,41 +105,41 @@ export default function AdminSettingsPage() {
     }
 
     return (
-        <div className="max-w-3xl mx-auto space-y-8">
-            {userRole === 'SUPER_ADMIN' && (
+        <div className="max-w-3xl mx-auto space-y-8 text-left bg-[#020617]">
+            {(userRole === 'SUPER_ADMIN' || userRole === 'ADMIN') && (
                 <motion.form
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     onSubmit={handleSendNotification}
-                    className="bg-white border border-slate-200/80 rounded-3xl p-6 md:p-8 space-y-5 shadow-sm"
+                    className="bg-[#080d1a] border border-slate-800/80 rounded-3xl p-6 md:p-8 space-y-5 shadow-sm"
                 >
-                    <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-                        <div className="w-10 h-10 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-red-600 shrink-0">
+                    <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
+                        <div className="w-10 h-10 rounded-xl bg-blue-950/30 border border-blue-900/50 flex items-center justify-center text-cyan-400 shrink-0">
                             <Bell className="w-5 h-5" />
                         </div>
                         <div>
-                            <h3 className="text-base font-black text-slate-900 tracking-tight">Envoyer une notification</h3>
-                            <p className="text-xs text-slate-500 font-medium">Créez et envoyez une notification à un groupe d'utilisateurs.</p>
+                            <h3 className="text-base font-black text-white tracking-tight">Envoyer une notification</h3>
+                            <p className="text-xs text-slate-400 font-medium">Créez et envoyez une notification à un groupe d'utilisateurs.</p>
                         </div>
                     </div>
 
                     <div className="space-y-4">
                         <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-slate-700">Titre *</label>
+                            <label className="text-xs font-bold text-slate-300">Titre *</label>
                             <input type="text" required value={notifTitre} onChange={(e) => setNotifTitre(e.target.value)}
                                 placeholder="Ex: Maintenance plateforme"
-                                className="w-full p-3 bg-slate-50 border border-slate-200 focus:border-red-600 rounded-xl text-xs font-semibold outline-none transition-colors" />
+                                className="w-full p-3 bg-[#020617] border border-slate-800 focus:border-blue-600 rounded-xl text-xs font-semibold text-white placeholder:text-slate-500 outline-none transition-colors" />
                         </div>
 
                         <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-slate-700">Message *</label>
+                            <label className="text-xs font-bold text-slate-300">Message *</label>
                             <textarea required rows={4} value={notifMessage} onChange={(e) => setNotifMessage(e.target.value)}
                                 placeholder="Écrivez le contenu de votre notification..."
-                                className="w-full p-3 bg-slate-50 border border-slate-200 focus:border-red-600 rounded-xl text-xs font-semibold outline-none transition-colors resize-none" />
+                                className="w-full p-3 bg-[#020617] border border-slate-800 focus:border-blue-600 rounded-xl text-xs font-semibold text-white placeholder:text-slate-500 outline-none transition-colors resize-none" />
                         </div>
 
                         <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-slate-700">Destinataires</label>
+                            <label className="text-xs font-bold text-slate-300">Destinataires</label>
                             <div className="flex flex-wrap gap-2">
                                 {[
                                     { val: 'APPRENANT', label: 'Apprenants', img: '/images/apprenant.png' },
@@ -149,8 +149,8 @@ export default function AdminSettingsPage() {
                                     <button key={opt.val} type="button" onClick={() => setNotifTarget(opt.val as any)}
                                         className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                                             notifTarget === opt.val
-                                                ? 'bg-red-600 text-white border-red-600 shadow-sm'
-                                                : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-300'
+                                                ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                                                : 'bg-[#020617] text-slate-400 border-slate-800 hover:border-slate-700'
                                         }`}>
                                         {opt.img ? (
                                             <img src={opt.img} alt="" className="w-4 h-4 object-contain" />
@@ -166,7 +166,7 @@ export default function AdminSettingsPage() {
 
                     <div className="flex justify-end pt-2">
                         <button type="submit" disabled={sendingNotif}
-                            className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl text-xs flex items-center gap-2 cursor-pointer transition-all shadow-md disabled:opacity-50">
+                            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl text-xs flex items-center gap-2 cursor-pointer transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50">
                             {sendingNotif ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                             <span>{sendingNotif ? 'Envoi en cours...' : 'Envoyer la notification'}</span>
                         </button>
@@ -178,46 +178,46 @@ export default function AdminSettingsPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 onSubmit={handleSavePreferences}
-                className="bg-white border border-slate-200/80 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm"
+                className="bg-[#080d1a] border border-slate-800/80 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm"
             >
-                <div className="border-b border-slate-100 pb-4">
-                    <h3 className="text-base font-black text-slate-900 tracking-tight">Préférences de notifications</h3>
-                    <p className="text-xs text-slate-500 font-medium">Gérez vos préférences de messagerie et de notifications internes.</p>
+                <div className="border-b border-slate-800 pb-4">
+                    <h3 className="text-base font-black text-white tracking-tight">Préférences de notifications</h3>
+                    <p className="text-xs text-slate-400 font-medium">Gérez vos préférences de messagerie et de notifications internes.</p>
                 </div>
 
                 <div className="space-y-4 max-w-xl">
-                    <label className="flex items-center justify-between p-4 bg-slate-50 border border-slate-200/80 rounded-2xl cursor-pointer hover:bg-slate-100 transition-colors">
+                    <label className="flex items-center justify-between p-4 bg-[#020617] border border-slate-800/80 rounded-2xl cursor-pointer hover:bg-slate-900/50 transition-colors">
                         <div className="space-y-0.5 text-left">
-                            <h4 className="text-xs font-black text-slate-950">Réponses au Forum</h4>
-                            <p className="text-[11px] text-slate-500 font-medium">Recevoir une alerte quand quelqu'un répond à vos sujets ou commentaires.</p>
+                            <h4 className="text-xs font-black text-white">Réponses au Forum</h4>
+                            <p className="text-[11px] text-slate-400 font-medium">Recevoir une alerte quand quelqu'un répond à vos sujets ou commentaires.</p>
                         </div>
                         <input type="checkbox" checked={notifReplies} onChange={(e) => setNotifReplies(e.target.checked)}
-                            className="accent-indigo-650 w-5 h-5 cursor-pointer" />
+                            className="accent-blue-650 w-5 h-5 cursor-pointer" />
                     </label>
 
-                    <label className="flex items-center justify-between p-4 bg-slate-50 border border-slate-200/80 rounded-2xl cursor-pointer hover:bg-slate-100 transition-colors">
+                    <label className="flex items-center justify-between p-4 bg-[#020617] border border-slate-800/80 rounded-2xl cursor-pointer hover:bg-slate-900/50 transition-colors">
                         <div className="space-y-0.5 text-left">
-                            <h4 className="text-xs font-black text-slate-950">Mentions J'aime</h4>
-                            <p className="text-[11px] text-slate-500 font-medium">Recevoir une notification quand un apprenant aime votre sujet.</p>
+                            <h4 className="text-xs font-black text-white">Mentions J'aime</h4>
+                            <p className="text-[11px] text-slate-400 font-medium">Recevoir une notification quand un apprenant aime votre sujet.</p>
                         </div>
                         <input type="checkbox" checked={notifLikes} onChange={(e) => setNotifLikes(e.target.checked)}
-                            className="accent-indigo-650 w-5 h-5 cursor-pointer" />
+                            className="accent-blue-650 w-5 h-5 cursor-pointer" />
                     </label>
 
-                    <label className="flex items-center justify-between p-4 bg-slate-50 border border-slate-200/80 rounded-2xl cursor-pointer hover:bg-slate-100 transition-colors">
+                    <label className="flex items-center justify-between p-4 bg-[#020617] border border-slate-800/80 rounded-2xl cursor-pointer hover:bg-slate-900/50 transition-colors">
                         <div className="space-y-0.5 text-left">
-                            <h4 className="text-xs font-black text-slate-950">Alertes Plateforme & Système</h4>
-                            <p className="text-[11px] text-slate-500 font-medium">Notifications de mise à jour, nouveaux contenus et rappels d'examens cibles.</p>
+                            <h4 className="text-xs font-black text-white">Alertes Plateforme & Système</h4>
+                            <p className="text-[11px] text-slate-400 font-medium">Notifications de mise à jour, nouveaux contenus et rappels d'examens cibles.</p>
                         </div>
                         <input type="checkbox" checked={notifSystem} onChange={(e) => setNotifSystem(e.target.checked)}
-                            className="accent-indigo-650 w-5 h-5 cursor-pointer" />
+                            className="accent-blue-650 w-5 h-5 cursor-pointer" />
                     </label>
 
                 </div>
 
-                <div className="flex justify-end pt-4 border-t border-slate-100">
+                <div className="flex justify-end pt-4 border-t border-slate-800">
                     <button type="submit" disabled={saving}
-                        className="px-6 py-3 bg-slate-950 hover:bg-slate-800 text-white font-bold rounded-2xl text-xs flex items-center gap-2 cursor-pointer transition-all shadow-md disabled:opacity-50">
+                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl text-xs flex items-center gap-2 cursor-pointer transition-all shadow-md disabled:opacity-50">
                         {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                         <span>Enregistrer les préférences</span>
                     </button>

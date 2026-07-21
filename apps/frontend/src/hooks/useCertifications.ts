@@ -66,10 +66,10 @@ export function useCertifications() {
     await fetchCerts();
   };
 
-  const createFournisseur = async (nom: string) => {
+  const createFournisseur = async (nom: string, image?: string) => {
     const newFourn = await apiFetch('/certifications/fournisseurs', {
       method: 'POST',
-      body: { nom }
+      body: { nom, image }
     });
     await fetchFournisseurs();
     return newFourn;
