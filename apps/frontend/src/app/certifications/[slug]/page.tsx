@@ -153,7 +153,7 @@ export default function CertificationDetailPage() {
             ) : isConnected ? (
               <Link
                 href="/dashboard"
-                className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-650 hover:to-blue-750 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-600/20 cursor-pointer hover:scale-105 active:scale-95"
+                className="inline-flex items-center justify-center px-4 py-2 md:px-5 md:py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-[10px] md:text-xs font-black uppercase tracking-wider rounded-lg md:rounded-xl transition-all shadow-md shadow-blue-600/20 cursor-pointer shrink-0 whitespace-nowrap active:scale-95"
               >
                 Mon Espace
               </Link>
