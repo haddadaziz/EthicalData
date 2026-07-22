@@ -27,19 +27,19 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     let message = 'Une erreur interne est survenue sur le serveur.';
 
-    if (typeof exceptionResponse === 'string') {
+    if (exception instanceof Error) {
+      message = (exception as any).cause?.message || exception.message || String(exception);
+    } else if (typeof exceptionResponse === 'string') {
       message = exceptionResponse;
     } else if (exceptionResponse && typeof exceptionResponse === 'object') {
       message = exceptionResponse.message || message;
-    } else if (exception instanceof Error) {
-      message = exception.message;
     }
 
     if (status === (HttpStatus.INTERNAL_SERVER_ERROR as number)) {
       this.logger.error(
         `[${request.method}] ${request.url} - Error: ${
           exception instanceof Error
-            ? exception.message
+            ? exception.stack || exception.message
             : JSON.stringify(exception)
         }`,
       );
@@ -50,6 +50,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       path: request.url,
       message: Array.isArray(message) ? message[0] : message,
+      errorDetail: exception instanceof Error ? exception.stack : String(exception),
     });
   }
 }
