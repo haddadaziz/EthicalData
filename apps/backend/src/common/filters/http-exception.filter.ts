@@ -31,6 +31,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
       message = exceptionResponse;
     } else if (exceptionResponse && typeof exceptionResponse === 'object') {
       message = exceptionResponse.message || message;
+    } else if (exception instanceof Error) {
+      message = exception.message;
     }
 
     if (status === (HttpStatus.INTERNAL_SERVER_ERROR as number)) {
