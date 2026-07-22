@@ -53,12 +53,14 @@ export class HttpExceptionFilter implements ExceptionFilter {
       );
     }
 
+    const isProduction = process.env.NODE_ENV === 'production';
+
     response.status(status).json({
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
       message,
-      errorDetail: detail,
+      ...(isProduction ? {} : { errorDetail: detail }),
     });
   }
 }
