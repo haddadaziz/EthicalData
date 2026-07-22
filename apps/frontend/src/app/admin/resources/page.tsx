@@ -4,8 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useConfirm } from '../../../context/ConfirmContext';
-import { FileText, Search, Plus, X, Edit, Trash2, Award, ArrowLeft, ArrowRight, ChevronDown, ChevronUp, FolderOpen, BookOpen, Clock } from '@/components/icons';
-import { Link, Video } from 'lucide-react';
+import { FileText, Search, Plus, X, Edit, Trash2, Award, ArrowLeft, ArrowRight, ChevronDown, ChevronUp, FolderOpen, BookOpen, Clock, Link, Video } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Resource {

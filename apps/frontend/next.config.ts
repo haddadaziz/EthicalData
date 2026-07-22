@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     formats: ['image/avif', 'image/webp'],
   },
   experimental: {
-    optimizePackageImports: ['lucide-react', 'framer-motion'],
+    optimizePackageImports: ['@fortawesome/react-fontawesome', 'framer-motion'],
   },
   compress: true,
 };
