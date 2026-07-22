@@ -48,23 +48,37 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   async register(
     @Body() registerDto: RegisterDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result = await this.authService.register(registerDto);
+    try {
+      const result = await this.authService.register(registerDto);
 
-    res.cookie(
-      'token',
-      result.access_token,
-      this.authService.getCookieOptions(),
-    );
+      res.cookie(
+        'token',
+        result.access_token,
+        this.authService.getCookieOptions(),
+      );
 
-    return {
-      access_token: result.access_token,
-      message: 'Compte créé avec succès',
-    };
+      return {
+        access_token: result.access_token,
+        message: 'Compte créé avec succès',
+      };
+    } catch (err: any) {
+      console.error('REGISTER CONTROLLER ERROR:', err);
+      if (
+        err instanceof UnauthorizedException ||
+        err instanceof ConflictException ||
+        err instanceof BadRequestException
+      ) {
+        throw err;
+      }
+      throw new BadRequestException(
+        err?.message || 'Erreur lors de l\'inscription: ' + String(err),
+      );
+    }
   }
 
   @Post('forgot-password')

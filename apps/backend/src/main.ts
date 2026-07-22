@@ -23,6 +23,7 @@ process.on('unhandledRejection', (reason) => {
 async function bootstrap() {
   console.log('⚡ Creating NestJS app...');
   const app = await NestFactory.create(AppModule, { bodyParser: false });
+  app.getHttpAdapter().getInstance().set('trust proxy', true);
   console.log('⚡ NestJS app created');
 
   // Enable shutdown hooks for graceful exit (e.g. Prisma disconnection)
