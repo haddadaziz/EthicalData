@@ -80,6 +80,11 @@ export class UsersService {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(createUserDto.motDePasse, salt);
 
+    const rolesToConnect =
+      createUserDto.roles && createUserDto.roles.length > 0
+        ? createUserDto.roles
+        : ['APPRENANT'];
+
     const user = await this.prisma.utilisateur.create({
       data: {
         prenom: createUserDto.prenom,
@@ -88,14 +93,12 @@ export class UsersService {
         telephone: createUserDto.telephone,
         motDePasse: hashedPassword,
         statut: 'ACTIF',
-        roles:
-          createUserDto.roles && createUserDto.roles.length > 0
-            ? {
-                connect: createUserDto.roles.map((roleNom) => ({
-                  nom: roleNom,
-                })),
-              }
-            : undefined,
+        roles: {
+          connectOrCreate: rolesToConnect.map((roleNom) => ({
+            where: { nom: roleNom },
+            create: { nom: roleNom },
+          })),
+        },
       },
       include: {
         roles: true,
@@ -550,7 +553,10 @@ export class UsersService {
         where: { id: BigInt(userId) },
         data: {
           roles: {
-            connect: { nom: 'FORMATEUR' },
+            connectOrCreate: {
+              where: { nom: 'FORMATEUR' },
+              create: { nom: 'FORMATEUR' },
+            },
           },
         },
       });
