@@ -29,6 +29,9 @@ export async function apiFetch(endpoint: string, options: FetchOptions = {}) {
   const response = await fetch(url, config);
 
   if (!response.ok) {
+    if (typeof window !== 'undefined' && (response.status === 401 || (response.status === 404 && endpoint.includes('me/profile')))) {
+      localStorage.removeItem('access_token');
+    }
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.message || `Erreur HTTP : ${response.status}`);
   }
