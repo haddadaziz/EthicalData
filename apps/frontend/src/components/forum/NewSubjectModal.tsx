@@ -55,9 +55,19 @@ export default function NewSubjectModal({
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
+            const scrollContainers = document.querySelectorAll('main, .overflow-y-auto');
+            scrollContainers.forEach(el => {
+                (el as HTMLElement).style.overflow = 'hidden';
+            });
         }
         return () => {
             document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+            const scrollContainers = document.querySelectorAll('main, .overflow-y-auto');
+            scrollContainers.forEach(el => {
+                (el as HTMLElement).style.overflow = '';
+            });
         };
     }, [isOpen]);
 
@@ -80,14 +90,17 @@ export default function NewSubjectModal({
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.15 }}
-                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xs"
+                    onClick={(e) => {
+                        if (e.target === e.currentTarget) onClose();
+                    }}
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xs overflow-y-auto"
                 >
                     <motion.div
                         initial={{ scale: 0.95, y: 15 }}
                         animate={{ scale: 1, y: 0 }}
                         exit={{ scale: 0.95, y: 15 }}
                         transition={{ duration: 0.15, ease: "easeOut" }}
-                        className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 md:p-8 max-w-xl w-full shadow-2xl space-y-6 text-left"
+                        className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 md:p-8 max-w-xl w-full shadow-2xl space-y-6 text-left relative z-10 my-auto"
                     >
                         <div className="flex items-center justify-between border-b border-slate-800 pb-4">
                             <div className="flex items-center gap-2.5">
