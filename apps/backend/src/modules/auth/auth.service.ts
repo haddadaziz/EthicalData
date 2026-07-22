@@ -63,16 +63,21 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto) {
-    const createUserDto: CreateUserDto = {
-      prenom: registerDto.prenom,
-      nom: registerDto.nom,
-      email: registerDto.email,
-      motDePasse: registerDto.motDePasse,
-      roles: ['APPRENANT'],
-    };
+    try {
+      const createUserDto: CreateUserDto = {
+        prenom: registerDto.prenom,
+        nom: registerDto.nom,
+        email: registerDto.email,
+        motDePasse: registerDto.motDePasse,
+        roles: ['APPRENANT'],
+      };
 
-    const user = await this.usersService.create(createUserDto);
-    return this.login(user);
+      const user = await this.usersService.create(createUserDto);
+      return await this.login(user);
+    } catch (err: any) {
+      console.error('❌ AUTH REGISTER ERROR:', err?.stack || err?.message || err);
+      throw err;
+    }
   }
 
   async forgotPassword(email: string): Promise<{ message: string }> {

@@ -27,21 +27,29 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     let message = 'Une erreur interne est survenue sur le serveur.';
 
-    if (exception instanceof Error) {
-      message = (exception as any).cause?.message || exception.message || String(exception);
-    } else if (typeof exceptionResponse === 'string') {
+    if (typeof exceptionResponse === 'string') {
       message = exceptionResponse;
     } else if (exceptionResponse && typeof exceptionResponse === 'object') {
-      message = exceptionResponse.message || message;
+      const respMsg = exceptionResponse.message;
+      if (Array.isArray(respMsg)) {
+        message = respMsg[0];
+      } else if (typeof respMsg === 'string') {
+        message = respMsg;
+      } else {
+        message = JSON.stringify(exceptionResponse);
+      }
+    } else if (exception instanceof Error) {
+      message = exception.message;
     }
+
+    const detail =
+      exception instanceof Error
+        ? exception.stack || exception.message
+        : String(exception);
 
     if (status === (HttpStatus.INTERNAL_SERVER_ERROR as number)) {
       this.logger.error(
-        `[${request.method}] ${request.url} - Error: ${
-          exception instanceof Error
-            ? exception.stack || exception.message
-            : JSON.stringify(exception)
-        }`,
+        `[${request.method}] ${request.url} - Error: ${detail}`,
       );
     }
 
@@ -49,8 +57,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
-      message: Array.isArray(message) ? message[0] : message,
-      errorDetail: exception instanceof Error ? exception.stack : String(exception),
+      message,
+      errorDetail: detail,
     });
   }
 }
