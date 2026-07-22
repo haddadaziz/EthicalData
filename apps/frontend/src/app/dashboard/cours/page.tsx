@@ -42,7 +42,6 @@ export default function LearnerCoursesPage() {
     const searchParams = useSearchParams();
     const [cours, setCours] = useState<Cours[]>([]);
     const [inscriptions, setInscriptions] = useState<Inscription[]>([]);
-    const [userRoles, setUserRoles] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<TabId>('explorer');
     const [searchTerm, setSearchTerm] = useState('');
@@ -53,14 +52,6 @@ export default function LearnerCoursesPage() {
             setActiveTab(tab);
         }
     }, [searchParams]);
-
-    useEffect(() => {
-        apiFetch('/users/me/profile').then((profile) => {
-            if (profile?.roles) {
-                setUserRoles(profile.roles.map((r: any) => r.nom));
-            }
-        }).catch(() => {});
-    }, []);
 
     useEffect(() => {
         (async () => {
@@ -81,7 +72,7 @@ export default function LearnerCoursesPage() {
                 setLoading(false);
             }
         })();
-    }, [userRoles]);
+    }, []);
 
     const inscritsIds = new Set(inscriptions.map(i => i.cours?.id));
     const coursTermines = inscriptions.filter(i => i.progression >= 100);
