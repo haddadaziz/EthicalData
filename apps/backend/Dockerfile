@@ -37,5 +37,5 @@ COPY --from=builder /app/dist ./dist
 # Port sur lequel le backend écoute
 EXPOSE 3000
 
-# Commande de démarrage : applique les migrations puis démarre le serveur
-CMD ["sh", "-c", "npx prisma migrate deploy && npm run start:prod"]
+# Commande de démarrage
+CMD ["sh", "-c", "npm run start:prod"]

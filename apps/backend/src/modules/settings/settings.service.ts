@@ -63,18 +63,22 @@ INSTRUCTIONS DE NOTATION :
   }
 
   async getSetting(key: string): Promise<any> {
-    const setting = await this.prisma.configurationSysteme.findUnique({
-      where: { cle: key },
-    });
-
-    if (!setting) {
-      return this.getDefaults(key);
-    }
-
     try {
-      return JSON.parse(setting.valeur);
+      const setting = await this.prisma.configurationSysteme.findUnique({
+        where: { cle: key },
+      });
+
+      if (!setting) {
+        return this.getDefaults(key);
+      }
+
+      try {
+        return JSON.parse(setting.valeur);
+      } catch {
+        return setting.valeur;
+      }
     } catch {
-      return setting.valeur;
+      return this.getDefaults(key);
     }
   }
 
