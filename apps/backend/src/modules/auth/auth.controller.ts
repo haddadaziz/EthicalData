@@ -6,6 +6,8 @@ import {
   Post,
   Res,
   UnauthorizedException,
+  BadRequestException,
+  ConflictException,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import type { Response } from 'express';
