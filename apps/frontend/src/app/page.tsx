@@ -9,6 +9,7 @@ import { HeroSection } from '@/components/landing/HeroSection';
 import { ClientsSection } from '@/components/landing/ClientsSection';
 import { AboutSection } from '@/components/landing/AboutSection';
 import { CertificationsSection } from '@/components/landing/CertificationsSection';
+import { CoursesPreviewSection } from '@/components/landing/CoursesPreviewSection';
 import { ServicesSection } from '@/components/landing/ServicesSection';
 import { TestimonialsSection } from '@/components/landing/TestimonialsSection';
 import { BlogPreviewSection } from '@/components/landing/BlogPreviewSection';
@@ -114,6 +115,8 @@ export default function LandingPage() {
         courses={courses} 
         cleanTitle={cleanTitle} 
       />
+      
+      <CoursesPreviewSection />
       
       <ServicesSection />
       <TestimonialsSection />

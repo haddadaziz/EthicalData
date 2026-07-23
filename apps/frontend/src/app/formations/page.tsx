@@ -28,8 +28,83 @@ interface Course {
   };
 }
 
+const SEEDED_COURSES: Course[] = [
+  {
+    id: 'az900-course-seed',
+    titre: 'Microsoft Azure Fundamentals (AZ-900)',
+    description: 'Formation complète sur les concepts du Cloud Azure, les services d’infrastructure (IaaS/PaaS/SaaS), la sécurité Entra ID et le calcul des coûts.',
+    dureeEstimee: 120,
+    certification: {
+      nom: 'Microsoft Azure Fundamentals',
+      codeExamen: 'AZ-900',
+      fournisseur: { nom: 'Microsoft' },
+    },
+    _count: { modules: 8, inscriptions: 1420 },
+  },
+  {
+    id: 'iso27001-course-seed',
+    titre: 'PECB ISO 27001 Lead Implementer',
+    description: 'Apprenez à déployer et piloter un Système de Management de la Sécurité de l’Information (SMSI) conforme aux normes ISO/IEC 27001 & 27002.',
+    dureeEstimee: 180,
+    certification: {
+      nom: 'PECB ISO 27001 Lead Implementer',
+      codeExamen: 'ISO-27001',
+      fournisseur: { nom: 'PECB' },
+    },
+    _count: { modules: 12, inscriptions: 980 },
+  },
+  {
+    id: 'aws-clf-course-seed',
+    titre: 'AWS Certified Cloud Practitioner (CLF-C02)',
+    description: 'Comprenez l’écosystème Amazon Web Services (S3, EC2, IAM, CloudFront, VPC) et révisez avec les corrigés détaillés d’examen blanc.',
+    dureeEstimee: 150,
+    certification: {
+      nom: 'AWS Certified Cloud Practitioner',
+      codeExamen: 'CLF-C02',
+      fournisseur: { nom: 'AWS' },
+    },
+    _count: { modules: 10, inscriptions: 1150 },
+  },
+  {
+    id: 'paloalto-course-seed',
+    titre: 'Palo Alto Networks Certified Network Security (PCNSA)',
+    description: 'Configuration avancée et administration des pare-feu de nouvelle génération (NGFW) Palo Alto Networks pour entreprises.',
+    dureeEstimee: 160,
+    certification: {
+      nom: 'Palo Alto Networks Certified Network Security',
+      codeExamen: 'PCNSA',
+      fournisseur: { nom: 'Palo Alto Networks' },
+    },
+    _count: { modules: 9, inscriptions: 760 },
+  },
+  {
+    id: 'comptia-course-seed',
+    titre: 'CompTIA Security+ (SY0-701)',
+    description: 'Les fondations de la cybersécurité opérationnelle : gestion des menaces, cryptographie, gestion des accès et prévention des attaques.',
+    dureeEstimee: 170,
+    certification: {
+      nom: 'CompTIA Security+',
+      codeExamen: 'SY0-701',
+      fournisseur: { nom: 'CompTIA' },
+    },
+    _count: { modules: 11, inscriptions: 890 },
+  },
+  {
+    id: 'fortinet-course-seed',
+    titre: 'Fortinet Network Security Associate (NSE 4)',
+    description: 'Déploiement et sécurisation de l’infrastructure réseau avec les solutions FortiGate et FortiOS.',
+    dureeEstimee: 190,
+    certification: {
+      nom: 'Fortinet Network Security Associate',
+      codeExamen: 'NSE 4',
+      fournisseur: { nom: 'Fortinet' },
+    },
+    _count: { modules: 14, inscriptions: 620 },
+  },
+];
+
 export default function FormationsPublicPage() {
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<Course[]>(SEEDED_COURSES);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProvider, setSelectedProvider] = useState<string>('TOUS');
@@ -38,7 +113,7 @@ export default function FormationsPublicPage() {
     document.title = "Catalogue des Formations - Ethical Data Security";
     apiFetch('/cours')
       .then((data) => {
-        if (Array.isArray(data)) {
+        if (Array.isArray(data) && data.length > 0) {
           setCourses(data);
         }
       })
@@ -66,8 +141,7 @@ export default function FormationsPublicPage() {
         {/* HERO EN-TÊTE */}
         <div className="space-y-4 max-w-3xl">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-950/60 border border-blue-800/50 text-cyan-400 text-xs font-black uppercase tracking-wider">
-            <BookOpen className="w-3.5 h-3.5" />
-            <span>Catalogue Officiel</span>
+            <span>Catalogue de cours et formations</span>
           </div>
           <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight">
             Formations & Cours d’Préparation IT
