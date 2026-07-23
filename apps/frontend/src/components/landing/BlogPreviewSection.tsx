@@ -43,14 +43,14 @@ export function BlogPreviewSection() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start start", "end start"],
+    offset: ["start end", "end start"],
   });
 
-  const pathLengthFirst = useTransform(scrollYProgress, [0, 0.8], [0.1, 1.2]);
-  const pathLengthSecond = useTransform(scrollYProgress, [0, 0.8], [0.15, 1.2]);
-  const pathLengthThird = useTransform(scrollYProgress, [0, 0.8], [0.2, 1.2]);
-  const pathLengthFourth = useTransform(scrollYProgress, [0, 0.8], [0.05, 1.2]);
-  const pathLengthFifth = useTransform(scrollYProgress, [0, 0.8], [0, 1.2]);
+  const pathLengthFirst = useTransform(scrollYProgress, [0.05, 0.6], [0, 1.2]);
+  const pathLengthSecond = useTransform(scrollYProgress, [0.05, 0.6], [0.05, 1.2]);
+  const pathLengthThird = useTransform(scrollYProgress, [0.05, 0.6], [0.1, 1.2]);
+  const pathLengthFourth = useTransform(scrollYProgress, [0.05, 0.6], [0.15, 1.2]);
+  const pathLengthFifth = useTransform(scrollYProgress, [0.05, 0.6], [0.2, 1.2]);
 
   return (
     <section ref={ref} className="relative z-10 bg-[#020617] border-t border-slate-900">

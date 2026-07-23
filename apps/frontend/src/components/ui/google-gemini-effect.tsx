@@ -18,7 +18,7 @@ export const GoogleGeminiEffect = ({
   return (
     <div
       className={cn(
-        "sticky top-0 h-[600px] w-full flex flex-col items-center justify-center overflow-hidden bg-[#020617] pointer-events-none",
+        "relative py-16 md:py-24 w-full flex flex-col items-center justify-center overflow-hidden bg-[#020617] pointer-events-none",
         className
       )}
     >
