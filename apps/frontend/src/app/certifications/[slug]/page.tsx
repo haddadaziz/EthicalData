@@ -5,7 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { apiFetch } from '@/lib/api';
-import { ChevronRight, Clock, Award, BookOpen, Target, CheckCircle2, Play, Menu, X } from '@/components/icons';
+import { ChevronRight, Clock, Award, BookOpen, Target, CheckCircle2, Play } from '@/components/icons';
+import { Navbar } from '@/components/landing/Navbar';
 import { Footer } from '@/components/layout/Footer';
 
 interface Module {
@@ -116,89 +117,7 @@ export default function CertificationDetailPage() {
   return (
     <div className="min-h-screen bg-[#020617] text-white flex flex-col font-sans selection:bg-blue-600 selection:text-white">
 
-      {/* BARRE DE NAVIGATION CAPSULE GLASSMORPHIC */}
-      <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-[#020617]/85 transition-all">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 group cursor-pointer">
-            <div className="flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-              <TriangleLogo className="w-7 h-7" />
-            </div>
-            <span className="font-extrabold text-sm sm:text-base tracking-tight text-white uppercase">
-              Ethical Data Security
-            </span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-1 bg-white/[0.04] border border-slate-800 rounded-full px-3 py-1.5 shadow-sm">
-            <Link href="/#about" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-300 hover:text-white hover:bg-[#080d1a] rounded-full transition-all duration-200 hover:shadow-xs">
-              Qui Sommes-Nous
-            </Link>
-            <Link href="/certifications" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-blue-500 bg-[#080d1a] border border-slate-800 shadow-xs rounded-full transition-all duration-200">
-              Certifications
-            </Link>
-            <Link href="/#services" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-300 hover:text-white hover:bg-[#080d1a] rounded-full transition-all duration-200 hover:shadow-xs">
-              Nos Services
-            </Link>
-            <Link href="/#testimonials" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-300 hover:text-white hover:bg-[#080d1a] rounded-full transition-all duration-200 hover:shadow-xs">
-              Avis
-            </Link>
-            <Link href="/#faq" className="px-4 py-1.5 text-xs font-black uppercase tracking-wider text-slate-300 hover:text-white hover:bg-[#080d1a] rounded-full transition-all duration-200 hover:shadow-xs">
-              FAQ
-            </Link>
-          </nav>
-          <div className="flex items-center gap-3">
-            {!mounted ? (
-              <div className="flex items-center gap-3">
-                <div className="w-[80px] h-[36px]" />
-                <div className="w-[110px] h-[40px] rounded-xl bg-slate-200 animate-pulse" />
-              </div>
-            ) : isConnected ? (
-              <Link
-                href="/dashboard"
-                className="inline-flex items-center justify-center px-4 py-2 md:px-5 md:py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-[10px] md:text-xs font-black uppercase tracking-wider rounded-lg md:rounded-xl transition-all shadow-md shadow-blue-600/20 cursor-pointer shrink-0 whitespace-nowrap active:scale-95"
-              >
-                Mon Espace
-              </Link>
-            ) : (
-              <>
-                <Link href="/login" className="px-4 py-2 text-xs font-black uppercase tracking-wider text-slate-300 hover:text-white transition-colors cursor-pointer">
-                  Connexion
-                </Link>
-                <Link
-                  href="/register"
-                  className="px-5 py-2.5 bg-white hover:bg-slate-200 text-slate-950 text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm hover:shadow-md cursor-pointer hover:scale-105 active:scale-95"
-                >
-                  S&apos;inscrire
-                </Link>
-              </>
-            )}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-slate-300 hover:text-white cursor-pointer rounded-xl bg-[#080d1a] border border-slate-800"
-              aria-label="Menu mobile"
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
-        </div>
-
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="md:hidden border-t border-slate-800 bg-[#020617]/95 overflow-hidden"
-            >
-              <nav className="flex flex-col p-4 gap-1 text-xs font-black uppercase tracking-widest">
-                <Link href="/#about" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-400 hover:text-white hover:bg-[#080d1a] rounded-xl">Qui Sommes-Nous</Link>
-                <Link href="/certifications" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-blue-500 bg-blue-500/10 border border-blue-500/20 rounded-xl font-black">Certifications</Link>
-                <Link href="/#services" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-400 hover:text-white hover:bg-[#080d1a] rounded-xl">Nos Services</Link>
-                <Link href="/#testimonials" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-400 hover:text-white hover:bg-[#080d1a] rounded-xl">Avis</Link>
-                <Link href="/#faq" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-400 hover:text-white hover:bg-[#080d1a] rounded-xl">FAQ</Link>
-              </nav>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </header>
+      <Navbar />
 
       {loading ? (
         <main className="flex-1 flex items-center justify-center">
@@ -214,7 +133,7 @@ export default function CertificationDetailPage() {
           </div>
         </main>
       ) : (
-    <main className="min-h-screen bg-[#020617] flex-1">
+    <main className="min-h-screen bg-[#020617] flex-1 pt-24">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <nav className="flex items-center gap-2 text-xs font-semibold text-slate-400 mb-8">
           <Link href="/" className="hover:text-blue-500 transition-colors">Accueil</Link>
