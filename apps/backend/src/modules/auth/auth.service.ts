@@ -68,6 +68,7 @@ export class AuthService {
         prenom: registerDto.prenom,
         nom: registerDto.nom,
         email: registerDto.email,
+        telephone: registerDto.telephone,
         motDePasse: registerDto.motDePasse,
         roles: ['APPRENANT'],
       };

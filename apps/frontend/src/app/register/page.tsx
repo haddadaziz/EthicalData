@@ -20,6 +20,7 @@ export default function RegisterPage() {
     const [prenom, setPrenom] = useState('');
     const [nom, setNom] = useState('');
     const [email, setEmail] = useState('');
+    const [telephone, setTelephone] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -202,7 +203,7 @@ export default function RegisterPage() {
         try {
             const data = await apiFetch('/auth/register', {
                 method: 'POST',
-                body: { prenom, nom, email, motDePasse: password },
+                body: { prenom, nom, email, telephone: telephone.trim() || undefined, motDePasse: password },
             });
 
             if (data?.access_token) {
@@ -307,6 +308,22 @@ export default function RegisterPage() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="nom@exemple.com"
+                                    className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 hover:border-slate-700 focus:border-cyan-500/50 focus:bg-[#020617] focus:ring-4 focus:ring-cyan-500/10 rounded-xl text-white placeholder-slate-500 transition-all text-xs outline-none font-semibold"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-1.5 text-left group">
+                            <div className="flex items-center justify-between pl-1">
+                                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Numéro de Téléphone</label>
+                                <span className="text-[9px] text-slate-500 font-semibold lowercase">(optionnel)</span>
+                            </div>
+                            <div className="relative">
+                                <input
+                                    type="tel"
+                                    value={telephone}
+                                    onChange={(e) => setTelephone(e.target.value)}
+                                    placeholder="+212 6 00 00 00 00"
                                     className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 hover:border-slate-700 focus:border-cyan-500/50 focus:bg-[#020617] focus:ring-4 focus:ring-cyan-500/10 rounded-xl text-white placeholder-slate-500 transition-all text-xs outline-none font-semibold"
                                 />
                             </div>
