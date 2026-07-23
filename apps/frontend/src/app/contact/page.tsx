@@ -44,7 +44,7 @@ export default function ContactPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#020617] text-white selection:bg-red-600 selection:text-white relative flex flex-col">
+    <main className="min-h-screen bg-[#020617] text-white selection:bg-blue-600 selection:text-white relative flex flex-col">
       <Navbar />
 
       <div className="flex-1 relative w-full pt-32 pb-20 md:pb-24 overflow-hidden flex items-center justify-center">

@@ -16,6 +16,7 @@ import { BlogPreviewSection } from '@/components/landing/BlogPreviewSection';
 import { CommunityCoachingBanner } from '@/components/landing/CommunityCoachingBanner';
 import { PartnersSection } from '@/components/landing/PartnersSection';
 import { FaqSection } from '@/components/landing/FaqSection';
+import { ContactSection } from '@/components/landing/ContactSection';
 
 
 const cleanTitle = (nom: string, code: string) => {
@@ -124,6 +125,7 @@ export default function LandingPage() {
       <CommunityCoachingBanner />
       <PartnersSection />
       <FaqSection />
+      <ContactSection />
 
       <Footer />
     </main>
