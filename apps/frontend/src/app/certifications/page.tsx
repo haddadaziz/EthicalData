@@ -162,79 +162,24 @@ export default function CertificationsPublicPage() {
     useEffect(() => { setCurrentPage(1); }, [searchQuery, selectedProvider, selectedLevel, selectedCategory]);
 
     return (
-        <div className="min-h-screen bg-[#020617] text-white flex flex-col font-sans selection:bg-blue-600 selection:text-white relative overflow-hidden">
+        <main className="min-h-screen bg-[#020617] text-white flex flex-col font-sans selection:bg-blue-600 selection:text-white relative overflow-hidden">
             
-            {/* NAVBAR IDENTIQUE À LA LANDING PAGE (transparent en haut, blanc au scroll, disparaît en descendant) */}
             <Navbar />
 
-            {/* HEADER HERO SECTION */}
-            <section className="relative min-h-[115vh] lg:min-h-[80vh] flex items-center justify-center overflow-hidden border-b border-slate-800">
-                {/* Background image */}
-                <div className="absolute inset-0 z-0">
-                    <img 
-                        src="/logos/landing_page_logo_ethicaldata.jpeg" 
-                        alt="Ethical Data Background Logo" 
-                        className="w-full h-full object-cover opacity-80" 
-                        decoding="async"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-b from-[#020617]/50 via-[#020617]/30 to-[#020617]/70" />
-
-                    <style dangerouslySetInnerHTML={{__html: `
-                        @keyframes scan-laser {
-                            0% { transform: translate3d(0, 0vh, 0); }
-                            50% { transform: translate3d(0, 80vh, 0); }
-                            100% { transform: translate3d(0, 0vh, 0); }
-                        }
-                        .animate-scan-laser {
-                            animation: scan-laser 6s linear infinite;
-                            will-change: transform;
-                            backface-visibility: hidden;
-                        }
-                    `}} />
-
-                    <div 
-                        className="absolute top-0 left-0 w-full h-[2px] bg-cyan-400/80 shadow-[0_0_15px_#06b6d4] animate-scan-laser pointer-events-none z-10"
-                    />
+            <div className="pt-28 pb-12 relative z-10 max-w-7xl mx-auto px-4 md:px-6 text-left space-y-8 w-full">
+                
+                {/* HERO EN-TÊTE */}
+                <div className="space-y-4 max-w-3xl">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-950/60 border border-blue-800/50 text-cyan-400 text-xs font-black uppercase tracking-wider">
+                        <span>Catalogue des Certifications Officielles</span>
+                    </div>
+                    <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight">
+                        Certifications IT & Préparations aux Examens
+                    </h1>
+                    <p className="text-slate-400 text-sm md:text-base leading-relaxed">
+                        Explorez nos programmes officiels de préparation Cloud, Cybersécurité et ISO. Testez vos connaissances et préparez-vous avec nos examens blancs et questionnaires interactifs.
+                    </p>
                 </div>
-
-                {/* Hero content */}
-                <div className="relative z-10 max-w-4xl mx-auto px-6 pt-24 pb-32 flex flex-col items-center text-center">
-                    <motion.h1
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.1 }}
-                        className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white max-w-4xl uppercase leading-none drop-shadow-lg"
-                    >
-                        Certifications & Préparations d&apos;Examen
-                    </motion.h1>
-                    <motion.p
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
-                        className="text-xs sm:text-sm md:text-base text-white/80 max-w-3xl mx-auto mt-6 font-semibold leading-relaxed drop-shadow-md"
-                    >
-                        Explorez nos programmes officiels de préparation Cloud & Cybersécurité et testez vos connaissances sur nos examens blancs interactifs.
-                    </motion.p>
-                </div>
-            </section>
-
-            {/* WRAPPER AVEC BACKGROUND */}
-            <div className="relative flex-1 flex flex-col w-full">
-                {/* Background image identique à la landing page */}
-                <div className="absolute inset-0 z-0 pointer-events-none" style={{ contentVisibility: 'auto' }}>
-                    <img 
-                        src="/bg/cyber_hero_bg.png" 
-                        alt="Cyber security background texture" 
-                        className="w-full h-full object-cover opacity-65 transform-gpu" 
-                        loading="lazy"
-                        decoding="async"
-                        fetchPriority="low"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-b from-[#020617] via-transparent to-[#020617]" />
-                </div>
-
-                {/* CONTENU PRINCIPAL & FILTRES */}
-                <main className="relative z-10 max-w-7xl mx-auto px-6 py-10 flex-1 w-full space-y-8">
                 
                 {/* BARRE DE RECHERCHE ET FILTRES D'ÉDITEURS */}
                 <div className="bg-[#080d1a]/85 border border-slate-800 rounded-3xl p-6 shadow-sm space-y-5 text-left">
@@ -507,10 +452,9 @@ export default function CertificationsPublicPage() {
                     </>
                 )}
 
-                </main>
             </div>
 
             <Footer />
-        </div>
+        </main>
     );
 }
