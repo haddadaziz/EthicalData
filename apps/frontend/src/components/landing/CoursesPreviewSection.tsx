@@ -50,9 +50,6 @@ export function CoursesPreviewSection() {
           {/* Header de section */}
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
             <div className="space-y-3 max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-950/60 border border-blue-800/50 text-cyan-400 text-xs font-black uppercase tracking-wider shadow-[0_0_15px_rgba(6,182,212,0.15)]">
-                <span>Programmes & Cours de Formation</span>
-              </div>
               <h2 className="text-2xl md:text-5xl font-black text-white tracking-tight">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-cyan-400">
                   Cours & Formations Interactives

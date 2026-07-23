@@ -80,9 +80,6 @@ export const GoogleGeminiEffect = ({
       </div>
 
       <div className="relative z-10 text-center space-y-3 px-4 max-w-3xl">
-        <span className="text-xs font-black text-cyan-400 uppercase tracking-widest px-4 py-1.5 rounded-full bg-blue-950/60 border border-blue-800/50 shadow-[0_0_20px_rgba(6,182,212,0.2)]">
-          Ressources &amp; Guides IT
-        </span>
         <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-cyan-400">
             {title}
