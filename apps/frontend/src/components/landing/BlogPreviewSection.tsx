@@ -1,8 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import Link from 'next/link';
-import { ArrowRight, BookOpen, Clock, Tag } from '@/components/icons';
+import { useScroll, useTransform } from 'framer-motion';
+import { ArrowRight, Clock } from '@/components/icons';
+import { GoogleGeminiEffect } from '@/components/ui/google-gemini-effect';
 
 const BLOG_POSTS = [
   {
@@ -38,27 +40,42 @@ const BLOG_POSTS = [
 ];
 
 export function BlogPreviewSection() {
-  return (
-    <section className="py-20 relative z-10 bg-[#020617] border-t border-slate-900">
-      <div className="max-w-7xl mx-auto px-4 md:px-6">
-        
-        {/* Header de section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 text-left">
-          <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-950/60 border border-blue-800/50 text-cyan-400 text-xs font-black uppercase tracking-wider">
-              <span>Ressources & Guides IT</span>
-            </div>
-            <h2 className="text-2xl md:text-4xl font-black text-white tracking-tight">
-              Derniers Articles & Astuces de Révision
-            </h2>
-            <p className="text-slate-400 text-sm max-w-xl">
-              Retrouvez nos derniers conseils d'experts pour préparer vos examens officiels et booster votre carrière IT.
-            </p>
-          </div>
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
 
+  const pathLengthFirst = useTransform(scrollYProgress, [0, 0.8], [0.1, 1.2]);
+  const pathLengthSecond = useTransform(scrollYProgress, [0, 0.8], [0.15, 1.2]);
+  const pathLengthThird = useTransform(scrollYProgress, [0, 0.8], [0.2, 1.2]);
+  const pathLengthFourth = useTransform(scrollYProgress, [0, 0.8], [0.05, 1.2]);
+  const pathLengthFifth = useTransform(scrollYProgress, [0, 0.8], [0, 1.2]);
+
+  return (
+    <section ref={ref} className="relative z-10 bg-[#020617] border-t border-slate-900">
+      {/* Google Gemini SVG Trace Effect in Background */}
+      <div className="relative w-full">
+        <GoogleGeminiEffect
+          pathLengths={[
+            pathLengthFirst,
+            pathLengthSecond,
+            pathLengthThird,
+            pathLengthFourth,
+            pathLengthFifth,
+          ]}
+          title="Derniers Articles & Astuces de Révision"
+          description="Retrouvez nos conseils d'experts pour préparer vos examens officiels et propulser votre carrière IT."
+        />
+      </div>
+
+      {/* Grid container of Blog Posts */}
+      <div className="max-w-7xl mx-auto px-4 md:px-6 pb-20 relative z-20 -mt-24">
+        <div className="flex justify-between items-center mb-8">
+          <h3 className="text-lg font-black text-white uppercase tracking-wider">Articles populaires</h3>
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#080d1a] hover:bg-slate-900 border border-slate-800 text-cyan-400 hover:text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm shrink-0 cursor-pointer self-start md:self-auto"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#080d1a] hover:bg-slate-900 border border-slate-800 text-cyan-400 hover:text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm shrink-0 cursor-pointer"
           >
             <span>Voir tous les articles</span>
             <ArrowRight className="w-4 h-4" />
@@ -71,7 +88,7 @@ export function BlogPreviewSection() {
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
-              className="group bg-[#080d1a] border border-slate-800 hover:border-slate-700 rounded-3xl overflow-hidden transition-all duration-300 flex flex-col shadow-xl hover:shadow-cyan-950/20"
+              className="group bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-slate-700 rounded-3xl overflow-hidden transition-all duration-300 flex flex-col shadow-xl hover:shadow-cyan-950/20"
             >
               {/* Image d'illustration */}
               <div className="relative h-48 w-full overflow-hidden bg-slate-900">
@@ -115,7 +132,6 @@ export function BlogPreviewSection() {
             </Link>
           ))}
         </div>
-
       </div>
     </section>
   );
