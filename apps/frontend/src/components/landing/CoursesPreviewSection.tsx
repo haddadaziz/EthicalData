@@ -52,7 +52,7 @@ export function CoursesPreviewSection() {
               <span>Programmes & Cours de Formation</span>
             </div>
             <h2 className="text-2xl md:text-4xl font-black text-white tracking-tight">
-              Aperçu des Cours & Formations Interactives
+              Cours & Formations Interactives
             </h2>
             <p className="text-slate-400 text-sm leading-relaxed">
               Consultez nos modules de cours structurés, conçus pour vous faire progresser pas à pas et valider vos examens professionnels.
