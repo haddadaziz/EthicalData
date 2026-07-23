@@ -19,7 +19,6 @@ export const CometCard = ({
 
   const [isHovered, setIsHovered] = useState(false);
   const [transformStyle, setTransformStyle] = useState("");
-  const [cometStyle, setCometStyle] = useState({ opacity: 0, angle: 0, x: 50, y: 50 });
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -48,21 +47,9 @@ export const CometCard = ({
         const rotateX = (0.5 - yPct) * rotateDepth;
         const rotateY = (xPct - 0.5) * rotateDepth;
 
-        // Calculate comet glow angle around center
-        const dx = mouseX - width / 2;
-        const dy = mouseY - height / 2;
-        const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
-
         setTransformStyle(
           `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`
         );
-
-        setCometStyle({
-          opacity: 1,
-          angle,
-          x: Math.round(xPct * 100),
-          y: Math.round(yPct * 100),
-        });
       });
     },
     [rotateDepth]
@@ -78,7 +65,6 @@ export const CometCard = ({
     }
     setIsHovered(false);
     setTransformStyle("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
-    setCometStyle((prev) => ({ ...prev, opacity: 0 }));
   };
 
   return (
@@ -97,30 +83,6 @@ export const CometCard = ({
         willChange: "transform",
       }}
     >
-      {/* Comet Border Light Sweep */}
-      <div
-        className="pointer-events-none absolute -inset-[1px] rounded-[inherit] transition-opacity duration-300 z-10"
-        style={{
-          opacity: cometStyle.opacity,
-          background: `conic-gradient(from ${cometStyle.angle}deg at ${cometStyle.x}% ${cometStyle.y}%, #06b6d4 0deg, #2563eb 40deg, transparent 120deg, transparent 360deg)`,
-          borderRadius: "inherit",
-          maskImage: "linear-gradient(#fff, #fff) content-box, linear-gradient(#fff, #fff)",
-          maskComposite: "exclude",
-          WebkitMaskComposite: "xor",
-          padding: "1.5px",
-        }}
-      />
-
-      {/* Radial Spotlight Overlay */}
-      <div
-        className="pointer-events-none absolute inset-0 rounded-[inherit] transition-opacity duration-300 z-20"
-        style={{
-          opacity: isHovered ? 0.25 : 0,
-          background: `radial-gradient(400px circle at ${cometStyle.x}% ${cometStyle.y}%, rgba(6, 182, 212, 0.4), transparent 80%)`,
-          borderRadius: "inherit",
-        }}
-      />
-
       {/* Card Content */}
       <div className="relative z-0 h-full w-full rounded-[inherit] overflow-hidden">
         {children}
