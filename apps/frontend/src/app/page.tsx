@@ -11,7 +11,8 @@ import { AboutSection } from '@/components/landing/AboutSection';
 import { CertificationsSection } from '@/components/landing/CertificationsSection';
 import { ServicesSection } from '@/components/landing/ServicesSection';
 import { TestimonialsSection } from '@/components/landing/TestimonialsSection';
-import { EventsSection } from '@/components/landing/EventsSection';
+import { BlogPreviewSection } from '@/components/landing/BlogPreviewSection';
+import { CommunityCoachingBanner } from '@/components/landing/CommunityCoachingBanner';
 import { PartnersSection } from '@/components/landing/PartnersSection';
 import { FaqSection } from '@/components/landing/FaqSection';
 
@@ -116,7 +117,8 @@ export default function LandingPage() {
       
       <ServicesSection />
       <TestimonialsSection />
-      <EventsSection />
+      <BlogPreviewSection />
+      <CommunityCoachingBanner />
       <PartnersSection />
       <FaqSection />
 

@@ -31,8 +31,10 @@ export function Footer() {
           <div className="space-y-4">
             <h4 className="text-base font-bold text-white uppercase tracking-wider">Liens</h4>
             <div className="text-sm space-y-2.5">
-              <a href="/about" className="block text-slate-400 hover:text-white transition-colors">À propos</a>
+              <a href="/formations" className="block text-slate-400 hover:text-white transition-colors">Formations</a>
               <a href="/certifications" className="block text-slate-400 hover:text-white transition-colors">Certifications</a>
+              <a href="/coaching" className="block text-slate-400 hover:text-white transition-colors">Coaching & Mentoring</a>
+              <a href="/blog" className="block text-slate-400 hover:text-white transition-colors">Blog & Guides</a>
               <a href="/faq" className="block text-slate-400 hover:text-white transition-colors">FAQ</a>
               <a href="/contact" className="block text-slate-400 hover:text-white transition-colors">Contact</a>
             </div>

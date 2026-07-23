@@ -130,3 +130,6 @@ export const User = makeIcon(faUser);
 export const Users = makeIcon(faUsers);
 export const Video = makeIcon(faVideo);
 export const X = makeIcon(faXmark);
+export const Zap = makeIcon(faBolt);
+export const Tag = makeIcon(faBookmark);
+export const Share2 = makeIcon(faArrowUpRightFromSquare);
