@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ethical Data Security — Prototype de Landing Page Pro Max</title>
+  
+  <!-- Google Fonts: Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Poppins', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              dark: '#020617', // slate-950
+              darker: '#030712',
+              card: '#0c1125',
+              border: '#1e293b',
+              accent: '#dc2626', // red-600
+              accentHover: '#b91c1c' // red-700
+            }
+          },
+          boxShadow: {
+            glow: '0 0 20px rgba(220, 38, 38, 0.15)',
+            glowStrong: '0 0 35px rgba(220, 38, 38, 0.3)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom CSS animations and styles - Optimized for GPU Hardware Acceleration */
+    @keyframes float {
+      0%, 100% { transform: translateY(-6px); }
+      50% { transform: translateY(6px); }
+    }
+    .animate-float {
+      animation: float 6s ease-in-out infinite;
+      will-change: transform;
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.15; }
+      50% { opacity: 0.35; }
+    }
+    .animate-pulse-glow {
+      animation: pulse-glow 4s ease-in-out infinite;
+    }
+
+    @keyframes scan {
+      0% { transform: translate3d(0, 0vh, 0); }
+      50% { transform: translate3d(0, 80vh, 0); }
+      100% { transform: translate3d(0, 0vh, 0); }
+    }
+    .animate-scan {
+      animation: scan 6s linear infinite;
+      will-change: transform;
+      backface-visibility: hidden;
+    }
+  </style>
+</head>
+<body class="bg-brand-dark text-white font-sans overflow-x-hidden selection:bg-brand-accent selection:text-white">
+
+  <!-- ================= HEADER / NAVBAR ================= -->
+  <header id="navbar" class="fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 bg-transparent border-b border-transparent">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="hover:scale-105 transition-transform duration-300">
+          <img src="ethicaldata_white_logo.png" alt="Ethical Data Security Logo" class="h-8 w-auto object-contain">
+        </div>
+      </a>
+
+      <!-- Desktop Nav links -->
+      <nav id="nav-pill" class="hidden md:flex items-center gap-1 rounded-full px-3 py-1.5 transition-all duration-300">
+        <a href="#about" class="px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full text-white/90 hover:text-brand-accent transition-colors">
+          Qui Sommes-Nous
+        </a>
+        <a href="#formations" class="px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full text-white/90 hover:text-brand-accent transition-colors">
+          Certifications
+        </a>
+        <a href="#services" class="px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full text-white/90 hover:text-brand-accent transition-colors">
+          Nos Services
+        </a>
+        <a href="#faq" class="px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full text-white/90 hover:text-brand-accent transition-colors">
+          FAQ
+        </a>
+      </nav>
+
+      <!-- Action buttons -->
+      <div class="flex items-center gap-3">
+        <a href="#" class="px-4 py-2 text-xs font-black uppercase tracking-wider text-white/80 hover:text-white transition-colors">
+          Connexion
+        </a>
+        <a href="#" class="px-5 py-2.5 text-xs font-black uppercase tracking-wider rounded-xl bg-brand-accent hover:bg-brand-accentHover text-white shadow-md shadow-brand-accent/20 hover:scale-105 active:scale-95 transition-all">
+          S'inscrire
+        </a>
+
+        <!-- Hamburger Menu Button -->
+        <button id="mobile-menu-btn" class="md:hidden p-2 rounded-xl transition-all text-white/80 hover:text-white bg-transparent border-0" aria-label="Menu mobile">
+          <svg id="hamburger-icon" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg id="close-icon" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-drawer" class="hidden md:hidden border-t border-brand-border bg-brand-dark text-xs font-black uppercase tracking-widest">
+      <nav class="flex flex-col p-4 gap-1">
+        <a href="#about" class="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">Qui Sommes-Nous</a>
+        <a href="#formations" class="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">Certifications</a>
+        <a href="#services" class="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">Nos Services</a>
+        <a href="#faq" class="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">FAQ</a>
+      </nav>
+    </div>
+  </header>
+
+
+  <!-- ================= HERO SECTION ================= -->
+  <section class="relative min-h-[80vh] flex flex-col justify-between overflow-hidden bg-brand-dark text-white pt-16">
+    
+    <!-- Background Image overlay -->
+    <div class="absolute inset-0 z-0">
+      <img src="landing_page_logo_ethicaldata.jpeg" alt="Background" class="w-full h-full object-cover opacity-80 transform-gpu pointer-events-none">
+      <div class="absolute inset-0 bg-gradient-to-b from-brand-dark/50 via-brand-dark/30 to-brand-dark/70 pointer-events-none" />
+
+      <!-- Glowing Red Laser Scanning Line (GPU accelerated, positioned just above background image) -->
+      <div class="absolute top-0 left-0 w-full h-[2px] bg-brand-accent/80 shadow-[0_0_15px_#dc2626] animate-scan pointer-events-none z-10"></div>
+    </div>
+
+    <!-- Hero Content Container -->
+    <div class="relative z-10 max-w-7xl mx-auto px-6 w-full flex-grow flex flex-col lg:flex-row items-center justify-center gap-12 py-20">
+      
+      <!-- Left Column: Title & CTAs (Matched original content exactly) -->
+      <div class="w-full lg:w-7/12 flex flex-col items-start text-left space-y-6">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white uppercase leading-none drop-shadow-lg">
+          Ethical Data Security – L&apos;essentiel en un clic !
+        </h1>
+
+        <p class="text-xs sm:text-sm md:text-base text-white/80 uppercase tracking-widest font-black leading-relaxed max-w-xl drop-shadow-md">
+          SUPPORT DE COURS ET ENTRAÎNEMENT PRATIQUE POUR VOS CERTIFICATIONS EN CYBERSÉCURITÉ ET EN SÉCURITÉ
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center gap-4 pt-4">
+          <a href="#" class="w-full sm:w-auto px-8 py-3.5 bg-brand-accent hover:bg-brand-accentHover text-white font-extrabold rounded-xl transition-all duration-300 flex items-center justify-center gap-2.5 cursor-pointer shadow-lg shadow-brand-accent/30 text-sm uppercase tracking-wider hover:scale-105 active:scale-95">
+            <span>Réserver un diagnostic</span>
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Right Column: Interactive Animated Cyber Wolf Mascot -->
+      <div class="w-full lg:w-5/12 flex items-center justify-center relative select-none">
+        
+        <!-- Cybernetic rotating background rings -->
+        <div class="absolute w-[280px] h-[280px] sm:w-[340px] sm:h-[340px] border border-brand-accent/10 rounded-full"></div>
+        <div class="absolute w-[240px] h-[240px] sm:w-[280px] sm:h-[280px] border border-dashed border-brand-accent/15 rounded-full"></div>
+        
+        <!-- Mascot Frame -->
+        <div class="relative z-10 w-[240px] h-[240px] sm:w-[320px] sm:h-[320px] rounded-2xl overflow-hidden border border-brand-accent/20 bg-[#080d1a] p-4 shadow-xl shadow-red-950/20 hover:scale-[1.02] transition-transform duration-500 transform-gpu group">
+          
+          <!-- Corner ticks -->
+          <div class="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-brand-accent/50 rounded-tl-lg"></div>
+          <div class="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-brand-accent/50 rounded-tr-lg"></div>
+          <div class="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-brand-accent/50 rounded-bl-lg"></div>
+          <div class="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-brand-accent/50 rounded-br-lg"></div>
+
+          <!-- Inside Frame -->
+          <div class="relative w-full h-full rounded-xl overflow-hidden bg-brand-dark flex items-center justify-center">
+            
+            <!-- Wolf Mascot image scales slightly when hovered -->
+            <img src="wolf_mascot.png" alt="Cyber Wolf Mascot" class="w-[85%] h-[85%] object-contain drop-shadow-[0_0_20px_rgba(220, 38, 38, 0.3)] animate-float transition-transform duration-500 ease-out hover:scale-105 cursor-pointer transform-gpu" style="will-change: transform;">
+            
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ================= ABOUT SECTION ================= -->
+  <section id="about" class="relative z-10 w-full pt-20 md:pt-24 pb-24 bg-brand-darker">
+
+    <!-- Background cyber network image - Stretching 100% edge-to-edge -->
+    <div class="absolute inset-0 z-0 pointer-events-none">
+      <img src="about_cyber_bg.png" alt="Cyber network background" class="w-full h-full object-cover opacity-25 transform-gpu">
+      <!-- Soft gradient fading perfectly to top/bottom sections to ensure smooth seamless flow -->
+      <div class="absolute inset-0 bg-gradient-to-b from-brand-darker via-transparent to-brand-darker"></div>
+    </div>
+
+    <div class="relative z-10 max-w-5xl mx-auto px-6 text-center space-y-6">
+      <h2 class="text-3xl sm:text-4xl font-black text-white uppercase leading-tight tracking-tight">
+        ETHICAL DATA SECURITY
+      </h2>
+      <p class="text-slate-300 text-sm md:text-[15px] leading-relaxed font-medium max-w-4xl mx-auto">
+        Dynamisme, réactivité, et innovation font partie de nos principaux engagements vis à vis de nos clients. De même, toutes nos prestations et solutions sont conçues et réalisées par des experts reconnus dans leurs domaines. Chez ETHICAL DATA SECURITY, nous ferons toujours les efforts nécessaires pour dépasser vos attentes.
+      </p>
+      
+      <!-- Stats - Matched exactly with original layout structure -->
+      <div class="flex flex-wrap justify-center gap-12 sm:gap-20 md:gap-32 pt-8 pb-4">
+        
+        <div class="text-center">
+          <p class="text-4xl sm:text-5xl font-black text-brand-accent mb-1 drop-shadow-[0_0_8px_rgba(220,38,38,0.2)]">
+            254
+          </p>
+          <p class="text-[11px] sm:text-xs text-white font-extrabold uppercase tracking-widest">
+            Projets Réalisés
+          </p>
+        </div>
+
+        <div class="text-center">
+          <p class="text-4xl sm:text-5xl font-black text-brand-accent mb-1 drop-shadow-[0_0_8px_rgba(220,38,38,0.2)]">
+            569
+          </p>
+          <p class="text-[11px] sm:text-xs text-white font-extrabold uppercase tracking-widest">
+            Formations
+          </p>
+        </div>
+
+        <div class="text-center">
+          <p class="text-4xl sm:text-5xl font-black text-brand-accent mb-1 drop-shadow-[0_0_8px_rgba(220,38,38,0.2)]">
+            2000
+          </p>
+          <p class="text-[11px] sm:text-xs text-white font-extrabold uppercase tracking-widest">
+            Certificats
+          </p>
+        </div>
+
+        <div class="text-center">
+          <p class="text-4xl sm:text-5xl font-black text-brand-accent mb-1 drop-shadow-[0_0_8px_rgba(220,38,38,0.2)]">
+            100
+          </p>
+          <p class="text-[11px] sm:text-xs text-white font-extrabold uppercase tracking-widest">
+            Mission Pentest
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ================= ABOUT SLIDER ================= -->
+    <div class="w-full max-w-6xl mx-auto px-6 mt-6 md:mt-12">
+      
+      <div class="relative w-full max-w-5xl mx-auto mt-4 md:mt-12 group" id="slider-container">
+        <!-- Slider Main Wrapper -->
+        <div class="w-full relative flex flex-col items-center">
+          
+          <!-- background building image (with black background to prevent bleed-through) -->
+          <div class="w-full h-[300px] md:h-[450px] overflow-hidden rounded-2xl md:rounded-[40px] shadow-lg relative border border-slate-900 bg-black">
+            <img src="technopark.jpeg" alt="Technopark" class="w-full h-full object-cover opacity-70">
+          </div>
+
+          <!-- Slide card overlapping the image bottom (Optimized: solid background, no backdrop-blur) -->
+          <div class="relative -mt-24 md:-mt-32 w-[90%] md:w-10/12 bg-[#080d1a] border border-slate-800 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-5 md:p-10 z-20 flex flex-col md:flex-row gap-6 md:gap-10 items-center min-h-[200px] transition-all duration-500 transform-gpu">
+            
+            <!-- Navigation controls -->
+            <button id="slider-prev-btn" class="cursor-pointer absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-[#080d1a] border border-brand-accent text-brand-accent hover:bg-red-950/30 hover:scale-110 rounded-full flex items-center justify-center transition-all z-30 shadow-md">
+              <svg class="w-5 h-5 ml-[-2px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+            </button>
+            <button id="slider-next-btn" class="cursor-pointer absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-[#080d1a] border border-brand-accent text-brand-accent hover:bg-red-950/30 hover:scale-110 rounded-full flex items-center justify-center transition-all z-30 shadow-md">
+              <svg class="w-5 h-5 mr-[-2px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </button>
+
+            <!-- Slide Image -->
+            <div class="w-full md:w-5/12 shrink-0 flex items-center justify-center">
+              <img id="slide-image" src="expertises-integrations-scaled-434x358.webp" alt="Solution IT" class="max-w-full max-h-56 h-auto object-contain transition-opacity duration-300 transform-gpu drop-shadow-[0_0_15px_rgba(220,38,38,0.25)]">
+            </div>
+
+            <!-- Slide Text -->
+            <div class="w-full md:w-7/12 text-left space-y-3 md:space-y-4">
+              <h3 id="slide-title" class="text-lg md:text-2xl font-bold text-brand-accent drop-shadow-[0_0_8px_rgba(220, 38, 38, 0.2)]">
+                Solution IT
+              </h3>
+              <p id="slide-text" class="text-slate-300 text-xs md:text-sm leading-relaxed font-semibold transition-opacity duration-300">
+                Nous vous offrons des opportunités en développant des solutions spécialisées et nous vous proposons plusieurs produits qui accélèrent la transformation numérique sur n'importe quelle application, n'importe quel cloud et n'importe quel appareil pour réduire les dépenses informatiques......
+              </p>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ================= CERTIFICATIONS SECTION ================= -->
+  <section id="formations" class="relative z-10 w-full py-20 bg-brand-dark overflow-hidden">
+    
+    <!-- Background cyber graphic image from generated asset - Opacity 65% - stretching edge-to-edge -->
+    <div class="absolute inset-0 z-0 pointer-events-none">
+      <img src="cyber_hero_bg.png" alt="Cyber security background" class="w-full h-full object-cover opacity-65 transform-gpu">
+      <div class="absolute inset-0 bg-gradient-to-b from-brand-dark via-transparent to-brand-dark"></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-6">
+      
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <span class="text-xs font-bold text-brand-accent uppercase tracking-widest">Offres phares</span>
+        <h2 class="text-3xl font-black text-white mt-3 uppercase tracking-tight">Certifications</h2>
+        <p class="text-sm text-slate-400 mt-4 leading-relaxed font-semibold">
+          Sélectionnez votre parcours, entraînez-vous sur nos simulateurs et décrochez votre certification internationale.
+        </p>
+      </div>
+
+      <!-- Certifications Cards Grid - Matched with original structures -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <!-- Card 1 -->
+        <a href="#" class="flex flex-col group cursor-pointer">
+          <div class="relative w-full h-[340px] rounded-xl overflow-hidden shadow-lg transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-red-950/40 group-hover:shadow-2xl bg-[#0a0f1d] border border-slate-900">
+            <img src="cadre_certif.png" alt="Template" class="absolute inset-0 w-full h-full object-cover z-0 opacity-80 group-hover:opacity-100 transition-opacity">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent z-10" />
+            
+            <div class="absolute top-4 left-4 z-30">
+              <div class="bg-slate-950/90 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-800/80 shadow-sm flex items-center group-hover:bg-brand-accent group-hover:border-brand-accent transition-colors">
+                AZ-900
+              </div>
+            </div>
+
+            <div class="absolute bottom-32 left-1/2 -translate-x-1/2 z-20 group-hover:-translate-y-2 transition-transform duration-500 w-32 flex justify-center">
+              <img src="microsoft.png" alt="Microsoft Badge" class="w-20 h-20 object-contain filter drop-shadow-xl">
+            </div>
+          </div>
+          <div class="mt-4 flex flex-col gap-2 px-1">
+            <div class="flex items-center justify-between gap-3">
+              <h3 class="text-[13px] font-bold text-slate-200 group-hover:text-white leading-snug line-clamp-2 flex-1">
+                Microsoft Azure Fundamentals
+              </h3>
+              <!-- Button is red by default -->
+              <div class="px-3 py-1.5 bg-brand-accent border border-brand-accent rounded-lg flex items-center justify-center text-white transition-colors shadow-sm hover:bg-brand-accentHover hover:border-brand-accentHover group-hover:bg-brand-accentHover group-hover:border-brand-accentHover text-[10px] font-bold uppercase tracking-wider">
+                Voir plus
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <!-- Card 2 -->
+        <a href="#" class="flex flex-col group cursor-pointer">
+          <div class="relative w-full h-[340px] rounded-xl overflow-hidden shadow-lg transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-red-950/40 group-hover:shadow-2xl bg-[#0a0f1d] border border-slate-900">
+            <img src="cadre_certif.png" alt="Template" class="absolute inset-0 w-full h-full object-cover z-0 opacity-80 group-hover:opacity-100 transition-opacity">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent z-10" />
+            
+            <div class="absolute top-4 left-4 z-30">
+              <div class="bg-slate-950/90 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-800/80 shadow-sm flex items-center group-hover:bg-brand-accent group-hover:border-brand-accent transition-colors">
+                ISO-27001
+              </div>
+            </div>
+
+            <div class="absolute bottom-32 left-1/2 -translate-x-1/2 z-20 group-hover:-translate-y-2 transition-transform duration-500 w-32 flex justify-center">
+              <img src="pecb.png" alt="PECB Badge" class="w-20 h-20 object-contain filter drop-shadow-xl">
+            </div>
+          </div>
+          <div class="mt-4 flex flex-col gap-2 px-1">
+            <div class="flex items-center justify-between gap-3">
+              <h3 class="text-[13px] font-bold text-slate-200 group-hover:text-white leading-snug line-clamp-2 flex-1">
+                PECB ISO 27001 Lead Implementer
+              </h3>
+              <!-- Button is red by default -->
+              <div class="px-3 py-1.5 bg-brand-accent border border-brand-accent rounded-lg flex items-center justify-center text-white transition-colors shadow-sm hover:bg-brand-accentHover hover:border-brand-accentHover group-hover:bg-brand-accentHover group-hover:border-brand-accentHover text-[10px] font-bold uppercase tracking-wider">
+                Voir plus
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <!-- Card 3 -->
+        <a href="#" class="flex flex-col group cursor-pointer">
+          <div class="relative w-full h-[340px] rounded-xl overflow-hidden shadow-lg transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-red-950/40 group-hover:shadow-2xl bg-[#0a0f1d] border border-slate-900">
+            <img src="cadre_certif.png" alt="Template" class="absolute inset-0 w-full h-full object-cover z-0 opacity-80 group-hover:opacity-100 transition-opacity">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent z-10" />
+            
+            <div class="absolute top-4 left-4 z-30">
+              <div class="bg-slate-950/90 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-800/80 shadow-sm flex items-center group-hover:bg-brand-accent group-hover:border-brand-accent transition-colors">
+                CLF-C02
+              </div>
+            </div>
+
+            <div class="absolute bottom-32 left-1/2 -translate-x-1/2 z-20 group-hover:-translate-y-2 transition-transform duration-500 w-32 flex justify-center">
+              <img src="aws.png" alt="AWS Badge" class="w-20 h-20 object-contain filter drop-shadow-xl">
+            </div>
+          </div>
+          <div class="mt-4 flex flex-col gap-2 px-1">
+            <div class="flex items-center justify-between gap-3">
+              <h3 class="text-[13px] font-bold text-slate-200 group-hover:text-white leading-snug line-clamp-2 flex-1">
+                AWS Certified Cloud Practitioner
+              </h3>
+              <!-- Button is red by default -->
+              <div class="px-3 py-1.5 bg-brand-accent border border-brand-accent rounded-lg flex items-center justify-center text-white transition-colors shadow-sm hover:bg-brand-accentHover hover:border-brand-accentHover group-hover:bg-brand-accentHover group-hover:border-brand-accentHover text-[10px] font-bold uppercase tracking-wider">
+                Voir plus
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <!-- Card 4 -->
+        <a href="#" class="flex flex-col group cursor-pointer">
+          <div class="relative w-full h-[340px] rounded-xl overflow-hidden shadow-lg transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-red-950/40 group-hover:shadow-2xl bg-[#0a0f1d] border border-slate-900">
+            <img src="paloalto.png" alt="Template" class="absolute inset-0 w-full h-full object-cover z-0 opacity-80 group-hover:opacity-100 transition-opacity">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent z-10" />
+            
+            <div class="absolute top-4 left-4 z-30">
+              <div class="bg-slate-950/90 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-800/80 shadow-sm flex items-center group-hover:bg-brand-accent group-hover:border-brand-accent transition-colors">
+                PCNSA
+              </div>
+            </div>
+
+            <div class="absolute bottom-32 left-1/2 -translate-x-1/2 z-20 group-hover:-translate-y-2 transition-transform duration-500 w-32 flex justify-center">
+              <img src="paloalto.png" alt="Palo Alto Badge" class="w-20 h-20 object-contain filter drop-shadow-xl">
+            </div>
+          </div>
+          <div class="mt-4 flex flex-col gap-2 px-1">
+            <div class="flex items-center justify-between gap-3">
+              <h3 class="text-[13px] font-bold text-slate-200 group-hover:text-white leading-snug line-clamp-2 flex-1">
+                Palo Alto Networks Network Security
+              </h3>
+              <!-- Button is red by default -->
+              <div class="px-3 py-1.5 bg-brand-accent border border-brand-accent rounded-lg flex items-center justify-center text-white transition-colors shadow-sm hover:bg-brand-accentHover hover:border-brand-accentHover group-hover:bg-brand-accentHover group-hover:border-brand-accentHover text-[10px] font-bold uppercase tracking-wider">
+                Voir plus
+              </div>
+            </div>
+          </div>
+        </a>
+
+      </div>
+
+      <div class="flex justify-center mt-12">
+        <!-- Main button is red by default -->
+        <a href="#" class="px-8 py-3.5 bg-brand-accent hover:bg-brand-accentHover text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-brand-accent/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-3 group">
+          <span>Voir tout le catalogue des certifications</span>
+          <svg class="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ================= SERVICES SECTION ================= -->
+  <section id="services" class="relative z-10 w-full py-24 overflow-hidden border-t border-slate-900 bg-brand-dark">
+    
+    <!-- Background binary matrix generated asset - Stretching 100% viewport width -->
+    <div class="absolute inset-0 z-0 pointer-events-none">
+      <img src="cyber_services_bg.png" alt="Cyber security matrix background" class="w-full h-full object-cover opacity-30 transform-gpu">
+      <!-- Soft gradient fading perfectly to top/bottom sections to ensure smooth seamless flow -->
+      <div class="absolute inset-0 bg-gradient-to-b from-brand-dark via-transparent to-brand-dark"></div>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-6 z-10">
+      
+      <!-- Centered Header of section -->
+      <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+        <div class="flex items-center justify-center gap-4">
+          <span class="w-10 h-[2px] bg-brand-accent rounded-full"></span>
+          <span class="text-sm font-black text-brand-accent uppercase tracking-[0.2em]">Notre Expertise</span>
+          <span class="w-10 h-[2px] bg-brand-accent rounded-full"></span>
+        </div>
+        <h2 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white uppercase tracking-tighter">Nos Prestations</h2>
+        <p class="text-sm text-slate-400 leading-relaxed font-semibold max-w-xl mx-auto">
+          Découvrez nos domaines d'intervention clés pour sécuriser et accélérer la transformation numérique de vos infrastructures.
+        </p>
+      </div>
+
+      <!-- Symmetric 3-column Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Card 1 -->
+        <div class="flex flex-col p-6 bg-[#080c16]/50 border border-slate-900 hover:border-brand-accent/20 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-red-950/5 group cursor-default">
+          <div class="flex items-center justify-between mb-3 border-b border-slate-900 pb-2">
+            <h3 class="text-lg font-bold text-white group-hover:text-brand-accent transition-colors duration-300 leading-tight">Services IT</h3>
+            <span class="text-3xl font-black text-slate-800 group-hover:text-brand-accent/80 transition-colors duration-500 leading-none">01</span>
+          </div>
+          <p class="text-[13px] text-slate-400 leading-relaxed font-semibold group-hover:text-slate-300 transition-colors duration-300">
+            Nous vous accompagnons dans la mise en place, l'évolution et la sécurisation de votre infrastructure IT. Notre objectif é: de garantir à votre entreprise performance, fiabilité et continuité, tout en assurant un haut niveau de disponibilité et de sécurité pour vos systèmes.
+          </p>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="flex flex-col p-6 bg-[#080c16]/50 border border-slate-900 hover:border-brand-accent/20 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-red-950/5 group cursor-default">
+          <div class="flex items-center justify-between mb-3 border-b border-slate-900 pb-2">
+            <h3 class="text-lg font-bold text-white group-hover:text-brand-accent transition-colors duration-300 leading-tight">Certification</h3>
+            <span class="text-3xl font-black text-slate-800 group-hover:text-brand-accent/80 transition-colors duration-500 leading-none">02</span>
+          </div>
+          <p class="text-[13px] text-slate-400 leading-relaxed font-semibold group-hover:text-slate-300 transition-colors duration-300">
+            Boostez votre carrière grâce à nos certifications professionnelles reconnues. Elles vous permettent de valider vos compétences, d'accroître votre crédibilité sur le marché de l'emploi et de répondre aux exigences actuelles des entreprises en matière de qualité et d'expertise métier.
+          </p>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="flex flex-col p-6 bg-[#080c16]/50 border border-slate-900 hover:border-brand-accent/20 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-red-950/5 group cursor-default">
+          <div class="flex items-center justify-between mb-3 border-b border-slate-900 pb-2">
+            <h3 class="text-lg font-bold text-white group-hover:text-brand-accent transition-colors duration-300 leading-tight">Formation</h3>
+            <span class="text-3xl font-black text-slate-800 group-hover:text-brand-accent/80 transition-colors duration-500 leading-none">03</span>
+          </div>
+          <p class="text-[13px] text-slate-400 leading-relaxed font-semibold group-hover:text-slate-300 transition-colors duration-300">
+            Nous proposons des formations spécialisées en IT et autres domaines clés. Adaptées aux professionnels et particuliers, elles visent à développer vos compétences, vous tenir à jour avec les nouvelles technologies, et répondre concrètement à vos objectifs de carrière ou d'entreprise.
+          </p>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="flex flex-col p-6 bg-[#080c16]/50 border border-slate-900 hover:border-brand-accent/20 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-red-950/5 group cursor-default">
+          <div class="flex items-center justify-between mb-3 border-b border-slate-900 pb-2">
+            <h3 class="text-lg font-bold text-white group-hover:text-brand-accent transition-colors duration-300 leading-tight">Infogérance</h3>
+            <span class="text-3xl font-black text-slate-800 group-hover:text-brand-accent/80 transition-colors duration-500 leading-none">04</span>
+          </div>
+          <p class="text-[13px] text-slate-400 leading-relaxed font-semibold group-hover:text-slate-300 transition-colors duration-300">
+            Confiez-nous la gestion de votre système d'information. Nous assurons la maintenance, la supervision, la sécurité et le bon fonctionnement de vos infrastructures IT, sur site ou à distance, pour vous permettre de rester concentré sur votre cœur de métier, en toute sérénité.
+          </p>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="flex flex-col p-6 bg-[#080c16]/50 border border-slate-900 hover:border-brand-accent/20 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-red-950/5 group cursor-default">
+          <div class="flex items-center justify-between mb-3 border-b border-slate-900 pb-2">
+            <h3 class="text-lg font-bold text-white group-hover:text-brand-accent transition-colors duration-300 leading-tight">Intégration</h3>
+            <span class="text-3xl font-black text-slate-800 group-hover:text-brand-accent/80 transition-colors duration-500 leading-none">05</span>
+          </div>
+          <p class="text-[13px] text-slate-400 leading-relaxed font-semibold group-hover:text-slate-300 transition-colors duration-300">
+            Nous vous aidons à intégrer des solutions technologiques sur mesure, compatibles avec votre environnement IT. Notre expertise vous permet de réussir votre transformation digitale en assurant la cohérence, la performance et l'optimisation de l'ensemble de votre système d'information.
+          </p>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="flex flex-col p-6 bg-[#080c16]/50 border border-slate-900 hover:border-brand-accent/20 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-red-950/5 group cursor-default">
+          <div class="flex items-center justify-between mb-3 border-b border-slate-900 pb-2">
+            <h3 class="text-lg font-bold text-white group-hover:text-brand-accent transition-colors duration-300 leading-tight">Services professionnels</h3>
+            <span class="text-3xl font-black text-slate-800 group-hover:text-brand-accent/80 transition-colors duration-500 leading-none">06</span>
+          </div>
+          <p class="text-[13px] text-slate-400 leading-relaxed font-semibold group-hover:text-slate-300 transition-colors duration-300">
+            Nos experts interviennent pour des missions de conseil, d'audit et de déploiement IT. Grâce à une approche sur mesure, nous vous apportons un accompagnement stratégique et opérationnel pour relever vos défis technologiques et garantir la réussite de vos projets.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ================= TESTIMONIALS SECTION ================= -->
+  <section id="testimonials" class="relative z-10 w-full py-20 overflow-hidden bg-brand-dark animate-flow-blend">
+    
+    <!-- Background cyber network image - Stretching 100% edge-to-edge -->
+    <div class="absolute inset-0 z-0 pointer-events-none">
+      <img src="testimonials_cyber_bg.png" alt="Testimonials background" class="w-full h-full object-cover opacity-20 transform-gpu">
+      <!-- Soft gradient fading perfectly to top/bottom sections to ensure smooth seamless flow -->
+      <div class="absolute inset-0 bg-gradient-to-b from-brand-dark via-transparent to-brand-dark"></div>
+    </div>
+
+    <div class="relative max-w-[1400px] mx-auto px-6 z-10">
+      
+      <!-- En-tête Google -->
+      <div class="flex flex-col items-center justify-center text-center space-y-4 mb-14">
+        <h2 class="text-3xl sm:text-4xl font-black text-white tracking-tight">Ce que disent nos clients</h2>
+        
+        <div class="flex flex-col items-center space-y-1">
+          <span class="text-lg font-black text-white uppercase tracking-widest">Excellent</span>
+          <div class="flex gap-1">
+            <svg class="w-7 h-7 text-[#FFC107] fill-current" viewBox="0 0 512 512"><path d="M256 0c-11.4 0-21.8 7-25.7 17.7L171.1 143.5 29.8 163.6c-11.8 1.7-21.1 10.4-23.7 22-2.6 11.6 1.5 23.6 10.5 31.6l102.4 92-24.5 140.2c-2.1 11.8 3 23.9 13.1 30.5 10 6.6 23.1 6.5 33.1-.2L256 405.1l125.1 74.5c10 6.7 23 6.8 33.1 .2 10.1-6.6 15.2-18.7 13.1-30.5L402.9 309.2l102.4-92c9-8 13.1-20 10.5-31.6-2.6-11.6-11.9-20.3-23.7-22L340.9 143.5 281.7 17.7C277.8 7 267.4 0 256 0z"/></svg>
+            <svg class="w-7 h-7 text-[#FFC107] fill-current" viewBox="0 0 512 512"><path d="M256 0c-11.4 0-21.8 7-25.7 17.7L171.1 143.5 29.8 163.6c-11.8 1.7-21.1 10.4-23.7 22-2.6 11.6 1.5 23.6 10.5 31.6l102.4 92-24.5 140.2c-2.1 11.8 3 23.9 13.1 30.5 10 6.6 23.1 6.5 33.1-.2L256 405.1l125.1 74.5c10 6.7 23 6.8 33.1 .2 10.1-6.6 15.2-18.7 13.1-30.5L402.9 309.2l102.4-92c9-8 13.1-20 10.5-31.6-2.6-11.6-11.9-20.3-23.7-22L340.9 143.5 281.7 17.7C277.8 7 267.4 0 256 0z"/></svg>
+            <svg class="w-7 h-7 text-[#FFC107] fill-current" viewBox="0 0 512 512"><path d="M256 0c-11.4 0-21.8 7-25.7 17.7L171.1 143.5 29.8 163.6c-11.8 1.7-21.1 10.4-23.7 22-2.6 11.6 1.5 23.6 10.5 31.6l102.4 92-24.5 140.2c-2.1 11.8 3 23.9 13.1 30.5 10 6.6 23.1 6.5 33.1-.2L256 405.1l125.1 74.5c10 6.7 23 6.8 33.1 .2 10.1-6.6 15.2-18.7 13.1-30.5L402.9 309.2l102.4-92c9-8 13.1-20 10.5-31.6-2.6-11.6-11.9-20.3-23.7-22L340.9 143.5 281.7 17.7C277.8 7 267.4 0 256 0z"/></svg>
+            <svg class="w-7 h-7 text-[#FFC107] fill-current" viewBox="0 0 512 512"><path d="M256 0c-11.4 0-21.8 7-25.7 17.7L171.1 143.5 29.8 163.6c-11.8 1.7-21.1 10.4-23.7 22-2.6 11.6 1.5 23.6 10.5 31.6l102.4 92-24.5 140.2c-2.1 11.8 3 23.9 13.1 30.5 10 6.6 23.1 6.5 33.1-.2L256 405.1l125.1 74.5c10 6.7 23 6.8 33.1 .2 10.1-6.6 15.2-18.7 13.1-30.5L402.9 309.2l102.4-92c9-8 13.1-20 10.5-31.6-2.6-11.6-11.9-20.3-23.7-22L340.9 143.5 281.7 17.7C277.8 7 267.4 0 256 0z"/></svg>
+            <svg class="w-7 h-7 text-[#FFC107] fill-current" viewBox="0 0 512 512"><path d="M256 0c-11.4 0-21.8 7-25.7 17.7L171.1 143.5 29.8 163.6c-11.8 1.7-21.1 10.4-23.7 22-2.6 11.6 1.5 23.6 10.5 31.6l102.4 92-24.5 140.2c-2.1 11.8 3 23.9 13.1 30.5 10 6.6 23.1 6.5 33.1-.2L256 405.1l125.1 74.5c10 6.7 23 6.8 33.1 .2 10.1-6.6 15.2-18.7 13.1-30.5L402.9 309.2l102.4-92c9-8 13.1-20 10.5-31.6-2.6-11.6-11.9-20.3-23.7-22L340.9 143.5 281.7 17.7C277.8 7 267.4 0 256 0z"/></svg>
+          </div>
+          <p class="text-[13px] text-slate-400 mt-1 font-semibold">Basé sur <strong class="text-slate-200">56 avis</strong></p>
+          <img src="google.png" alt="Google" class="h-7 object-contain mt-2">
+        </div>
+      </div>
+
+      <!-- Testimonials grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Card 1 -->
+        <div class="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-900 hover:border-brand-accent/20 rounded-2xl p-6 text-left flex flex-col space-y-4 hover:-translate-y-1 hover:shadow-lg hover:shadow-red-950/5 transition-all duration-300 group cursor-default">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg bg-orange-700">N</div>
+              <div class="flex flex-col">
+                <span class="text-[13px] font-bold text-white group-hover:text-brand-accent transition-colors duration-300 leading-tight">Nouhaila IJIKKI</span>
+                <span class="text-[11px] text-slate-400 mt-0.5">il y a 1 année</span>
+              </div>
+            </div>
+            <img src="small_google.png" alt="Google" class="w-5 h-5 object-contain shrink-0">
+          </div>
+          <div class="flex gap-1 items-center">
+            <svg class="w-[18px] h-[18px] text-[#FFC107] fill-current" viewBox="0 0 512 512"><path d="M256 0c-11.4 0-21.8 7-25.7 17.7L171.1 143.5 29.8 163.6c-11.8 1.7-21.1 10.4-23.7 22-2.6 11.6 1.5 23.6 10.5 31.6l102.4 92-24.5 140.2c-2.1 11.8 3 23.9 13.1 30.5 10 6.6 23.1 6.5 33.1-.2L256 405.1l125.1 74.5c10 6.7 23 6.8 33.1 .2 10.1-6.6 15.2-18.7 13.1-30.5L402.9 309.2l102.4-92c9-8 13.1-20 10.5-31.6-2.6-11.6-11.9-20.3-23.7-22L340.9 143.5 281.7 17.7C277.8 7 267.4 0 256 0z"/></svg>
+            <svg class="w-[18px] h-[18px] text-[#FFC107] fill-current" viewBox="0 0 512 512"><path d="M256 0c-11.4 0-21.8 7-25.7 17.7L171.1 143.5 29.8 163.6c-11.8 1.7-21.1 10.4-23.7 22-2.6 11.6 1.5 23.6 10.5 31.6l102.4 92-24.5 140.2c-2.1 11.8 3 23.9 13.1 30.5 10 6.6 23.1 6.5 33.1-.2L256 405.1l125.1 74.5c10 6.7 23 6.8 33.1 .2 10.1-6.6 15.2-18.7 13.1-30.5L402.9 309.2l102.4-92c9-8 13.1-20 10.5-31.6-2.6-11.6-11.9-20.3-23.7-22L340.9 143.5 281.7 17.7C277.8 7 267.4 0 256 0z"/></svg>
+            <svg class="w-[18px] h-[18px] text-[#FFC107] fill-current" viewBox="0 0 512 512"><path d="M256 0c-11.4 0-21.8 7-25.7 17.7L171.1 143.5 29.8 163.6c-11.8 1.7-21.1 10.4-23.7 22-2.6 11.6 1.5 23.6 10.5 31.6l102.4 92-24.5 140.2c-2.1 11.8 3 23.9 13.1 30.5 10 6.6 23.1 6.5 33.1-.2L256 405.1l125.1 74.5c10 6.7 23 6.8 33.1 .2 10.1-6.6 15.2-18.7 13.1-30.5L402.9 309.2l102.4-92c9-8 13.1-20 10.5-31.6-2.6-11.6-11.9-20.3-23.7-22L340.9 143.5 281.7 17.7C277.8 7 267.4 0 256 0z"/></svg>
+            <svg class="w-[18px] h-[18px] text-[#FFC107] fill-current" viewBox="0 0 512 512"><path d="M256 0c-11.4 0-21.8 7-25.7 17.7L171.1 143.5 29.8 163.6c-11.8 1.7-21.1 10.4-23.7 22-2.6 11.6 1.5 23.6 10.5 31.6l102.4 92-24.5 140.2c-2.1 11.8 3 23.9 13.1 30.5 10 6.6 23.1 6.5 33.1-.2L256 405.1l125.1 74.5c10 6.7 23 6.8 33.1 .2 10.1-6.6 15.2-18.7 13.1-30.5L402.9 309.2l102.4-92c9-8 13.1-20 10.5-31.6-2.6-11.6-11.9-20.3-23.7-22L340.9 143.5 281.7 17.7C277.8 7 267.4 0 256 0z"/></svg>
+            <svg class="w-[18px] h-[18px] text-[#FFC107] fill-current" viewBox="0 0 512 512"><path d="M256 0c-11.4 0-21.8 7-25.7 17.7L171.1 143.5 29.8 163.6c-11.8 1.7-21.1 10.4-23.7 22-2.6 11.6 1.5 23.6 10.5 31.6l102.4 92-24.5 140.2c-2.1 11.8 3 23.9 13.1 30.5 10 6.6 23.1 6.5 33.1-.2L256 405.1l125.1 74.5c10 6.7 23 6.8 33.1 .2 10.1-6.6 15.2-18.7 13.1-30.5L402.9 309.2l102.4-92c9-8 13.1-20 10.5-31.6-2.6-11.6-11.9-20.3-23.7-22L340.9 143.5 281.7 17.7C277.8 7 267.4 0 256 0z"/></svg>
+          </div>
+          <p class="text-[13px] text-slate-300 group-hover:text-slate-200 transition-colors duration-300 leading-relaxed font-semibold">
+            Great experience!!! The staff was professional and welcoming, ensuring a smooth and stress-free process. The exam room was very comfortable and well equipped. I would definitely recommend it to anyone.
+          </p>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-900 hover:border-brand-accent/20 rounded-2xl p-6 text-left flex flex-col space-y-4 hover:-translate-y-1 hover:shadow-lg hover:shadow-red-950/5 transition-all duration-300 group cursor-default">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg bg-green-600">R</div>
+              <div class="flex flex-col">
+                <span class="text-[13px] font-bold text-white group-hover:text-brand-accent transition-colors duration-300 leading-tight">Ruby Rust</span>
+                <span class="text-[11px] text-slate-400 mt-0.5">il y a 1 année</span>
+              </div>
+            </div>
+            <img src="small_google.png" alt="Google" class="w-5 h-5 object-contain shrink-0">
+          </div>
+          <div class="flex gap-1 items-center">
+            <svg class="w-[18px] h-[18px] text-[#FFC107] fill-current" viewBox="0 0 512 512"><path d="M256 0c-11.4 0-21.8 7-25.7 17.7L171.1 143.5 29.8 163.6c-11.8 1.7-21.1 10.4-23.7 22-2.6 11.6 1.5 23.6 10.5 31.6l102.4 92-24.5 140.2c-2.1 11.8 3 23.9 13.1 30.5 10 6.6 23.1 6.5 33.1-.2L256 405.1l125.1 74.5c10 6.7 23 6.8 33.1 .2 10.1-6.6 15.2-18.7 13.1-30.5L402.9 309.2l102.4-92c9-8 13.1-20 10.5-31.6-2.6-11.6-11.9-20.3-23.7-22L340.9 143.5 281.7 17.7C277.8 7 267.4 0 256 0z"/></svg>
+            <svg class="w-[18px] h-[18px] text-[#FFC107] fill-current" viewBox="0 0 512 512"><path d="M256 0c-11.4 0-21.8 7-25.7 17.7L171.1 143.5 29.8 163.6c-11.8 1.7-21.1 10.4-23.7 22-2.6 11.6 1.5 23.6 10.5 31.6l102.4 92-24.5 140.2c-2.1 11.8 3 23.9 13.1 30.5 10 6.6 23.1 6.5 33.1-.2L256 405.1l125.1 74.5c10 6.7 23 6.8 33.1 .2 10.1-6.6 15.2-18.7 13.1-30.5L402.9 309.2l102.4-92c9-8 13.1-20 10.5-31.6-2.6-11.6-11.9-20.3-23.7-22L340.9 143.5 281.7 17.7C277.8 7 267.4 0 256 0z"/></svg>
+            <svg class="w-[18px] h-[18px] text-[#FFC107] fill-current" viewBox="0 0 512 512"><path d="M256 0c-11.4 0-21.8 7-25.7 17.7L171.1 143.5 29.8 163.6c-11.8 1.7-21.1 10.4-23.7 22-2.6 11.6 1.5 23.6 10.5 31.6l102.4 92-24.5 140.2c-2.1 11.8 3 23.9 13.1 30.5 10 6.6 23.1 6.5 33.1-.2L256 405.1l125.1 74.5c10 6.7 23 6.8 33.1 .2 10.1-6.6 15.2-18.7 13.1-30.5L402.9 309.2l102.4-92c9-8 13.1-20 10.5-31.6-2.6-11.6-11.9-20.3-23.7-22L340.9 143.5 281.7 17.7C277.8 7 267.4 0 256 0z"/></svg>
+            <svg class="w-[18px] h-[18px] text-[#FFC107] fill-current" viewBox="0 0 512 512"><path d="M256 0c-11.4 0-21.8 7-25.7 17.7L171.1 143.5 29.8 163.6c-11.8 1.7-21.1 10.4-23.7 22-2.6 11.6 1.5 23.6 10.5 31.6l102.4 92-24.5 140.2c-2.1 11.8 3 23.9 13.1 30.5 10 6.6 23.1 6.5 33.1-.2L256 405.1l125.1 74.5c10 6.7 23 6.8 33.1 .2 10.1-6.6 15.2-18.7 13.1-30.5L402.9 309.2l102.4-92c9-8 13.1-20 10.5-31.6-2.6-11.6-11.9-20.3-23.7-22L340.9 143.5 281.7 17.7C277.8 7 267.4 0 256 0z"/></svg>
+            <svg class="w-[18px] h-[18px] text-[#FFC107] fill-current" viewBox="0 0 512 512"><path d="M256 0c-11.4 0-21.8 7-25.7 17.7L171.1 143.5 29.8 163.6c-11.8 1.7-21.1 10.4-23.7 22-2.6 11.6 1.5 23.6 10.5 31.6l102.4 92-24.5 140.2c-2.1 11.8 3 23.9 13.1 30.5 10 6.6 23.1 6.5 33.1-.2L256 405.1l125.1 74.5c10 6.7 23 6.8 33.1 .2 10.1-6.6 15.2-18.7 13.1-30.5L402.9 309.2l102.4-92c9-8 13.1-20 10.5-31.6-2.6-11.6-11.9-20.3-23.7-22L340.9 143.5 281.7 17.7C277.8 7 267.4 0 256 0z"/></svg>
+          </div>
+          <p class="text-[13px] text-slate-300 group-hover:text-slate-200 transition-colors duration-300 leading-relaxed font-semibold">
+            Excellent experience! Great organization and helpful staff. Highly recommend.
+          </p>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-900 hover:border-brand-accent/20 rounded-2xl p-6 text-left flex flex-col space-y-4 hover:-translate-y-1 hover:shadow-lg hover:shadow-red-950/5 transition-all duration-300 group cursor-default">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg bg-blue-500">A</div>
+              <div class="flex flex-col">
+                <span class="text-[13px] font-bold text-white group-hover:text-brand-accent transition-colors duration-300 leading-tight">ABDELHAMID EL KREM</span>
+                <span class="text-[11px] text-slate-400 mt-0.5">il y a 1 année</span>
+              </div>
+            </div>
+            <img src="small_google.png" alt="Google" class="w-5 h-5 object-contain shrink-0">
+          </div>
+          <div class="flex gap-1 items-center">
+            <svg class="w-[18px] h-[18px] text-[#FFC107] fill-current" viewBox="0 0 512 512"><path d="M256 0c-11.4 0-21.8 7-25.7 17.7L171.1 143.5 29.8 163.6c-11.8 1.7-21.1 10.4-23.7 22-2.6 11.6 1.5 23.6 10.5 31.6l102.4 92-24.5 140.2c-2.1 11.8 3 23.9 13.1 30.5 10 6.6 23.1 6.5 33.1-.2L256 405.1l125.1 74.5c10 6.7 23 6.8 33.1 .2 10.1-6.6 15.2-18.7 13.1-30.5L402.9 309.2l102.4-92c9-8 13.1-20 10.5-31.6-2.6-11.6-11.9-20.3-23.7-22L340.9 143.5 281.7 17.7C277.8 7 267.4 0 256 0z"/></svg>
+            <svg class="w-[18px] h-[18px] text-[#FFC107] fill-current" viewBox="0 0 512 512"><path d="M256 0c-11.4 0-21.8 7-25.7 17.7L171.1 143.5 29.8 163.6c-11.8 1.7-21.1 10.4-23.7 22-2.6 11.6 1.5 23.6 10.5 31.6l102.4 92-24.5 140.2c-2.1 11.8 3 23.9 13.1 30.5 10 6.6 23.1 6.5 33.1-.2L256 405.1l125.1 74.5c10 6.7 23 6.8 33.1 .2 10.1-6.6 15.2-18.7 13.1-30.5L402.9 309.2l102.4-92c9-8 13.1-20 10.5-31.6-2.6-11.6-11.9-20.3-23.7-22L340.9 143.5 281.7 17.7C277.8 7 267.4 0 256 0z"/></svg>
+            <svg class="w-[18px] h-[18px] text-[#FFC107] fill-current" viewBox="0 0 512 512"><path d="M256 0c-11.4 0-21.8 7-25.7 17.7L171.1 143.5 29.8 163.6c-11.8 1.7-21.1 10.4-23.7 22-2.6 11.6 1.5 23.6 10.5 31.6l102.4 92-24.5 140.2c-2.1 11.8 3 23.9 13.1 30.5 10 6.6 23.1 6.5 33.1-.2L256 405.1l125.1 74.5c10 6.7 23 6.8 33.1 .2 10.1-6.6 15.2-18.7 13.1-30.5L402.9 309.2l102.4-92c9-8 13.1-20 10.5-31.6-2.6-11.6-11.9-20.3-23.7-22L340.9 143.5 281.7 17.7C277.8 7 267.4 0 256 0z"/></svg>
+            <svg class="w-[18px] h-[18px] text-[#FFC107] fill-current" viewBox="0 0 512 512"><path d="M256 0c-11.4 0-21.8 7-25.7 17.7L171.1 143.5 29.8 163.6c-11.8 1.7-21.1 10.4-23.7 22-2.6 11.6 1.5 23.6 10.5 31.6l102.4 92-24.5 140.2c-2.1 11.8 3 23.9 13.1 30.5 10 6.6 23.1 6.5 33.1-.2L256 405.1l125.1 74.5c10 6.7 23 6.8 33.1 .2 10.1-6.6 15.2-18.7 13.1-30.5L402.9 309.2l102.4-92c9-8 13.1-20 10.5-31.6-2.6-11.6-11.9-20.3-23.7-22L340.9 143.5 281.7 17.7C277.8 7 267.4 0 256 0z"/></svg>
+            <svg class="w-[18px] h-[18px] text-[#FFC107] fill-current" viewBox="0 0 512 512"><path d="M256 0c-11.4 0-21.8 7-25.7 17.7L171.1 143.5 29.8 163.6c-11.8 1.7-21.1 10.4-23.7 22-2.6 11.6 1.5 23.6 10.5 31.6l102.4 92-24.5 140.2c-2.1 11.8 3 23.9 13.1 30.5 10 6.6 23.1 6.5 33.1-.2L256 405.1l125.1 74.5c10 6.7 23 6.8 33.1 .2 10.1-6.6 15.2-18.7 13.1-30.5L402.9 309.2l102.4-92c9-8 13.1-20 10.5-31.6-2.6-11.6-11.9-20.3-23.7-22L340.9 143.5 281.7 17.7C277.8 7 267.4 0 256 0z"/></svg>
+          </div>
+          <p class="text-[13px] text-slate-300 group-hover:text-slate-200 transition-colors duration-300 leading-relaxed font-semibold">
+            Je remercie vivement ce cabinet pour son professionnalisme.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+  
+  <!-- ================= FAQ SECTION ================= -->
+  <section id="faq" class="relative z-10 w-full py-20 overflow-hidden bg-brand-dark animate-flow-blend">
+    
+    <!-- Background FAQ encryption image - Stretching 100% viewport width -->
+    <div class="absolute inset-0 z-0 pointer-events-none">
+      <img src="faq_cyber_bg.png" alt="FAQ background" class="w-full h-full object-cover opacity-20 transform-gpu">
+      <!-- Soft gradient fading perfectly to top/bottom sections to ensure smooth seamless flow -->
+      <div class="absolute inset-0 bg-gradient-to-b from-brand-dark via-transparent to-brand-dark"></div>
+    </div>
+
+    <div class="relative max-w-4xl mx-auto px-6 z-10">
+      
+      <div class="text-center mb-16 space-y-4">
+        <div class="flex items-center justify-center gap-3">
+          <span class="w-8 h-[2px] bg-brand-accent rounded-full animate-pulse"></span>
+          <span class="text-xs font-black text-brand-accent uppercase tracking-[0.2em]">FAQ</span>
+          <span class="w-8 h-[2px] bg-brand-accent rounded-full animate-pulse"></span>
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-black text-white uppercase tracking-tight">Questions Fréquentes</h2>
+      </div>
+
+      <!-- FAQ Accordion -->
+      <div class="space-y-4">
+        
+        <!-- FAQ 1 -->
+        <div class="border border-slate-900 bg-[#0a0f1d]/85 backdrop-blur-sm rounded-2xl overflow-hidden">
+          <button class="faq-btn w-full p-6 text-left flex justify-between items-center font-bold text-white hover:text-brand-accent transition-colors border-0 bg-transparent">
+            <span>Comment se déroulent les examens blancs ?</span>
+            <svg class="w-4 h-4 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-content hidden p-6 pt-0 text-slate-400 text-sm leading-relaxed border-t border-slate-900/50">
+            Nos examens blancs se déroulent en ligne via des simulateurs interactifs reprenant les conditions réelles des examens officiels (chronomètre, typologie de questions, score minimum de réussite).
+          </div>
+        </div>
+
+        <!-- FAQ 2 -->
+        <div class="border border-slate-900 bg-[#0a0f1d]/85 backdrop-blur-sm rounded-2xl overflow-hidden">
+          <button class="faq-btn w-full p-6 text-left flex justify-between items-center font-bold text-white hover:text-brand-accent transition-colors border-0 bg-transparent">
+            <span>Les certifications proposées sont-elles reconnues ?</span>
+            <svg class="w-4 h-4 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-content hidden p-6 pt-0 text-slate-400 text-sm leading-relaxed border-t border-slate-900/50">
+            Oui. Ethical Data Security est agréé Pearson VUE et délivre des certifications mondiales en partenariat direct avec PECB, Microsoft, AWS, Cisco, etc.
+          </div>
+        </div>
+
+        <!-- FAQ 3 -->
+        <div class="border border-slate-900 bg-[#0a0f1d]/85 backdrop-blur-sm rounded-2xl overflow-hidden">
+          <button class="faq-btn w-full p-6 text-left flex justify-between items-center font-bold text-white hover:text-brand-accent transition-colors border-0 bg-transparent">
+            <span>Puis-je bénéficier d'un coaching individuel ?</span>
+            <svg class="w-4 h-4 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-content hidden p-6 pt-0 text-slate-400 text-sm leading-relaxed border-t border-slate-900/50">
+            Oui, notre plateforme propose un accompagnement sur-mesure avec nos experts accrédités pour surmonter vos difficultés et peaufiner vos compétences clés.
+          </div>
+        </div>
+
+      </div>
+      
+    </div>
+  </section>
+
+
+  <!-- ================= CONTACT SECTION ================= -->
+  <section id="contact" class="relative z-10 w-full py-20 md:py-24 overflow-hidden bg-brand-dark">
+    
+    <!-- Background cyber network image - Stretching 100% edge-to-edge -->
+    <div class="absolute inset-0 z-0 pointer-events-none">
+      <img src="contact_cyber_bg.png" alt="Contact background" class="w-full h-full object-cover opacity-20 transform-gpu">
+      <!-- Soft gradient fading perfectly to top/bottom sections to ensure smooth seamless flow -->
+      <div class="absolute inset-0 bg-gradient-to-b from-brand-dark via-transparent to-brand-dark"></div>
+    </div>
+
+    <div class="relative max-w-6xl mx-auto px-6 z-10">
+      
+      <div class="text-center space-y-4 mb-16">
+        <h2 class="text-3xl sm:text-4xl font-black text-white uppercase leading-tight tracking-tight">
+          NOUS CONTACTER
+        </h2>
+        <p class="text-slate-400 text-sm md:text-base leading-relaxed font-semibold max-w-2xl mx-auto">
+          Une question sur nos formations, nos certifications ou nos prestations ? Écrivez-nous et nos experts vous répondront dans les plus brefs délais.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mt-8">
+        
+        <!-- Coordonnees -->
+        <div class="lg:col-span-5 space-y-8">
+          <div class="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-900 rounded-3xl p-8 space-y-6">
+            <h3 class="text-xl font-black text-white tracking-tight leading-none mb-2">
+              Coordonnées
+            </h3>
+            <p class="text-xs text-brand-accent font-extrabold uppercase tracking-wider">
+              Ethical Data Security
+            </p>
+
+            <div class="space-y-4 pt-2">
+              
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-xl bg-red-950/30 border border-red-900/20 flex items-center justify-center text-brand-accent shrink-0 shadow-[0_0_10px_rgba(220,38,38,0.15)]">
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">E-mail</h4>
+                  <p class="text-sm font-bold text-slate-200">contact@ethicaldata.ma</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-xl bg-red-950/30 border border-red-900/20 flex items-center justify-center text-brand-accent shrink-0 shadow-[0_0_10px_rgba(220,38,38,0.15)]">
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Téléphone</h4>
+                  <p class="text-sm font-bold text-slate-200">+212 (0) 5 22 22 22 22</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-xl bg-red-950/30 border border-red-900/20 flex items-center justify-center text-brand-accent shrink-0 shadow-[0_0_10px_rgba(220,38,38,0.15)]">
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Adresse</h4>
+                  <p class="text-sm font-bold text-slate-200">Technopark Casablanca, Maroc</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Formulaire -->
+        <div class="lg:col-span-7">
+          <form class="bg-[#080d1a]/85 backdrop-blur-sm border border-slate-900 rounded-3xl p-8 space-y-5" onsubmit="event.preventDefault(); alert('Message envoyé avec succès ! (Simulation)');">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div class="space-y-1.5">
+                <label class="text-xs font-bold text-slate-400">Nom Complet *</label>
+                <input type="text" required placeholder="Votre nom et prénom" class="w-full p-3.5 bg-[#030712] border border-slate-900 focus:border-brand-accent rounded-2xl text-white text-xs font-semibold outline-none transition-colors placeholder-slate-600">
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-xs font-bold text-slate-400">Adresse E-mail *</label>
+                <input type="email" required placeholder="nom@exemple.com" class="w-full p-3.5 bg-[#030712] border border-slate-900 focus:border-brand-accent rounded-2xl text-white text-xs font-semibold outline-none transition-colors placeholder-slate-600">
+              </div>
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="text-xs font-bold text-slate-400">Sujet *</label>
+              <input type="text" required placeholder="De quoi s'agit-il ?" class="w-full p-3.5 bg-[#030712] border border-slate-900 focus:border-brand-accent rounded-2xl text-white text-xs font-semibold outline-none transition-colors placeholder-slate-600">
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="text-xs font-bold text-slate-400">Message *</label>
+              <textarea required rows="4" placeholder="Décrivez votre demande en détail..." class="w-full p-3.5 bg-[#030712] border border-slate-900 focus:border-brand-accent rounded-2xl text-white text-xs font-semibold outline-none transition-colors resize-none placeholder-slate-600"></textarea>
+            </div>
+
+            <div class="flex justify-end pt-3">
+              <button type="submit" class="px-6 py-3 bg-brand-accent hover:bg-brand-accentHover text-white font-bold rounded-2xl text-xs flex items-center gap-2 transition-all shadow-md shadow-brand-accent/20 cursor-pointer border-0">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                <span>Envoyer le Message</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="relative z-10 w-full bg-brand-dark text-slate-400 overflow-hidden">
+    
+    <!-- Background cyber network image - Stretching 100% edge-to-edge -->
+    <div class="absolute inset-0 z-0 pointer-events-none">
+      <img src="footer_cyber_bg.png" alt="Footer background" class="w-full h-full object-cover opacity-15 transform-gpu">
+      <!-- Soft gradient fading perfectly to top section to ensure smooth seamless flow -->
+      <div class="absolute inset-0 bg-gradient-to-b from-brand-dark via-transparent to-brand-dark"></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between gap-12">
+      
+      <div class="max-w-xl space-y-4 text-left">
+        <img src="ethicaldata_white_logo.png" alt="Ethical Data Security Logo" class="h-10 w-auto object-contain">
+        <p class="text-sm leading-relaxed text-slate-400">
+          Dynamisme, réactivité et innovation sont au cœur de nos engagements. Nos solutions,<br class="hidden md:block">
+          conçues by des experts, visent à surpasser vos attentes.
+        </p>
+      </div>
+
+      <div class="text-left space-y-4 md:min-w-[400px]">
+        <h4 class="text-base font-bold text-white uppercase tracking-wider">Contact</h4>
+        <div class="text-sm space-y-3">
+          <p><span class="font-bold text-[#E5E5E5]">Email :</span> contact@ethicaldatasecurity.ma</p>
+          <p><span class="font-bold text-[#E5E5E5]">Tél :</span> +212 664 244 343 // +212 520 572 631</p>
+          <p><span class="font-bold text-[#E5E5E5]">Adresse :</span> Bureau 305, Technopark Casablanca</p>
+        </div>
+      </div>
+      
+    </div>
+
+    <!-- BOTTOM COPYRIGHT STRIP -->
+    <div class="w-full bg-[#030712]/90 border-t border-slate-900/50 py-5 relative z-10 text-xs">
+      <div class="max-w-7xl mx-auto px-6 flex items-center justify-between flex-col md:flex-row gap-4">
+        <p class="text-slate-500">© 2026 Ethical Data Security - Tous droits réservés.</p>
+        <div class="flex items-center gap-6">
+          <a href="#" class="hover:text-white transition-colors">Confidentialité</a>
+          <a href="#" class="hover:text-white transition-colors">Conditions d'utilisation</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ================= INTERACTIVE JS SCRIPT ================= -->
+  <script>
+    // 1. Navbar Scroll effect
+    const navbar = document.getElementById('navbar');
+    const navPill = document.getElementById('nav-pill');
+    let lastScrollY = window.scrollY;
+    
+    window.addEventListener('scroll', () => {
+      const currentY = window.scrollY;
+      
+      // Scrolled styling
+      if (currentY > 60) {
+        navbar.classList.remove('bg-transparent', 'border-transparent');
+        navbar.classList.add('bg-[#020617]', 'border-slate-900', 'shadow-sm');
+        navPill.classList.add('bg-slate-950/60', 'border', 'border-slate-900');
+      } else {
+        navbar.classList.remove('bg-[#020617]', 'border-slate-900', 'shadow-sm');
+        navbar.classList.add('bg-transparent', 'border-transparent');
+        navPill.classList.remove('bg-slate-950/60', 'border', 'border-slate-900');
+      }
+      
+      // Hide / Show Navbar
+      if (currentY > 60 && currentY > lastScrollY) {
+        navbar.classList.add('-translate-y-full');
+        navbar.classList.remove('translate-y-0');
+      } else {
+        navbar.classList.add('translate-y-0');
+        navbar.classList.remove('-translate-y-full');
+      }
+      
+      lastScrollY = currentY;
+    }, { passive: true });
+
+    // 2. Mobile Nav Drawer Toggle
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+    const mobileDrawer = document.getElementById('mobile-drawer');
+    const hamburgerIcon = document.getElementById('hamburger-icon');
+    const closeIcon = document.getElementById('close-icon');
+
+    mobileBtn.addEventListener('click', () => {
+      const isOpen = !mobileDrawer.classList.contains('hidden');
+      if (isOpen) {
+        mobileDrawer.classList.add('hidden');
+        hamburgerIcon.classList.remove('hidden');
+        closeIcon.classList.add('hidden');
+      } else {
+        mobileDrawer.classList.remove('hidden');
+        hamburgerIcon.classList.add('hidden');
+        closeIcon.classList.remove('hidden');
+      }
+    });
+
+    // 3. Slider logic (AboutSlider replica)
+    const slides = [
+      {
+        title: "Solution IT",
+        text: "Nous vous offrons des opportunités en développant des solutions spécialisées et nous vous proposons plusieurs produits qui accélèrent la transformation numérique sur n'importe quelle application, n'importe quel cloud et n'importe quel appareil pour réduire les dépenses informatiques......",
+        image: "expertises-integrations-scaled-434x358.webp"
+      },
+      {
+        title: "Notre priorité",
+        text: "Notre mission est de vous accompagner tout au long du cycle de vie de votre infrastructure réseau et sécurité. Nos domaines d'intervention couvrent la conception, la mise en oeuvre, la gestion et le support de solutions réseau, cloud et sécurité",
+        image: "avantages-1-434x358.webp"
+      },
+      {
+        title: "Une expérience d'une décennie",
+        text: "Une équipe enthousiaste, composée de consultants en cybersécurité et infrastructure, reconnus sur le marché local et international à travers leur participation réussie à des projets de grande envergure (ISP, gouvernemental, finance...). Chacun d'entre nous apporte le meilleur de son expertise pour assurer le succès et la fiabilité de vos projets.",
+        image: "experiences-scaled-434x358.webp"
+      },
+      {
+        title: "Certification",
+        text: "Ethical Data Security met à votre disposition plus de 500 certifications pour renforcer votre expertise et valider vos compétences aux standards les plus élevés. Reconnues et prisées par les recruteurs, nos certifications vous ouvrent les portes des opportunités professionnelles les plus exigences",
+        image: "certifications-scaled-434x358.webp"
+      }
+    ];
+
+    let currentSlide = 0;
+    const slideImg = document.getElementById('slide-image');
+    const slideTitle = document.getElementById('slide-title');
+    const slideText = document.getElementById('slide-text');
+    const nextBtn = document.getElementById('slider-next-btn');
+    const prevBtn = document.getElementById('slider-prev-btn');
+
+    function updateSlider(index) {
+      // Fade out effect
+      slideImg.style.opacity = '0';
+      slideTitle.style.opacity = '0';
+      slideText.style.opacity = '0';
+      
+      setTimeout(() => {
+        currentSlide = index;
+        slideImg.src = slides[currentSlide].image;
+        slideImg.alt = slides[currentSlide].title;
+        slideTitle.innerText = slides[currentSlide].title;
+        slideText.innerText = slides[currentSlide].text;
+        
+        // Fade in
+        slideImg.style.opacity = '1';
+        slideTitle.style.opacity = '1';
+        slideText.style.opacity = '1';
+      }, 200);
+    }
+
+    nextBtn.addEventListener('click', () => {
+      const nextIndex = (currentSlide + 1) % slides.length;
+      updateSlider(nextIndex);
+    });
+
+    prevBtn.addEventListener('click', () => {
+      const prevIndex = (currentSlide - 1 + slides.length) % slides.length;
+      updateSlider(prevIndex);
+    });
+
+    // Auto change slide every 6 seconds
+    let autoSlideInterval = setInterval(() => {
+      const nextIndex = (currentSlide + 1) % slides.length;
+      updateSlider(nextIndex);
+    }, 6000);
+
+    const sliderContainer = document.getElementById('slider-container');
+    sliderContainer.addEventListener('mouseenter', () => clearInterval(autoSlideInterval));
+    sliderContainer.addEventListener('mouseleave', () => {
+      autoSlideInterval = setInterval(() => {
+        const nextIndex = (currentSlide + 1) % slides.length;
+        updateSlider(nextIndex);
+      }, 6000);
+    });
+
+    // 4. FAQ Accordion Toggle
+    const faqBtns = document.querySelectorAll('.faq-btn');
+    faqBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const content = btn.nextElementSibling;
+        const arrow = btn.querySelector('svg');
+        const isHidden = content.classList.contains('hidden');
+        
+        // Close all others
+        document.querySelectorAll('.faq-content').forEach(c => c.classList.add('hidden'));
+        document.querySelectorAll('.faq-btn svg').forEach(a => a.classList.remove('rotate-180'));
+
+        if (isHidden) {
+          content.classList.remove('hidden');
+          arrow.classList.add('rotate-180');
+        } else {
+          content.classList.add('hidden');
+          arrow.classList.remove('rotate-180');
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

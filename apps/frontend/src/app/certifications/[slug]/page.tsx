@@ -1,0 +1,374 @@
+"use client";
+
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
+import { apiFetch } from '@/lib/api';
+import { ChevronRight, Clock, Award, BookOpen, Target, CheckCircle2, Play } from '@/components/icons';
+import { Navbar } from '@/components/landing/Navbar';
+import { Footer } from '@/components/layout/Footer';
+
+interface Module {
+  id: number;
+  titre: string;
+  description?: string;
+  ordre: number;
+  icon?: string;
+  sousModules: Module[];
+}
+
+interface Certification {
+  id: number;
+  nom: string;
+  slug: string;
+  codeExamen?: string;
+  description: string;
+  niveau: string;
+  dureeIndicative?: string;
+  objectifs: string[];
+  prerequis: string[];
+  image?: string;
+  fournisseur: { id: number; nom: string; image?: string };
+  categorie?: { id: number; nom: string; slug: string };
+  modules: Module[];
+}
+
+const levelColors: Record<string, string> = {
+  DEBUTANT: 'bg-green-100 text-green-700 border-green-200',
+  INTERMEDIAIRE: 'bg-orange-100 text-orange-700 border-orange-200',
+  AVANCE: 'bg-red-100 text-red-700 border-red-200',
+};
+
+const TriangleLogo = ({ className = "w-5 h-5" }: { className?: string }) => (
+  <svg className={`${className} text-red-600`} viewBox="0 0 100 100" fill="currentColor">
+    <polygon points="50,15 15,85 85,85" className="fill-none stroke-red-600 stroke-[6]" />
+    <polygon points="50,30 28,75 72,75" className="fill-none stroke-slate-900 stroke-[4]" />
+    <polygon points="50,45 40,65 60,65" className="fill-red-600" />
+  </svg>
+);
+
+export default function CertificationDetailPage() {
+  const { slug } = useParams<{ slug: string }>();
+  const router = useRouter();
+  const [cert, setCert] = useState<Certification | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [expandedModules, setExpandedModules] = useState<Record<number, boolean>>({});
+  const [mounted, setMounted] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [enrolled, setEnrolled] = useState(false);
+  const [enrolling, setEnrolling] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    apiFetch('/users/me/profile').then(() => {
+      setIsConnected(true);
+    }).catch(() => {
+      setIsConnected(false);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!slug) return;
+    setLoading(true);
+    apiFetch(`/certifications/slug/${slug}`)
+      .then((data) => {
+        setCert(data);
+        setExpandedModules({});
+      })
+      .catch((err) => setError(err.message || 'Certification introuvable'))
+      .finally(() => setLoading(false));
+  }, [slug]);
+
+  useEffect(() => {
+    if (isConnected && cert) {
+      apiFetch('/certifications/mes-inscriptions').then((inscriptions) => {
+        const found = inscriptions?.find((i: any) => i.certification.slug === cert.slug);
+        if (found) setEnrolled(true);
+      }).catch(() => {});
+    }
+  }, [isConnected, cert]);
+
+  const handleEnroll = async () => {
+    if (!isConnected) { router.push('/login'); return; }
+    if (!cert) return;
+    setEnrolling(true);
+    try {
+      if (enrolled) {
+        await apiFetch(`/certifications/${cert.id}/inscrire`, { method: 'DELETE' });
+        setEnrolled(false);
+      } else {
+        await apiFetch(`/certifications/${cert.id}/inscrire`, { method: 'POST' });
+        setEnrolled(true);
+      }
+    } catch (err: any) {
+      console.error(err);
+    } finally {
+      setEnrolling(false);
+    }
+  };
+
+  const toggleModule = (id: number) => {
+    setExpandedModules((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  return (
+    <div className="min-h-screen bg-[#020617] text-white flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+
+      <Navbar />
+
+      {loading ? (
+        <main className="flex-1 flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+        </main>
+      ) : error || !cert ? (
+        <main className="flex-1 flex items-center justify-center">
+          <div className="text-center space-y-4">
+            <p className="text-slate-500 font-semibold">{error || 'Certification introuvable'}</p>
+            <Link href="/certifications" className="text-blue-600 hover:text-blue-700 font-bold text-sm">
+              Voir toutes les certifications
+            </Link>
+          </div>
+        </main>
+      ) : (
+    <main className="min-h-screen bg-[#020617] flex-1 pt-24">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <nav className="flex items-center gap-2 text-xs font-semibold text-slate-400 mb-8">
+          <Link href="/" className="hover:text-blue-500 transition-colors">Accueil</Link>
+          <ChevronRight className="w-3 h-3 text-slate-500" />
+          <Link href="/certifications" className="hover:text-blue-500 transition-colors">Certifications</Link>
+          <ChevronRight className="w-3 h-3 text-slate-500" />
+          <span className="text-slate-300">{cert.codeExamen || cert.nom}</span>
+        </nav>
+
+        <div className="bg-[#080d1a]/85 rounded-3xl shadow-sm border border-slate-800 overflow-hidden">
+          <div className="p-6 sm:p-8 md:p-10">
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              {cert.categorie && (
+                <Link
+                  href={`/certifications?categorie=${cert.categorie.slug}`}
+                  className="text-[10px] uppercase tracking-wider px-2.5 py-1 bg-indigo-500/10 text-indigo-400 font-bold rounded-lg hover:bg-indigo-500/20 transition-colors border border-indigo-500/20"
+                >
+                  {cert.categorie.nom}
+                </Link>
+              )}
+              <span className="text-[10px] uppercase tracking-wider px-2.5 py-1 bg-[#020617] text-slate-300 font-bold rounded-lg flex items-center gap-1.5 border border-slate-800">
+                {cert.fournisseur.image && (
+                  <img src={cert.fournisseur.image} alt="" className="w-3.5 h-3.5 rounded-full object-contain" />
+                )}
+                {cert.fournisseur.nom}
+              </span>
+              <span className={`text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-lg border font-bold ${levelColors[cert.niveau] || 'bg-[#020617] text-slate-300 border-slate-800'}`}>
+                {cert.niveau}
+              </span>
+            </div>
+
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+              <div className="flex-1">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight mb-3">
+                  {cert.codeExamen && (
+                    <span className="text-blue-500">{cert.codeExamen} — </span>
+                  )}
+                  {cert.nom}
+                </h1>
+                <p className="text-slate-400 text-sm sm:text-base leading-relaxed max-w-3xl">
+                  {cert.description}
+                </p>
+              </div>
+              {cert.image && (
+                <div className="shrink-0 p-2 flex items-center justify-center">
+                  <img src={cert.image} alt={cert.nom} className="w-28 sm:w-36 object-contain filter drop-shadow-2xl" />
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 mt-6 pb-6 border-b border-slate-800">
+              {cert.dureeIndicative && (
+                <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-300">
+                  <Clock className="w-4 h-4 text-blue-500" />
+                  <span>{cert.dureeIndicative}</span>
+                </div>
+              )}
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-300">
+                <BookOpen className="w-4 h-4 text-blue-500" />
+                <span>{cert.modules?.length || 0} modules</span>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-3 mt-6">
+              <button
+                type="button"
+                onClick={() => handleEnroll()}
+                disabled={enrolling}
+                className={`px-6 py-3 font-black rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2 text-sm cursor-pointer ${enrolled ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white'}`}
+              >
+                <Award className="w-4 h-4" />
+                {enrolled ? 'Inscrit' : "S'inscrire"}
+              </button>
+              <button
+                type="button"
+                onClick={() => isConnected ? router.push('/dashboard/practice?cert=' + cert.slug) : router.push('/login')}
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2 text-sm"
+              >
+                <Play className="w-4 h-4 fill-white" />
+                S'entrainer
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push('/dashboard/cours')}
+                className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-black rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2 text-sm border border-slate-700"
+              >
+                <BookOpen className="w-4 h-4" />
+                Voir les cours
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+          <div className="lg:col-span-2 space-y-6">
+            {cert.objectifs && cert.objectifs.length > 0 && (
+              <div className="bg-[#080d1a]/85 border border-slate-800 rounded-3xl shadow-sm p-6 sm:p-8">
+                <h2 className="text-lg font-black text-white mb-4 flex items-center gap-2">
+                  <Target className="w-5 h-5 text-blue-500" />
+                  Objectifs
+                </h2>
+                <ul className="space-y-2">
+                  {cert.objectifs.map((obj, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-sm text-slate-300">
+                      <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                      {obj}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {cert.prerequis && cert.prerequis.length > 0 && (
+              <div className="bg-[#080d1a]/85 border border-slate-800 rounded-3xl shadow-sm p-6 sm:p-8">
+                <h2 className="text-lg font-black text-white mb-4 flex items-center gap-2">
+                  <Award className="w-5 h-5 text-amber-500" />
+                  Prerequis
+                </h2>
+                <ul className="space-y-2">
+                  {cert.prerequis.map((pr, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-sm text-slate-300">
+                      <CheckCircle2 className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                      {pr}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {cert.modules && cert.modules.length > 0 && (
+              <div className="bg-[#080d1a]/85 border border-slate-800 rounded-3xl shadow-sm p-6 sm:p-8">
+                <h2 className="text-lg font-black text-white mb-6 flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-blue-500" />
+                  Programme de la certification
+                </h2>
+                <div className="space-y-3">
+                  {cert.modules.map((mod, i) => (
+                    <div key={mod.id} className="border border-slate-800 rounded-xl overflow-hidden">
+                      <button
+                        onClick={() => toggleModule(mod.id)}
+                        className="w-full flex items-center justify-between p-4 bg-[#020617] hover:bg-[#0a1224] transition-colors text-left cursor-pointer"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-black flex items-center justify-center shrink-0">
+                            {i + 1}
+                          </span>
+                          <div>
+                            <span className="font-bold text-sm text-slate-100">{mod.titre}</span>
+                            {mod.description && (
+                              <p className="text-xs text-slate-400 mt-0.5">{mod.description}</p>
+                            )}
+                          </div>
+                        </div>
+                        <motion.svg
+                          animate={{ rotate: expandedModules[mod.id] ? 180 : 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="w-4 h-4 text-slate-400 shrink-0"
+                          viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                          strokeLinecap="round" strokeLinejoin="round"
+                        >
+                          <polyline points="6 9 12 15 18 9" />
+                        </motion.svg>
+                      </button>
+                      {mod.sousModules && mod.sousModules.length > 0 && (
+                        <motion.div
+                          initial={false}
+                          animate={{ height: expandedModules[mod.id] ? 'auto' : 0, opacity: expandedModules[mod.id] ? 1 : 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="px-4 pb-4 space-y-1.5">
+                            {mod.sousModules.map((sub) => (
+                              <div key={sub.id} className="flex items-center gap-2.5 pl-10 py-1.5">
+                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
+                                <span className="text-sm text-slate-300">{sub.titre}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-6">
+            <div className="bg-[#080d1a]/85 rounded-3xl shadow-sm border border-slate-800 p-6">
+              <h3 className="text-sm font-black text-white mb-3">Certification</h3>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Code</span>
+                  <span className="font-bold text-white">{cert.codeExamen || '-'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Niveau</span>
+                  <span className="font-bold text-white uppercase">{cert.niveau}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Editeur</span>
+                  <span className="font-bold text-white">{cert.fournisseur.nom}</span>
+                </div>
+                {cert.dureeIndicative && (
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Duree</span>
+                    <span className="font-bold text-white">{cert.dureeIndicative}</span>
+                  </div>
+                )}
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Modules</span>
+                  <span className="font-bold text-white">{cert.modules?.length || 0}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-6 text-white">
+              <h3 className="text-sm font-black mb-2">Pret pour l'examen ?</h3>
+              <p className="text-xs text-blue-200 mb-4">
+                Teste tes connaissances avec nos QCM et simulations.
+              </p>
+              <button
+                onClick={() => isConnected ? router.push('/dashboard/practice?cert=' + cert.slug) : router.push('/login')}
+                className="w-full py-2.5 bg-white text-blue-700 font-black rounded-xl text-xs hover:bg-blue-50 transition-colors cursor-pointer"
+              >
+                Commencer
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+      )}
+
+      <Footer />
+    </div>
+  );
+}

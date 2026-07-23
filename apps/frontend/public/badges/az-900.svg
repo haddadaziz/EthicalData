@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 230" width="200" height="230">
+  <defs>
+    <linearGradient id="azGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="50%" stop-color="#0369a1" />
+      <stop offset="100%" stop-color="#075985" />
+    </linearGradient>
+    <filter id="shadowAz" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <!-- Shield Badge Body -->
+  <path d="M100 5 L185 30 L185 130 C185 180 140 215 100 225 C60 215 15 180 15 130 L15 30 Z" fill="url(#azGrad)" stroke="#38bdf8" stroke-width="4" filter="url(#shadowAz)" />
+  <!-- Inner Border Line -->
+  <path d="M100 14 L176 37 L176 127 C176 172 135 204 100 214 C65 204 24 172 24 127 L24 37 Z" fill="none" stroke="#7dd3fc" stroke-width="1.5" opacity="0.6"/>
+  <!-- Microsoft 4-square icon -->
+  <g transform="translate(86, 32)">
+    <rect x="0" y="0" width="12" height="12" fill="#f25022"/>
+    <rect x="15" y="0" width="12" height="12" fill="#7fba00"/>
+    <rect x="0" y="15" width="12" height="12" fill="#00a4ef"/>
+    <rect x="15" y="15" width="12" height="12" fill="#ffb900"/>
+  </g>
+  <!-- Header Text -->
+  <text x="100" y="75" fill="#e0f2fe" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="11" text-anchor="middle" letter-spacing="1.5">MICROSOFT CERTIFIED</text>
+  <line x1="45" y1="83" x2="155" y2="83" stroke="#7dd3fc" stroke-width="1" opacity="0.5"/>
+  <!-- Main Title: Azure Fundamentals -->
+  <text x="100" y="112" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="19" text-anchor="middle">Azure</text>
+  <text x="100" y="136" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="16" text-anchor="middle">Fundamentals</text>
+  <line x1="45" y1="152" x2="155" y2="152" stroke="#7dd3fc" stroke-width="1" opacity="0.5"/>
+  <!-- Footer Level: AZ-900 -->
+  <text x="100" y="180" fill="#38bdf8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="14" text-anchor="middle" letter-spacing="3">AZ-900</text>
+</svg>

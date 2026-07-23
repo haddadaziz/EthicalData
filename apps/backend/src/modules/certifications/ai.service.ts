@@ -1,0 +1,254 @@
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { SettingsService } from '../settings/settings.service';
+
+export interface ResultatEvaluation {
+  score: number;
+  critique: string;
+  suggestions: string;
+}
+
+@Injectable()
+export class AiService {
+  private readonly fallbackApiKey: string;
+
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly settingsService: SettingsService,
+  ) {
+    this.fallbackApiKey =
+      this.configService.get<string>('GEMINI_API_KEY') || '';
+  }
+
+  async evaluerReponseOuverte(
+    enonce: string,
+    reponseCorrecte: string | null,
+    grilleNotation: string | null,
+    reponseCandidat: string,
+  ): Promise<ResultatEvaluation> {
+    const aiSettings = await this.settingsService.getSetting('ai');
+    const apiKey = (aiSettings?.apiKey || this.fallbackApiKey).trim();
+    const activeModel = (aiSettings?.activeModel || 'gemini-2.5-flash').trim();
+    const customPromptTemplate = aiSettings?.customPrompt || '';
+
+    console.log(`[AiService] Model: ${activeModel}, Key set: ${!!apiKey}, Key prefix: ${apiKey?.substring(0, 10)}...`);
+
+    if (!apiKey || apiKey.includes('AIzaSy...')) {
+      console.log('[AiService] No valid API key, using simulated evaluation');
+      return {
+        score: 0,
+        critique: `IA non configurée : clé API ${apiKey ? 'invalide (contient AIzaSy...)' : 'manquante'}. Allez dans Admin → Paramètres Système → Configuration IA pour définir une clé Gemini valide.`,
+        suggestions: 'Configurez une clé API Gemini valide dans les paramètres administrateur.',
+      };
+    }
+
+    try {
+      let prompt = '';
+      if (customPromptTemplate) {
+        prompt = customPromptTemplate
+          .replace('{{enonce}}', enonce)
+          .replace('{{reponseCorrecte}}', reponseCorrecte || '')
+          .replace('{{grilleNotation}}', grilleNotation || '')
+          .replace('{{reponseCandidat}}', reponseCandidat);
+      } else {
+        prompt = `Vous êtes un examinateur officiel expert en certifications informatiques (Cloud, Cybersécurité, Réseaux, ISO 27001, etc.).
+Évaluez de manière rigoureuse et constructive la réponse fournie par le candidat à la question ouverte ci-dessous en vous référant au corrigé type officiel.
+
+DÉTAILS DE LA QUESTION :
+- Énoncé de la question : "${enonce}"
+${reponseCorrecte ? `- Corrigé officiel / Réponse attendue : "${reponseCorrecte}"` : ''}
+${grilleNotation ? `- Critères d'évaluation additionnels : "${grilleNotation}"` : ''}
+- Réponse du candidat : "${reponseCandidat}"
+
+INSTRUCTIONS :
+1. Comparez la réponse du candidat au corrigé officiel et aux critères de notation (s'ils sont fournis).
+2. Attribuez une note globale sur 100 ("score").
+3. Rédigez une critique détaillée ("critique") expliquant ce qui est correct, ce qui manque et les erreurs éventuelles.
+4. Proposez des suggestions d'amélioration constructives ("suggestions") pour aider le candidat à s'améliorer.
+5. Vous devez obligatoirement formater votre réponse en JSON valide avec les clés "score", "critique" et "suggestions".`;
+      }
+
+      const isGeminiNative = activeModel.toLowerCase().startsWith('gemini') && !aiSettings?.apiUrl;
+      let parsedResult: ResultatEvaluation;
+
+      if (isGeminiNative) {
+        // --- NATIVE GEMINI API ---
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${activeModel}:generateContent?key=${apiKey}`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              contents: [
+                {
+                  parts: [{ text: prompt }],
+                },
+              ],
+              generationConfig: {
+                responseMimeType: 'application/json',
+                responseSchema: {
+                  type: 'OBJECT',
+                  properties: {
+                    score: {
+                      type: 'INTEGER',
+                      description: 'Note globale sur 100 attribuée à la réponse du candidat.',
+                    },
+                    critique: {
+                      type: 'STRING',
+                      description: 'Synthèse explicative des points forts et faiblesses identifiés dans la réponse du candidat.',
+                    },
+                    suggestions: {
+                      type: 'STRING',
+                      description: 'Conseils de révision ciblés et constructifs pour corriger les lacunes détectées.',
+                    },
+                  },
+                  required: ['score', 'critique', 'suggestions'],
+                },
+              },
+            }),
+          },
+        );
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Erreur API Gemini:', errorText);
+          let extraMsg = '';
+          if (response.status === 404) {
+            extraMsg = ` - Le modèle "${activeModel}" est introuvable. Assurez-vous d'utiliser "gemini-2.5-flash" ou un nom valide.`;
+          } else if (response.status === 400 || response.status === 403) {
+            extraMsg = ` - La clé API est peut-être invalide ou incorrecte.`;
+          }
+          throw new Error(`API Gemini a répondu avec le statut ${response.status}${extraMsg} (Détail Google: ${errorText})`);
+        }
+
+        const responseData = await response.json();
+        const textResponse = responseData.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (!textResponse) {
+          throw new Error('Réponse vide reçue de Gemini');
+        }
+
+        parsedResult = JSON.parse(textResponse);
+
+      } else {
+        // --- UNIVERSAL OPENAI-COMPATIBLE API ---
+        const baseUrl = aiSettings?.apiUrl || 'https://api.openai.com/v1';
+        const endpoint = baseUrl.endsWith('/') ? `${baseUrl}chat/completions` : `${baseUrl}/chat/completions`;
+
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model: activeModel,
+            messages: [
+              { 
+                role: 'system', 
+                content: "Tu es un expert en évaluation qui doit absolument retourner un JSON strict avec les clés: 'score' (nombre), 'critique' (chaine), 'suggestions' (chaine)." 
+              },
+              { 
+                role: 'user', 
+                content: prompt 
+              }
+            ],
+            response_format: { type: 'json_object' }
+          }),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Erreur API (OpenAI format):', errorText);
+          let extraMsg = '';
+          if (response.status === 404) {
+            extraMsg = ` - L'endpoint "${endpoint}" est introuvable. Si vous utilisez Gemini, laissez le champ "URL de base" VIDE.`;
+          }
+          throw new Error(`API AI a répondu avec le statut ${response.status}${extraMsg}`);
+        }
+
+        const responseData = await response.json();
+        const textResponse = responseData.choices?.[0]?.message?.content;
+
+        if (!textResponse) {
+          throw new Error('Réponse vide reçue de l\'API IA');
+        }
+
+        parsedResult = JSON.parse(textResponse);
+      }
+
+      return parsedResult;
+
+    } catch (error: any) {
+      const msg = error?.message || 'Erreur inconnue';
+      console.error("[AiService] Erreur lors de l'évaluation IA :", msg);
+      return {
+        score: 0,
+        critique: `Erreur API IA : ${msg}`,
+        suggestions: 'Vérifiez votre clé API, le modèle et l\'URL de base dans Admin → Paramètres Système → Configuration IA.',
+      };
+    }
+  }
+
+  /**
+   * Méthode de secours simulant l'évaluation si l'API est indisponible ou non configurée.
+   */
+  private evaluationSimulee(
+    reponseCandidat: string,
+    reponseCorrecte: string | null,
+  ): ResultatEvaluation {
+    const cleanCand = reponseCandidat.trim().toLowerCase();
+    const cleanCorr = (reponseCorrecte || '').trim().toLowerCase();
+
+    if (!cleanCand) {
+      return {
+        score: 0,
+        critique: "Aucune réponse n'a été fournie par le candidat.",
+        suggestions:
+          'Vous devez rédiger une explication structurée pour cette question.',
+      };
+    }
+
+    // Calcul rapide de similarité de mots pour la démo hors-ligne
+    const motsCandidat = cleanCand.split(/\s+/);
+    const motsCorrects = cleanCorr.split(/\s+/);
+
+    let correspondances = 0;
+    motsCandidat.forEach((mot) => {
+      if (mot.length > 3 && cleanCorr.includes(mot)) {
+        correspondances++;
+      }
+    });
+
+    const ratio = correspondances / Math.max(motsCorrects.length * 0.4, 5);
+    const scoreSimule = Math.min(Math.round(ratio * 100), 100);
+
+    if (scoreSimule > 70) {
+      return {
+        score: scoreSimule,
+        critique:
+          'Votre réponse couvre plusieurs mots-clés essentiels attendus dans le corrigé officiel.',
+        suggestions:
+          'Excellent travail. Pour optimiser votre score, veillez à utiliser les termes techniques précis du référentiel.',
+      };
+    } else if (scoreSimule > 30) {
+      return {
+        score: scoreSimule,
+        critique:
+          "Réponse partiellement correcte mais trop superficielle. Certains mots-clés importants sont présents, mais l'explication manque de profondeur technique.",
+        suggestions:
+          'Révisez le cours associé à cette notion pour structurer plus rigoureusement votre raisonnement.',
+      };
+    } else {
+      return {
+        score: Math.max(scoreSimule, 15),
+        critique:
+          'La réponse fournie est trop éloignée du corrigé attendu ou trop succincte.',
+        suggestions:
+          'Relisez attentivement la correction officielle et apprenez les définitions fondamentales de ce chapitre.',
+      };
+    }
+  }
+}

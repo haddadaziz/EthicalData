@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  # 1. Base de données PostgreSQL
+  postgres:
+    image: postgres:16-alpine
+    container_name: coaching_platform_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_password_secure_2026}
+      POSTGRES_DB: coaching_platform_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d coaching_platform_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. pgAdmin (Interface de gestion de base de données)
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: coaching_platform_pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@coaching.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin_password_secure_2026}
+    ports:
+      - "5050:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # 3. API Backend NestJS
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    container_name: coaching_platform_backend
+    restart: always
+    env_file:
+      - ./apps/backend/.env
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:dev_password_secure_2026@postgres:5432/coaching_platform_db?schema=public}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-1d}
+      PORT: ${PORT:-3000}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3001}
+      ADMIN_DEFAULT_EMAIL: ${ADMIN_EMAIL:-admin@ethicaldata.local}
+      ADMIN_DEFAULT_PASSWORD: ${ADMIN_PASSWORD:-admin_password_secure_2026}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+    ports:
+      - "${PORT:-3000}:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # 4. Frontend Next.js
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
+    container_name: coaching_platform_frontend
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
