@@ -9,14 +9,6 @@ import { apiFetch } from '../../lib/api';
 import { Footer } from '@/components/layout/Footer';
 import { Navbar } from '@/components/landing/Navbar';
 
-const TriangleLogo = ({ className = "w-5 h-5" }: { className?: string }) => (
-    <svg className={`${className} text-red-600`} viewBox="0 0 100 100" fill="currentColor">
-        <polygon points="50,15 15,85 85,85" className="fill-none stroke-red-600 stroke-[6]" />
-        <polygon points="50,30 28,75 72,75" className="fill-none stroke-slate-900 stroke-[4]" />
-        <polygon points="50,45 40,65 60,65" className="fill-red-600" />
-    </svg>
-);
-
 // Certifications de secours avec les vrais badges officiels si l'API est vide
 const fallbackCertifications = [
     {
@@ -201,7 +193,7 @@ export default function CertificationsPublicPage() {
                     `}} />
 
                     <div 
-                        className="absolute top-0 left-0 w-full h-[2px] bg-red-600/80 shadow-[0_0_15px_#dc2626] animate-scan-laser pointer-events-none z-10"
+                        className="absolute top-0 left-0 w-full h-[2px] bg-cyan-400/80 shadow-[0_0_15px_#06b6d4] animate-scan-laser pointer-events-none z-10"
                     />
                 </div>
 
@@ -297,116 +289,40 @@ export default function CertificationsPublicPage() {
                         </div>
                     </div>
 
-                    {/* Filtres Catégorie & Fournisseur (côte à côte) */}
-                    <div className="pt-4 border-t border-slate-100">
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                            {/* Catégorie */}
-                            <div className="flex items-center gap-3 w-full sm:w-auto">
-                                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 shrink-0 w-[92px] text-right">Catégorie :</span>
-                                <div className="relative w-full sm:w-52">
+                    {/* Filtre Rapide par Logos Fournisseurs (Fond Blanc) */}
+                    <div className="pt-4 border-t border-slate-800 space-y-3">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Filtrer par Fournisseur Officiels :</span>
+                        <div className="flex items-center gap-2.5 overflow-x-auto pb-2 scrollbar-none">
+                            {providers.map((provider) => {
+                                const logo = getProviderLogo(provider);
+                                const isSelected = selectedProvider === provider;
+                                return (
                                     <button
-                                        type="button"
-                                        onClick={() => setCategoryDropdownOpen(!categoryDropdownOpen)}
-                                        className="flex items-center gap-2.5 px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 rounded-xl text-white text-xs font-bold outline-none cursor-pointer hover:bg-[#0a1224] transition-all w-full shadow-sm"
+                                        key={provider}
+                                        onClick={() => setSelectedProvider(provider)}
+                                        className={`flex items-center gap-2.5 px-3.5 py-2 rounded-2xl border text-xs font-black uppercase tracking-wider transition-all shrink-0 cursor-pointer ${
+                                            isSelected
+                                                ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-600/20'
+                                                : 'bg-[#020617] border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white'
+                                        }`}
                                     >
-                                        <span className="flex-1 text-left truncate">
-                                            {selectedCategory === 'TOUS' ? 'Toutes les catégories' : categories.find(c => c.slug === selectedCategory)?.nom || 'Sélectionner'}
-                                        </span>
-                                        <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${categoryDropdownOpen ? 'rotate-180' : ''}`} />
-                                    </button>
-
-                                    {categoryDropdownOpen && (
-                                        <>
-                                            <div className="fixed inset-0 z-40" onClick={() => setCategoryDropdownOpen(false)} />
-                                            <div className="absolute top-full left-0 mt-1.5 z-50 w-full bg-[#080d1a] border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
-                                                <button
-                                                    onClick={() => { setSelectedCategory('TOUS'); setCategoryDropdownOpen(false); }}
-                                                    className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-[#020617] cursor-pointer ${
-                                                        selectedCategory === 'TOUS' ? 'bg-[#020617] text-white' : 'text-slate-400'
-                                                    }`}
-                                                >
-                                                    Toutes les catégories
-                                                </button>
-                                                <div className="border-t border-slate-800" />
-                                                {categories.map((cat) => (
-                                                    <button
-                                                        key={cat.slug}
-                                                        onClick={() => { setSelectedCategory(cat.slug); setCategoryDropdownOpen(false); }}
-                                                        className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-[#020617] cursor-pointer ${
-                                                            selectedCategory === cat.slug ? 'bg-[#020617] text-white' : 'text-slate-400'
-                                                        }`}
-                                                    >
-                                                        {cat.nom}
-                                                    </button>
-                                                ))}
+                                        {provider === 'TOUS' ? (
+                                            <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${isSelected ? 'bg-white/20 text-white' : 'bg-blue-950 text-cyan-400 border border-blue-800/50'}`}>
+                                                <Award className="w-3.5 h-3.5" />
                                             </div>
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Fournisseur */}
-                            <div className="flex items-center gap-3 w-full sm:w-auto">
-                                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 shrink-0 w-[92px] text-right">Fournisseur :</span>
-                                <div className="relative w-full sm:w-52">
-                                    <button
-                                        type="button"
-                                        onClick={() => setProviderDropdownOpen(!providerDropdownOpen)}
-                                        className="flex items-center gap-2.5 px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 rounded-xl text-white text-xs font-bold outline-none cursor-pointer hover:bg-[#0a1224] transition-all w-full shadow-sm"
-                                    >
-                                        {selectedProvider !== 'TOUS' && getProviderLogo(selectedProvider) && (
-                                            <img src={getProviderLogo(selectedProvider)} alt="" className="w-5 h-5 object-contain rounded shrink-0" />
+                                        ) : logo ? (
+                                            <div className="w-7 h-7 rounded-xl bg-white p-1 flex items-center justify-center shrink-0 border border-slate-200 shadow-sm">
+                                                <img src={logo} alt={provider} className="w-full h-full object-contain" />
+                                            </div>
+                                        ) : (
+                                            <div className="w-7 h-7 rounded-xl bg-white p-1 flex items-center justify-center shrink-0 border border-slate-200 shadow-sm">
+                                                <Award className="w-3.5 h-3.5 text-blue-600" />
+                                            </div>
                                         )}
-                                        <span className="flex-1 text-left truncate">
-                                            {selectedProvider === 'TOUS' ? 'Tous les fournisseurs' : providers.find(p => p !== 'TOUS' && (p === selectedProvider)) || 'Sélectionner'}
-                                        </span>
-                                        <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${providerDropdownOpen ? 'rotate-180' : ''}`} />
+                                        <span>{provider}</span>
                                     </button>
-
-                                    {providerDropdownOpen && (
-                                        <>
-                                            <div className="fixed inset-0 z-40" onClick={() => setProviderDropdownOpen(false)} />
-                                            <div className="absolute top-full left-0 mt-1.5 z-50 w-full bg-[#080d1a] border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
-                                                <button
-                                                    onClick={() => { setSelectedProvider('TOUS'); setProviderDropdownOpen(false); }}
-                                                    className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-[#020617] cursor-pointer ${
-                                                        selectedProvider === 'TOUS' ? 'bg-[#020617] text-white' : 'text-slate-400'
-                                                    }`}
-                                                >
-                                                    <div className="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
-                                                        <Award className="w-4 h-4 text-blue-500" />
-                                                    </div>
-                                                    Tous les fournisseurs
-                                                </button>
-                                                <div className="border-t border-slate-800" />
-                                                {providers.filter(p => p !== 'TOUS').map((provider) => {
-                                                    const logo = getProviderLogo(provider);
-                                                    return (
-                                                        <button
-                                                            key={provider}
-                                                            onClick={() => { setSelectedProvider(provider); setProviderDropdownOpen(false); }}
-                                                            className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-left transition-colors hover:bg-[#020617] cursor-pointer ${
-                                                                selectedProvider === provider ? 'bg-[#020617] text-white' : 'text-slate-400'
-                                                            }`}
-                                                        >
-                                                            {logo ? (
-                                                                <div className="w-7 h-7 rounded-lg bg-white/95 flex items-center justify-center shrink-0 p-1 border border-slate-200">
-                                                                    <img src={logo} alt="" className="w-full h-full object-contain rounded" />
-                                                                </div>
-                                                            ) : (
-                                                                <div className="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
-                                                                    <Award className="w-3.5 h-3.5 text-blue-500" />
-                                                                </div>
-                                                            )}
-                                                            {provider}
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
-                            </div>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
@@ -439,7 +355,7 @@ export default function CertificationsPublicPage() {
                                     <img src="/images/cadre_certif.png" alt="" className="absolute inset-0 w-full h-full object-cover z-0" />
                                     {cert.codeExamen && (
                                         <div className="absolute top-3 left-3 z-30">
-                                            <div className="bg-slate-950 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-800 shadow-sm flex items-center group-hover:bg-red-600 group-hover:border-red-500 transition-colors">
+                                            <div className="bg-slate-950 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-800 shadow-sm flex items-center group-hover:bg-blue-600 group-hover:border-blue-500 transition-colors">
                                                 {cert.codeExamen}
                                             </div>
                                         </div>
@@ -461,7 +377,7 @@ export default function CertificationsPublicPage() {
                                         <h3 className="text-[13px] font-bold text-slate-100 leading-snug line-clamp-2 flex-1">
                                             {cert.nom}
                                         </h3>
-                                        <div className="px-3 py-1.5 shrink-0 bg-[#020617] border border-slate-800 rounded-lg flex items-center justify-center text-slate-300 transition-colors shadow-sm group-hover:bg-red-600 group-hover:text-white group-hover:border-red-600 text-[10px] font-bold uppercase tracking-wider">
+                                        <div className="px-3 py-1.5 shrink-0 bg-[#020617] border border-slate-800 rounded-lg flex items-center justify-center text-slate-300 transition-colors shadow-sm group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 text-[10px] font-bold uppercase tracking-wider">
                                             Voir le détail
                                         </div>
                                     </div>
