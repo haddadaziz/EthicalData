@@ -35,6 +35,14 @@ export class CoursController {
     return this.coursService.findAllByFormateur(req.user.id);
   }
 
+  // Analytics & suivi des apprenants pour le formateur
+  @UseGuards(RolesGuard)
+  @Roles('FORMATEUR', 'ADMIN', 'SUPER_ADMIN')
+  @Get('formateur/analytics')
+  async getFormateurAnalytics(@Req() req: any) {
+    return this.coursService.getFormateurAnalytics(req.user.id, req.user.roles || []);
+  }
+
   // Brouillons du formateur connecté
   @UseGuards(RolesGuard)
   @Roles('FORMATEUR', 'ADMIN', 'SUPER_ADMIN')

@@ -814,4 +814,160 @@ export class CoursService {
       completedCount,
     };
   }
+
+  async getFormateurAnalytics(userId: number, roles: string[]) {
+    const isAdmin = roles.includes('ADMIN') || roles.includes('SUPER_ADMIN');
+
+    const whereCondition = isAdmin
+      ? { deletedAt: null }
+      : { formateurId: BigInt(userId), deletedAt: null };
+
+    const coursList = await this.prisma.cours.findMany({
+      where: whereCondition,
+      include: {
+        certification: { select: { id: true, nom: true, codeExamen: true } },
+        modules: {
+          select: { id: true, titre: true, ordre: true },
+          orderBy: { ordre: 'asc' },
+        },
+        inscriptions: {
+          include: {
+            apprenant: {
+              select: { id: true, prenom: true, nom: true, email: true, avatar: true },
+            },
+            progressions: {
+              select: { moduleId: true, completed: true, updatedAt: true },
+            },
+          },
+          orderBy: { dateInscription: 'desc' },
+        },
+        simulations: {
+          include: {
+            tentatives: {
+              include: {
+                utilisateur: {
+                  select: { id: true, prenom: true, nom: true, avatar: true },
+                },
+              },
+              orderBy: { datePassage: 'desc' },
+            },
+          },
+        },
+      },
+      orderBy: { dateCreation: 'desc' },
+    });
+
+    return coursList.map((c) => {
+      const totalModules = c.modules.length;
+
+      const inscrits = c.inscriptions.map((i) => {
+        const completedCount = i.progressions.filter((p) => p.completed).length;
+        const lastUpdated = i.progressions.reduce((acc: any, p: any) => {
+          if (!acc || (p.updatedAt && p.updatedAt > acc)) return p.updatedAt;
+          return acc;
+        }, i.dateInscription);
+
+        return {
+          id: i.id.toString(),
+          apprenant: {
+            id: i.apprenant.id.toString(),
+            prenom: i.apprenant.prenom,
+            nom: i.apprenant.nom,
+            email: i.apprenant.email,
+            avatar: i.apprenant.avatar,
+          },
+          dateInscription: i.dateInscription,
+          progression: i.progression,
+          modulesCompletes: completedCount,
+          totalModules: totalModules,
+          dernierAcces: lastUpdated,
+        };
+      });
+
+      const totalInscrits = inscrits.length;
+      const progressionMoyenne =
+        totalInscrits > 0
+          ? Math.round(inscrits.reduce((sum, item) => sum + item.progression, 0) / totalInscrits)
+          : 0;
+
+      const simulationsStats = c.simulations.map((s) => {
+        const tentatives = s.tentatives.map((t) => ({
+          id: t.id.toString(),
+          score: t.score,
+          dureePassage: t.dureePassage,
+          datePassage: t.datePassage,
+          reussi: t.score >= s.scoreMinimal,
+          utilisateur: {
+            id: t.utilisateur.id.toString(),
+            prenom: t.utilisateur.prenom,
+            nom: t.utilisateur.nom,
+            avatar: t.utilisateur.avatar,
+          },
+        }));
+
+        const totalTentatives = tentatives.length;
+        const reussisCount = tentatives.filter((t) => t.reussi).length;
+        const scoreMoyen =
+          totalTentatives > 0
+            ? Math.round(tentatives.reduce((sum, t) => sum + t.score, 0) / totalTentatives)
+            : 0;
+        const tauxReussite =
+          totalTentatives > 0 ? Math.round((reussisCount / totalTentatives) * 100) : 0;
+        const meilleurScore =
+          totalTentatives > 0 ? Math.max(...tentatives.map((t) => t.score)) : 0;
+
+        return {
+          id: s.id.toString(),
+          titre: s.titre,
+          duree: s.duree,
+          scoreMinimal: s.scoreMinimal,
+          totalTentatives,
+          reussisCount,
+          tauxReussite,
+          scoreMoyen,
+          meilleurScore,
+          dernieresTentatives: tentatives.slice(0, 10),
+        };
+      });
+
+      const totalTentativesGlobales = simulationsStats.reduce(
+        (sum, s) => sum + s.totalTentatives,
+        0,
+      );
+      const totalReussisGlobales = simulationsStats.reduce(
+        (sum, s) => sum + s.reussisCount,
+        0,
+      );
+      const tauxReussiteSimulations =
+        totalTentativesGlobales > 0
+          ? Math.round((totalReussisGlobales / totalTentativesGlobales) * 100)
+          : 0;
+
+      return {
+        id: c.id.toString(),
+        titre: c.titre,
+        imageUrl: c.imageUrl,
+        statut: c.statut,
+        datePublication: c.datePublication,
+        dureeEstimee: c.dureeEstimee,
+        certification: c.certification
+          ? {
+              id: c.certification.id.toString(),
+              nom: c.certification.nom,
+              codeExamen: c.certification.codeExamen,
+            }
+          : null,
+        totaux: {
+          totalInscrits,
+          progressionMoyenne,
+          totalModules,
+          totalSimulations: simulationsStats.length,
+          totalTentatives: totalTentativesGlobales,
+          tauxReussiteSimulations,
+        },
+        inscrits,
+        simulationsStats,
+      };
+    });
+  }
 }

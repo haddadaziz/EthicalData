@@ -47,6 +47,7 @@ export const ArrowRight = makeIcon(faArrowRight);
 export const ArrowUpRight = makeIcon(faArrowUpRightFromSquare);
 export const AtSign = makeIcon(faAt);
 export const Award = makeIcon(faAward);
+export const BarChart3 = makeIcon(faChartLine);
 export const Bell = makeIcon(faBell);
 export const BookOpen = makeIcon(faBookOpen);
 export const Bolt = makeIcon(faBolt);

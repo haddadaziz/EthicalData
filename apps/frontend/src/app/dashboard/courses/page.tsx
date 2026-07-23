@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
 import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/context/ConfirmContext';
-import { BookMarked, Globe, FilePen, Plus } from '@/components/icons';
+import { BookMarked, Globe, FilePen, Plus, BarChart3, Users } from '@/components/icons';
 import { useCourses } from '@/hooks/useCourses';
 import { CourseGrid } from '@/components/dashboard/courses/CourseGrid';
+import { InstructorAnalyticsView } from '@/components/dashboard/courses/InstructorAnalyticsView';
 import dynamic from 'next/dynamic';
 
 const CourseEditor = dynamic(
@@ -35,6 +36,7 @@ export default function CoursesPage() {
     const [isCreating, setIsCreating] = useState(false);
     const [editingCours, setEditingCours] = useState<any | null>(null);
     const [activeTab, setActiveTab] = useState<'TOUS' | 'PUBLIE' | 'BROUILLON'>('TOUS');
+    const [viewMode, setViewMode] = useState<'COURS' | 'ANALYTICS'>('COURS');
     const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
     useEffect(() => {
@@ -156,70 +158,104 @@ export default function CoursesPage() {
                     </div>
                 ) : (
                     <>
-                        {/* STATS */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 shadow-xs flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-blue-950/20 border border-blue-900/40 flex items-center justify-center text-cyan-400 shrink-0">
-                                    <BookMarked className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <span className="text-2xl font-black text-white block leading-tight">{totalCours}</span>
-                                    <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Cours créés</span>
-                                </div>
-                            </div>
-                            <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 shadow-xs flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-emerald-950/20 border border-emerald-900/40 flex items-center justify-center text-emerald-500 shrink-0">
-                                    <Globe className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <span className="text-2xl font-black text-white block leading-tight">{totalPublies}</span>
-                                    <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Cours publiés</span>
-                                </div>
-                            </div>
-                            <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 shadow-xs flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-amber-950/20 border border-amber-900/40 flex items-center justify-center text-amber-500 shrink-0">
-                                    <FilePen className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <span className="text-2xl font-black text-white block leading-tight">{totalBrouillons}</span>
-                                    <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Brouillons</span>
-                                </div>
+                        {/* NAVIGATION EN-TÊTE ESPACE FORMATEUR */}
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-[#080d1a] border border-slate-800 p-2 rounded-2xl">
+                            <div className="flex items-center gap-2 w-full sm:w-auto">
+                                <button
+                                    onClick={() => setViewMode('COURS')}
+                                    className={`flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                                        viewMode === 'COURS'
+                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20 border border-blue-500'
+                                            : 'text-slate-400 hover:text-white hover:bg-[#020617]'
+                                    }`}
+                                >
+                                    <BookMarked className="w-4 h-4" />
+                                    <span>Mes Cours & Édition</span>
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('ANALYTICS')}
+                                    className={`flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                                        viewMode === 'ANALYTICS'
+                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20 border border-blue-500'
+                                            : 'text-slate-400 hover:text-white hover:bg-[#020617]'
+                                    }`}
+                                >
+                                    <BarChart3 className="w-4 h-4" />
+                                    <span>Suivi des Apprenants & Statistiques</span>
+                                </button>
                             </div>
                         </div>
 
-                        {/* HEADER + FILTRES */}
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
-                            <div className="flex items-center gap-2">
-                                {(['TOUS', 'PUBLIE', 'BROUILLON'] as const).map(tab => (
+                        {viewMode === 'ANALYTICS' ? (
+                            <InstructorAnalyticsView />
+                        ) : (
+                            <>
+                                {/* STATS */}
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 shadow-xs flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-2xl bg-blue-950/20 border border-blue-900/40 flex items-center justify-center text-cyan-400 shrink-0">
+                                            <BookMarked className="w-6 h-6" />
+                                        </div>
+                                        <div>
+                                            <span className="text-2xl font-black text-white block leading-tight">{totalCours}</span>
+                                            <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Cours créés</span>
+                                        </div>
+                                    </div>
+                                    <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 shadow-xs flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-2xl bg-emerald-950/20 border border-emerald-900/40 flex items-center justify-center text-emerald-500 shrink-0">
+                                            <Globe className="w-6 h-6" />
+                                        </div>
+                                        <div>
+                                            <span className="text-2xl font-black text-white block leading-tight">{totalPublies}</span>
+                                            <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Cours publiés</span>
+                                        </div>
+                                    </div>
+                                    <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 shadow-xs flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-2xl bg-amber-950/20 border border-amber-900/40 flex items-center justify-center text-amber-500 shrink-0">
+                                            <FilePen className="w-6 h-6" />
+                                        </div>
+                                        <div>
+                                            <span className="text-2xl font-black text-white block leading-tight">{totalBrouillons}</span>
+                                            <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Brouillons</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* HEADER + FILTRES */}
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                                    <div className="flex items-center gap-2">
+                                        {(['TOUS', 'PUBLIE', 'BROUILLON'] as const).map(tab => (
+                                            <button
+                                                key={tab}
+                                                onClick={() => setActiveTab(tab)}
+                                                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${activeTab === tab
+                                                    ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.2)] border border-cyan-500'
+                                                    : 'bg-[#020617] text-slate-400 hover:bg-slate-900/50 hover:text-white border border-slate-800'
+                                                    }`}
+                                            >
+                                                {tab === 'TOUS' ? 'Tous les cours' : tab === 'PUBLIE' ? 'Publiés' : 'Brouillons'}
+                                            </button>
+                                        ))}
+                                    </div>
                                     <button
-                                        key={tab}
-                                        onClick={() => setActiveTab(tab)}
-                                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${activeTab === tab
-                                            ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.2)] border border-cyan-500'
-                                            : 'bg-[#020617] text-slate-400 hover:bg-slate-900/50 hover:text-white border border-slate-800'
-                                            }`}
+                                        onClick={() => router.push('/dashboard/courses/new')}
+                                        className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-2xl text-xs flex items-center gap-2 shadow-xs hover:shadow-[0_0_15px_rgba(37,99,235,0.3)] transition-all shrink-0 cursor-pointer"
                                     >
-                                        {tab === 'TOUS' ? 'Tous les cours' : tab === 'PUBLIE' ? 'Publiés' : 'Brouillons'}
+                                        <Plus className="w-4 h-4" />
+                                        <span>Nouveau cours</span>
                                     </button>
-                                ))}
-                            </div>
-                            <button
-                                onClick={() => router.push('/dashboard/courses/new')}
-                                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-2xl text-xs flex items-center gap-2 shadow-xs hover:shadow-[0_0_15px_rgba(37,99,235,0.3)] transition-all shrink-0 cursor-pointer"
-                            >
-                                <Plus className="w-4 h-4" />
-                                <span>Nouveau cours</span>
-                            </button>
-                        </div>
+                                </div>
 
-                        <CourseGrid
-                            filteredCours={filteredCours}
-                            activeTab={activeTab}
-                            onCreateNew={() => router.push('/dashboard/courses/new')}
-                            onEdit={(c) => router.push(`/dashboard/courses/${c.id}/edit`)}
-                            onPublish={handlePublish}
-                            onDelete={handleDeleteCours}
-                        />
+                                <CourseGrid
+                                    filteredCours={filteredCours}
+                                    activeTab={activeTab}
+                                    onCreateNew={() => router.push('/dashboard/courses/new')}
+                                    onEdit={(c) => router.push(`/dashboard/courses/${c.id}/edit`)}
+                                    onPublish={handlePublish}
+                                    onDelete={handleDeleteCours}
+                                />
+                            </>
+                        )}
                     </>
                 )}
             </div>
