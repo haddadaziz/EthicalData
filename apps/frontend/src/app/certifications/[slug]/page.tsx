@@ -259,8 +259,8 @@ export default function CertificationDetailPage() {
                 </p>
               </div>
               {cert.image && (
-                <div className="shrink-0 bg-white/95 p-3 rounded-2xl border border-slate-200">
-                  <img src={cert.image} alt={cert.nom} className="w-32 sm:w-40 object-contain" />
+                <div className="shrink-0 p-2 flex items-center justify-center">
+                  <img src={cert.image} alt={cert.nom} className="w-28 sm:w-36 object-contain filter drop-shadow-2xl" />
                 </div>
               )}
             </div>

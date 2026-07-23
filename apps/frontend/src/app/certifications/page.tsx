@@ -355,11 +355,11 @@ export default function CertificationsPublicPage() {
                         <p className="text-xs font-bold uppercase tracking-widest text-blue-600">Chargement des certifications...</p>
                     </div>
                 ) : filteredCertifications.length === 0 ? (
-                    <div className="bg-white border border-slate-200 rounded-3xl p-12 text-center space-y-4">
-                        <p className="text-base font-extrabold text-slate-700">Aucune certification ne correspond aux critères sélectionnés.</p>
+                    <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-12 text-center space-y-4">
+                        <p className="text-base font-extrabold text-slate-300">Aucune certification ne correspond aux critères sélectionnés.</p>
                         <button
                             onClick={() => { setSearchQuery(''); setSelectedProvider('TOUS'); setSelectedLevel('TOUS'); }}
-                            className="px-5 py-2.5 bg-blue-50 text-blue-600 border border-blue-100 rounded-xl text-xs font-bold hover:bg-blue-100 transition-all cursor-pointer"
+                            className="px-5 py-2.5 bg-blue-600/20 text-cyan-400 border border-blue-500/30 rounded-xl text-xs font-bold hover:bg-blue-600/30 transition-all cursor-pointer"
                         >
                             Réinitialiser les filtres
                         </button>
@@ -372,8 +372,8 @@ export default function CertificationsPublicPage() {
                             return (
                             <Link key={cert.id} href={`/certifications/${slug}`} scroll={false}
                                 className="bg-[#080d1a]/85 border border-slate-800 rounded-2xl p-4 flex flex-col group transition-all duration-300 hover:shadow-lg hover:border-slate-600 text-left">
-                                <div className="relative w-full aspect-[4/3] sm:aspect-auto sm:h-[220px] rounded-xl overflow-hidden shadow-sm transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-blue-900/30 group-hover:shadow-2xl bg-white border border-slate-100">
-                                    <img src="/images/cadre_certif.png" alt="" className="absolute inset-0 w-full h-full object-cover z-0" />
+                                <div className="relative w-full aspect-[4/3] sm:aspect-auto sm:h-[220px] rounded-xl overflow-hidden shadow-sm transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-blue-900/30 group-hover:shadow-2xl bg-[#020617] border border-slate-800">
+                                    <img src="/images/cadre_certif.png" alt="" className="absolute inset-0 w-full h-full object-cover z-0 opacity-50 mix-blend-screen" />
                                     {cert.codeExamen && (
                                         <div className="absolute top-3 left-3 z-30">
                                             <div className="bg-slate-950 text-white font-bold uppercase text-[9px] tracking-widest px-2.5 py-1 rounded-md border border-slate-800 shadow-sm flex items-center group-hover:bg-blue-600 group-hover:border-blue-500 transition-colors">
@@ -386,8 +386,8 @@ export default function CertificationsPublicPage() {
                                             {cert.image ? (
                                                 <img src={cert.image} alt={cert.nom} className="max-w-full max-h-full object-contain filter drop-shadow-xl" />
                                             ) : (
-                                                <div className="w-16 h-16 bg-white/95 rounded-full flex items-center justify-center border border-slate-200 shadow-sm">
-                                                    <span className="text-xs font-bold text-slate-500">{cert.codeExamen || 'EDS'}</span>
+                                                <div className="w-16 h-16 bg-slate-900/95 rounded-full flex items-center justify-center border border-slate-800 shadow-sm">
+                                                    <span className="text-xs font-bold text-slate-400">{cert.codeExamen || 'EDS'}</span>
                                                 </div>
                                             )}
                                         </div>
