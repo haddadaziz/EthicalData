@@ -73,7 +73,7 @@ export function CoursesPreviewSection() {
           </div>
 
           {/* Grille des 3 cours vedettes */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {FEATURED_COURSES.map((course) => (
               <div
                 key={course.id}
@@ -134,29 +134,6 @@ export function CoursesPreviewSection() {
               </div>
             ))}
           </div>
-
-          {/* BANNIÈRE CTA INVITATION REJOINDRE */}
-          <div className="bg-gradient-to-r from-blue-950/80 via-[#080d1a]/90 to-blue-950/80 backdrop-blur-md border border-slate-800 rounded-3xl p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
-            <div className="space-y-2 text-center md:text-left">
-              <h3 className="text-xl md:text-2xl font-black text-white">
-                Prêt à booster vos compétences IT et valider vos examens ?
-              </h3>
-              <p className="text-xs md:text-sm text-slate-300">
-                Inscrivez-vous gratuitement pour accéder aux cours interactifs, aux examens blancs et à la communauté.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-4 shrink-0">
-              <Link
-                href="/register"
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-blue-600/20 flex items-center gap-2 cursor-pointer"
-              >
-                <span>Créer un compte gratuit</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-
         </div>
       </BackgroundBeamsWithCollision>
     </section>
