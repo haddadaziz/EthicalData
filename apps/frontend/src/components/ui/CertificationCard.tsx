@@ -21,7 +21,7 @@ export const CertificationCard = ({
 }: CertificationCardProps) => {
   return (
     <Link href={`/certifications/${slug}`} className="block w-full">
-      <CometCard className="rounded-2xl" rotateDepth={8}>
+      <CometCard className="rounded-2xl" rotateDepth={12}>
         <div className="relative w-full h-[400px] rounded-2xl overflow-hidden bg-[#0a0f1d] border border-slate-800 transition-all duration-300 shadow-xl group-hover/comet:shadow-[0_20px_40px_-15px_rgba(37,99,235,0.4)] group-hover/comet:border-cyan-500/50">
           
           {/* Background Image / Frame */}
@@ -29,7 +29,7 @@ export const CertificationCard = ({
             <img
               src="/images/cadre_certif.png"
               alt="Template"
-              className="w-full h-full object-cover opacity-60 group-hover/comet:opacity-100 transition-all duration-500 group-hover/comet:scale-105"
+              className="w-full h-full object-cover opacity-60 group-hover/comet:opacity-100 transition-opacity duration-500"
               loading="lazy"
               decoding="async"
             />
@@ -48,7 +48,7 @@ export const CertificationCard = ({
 
           {/* Certification Badge Logo */}
           <div className="absolute bottom-36 left-1/2 z-20 w-32 -translate-x-1/2">
-            <div className="flex justify-center w-full transition-transform duration-500 group-hover/comet:-translate-y-3 group-hover/comet:scale-110">
+            <div className="flex justify-center w-full">
               {logo ? (
                 <img
                   src={logo}

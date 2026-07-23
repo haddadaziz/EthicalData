@@ -48,7 +48,7 @@ export const CometCard = ({
         const rotateY = (xPct - 0.5) * rotateDepth;
 
         setTransformStyle(
-          `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`
+          `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg)`
         );
       });
     },
