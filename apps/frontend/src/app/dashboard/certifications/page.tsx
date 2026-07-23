@@ -130,6 +130,17 @@ export default function LearnerCertificationsPage() {
     setCurrentPage(1);
   }, [searchTerm, selectedLevel, selectedProvider, onlyTargeted]);
 
+  useEffect(() => {
+    if (selectedCertModal) {
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, [selectedCertModal]);
+
   // Filtrage
   const filteredCerts = certs.filter((cert) => {
     const search = searchTerm.toLowerCase().trim();
@@ -481,11 +492,11 @@ function CertDetailModal({ cert, onClose, onPractice, isTargeted, onToggleTarget
         
         {/* PANNEAU IMAGE (Fixe à gauche sur desktop) */}
         <div className="w-full md:w-[340px] shrink-0 p-6 flex flex-col items-center justify-start bg-gradient-to-b from-[#050b14] to-[#020617] border-b md:border-b-0 md:border-r border-slate-800 overflow-y-auto md:overflow-hidden">
-          <div className="relative w-full max-w-[280px] h-[340px] rounded-2xl overflow-hidden shadow-[0_0_25px_rgba(30,58,138,0.1)] border border-blue-900/50 bg-[#080d1a] flex items-center justify-center p-6">
+          <div className="relative w-full max-w-[280px] h-[260px] rounded-2xl overflow-hidden shadow-[0_0_25px_rgba(30,58,138,0.1)] border border-blue-900/50 bg-[#080d1a] flex items-center justify-center p-8">
             <img src="/images/cadre_certif.png" alt="Template" className="absolute inset-0 w-full h-full object-cover z-0 opacity-50 mix-blend-screen" />
-            <div className="relative z-20 flex items-center justify-center w-full h-full">
+            <div className="relative z-20 flex items-center justify-center w-full h-full p-4">
               {cert.image ? (
-                <img src={cert.image} alt={cert.nom} className="max-w-full max-h-full object-contain filter drop-shadow-xl" />
+                <img src={cert.image} alt={cert.nom} className="max-w-[75%] max-h-[75%] object-contain filter drop-shadow-xl" />
               ) : (
                 <div className="w-16 h-16 bg-[#080d1a]/95 rounded-full flex items-center justify-center border border-slate-800 shadow-sm">
                   <Award className="w-8 h-8 text-slate-500" />

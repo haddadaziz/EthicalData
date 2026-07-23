@@ -7,36 +7,36 @@ import { BookOpen, Clock, Users, ArrowRight, ShieldCheck } from '@/components/ic
 const FEATURED_COURSES = [
   {
     id: 'az-900-course',
-    titre: 'Formation complète Microsoft Azure Fundamentals (AZ-900)',
+    titre: 'Microsoft Azure Fundamentals (AZ-900) - Le Guide Complet',
     provider: 'Microsoft',
     badgeClass: 'bg-blue-600/20 text-cyan-400 border-blue-500/30',
     dureeEstimee: 120,
     modulesCount: 8,
     studentsCount: 1420,
     description: 'Apprenez les bases indispensables du Cloud Microsoft Azure, la gestion des sous-réseaux, la sécurité Entra ID et le calcul du TCO.',
-    logo: '/logos/microsoft.png',
+    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80',
   },
   {
-    id: 'iso-27001-course',
-    titre: 'Mise en œuvre du SMSI selon ISO/IEC 27001 Lead Implementer',
-    provider: 'PECB',
-    badgeClass: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+    id: 'aws-saa-course',
+    titre: 'AWS Solutions Architect Associate (SAA-C03) - Masterclass',
+    provider: 'AWS',
+    badgeClass: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
     dureeEstimee: 180,
     modulesCount: 12,
     studentsCount: 980,
-    description: 'Maîtrisez la gestion des risques de sécurité de l’information, les politiques de sécurité et les règles d’audit officiel PECB.',
-    logo: '/logos/pecb.png',
+    description: 'Concevez des architectures résilientes, hautement disponibles et optimisées en coûts sur Amazon Web Services.',
+    image: 'https://images.unsplash.com/photo-1607799279861-4dd421887fb3?auto=format&fit=crop&w=1200&q=80',
   },
   {
-    id: 'aws-clf-course',
-    titre: 'Préparation AWS Certified Cloud Practitioner (CLF-C02)',
-    provider: 'AWS',
-    badgeClass: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-    dureeEstimee: 150,
-    modulesCount: 10,
-    studentsCount: 1150,
-    description: 'Comprenez l’architecture globale Amazon Web Services (S3, EC2, IAM, VPC) et préparez l’examen blanc officiel avec corrigés.',
-    logo: '/logos/aws.png',
+    id: 'comptia-course',
+    titre: 'CompTIA Security+ (SY0-701) - BootCamp Cybersécurité',
+    provider: 'CompTIA',
+    badgeClass: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+    dureeEstimee: 170,
+    modulesCount: 11,
+    studentsCount: 890,
+    description: 'Les fondations de la cybersécurité opérationnelle : gestion des menaces, cryptographie, gestion des accès et prévention des attaques.',
+    image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80',
   },
 ];
 
@@ -73,47 +73,59 @@ export function CoursesPreviewSection() {
           {FEATURED_COURSES.map((course) => (
             <div
               key={course.id}
-              className="bg-[#080d1a] border border-slate-800 hover:border-slate-700 rounded-3xl p-6 flex flex-col justify-between space-y-5 transition-all shadow-xl hover:shadow-cyan-950/20 group"
+              className="bg-[#080d1a] border border-slate-800 hover:border-slate-700 rounded-3xl overflow-hidden flex flex-col justify-between transition-all shadow-xl hover:shadow-cyan-950/20 group"
             >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className={`px-2.5 py-1 text-[9px] font-black uppercase tracking-wider rounded-full border ${course.badgeClass}`}>
-                    {course.provider}
-                  </span>
-                  <span className="flex items-center gap-1 text-[11px] text-slate-400 font-bold">
-                    <Clock className="w-3 h-3 text-cyan-400" />
-                    {course.dureeEstimee} min
-                  </span>
-                </div>
-
-                <h3 className="text-base font-bold text-white group-hover:text-cyan-400 transition-colors leading-snug">
-                  {course.titre}
-                </h3>
-
-                <p className="text-xs text-slate-400 line-clamp-3 leading-relaxed">
-                  {course.description}
-                </p>
+              {/* Banner Image */}
+              <div className="relative h-44 w-full overflow-hidden bg-slate-900">
+                <img
+                  src={course.image}
+                  alt={course.titre}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#080d1a] via-transparent to-transparent opacity-80" />
               </div>
 
-              <div className="pt-4 border-t border-slate-800/80 space-y-4">
-                <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
-                  <span className="flex items-center gap-1">
-                    <BookOpen className="w-3.5 h-3.5 text-slate-500" />
-                    {course.modulesCount} modules
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Users className="w-3.5 h-3.5 text-slate-500" />
-                    {course.studentsCount} apprenants
-                  </span>
+              <div className="p-6 flex-1 flex flex-col justify-between space-y-5">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className={`px-2.5 py-1 text-[9px] font-black uppercase tracking-wider rounded-full border ${course.badgeClass}`}>
+                      {course.provider}
+                    </span>
+                    <span className="flex items-center gap-1 text-[11px] text-slate-400 font-bold">
+                      <Clock className="w-3 h-3 text-cyan-400" />
+                      {course.dureeEstimee} min
+                    </span>
+                  </div>
+
+                  <h3 className="text-base font-bold text-white group-hover:text-cyan-400 transition-colors leading-snug">
+                    {course.titre}
+                  </h3>
+
+                  <p className="text-xs text-slate-400 line-clamp-3 leading-relaxed">
+                    {course.description}
+                  </p>
                 </div>
 
-                <Link
-                  href="/register"
-                  className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <span>Rejoindre la formation</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+                <div className="pt-4 border-t border-slate-800/80 space-y-4">
+                  <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
+                    <span className="flex items-center gap-1">
+                      <BookOpen className="w-3.5 h-3.5 text-slate-500" />
+                      {course.modulesCount} modules
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Users className="w-3.5 h-3.5 text-slate-500" />
+                      {course.studentsCount} apprenants
+                    </span>
+                  </div>
+
+                  <Link
+                    href="/register"
+                    className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <span>Rejoindre la formation</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
               </div>
             </div>
           ))}

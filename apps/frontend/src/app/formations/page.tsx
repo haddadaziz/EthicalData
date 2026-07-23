@@ -31,8 +31,9 @@ interface Course {
 const SEEDED_COURSES: Course[] = [
   {
     id: 'az900-course-seed',
-    titre: 'Microsoft Azure Fundamentals (AZ-900)',
+    titre: 'Microsoft Azure Fundamentals (AZ-900) - Le Guide Complet',
     description: 'Formation complète sur les concepts du Cloud Azure, les services d’infrastructure (IaaS/PaaS/SaaS), la sécurité Entra ID et le calcul des coûts.',
+    imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80',
     dureeEstimee: 120,
     certification: {
       nom: 'Microsoft Azure Fundamentals',
@@ -42,45 +43,23 @@ const SEEDED_COURSES: Course[] = [
     _count: { modules: 8, inscriptions: 1420 },
   },
   {
-    id: 'iso27001-course-seed',
-    titre: 'PECB ISO 27001 Lead Implementer',
-    description: 'Apprenez à déployer et piloter un Système de Management de la Sécurité de l’Information (SMSI) conforme aux normes ISO/IEC 27001 & 27002.',
+    id: 'aws-saa-course-seed',
+    titre: 'AWS Solutions Architect Associate (SAA-C03) - Masterclass',
+    description: 'Concevez des architectures résilientes, hautement disponibles et optimisées en coûts sur Amazon Web Services.',
+    imageUrl: 'https://images.unsplash.com/photo-1607799279861-4dd421887fb3?auto=format&fit=crop&w=1200&q=80',
     dureeEstimee: 180,
     certification: {
-      nom: 'PECB ISO 27001 Lead Implementer',
-      codeExamen: 'ISO-27001',
-      fournisseur: { nom: 'PECB' },
+      nom: 'AWS Certified Solutions Architect Associate',
+      codeExamen: 'SAA-C03',
+      fournisseur: { nom: 'AWS' },
     },
     _count: { modules: 12, inscriptions: 980 },
   },
   {
-    id: 'aws-clf-course-seed',
-    titre: 'AWS Certified Cloud Practitioner (CLF-C02)',
-    description: 'Comprenez l’écosystème Amazon Web Services (S3, EC2, IAM, CloudFront, VPC) et révisez avec les corrigés détaillés d’examen blanc.',
-    dureeEstimee: 150,
-    certification: {
-      nom: 'AWS Certified Cloud Practitioner',
-      codeExamen: 'CLF-C02',
-      fournisseur: { nom: 'AWS' },
-    },
-    _count: { modules: 10, inscriptions: 1150 },
-  },
-  {
-    id: 'paloalto-course-seed',
-    titre: 'Palo Alto Networks Certified Network Security (PCNSA)',
-    description: 'Configuration avancée et administration des pare-feu de nouvelle génération (NGFW) Palo Alto Networks pour entreprises.',
-    dureeEstimee: 160,
-    certification: {
-      nom: 'Palo Alto Networks Certified Network Security',
-      codeExamen: 'PCNSA',
-      fournisseur: { nom: 'Palo Alto Networks' },
-    },
-    _count: { modules: 9, inscriptions: 760 },
-  },
-  {
     id: 'comptia-course-seed',
-    titre: 'CompTIA Security+ (SY0-701)',
+    titre: 'CompTIA Security+ (SY0-701) - BootCamp Cybersécurité',
     description: 'Les fondations de la cybersécurité opérationnelle : gestion des menaces, cryptographie, gestion des accès et prévention des attaques.',
+    imageUrl: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80',
     dureeEstimee: 170,
     certification: {
       nom: 'CompTIA Security+',
@@ -90,16 +69,30 @@ const SEEDED_COURSES: Course[] = [
     _count: { modules: 11, inscriptions: 890 },
   },
   {
-    id: 'fortinet-course-seed',
-    titre: 'Fortinet Network Security Associate (NSE 4)',
-    description: 'Déploiement et sécurisation de l’infrastructure réseau avec les solutions FortiGate et FortiOS.',
-    dureeEstimee: 190,
+    id: 'gcp-course-seed',
+    titre: 'Google Cloud Digital Leader & Associate Cloud Engineer',
+    description: 'Maîtrisez les services Google Cloud Platform (Compute Engine, BigQuery, GKE, IAM) et préparez la certification officielle.',
+    imageUrl: 'https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&w=1200&q=80',
+    dureeEstimee: 160,
     certification: {
-      nom: 'Fortinet Network Security Associate',
-      codeExamen: 'NSE 4',
-      fournisseur: { nom: 'Fortinet' },
+      nom: 'Google Cloud Associate Cloud Engineer',
+      codeExamen: 'GCP-ACE',
+      fournisseur: { nom: 'Google Cloud Platform' },
     },
-    _count: { modules: 14, inscriptions: 620 },
+    _count: { modules: 9, inscriptions: 650 },
+  },
+  {
+    id: 'aws-clf-course-seed',
+    titre: 'AWS Certified Cloud Practitioner (CLF-C02) - Essentiels',
+    description: 'Comprenez l’écosystème Amazon Web Services (S3, EC2, IAM, CloudFront, VPC) et révisez avec les corrigés détaillés d’examen blanc.',
+    imageUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80',
+    dureeEstimee: 150,
+    certification: {
+      nom: 'AWS Certified Cloud Practitioner',
+      codeExamen: 'CLF-C02',
+      fournisseur: { nom: 'AWS' },
+    },
+    _count: { modules: 10, inscriptions: 1150 },
   },
 ];
 
@@ -128,7 +121,7 @@ export default function FormationsPublicPage() {
       c.certification?.nom?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchProvider =
       selectedProvider === 'TOUS' ||
-      c.certification?.fournisseur?.nom?.toUpperCase() === selectedProvider.toUpperCase();
+      c.certification?.fournisseur?.nom?.toUpperCase().includes(selectedProvider.toUpperCase());
     return matchSearch && matchProvider;
   });
 
@@ -167,7 +160,7 @@ export default function FormationsPublicPage() {
 
           {/* Filtre Constructeur */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 shrink-0">
-            {['TOUS', 'MICROSOFT', 'PECB', 'AWS', 'PALO ALTO'].map((provider) => (
+            {['TOUS', 'MICROSOFT', 'AWS', 'COMPTIA', 'GOOGLE'].map((provider) => (
               <button
                 key={provider}
                 onClick={() => setSelectedProvider(provider)}
@@ -202,51 +195,65 @@ export default function FormationsPublicPage() {
             {filteredCourses.map((c) => (
               <div
                 key={c.id}
-                className="bg-[#080d1a] border border-slate-800 hover:border-slate-700 rounded-3xl p-6 flex flex-col justify-between space-y-5 transition-all shadow-xl hover:shadow-cyan-950/20 group"
+                className="bg-[#080d1a] border border-slate-800 hover:border-slate-700 rounded-3xl overflow-hidden flex flex-col justify-between transition-all shadow-xl hover:shadow-cyan-950/20 group"
               >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider bg-blue-600/20 text-cyan-400 border border-blue-500/30 rounded-full">
-                      {c.certification?.fournisseur?.nom || 'Formation IT'}
-                    </span>
-                    {c.dureeEstimee && (
-                      <span className="flex items-center gap-1 text-[11px] text-slate-400 font-bold">
-                        <Clock className="w-3 h-3 text-cyan-400" />
-                        {c.dureeEstimee} min
+                {/* Banner Image */}
+                {c.imageUrl && (
+                  <div className="relative h-44 w-full overflow-hidden bg-slate-900">
+                    <img
+                      src={c.imageUrl}
+                      alt={c.titre}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#080d1a] via-transparent to-transparent opacity-80" />
+                  </div>
+                )}
+
+                <div className="p-6 flex-1 flex flex-col justify-between space-y-5">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider bg-blue-600/20 text-cyan-400 border border-blue-500/30 rounded-full">
+                        {c.certification?.fournisseur?.nom || 'Formation IT'}
                       </span>
+                      {c.dureeEstimee && (
+                        <span className="flex items-center gap-1 text-[11px] text-slate-400 font-bold">
+                          <Clock className="w-3 h-3 text-cyan-400" />
+                          {c.dureeEstimee} min
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 className="text-base font-bold text-white group-hover:text-cyan-400 transition-colors leading-snug">
+                      {c.titre}
+                    </h3>
+
+                    {c.description && (
+                      <p className="text-xs text-slate-400 line-clamp-3 leading-relaxed">
+                        {c.description}
+                      </p>
                     )}
                   </div>
 
-                  <h3 className="text-base font-bold text-white group-hover:text-cyan-400 transition-colors leading-snug">
-                    {c.titre}
-                  </h3>
+                  <div className="pt-4 border-t border-slate-800/80 space-y-4">
+                    <div className="flex items-center justify-between text-xs text-slate-400">
+                      <span className="flex items-center gap-1">
+                        <BookOpen className="w-3.5 h-3.5 text-slate-500" />
+                        {c._count?.modules || 0} modules
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Users className="w-3.5 h-3.5 text-slate-500" />
+                        {c._count?.inscriptions || 0} inscrits
+                      </span>
+                    </div>
 
-                  {c.description && (
-                    <p className="text-xs text-slate-400 line-clamp-3 leading-relaxed">
-                      {c.description}
-                    </p>
-                  )}
-                </div>
-
-                <div className="pt-4 border-t border-slate-800/80 space-y-4">
-                  <div className="flex items-center justify-between text-xs text-slate-400">
-                    <span className="flex items-center gap-1">
-                      <BookOpen className="w-3.5 h-3.5 text-slate-500" />
-                      {c._count?.modules || 0} modules
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Users className="w-3.5 h-3.5 text-slate-500" />
-                      {c._count?.inscriptions || 0} inscrits
-                    </span>
+                    <Link
+                      href="/dashboard/cours"
+                      className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <span>Accéder à la formation</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
                   </div>
-
-                  <Link
-                    href="/dashboard/cours"
-                    className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <span>Accéder à la formation</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
                 </div>
               </div>
             ))}
