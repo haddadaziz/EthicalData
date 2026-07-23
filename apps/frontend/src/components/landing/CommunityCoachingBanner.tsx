@@ -19,7 +19,6 @@ export function CommunityCoachingBanner() {
             {/* Contenu Texte */}
             <div className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/60 border border-cyan-800/50 text-cyan-400 text-xs font-black uppercase tracking-wider">
-                <Zap className="w-3.5 h-3.5" />
                 <span>Accompagnement Sur-Mesure & Entraide</span>
               </div>
 
@@ -62,13 +61,6 @@ export function CommunityCoachingBanner() {
                 >
                   <span>Découvrir l’Accompagnement</span>
                   <ArrowRight className="w-4 h-4" />
-                </Link>
-
-                <Link
-                  href="/register"
-                  className="px-6 py-3 bg-[#080d1a] hover:bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer"
-                >
-                  Créer un compte gratuit
                 </Link>
               </div>
             </div>
