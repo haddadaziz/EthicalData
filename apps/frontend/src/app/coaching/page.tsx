@@ -35,13 +35,6 @@ export default function CoachingPublicPage() {
               <span>Réserver une session de coaching</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
-
-            <Link
-              href="/register"
-              className="px-6 py-3 bg-[#080d1a] hover:bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer"
-            >
-              Créer un compte candidat
-            </Link>
           </div>
         </div>
 
