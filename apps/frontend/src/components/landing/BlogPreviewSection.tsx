@@ -46,7 +46,6 @@ export function BlogPreviewSection() {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 text-left">
           <div className="space-y-3">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-950/60 border border-blue-800/50 text-cyan-400 text-xs font-black uppercase tracking-wider">
-              <BookOpen className="w-3.5 h-3.5" />
               <span>Ressources & Guides IT</span>
             </div>
             <h2 className="text-2xl md:text-4xl font-black text-white tracking-tight">
