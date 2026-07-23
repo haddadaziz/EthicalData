@@ -16,7 +16,6 @@ export default function CoachingPublicPage() {
         {/* HERO SECTION */}
         <div className="text-center max-w-3xl mx-auto space-y-6">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/60 border border-cyan-800/50 text-cyan-400 text-xs font-black uppercase tracking-wider">
-            <Zap className="w-3.5 h-3.5" />
             <span>Accompagnement Individualisé</span>
           </div>
 
@@ -72,9 +71,9 @@ export default function CoachingPublicPage() {
             <div className="w-12 h-12 rounded-2xl bg-amber-600/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
               <Award className="w-6 h-6" />
             </div>
-            <h3 className="text-lg font-bold text-white">Correction & Évaluation par IA Gemini</h3>
+            <h3 className="text-lg font-bold text-white">Plan de Révision & Stratégie d’Examen</h3>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Vos réponses aux questions ouvertes sont évaluées instantanément selon la grille officielle avec une note de 0 à 100 et des conseils d'amélioration.
+              Bénéficiez d’un programme structuré étape par étape, de conseils de gestion du temps et des meilleures pratiques pour aborder sereinement le jour de l’épreuve.
             </p>
           </div>
         </div>
