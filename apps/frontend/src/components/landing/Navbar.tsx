@@ -129,21 +129,25 @@ export function Navbar() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="lg:hidden border-t border-slate-900 bg-[#020617]/95 overflow-hidden"
+            className="lg:hidden border-t border-slate-900 bg-[#020617]/95 backdrop-blur-xl overflow-hidden shadow-2xl"
           >
-            <nav className="flex flex-col p-4 gap-1 text-xs font-black uppercase tracking-widest">
-              <Link href="/formations" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">Formations</Link>
-              <Link href="/certifications" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">Certifications</Link>
-              <Link href="/coaching" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">Coaching</Link>
-              <Link href="/blog" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">Blog</Link>
-              <a href="/#testimonials" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">Avis</a>
-              <a href="/#faq" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">FAQ</a>
-              <a href="/#contact" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/40 rounded-xl">Contact</a>
+            <nav className="flex flex-col p-4 gap-1 text-xs font-black uppercase tracking-widest text-left">
+              <Link href="/formations" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">Formations</Link>
+              <Link href="/certifications" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">Certifications</Link>
+              <Link href="/coaching" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">Coaching</Link>
+              <Link href="/blog" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">Blog</Link>
+              <a href="/#testimonials" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">Avis</a>
+              <a href="/#faq" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">FAQ</a>
+              <a href="/#contact" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">Contact</a>
               
-              {!isConnected && (
-                <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-slate-800">
-                  <a href="/login" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-center text-slate-300 hover:text-white bg-slate-900/50 rounded-xl font-black uppercase tracking-wider">Connexion</a>
-                  <a href="/register" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-center text-white bg-blue-600 hover:bg-blue-700 rounded-xl font-black uppercase tracking-wider">S&apos;inscrire</a>
+              {!isConnected ? (
+                <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-slate-800/80">
+                  <a href="/login" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-center text-slate-300 hover:text-white bg-slate-900/80 border border-slate-800 rounded-xl font-black uppercase tracking-wider">Connexion</a>
+                  <a href="/register" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-center text-white bg-blue-600 hover:bg-blue-500 rounded-xl font-black uppercase tracking-wider shadow-md shadow-blue-600/20">S&apos;inscrire</a>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-slate-800/80">
+                  <a href={isAdmin ? "/admin" : "/dashboard"} onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-center text-white bg-blue-600 hover:bg-blue-500 rounded-xl font-black uppercase tracking-wider shadow-md shadow-blue-600/20">Mon Espace</a>
                 </div>
               )}
             </nav>

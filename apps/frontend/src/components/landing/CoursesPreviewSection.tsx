@@ -62,7 +62,7 @@ export function CoursesPreviewSection() {
 
             <Link
               href="/formations"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#080d1a] hover:bg-slate-900 border border-slate-800 text-cyan-400 hover:text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm shrink-0 cursor-pointer self-start md:self-auto"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#080d1a] hover:bg-slate-900 border border-slate-800 text-cyan-400 hover:text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm shrink-0 cursor-pointer w-full sm:w-auto self-start md:self-auto"
             >
               <span>Voir tout le catalogue</span>
               <ArrowRight className="w-4 h-4" />

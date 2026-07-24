@@ -9,22 +9,22 @@ interface HeroSectionProps {
 
 export function HeroSection({ isConnected, children }: HeroSectionProps) {
   return (
-    <section className="relative min-h-[115vh] lg:min-h-[80vh] flex flex-col justify-between overflow-hidden bg-[#020617] text-white">
+    <section className="relative min-h-screen lg:min-h-[80vh] flex flex-col justify-between overflow-hidden bg-[#020617] text-white">
       {/* Navigation container */}
       <div className="w-full z-50">
         {children}
       </div>
 
       {/* Hero content - Split Screen Grid Layout */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 lg:pt-20 pb-0 lg:pb-20 flex-grow flex flex-col lg:flex-row items-center justify-center gap-12 w-full">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-20 lg:pt-20 pb-12 lg:pb-20 flex-grow flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12 w-full">
         
         {/* Left Side: Headline & CTAs */}
-        <div className="w-full lg:w-7/12 flex flex-col items-center lg:items-start text-center lg:text-left space-y-6 pt-0">
+        <div className="w-full lg:w-7/12 flex flex-col items-center lg:items-start text-center lg:text-left space-y-5 pt-0">
           <motion.h1
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-white uppercase leading-tight md:leading-none drop-shadow-lg"
+            className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-white uppercase leading-tight md:leading-none drop-shadow-lg"
           >
             Ethical Data Security – L&apos;essentiel en un clic !
           </motion.h1>
@@ -42,11 +42,11 @@ export function HeroSection({ isConnected, children }: HeroSectionProps) {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4 w-full sm:w-auto"
+            className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2 w-full sm:w-auto"
           >
             <a
               href={isConnected ? "/dashboard/practice" : "/login"}
-              className="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl transition-all duration-300 flex items-center justify-center gap-2.5 cursor-pointer shadow-lg shadow-blue-600/30 text-sm uppercase tracking-wider hover:scale-105 active:scale-95"
+              className="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl transition-all duration-300 flex items-center justify-center gap-2.5 cursor-pointer shadow-lg shadow-blue-600/30 text-xs sm:text-sm uppercase tracking-wider hover:scale-105 active:scale-95"
             >
               <span>Réserver un diagnostic</span>
               <ArrowRight className="w-4 h-4" />
@@ -55,7 +55,7 @@ export function HeroSection({ isConnected, children }: HeroSectionProps) {
         </div>
 
         {/* Right Side: Simple Cyber Wolf Mascot Card */}
-        <div className="w-full lg:w-5/12 flex items-center justify-center relative select-none mt-auto lg:mt-0 mb-0 pt-24 lg:pt-0">
+        <div className="w-full lg:w-5/12 flex items-center justify-center relative select-none mt-4 lg:mt-0 mb-0 pt-4 lg:pt-0">
           {/* Static design rings */}
           <div className="absolute w-[260px] h-[260px] sm:w-[340px] sm:h-[340px] border border-cyan-500/10 rounded-full" />
           <div className="absolute w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] border border-dashed border-cyan-500/15 rounded-full" />

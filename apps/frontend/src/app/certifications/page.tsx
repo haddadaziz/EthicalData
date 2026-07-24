@@ -198,8 +198,8 @@ export default function CertificationsPublicPage() {
                         </div>
 
                         {/* Filtre Niveau */}
-                        <div className="flex items-center gap-2 w-full md:w-auto">
-                            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 shrink-0 w-[92px] text-right">Niveau :</span>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full md:w-auto">
+                            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 shrink-0 sm:w-[92px] text-left sm:text-right">Niveau :</span>
                             <div className="relative w-full sm:w-52">
                                 <button
                                     type="button"

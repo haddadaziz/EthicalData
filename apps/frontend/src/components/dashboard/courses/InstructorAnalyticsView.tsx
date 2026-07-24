@@ -289,8 +289,8 @@ export function InstructorAnalyticsView() {
             <p className="text-xs font-bold text-slate-400">Aucun apprenant inscrit à afficher.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+          <div className="overflow-x-auto -mx-2 px-2 pb-2">
+            <table className="w-full text-left border-collapse min-w-[650px]">
               <thead>
                 <tr className="border-b border-slate-800 text-[10px] font-black uppercase tracking-wider text-slate-400">
                   <th className="py-3 px-4">Apprenant</th>

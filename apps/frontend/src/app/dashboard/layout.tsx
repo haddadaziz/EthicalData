@@ -263,7 +263,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setSidebarOpen(false)}
-                            className="fixed inset-0 z-45 bg-slate-900/80"
+                            className="fixed inset-0 z-45 bg-slate-950/80 backdrop-blur-sm"
                         />
                         <motion.aside
                             initial={{ x: -280 }}
