@@ -2,9 +2,8 @@
 
 import React, { useRef } from 'react';
 import Link from 'next/link';
-import { useScroll, useTransform } from 'framer-motion';
+import { useScroll, useTransform, motion } from 'framer-motion';
 import { ArrowRight, Clock } from '@/components/icons';
-import { GoogleGeminiEffect } from '@/components/ui/google-gemini-effect';
 
 const BLOG_POSTS = [
   {
@@ -53,29 +52,79 @@ export function BlogPreviewSection() {
   const pathLengthFifth = useTransform(scrollYProgress, [0.05, 0.6], [0.2, 1.2]);
 
   return (
-    <section ref={ref} className="relative z-10 bg-[#020617] border-t border-slate-900">
-      {/* Google Gemini SVG Trace Effect in Background */}
-      <div className="relative w-full">
-        <GoogleGeminiEffect
-          pathLengths={[
-            pathLengthFirst,
-            pathLengthSecond,
-            pathLengthThird,
-            pathLengthFourth,
-            pathLengthFifth,
-          ]}
-          title="Derniers Articles & Astuces de Révision"
-          description="Retrouvez nos conseils d'experts pour préparer vos examens officiels et propulser votre carrière IT."
-        />
+    <section ref={ref} className="relative z-10 bg-[#020617] border-t border-slate-900 py-16 md:py-24 overflow-hidden">
+      
+      {/* Google Gemini SVG Laser Lines Background Layer */}
+      <div className="absolute inset-0 z-0 flex items-center justify-center opacity-35 pointer-events-none">
+        <svg
+          width="100%"
+          height="100%"
+          viewBox="0 0 1440 900"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-full h-full"
+        >
+          <motion.path
+            d="M 100 100 Q 400 300 720 450 T 1340 800"
+            stroke="#2563eb"
+            strokeWidth="3"
+            strokeLinecap="round"
+            style={{ pathLength: pathLengthFirst }}
+          />
+          <motion.path
+            d="M 100 200 Q 500 350 720 450 T 1340 700"
+            stroke="#06b6d4"
+            strokeWidth="3"
+            strokeLinecap="round"
+            style={{ pathLength: pathLengthSecond }}
+          />
+          <motion.path
+            d="M 100 300 Q 600 400 720 450 T 1340 600"
+            stroke="#38bdf8"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            style={{ pathLength: pathLengthThird }}
+          />
+          <motion.path
+            d="M 100 500 Q 700 400 720 450 T 1340 400"
+            stroke="#1d4ed8"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            style={{ pathLength: pathLengthFourth }}
+          />
+          <motion.path
+            d="M 100 600 Q 800 400 720 450 T 1340 300"
+            stroke="#60a5fa"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            style={{ pathLength: pathLengthFifth }}
+          />
+        </svg>
       </div>
 
-      {/* Grid container of Blog Posts */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 pb-16 md:pb-20 relative z-20 mt-2 md:-mt-20">
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-6 md:mb-8 gap-3">
-          <h3 className="text-base sm:text-lg font-black text-white uppercase tracking-wider">Articles populaires</h3>
+      {/* Main Content Container in Natural Document Flow (Zero Overlap Guaranteed) */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6 space-y-10 md:space-y-12">
+        
+        {/* En-tête Principal de Section */}
+        <div className="text-center space-y-3 max-w-3xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-cyan-400">
+              Derniers Articles & Astuces de Révision
+            </span>
+          </h2>
+          <p className="text-xs sm:text-sm md:text-base text-slate-400 font-medium leading-relaxed">
+            Retrouvez nos conseils d'experts pour préparer vos examens officiels et propulser votre carrière IT.
+          </p>
+        </div>
+
+        {/* Sous-Titre "Articles populaires" + Bouton "Voir tous les articles" */}
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 pt-4 border-t border-slate-800/60">
+          <h3 className="text-sm sm:text-lg font-black text-white uppercase tracking-wider text-left">
+            Articles populaires
+          </h3>
           <Link
             href="/blog"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#080d1a] hover:bg-slate-900 border border-slate-800 text-cyan-400 hover:text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm shrink-0 cursor-pointer w-full sm:w-auto"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#080d1a] hover:bg-slate-900 border border-slate-800 text-cyan-400 hover:text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm shrink-0 cursor-pointer w-full sm:w-auto"
           >
             <span>Voir tous les articles</span>
             <ArrowRight className="w-4 h-4" />
@@ -132,6 +181,7 @@ export function BlogPreviewSection() {
             </Link>
           ))}
         </div>
+
       </div>
     </section>
   );
