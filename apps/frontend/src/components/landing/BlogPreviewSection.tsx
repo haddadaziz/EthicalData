@@ -70,12 +70,12 @@ export function BlogPreviewSection() {
       </div>
 
       {/* Grid container of Blog Posts */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 pb-20 relative z-20 -mt-24">
-        <div className="flex justify-between items-center mb-8">
-          <h3 className="text-lg font-black text-white uppercase tracking-wider">Articles populaires</h3>
+      <div className="max-w-7xl mx-auto px-4 md:px-6 pb-16 md:pb-20 relative z-20 mt-2 md:-mt-20">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-6 md:mb-8 gap-3">
+          <h3 className="text-base sm:text-lg font-black text-white uppercase tracking-wider">Articles populaires</h3>
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#080d1a] hover:bg-slate-900 border border-slate-800 text-cyan-400 hover:text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm shrink-0 cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#080d1a] hover:bg-slate-900 border border-slate-800 text-cyan-400 hover:text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm shrink-0 cursor-pointer w-full sm:w-auto"
           >
             <span>Voir tous les articles</span>
             <ArrowRight className="w-4 h-4" />

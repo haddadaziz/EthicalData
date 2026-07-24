@@ -18,7 +18,7 @@ export const GoogleGeminiEffect = ({
   return (
     <div
       className={cn(
-        "relative py-16 md:py-24 w-full flex flex-col items-center justify-center overflow-hidden bg-[#020617] pointer-events-none",
+        "relative py-10 md:py-24 w-full flex flex-col items-center justify-center overflow-hidden bg-[#020617] pointer-events-none",
         className
       )}
     >
@@ -29,11 +29,11 @@ export const GoogleGeminiEffect = ({
           viewBox="0 0 1440 900"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full max-w-7xl"
+          className="w-full h-full"
         >
           <motion.path
-            d="M 100 200 Q 400 50 720 450 T 1340 700"
-            stroke="#06b6d4"
+            d="M 100 100 Q 400 300 720 450 T 1340 800"
+            stroke="#2563eb"
             strokeWidth="3"
             strokeLinecap="round"
             style={{
@@ -41,8 +41,8 @@ export const GoogleGeminiEffect = ({
             }}
           />
           <motion.path
-            d="M 100 300 Q 500 100 720 450 T 1340 600"
-            stroke="#2563eb"
+            d="M 100 200 Q 500 350 720 450 T 1340 700"
+            stroke="#06b6d4"
             strokeWidth="3"
             strokeLinecap="round"
             style={{
@@ -50,18 +50,18 @@ export const GoogleGeminiEffect = ({
             }}
           />
           <motion.path
-            d="M 100 400 Q 600 200 720 450 T 1340 500"
-            stroke="#3b82f6"
-            strokeWidth="3.5"
+            d="M 100 300 Q 600 400 720 450 T 1340 600"
+            stroke="#38bdf8"
+            strokeWidth="2.5"
             strokeLinecap="round"
             style={{
               pathLength: pathLengths[2],
             }}
           />
           <motion.path
-            d="M 100 500 Q 700 300 720 450 T 1340 400"
-            stroke="#06b6d4"
-            strokeWidth="3"
+            d="M 100 500 Q 700 400 720 450 T 1340 400"
+            stroke="#1d4ed8"
+            strokeWidth="2.5"
             strokeLinecap="round"
             style={{
               pathLength: pathLengths[3],
@@ -80,12 +80,12 @@ export const GoogleGeminiEffect = ({
       </div>
 
       <div className="relative z-10 text-center space-y-3 px-4 max-w-3xl">
-        <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
+        <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-cyan-400">
             {title}
           </span>
         </h2>
-        <p className="text-sm md:text-base text-slate-400 font-medium">
+        <p className="text-xs sm:text-sm md:text-base text-slate-400 font-medium leading-relaxed">
           {description}
         </p>
       </div>
