@@ -45,76 +45,77 @@ export function BlogPreviewSection() {
     offset: ["start end", "end start"],
   });
 
-  const pathLengthFirst = useTransform(scrollYProgress, [0.05, 0.6], [0, 1.2]);
-  const pathLengthSecond = useTransform(scrollYProgress, [0.05, 0.6], [0.05, 1.2]);
-  const pathLengthThird = useTransform(scrollYProgress, [0.05, 0.6], [0.1, 1.2]);
-  const pathLengthFourth = useTransform(scrollYProgress, [0.05, 0.6], [0.15, 1.2]);
-  const pathLengthFifth = useTransform(scrollYProgress, [0.05, 0.6], [0.2, 1.2]);
+  const pathLengthFirst = useTransform(scrollYProgress, [0, 0.5], [0, 1.2]);
+  const pathLengthSecond = useTransform(scrollYProgress, [0, 0.5], [0.05, 1.2]);
+  const pathLengthThird = useTransform(scrollYProgress, [0, 0.5], [0.1, 1.2]);
+  const pathLengthFourth = useTransform(scrollYProgress, [0, 0.5], [0.15, 1.2]);
+  const pathLengthFifth = useTransform(scrollYProgress, [0, 0.5], [0.2, 1.2]);
 
   return (
     <section ref={ref} className="relative z-10 bg-[#020617] border-t border-slate-900 py-16 md:py-24 overflow-hidden">
-      
-      {/* Google Gemini SVG Laser Lines Background Layer */}
-      <div className="absolute inset-0 z-0 flex items-center justify-center opacity-35 pointer-events-none">
-        <svg
-          width="100%"
-          height="100%"
-          viewBox="0 0 1440 900"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full"
-        >
-          <motion.path
-            d="M 100 100 Q 400 300 720 450 T 1340 800"
-            stroke="#2563eb"
-            strokeWidth="3"
-            strokeLinecap="round"
-            style={{ pathLength: pathLengthFirst }}
-          />
-          <motion.path
-            d="M 100 200 Q 500 350 720 450 T 1340 700"
-            stroke="#06b6d4"
-            strokeWidth="3"
-            strokeLinecap="round"
-            style={{ pathLength: pathLengthSecond }}
-          />
-          <motion.path
-            d="M 100 300 Q 600 400 720 450 T 1340 600"
-            stroke="#38bdf8"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            style={{ pathLength: pathLengthThird }}
-          />
-          <motion.path
-            d="M 100 500 Q 700 400 720 450 T 1340 400"
-            stroke="#1d4ed8"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            style={{ pathLength: pathLengthFourth }}
-          />
-          <motion.path
-            d="M 100 600 Q 800 400 720 450 T 1340 300"
-            stroke="#60a5fa"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            style={{ pathLength: pathLengthFifth }}
-          />
-        </svg>
-      </div>
-
-      {/* Main Content Container in Natural Document Flow (Zero Overlap Guaranteed) */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6 space-y-10 md:space-y-12">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 space-y-10 md:space-y-12 relative z-10">
         
-        {/* En-tête Principal de Section */}
-        <div className="text-center space-y-3 max-w-3xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-cyan-400">
-              Derniers Articles & Astuces de Révision
-            </span>
-          </h2>
-          <p className="text-xs sm:text-sm md:text-base text-slate-400 font-medium leading-relaxed">
-            Retrouvez nos conseils d'experts pour préparer vos examens officiels et propulser votre carrière IT.
-          </p>
+        {/* Header Block with Google Gemini SVG Laser Trace directly behind Title */}
+        <div className="relative py-12 px-6 rounded-3xl overflow-hidden bg-[#080d1a]/60 border border-slate-800/80 shadow-2xl max-w-4xl mx-auto text-center space-y-3">
+          
+          {/* Focused SVG Laser Animation Layer */}
+          <div className="absolute inset-0 z-0 flex items-center justify-center opacity-70 pointer-events-none">
+            <svg
+              width="100%"
+              height="100%"
+              viewBox="0 0 1000 300"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-full h-full"
+            >
+              <motion.path
+                d="M 50 30 Q 300 140 500 150 T 950 270"
+                stroke="#2563eb"
+                strokeWidth="3.5"
+                strokeLinecap="round"
+                style={{ pathLength: pathLengthFirst }}
+              />
+              <motion.path
+                d="M 50 80 Q 350 160 500 150 T 950 220"
+                stroke="#06b6d4"
+                strokeWidth="3.5"
+                strokeLinecap="round"
+                style={{ pathLength: pathLengthSecond }}
+              />
+              <motion.path
+                d="M 50 130 Q 400 180 500 150 T 950 170"
+                stroke="#38bdf8"
+                strokeWidth="3"
+                strokeLinecap="round"
+                style={{ pathLength: pathLengthThird }}
+              />
+              <motion.path
+                d="M 50 180 Q 450 160 500 150 T 950 120"
+                stroke="#1d4ed8"
+                strokeWidth="3"
+                strokeLinecap="round"
+                style={{ pathLength: pathLengthFourth }}
+              />
+              <motion.path
+                d="M 50 230 Q 500 140 500 150 T 950 70"
+                stroke="#60a5fa"
+                strokeWidth="3"
+                strokeLinecap="round"
+                style={{ pathLength: pathLengthFifth }}
+              />
+            </svg>
+          </div>
+
+          <div className="relative z-10 space-y-3">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight leading-tight">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-cyan-400">
+                Derniers Articles & Astuces de Révision
+              </span>
+            </h2>
+            <p className="text-xs sm:text-sm md:text-base text-slate-300 font-medium leading-relaxed max-w-2xl mx-auto">
+              Retrouvez nos conseils d'experts pour préparer vos examens officiels et propulser votre carrière IT.
+            </p>
+          </div>
         </div>
 
         {/* Sous-Titre "Articles populaires" + Bouton "Voir tous les articles" */}

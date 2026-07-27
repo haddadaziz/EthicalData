@@ -550,7 +550,7 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                             </div>
 
                             <div className="space-y-1.5">
-                                <label className="text-xs font-black text-slate-300">Description du cours (Éditeur Enrichi) *</label>
+                                <label className="text-xs font-black text-slate-300">Description du cours *</label>
                                 <RichTextEditor
                                     value={courseDescription}
                                     onChange={setCourseDescription}
@@ -827,7 +827,7 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                                 placeholder="Titre du module"
                                                 className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 rounded-xl text-xs font-semibold text-white outline-none" />
                                             <div className="space-y-1">
-                                                <label className="text-[11px] font-bold text-slate-300">Contenu du module (Éditeur Enrichi)</label>
+                                                <label className="text-[11px] font-bold text-slate-300">Contenu du module</label>
                                                 <RichTextEditor
                                                     value={moduleForm.contenu || ''}
                                                     onChange={(val) => setModuleForm(p => ({ ...p, contenu: val }))}
