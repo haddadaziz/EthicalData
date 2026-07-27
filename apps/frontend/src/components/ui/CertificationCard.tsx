@@ -53,8 +53,8 @@ export const CertificationCard = ({
             </div>
           </div>
 
-          {/* Certification Badge Logo */}
-          <div className="absolute bottom-28 left-1/2 z-20 w-32 -translate-x-1/2">
+          {/* Certification Badge Logo (Relevé légèrement plus haut) */}
+          <div className="absolute bottom-34 left-1/2 z-20 w-32 -translate-x-1/2">
             <div className="flex justify-center w-full">
               {logo ? (
                 <img
@@ -72,8 +72,8 @@ export const CertificationCard = ({
             </div>
           </div>
 
-          {/* Content / Title Area (Laisse le titre à sa place en bas) */}
-          <div className="absolute bottom-0 left-0 w-full p-5 z-40 bg-gradient-to-t from-[#02050f]/60 via-[#02050f]/30 to-transparent pt-10">
+          {/* Content / Title Area (Relevé légèrement plus haut pour laisser respirer le bas du cadre) */}
+          <div className="absolute bottom-3 left-0 w-full px-5 pb-3 z-40 bg-gradient-to-t from-[#02050f]/60 via-[#02050f]/30 to-transparent pt-8">
             <h3 className="text-sm md:text-base font-bold text-white group-hover/glare:text-cyan-300 leading-snug line-clamp-2 transition-colors duration-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
               {cleanTitle(nom, codeExamen || "")}
             </h3>
