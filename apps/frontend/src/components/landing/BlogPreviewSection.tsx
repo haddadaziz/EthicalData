@@ -2,8 +2,9 @@
 
 import React, { useRef } from 'react';
 import Link from 'next/link';
-import { useScroll, useTransform, motion } from 'framer-motion';
+import { useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Clock } from '@/components/icons';
+import { GoogleGeminiEffect } from '@/components/ui/google-gemini-effect';
 
 const BLOG_POSTS = [
   {
@@ -45,81 +46,34 @@ export function BlogPreviewSection() {
     offset: ["start end", "end start"],
   });
 
-  const pathLengthFirst = useTransform(scrollYProgress, [0, 0.5], [0, 1.2]);
-  const pathLengthSecond = useTransform(scrollYProgress, [0, 0.5], [0.05, 1.2]);
-  const pathLengthThird = useTransform(scrollYProgress, [0, 0.5], [0.1, 1.2]);
-  const pathLengthFourth = useTransform(scrollYProgress, [0, 0.5], [0.15, 1.2]);
-  const pathLengthFifth = useTransform(scrollYProgress, [0, 0.5], [0.2, 1.2]);
+  const pathLengthFirst = useTransform(scrollYProgress, [0.05, 0.55], [0, 1.2]);
+  const pathLengthSecond = useTransform(scrollYProgress, [0.05, 0.55], [0.05, 1.2]);
+  const pathLengthThird = useTransform(scrollYProgress, [0.05, 0.55], [0.1, 1.2]);
+  const pathLengthFourth = useTransform(scrollYProgress, [0.05, 0.55], [0.15, 1.2]);
+  const pathLengthFifth = useTransform(scrollYProgress, [0.05, 0.55], [0.2, 1.2]);
 
   return (
     <section ref={ref} className="relative z-10 bg-[#020617] border-t border-slate-900 py-16 md:py-24 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 space-y-10 md:space-y-12 relative z-10">
+      
+      {/* Header with Google Gemini Effect floating directly behind Title */}
+      <div className="relative w-full mb-10">
+        <GoogleGeminiEffect
+          pathLengths={[
+            pathLengthFirst,
+            pathLengthSecond,
+            pathLengthThird,
+            pathLengthFourth,
+            pathLengthFifth,
+          ]}
+          title="Derniers Articles & Astuces de Révision"
+          description="Retrouvez nos conseils d'experts pour préparer vos examens officiels et propulser votre carrière IT."
+        />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10 space-y-8">
         
-        {/* Header Block with Floating Google Gemini SVG Laser Trace (No Card Div Background) */}
-        <div className="relative py-10 px-4 max-w-4xl mx-auto text-center space-y-3">
-          
-          {/* Focused SVG Laser Animation Layer */}
-          <div className="absolute inset-0 z-0 flex items-center justify-center opacity-85 pointer-events-none">
-            <svg
-              width="100%"
-              height="100%"
-              viewBox="0 0 1000 260"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-full h-full"
-            >
-              <motion.path
-                d="M 50 30 Q 300 130 500 130 T 950 230"
-                stroke="#2563eb"
-                strokeWidth="4"
-                strokeLinecap="round"
-                style={{ pathLength: pathLengthFirst }}
-              />
-              <motion.path
-                d="M 50 70 Q 350 140 500 130 T 950 190"
-                stroke="#06b6d4"
-                strokeWidth="4"
-                strokeLinecap="round"
-                style={{ pathLength: pathLengthSecond }}
-              />
-              <motion.path
-                d="M 50 110 Q 400 150 500 130 T 950 150"
-                stroke="#38bdf8"
-                strokeWidth="3.5"
-                strokeLinecap="round"
-                style={{ pathLength: pathLengthThird }}
-              />
-              <motion.path
-                d="M 50 150 Q 450 140 500 130 T 950 110"
-                stroke="#1d4ed8"
-                strokeWidth="3.5"
-                strokeLinecap="round"
-                style={{ pathLength: pathLengthFourth }}
-              />
-              <motion.path
-                d="M 50 190 Q 500 130 500 130 T 950 60"
-                stroke="#60a5fa"
-                strokeWidth="3.5"
-                strokeLinecap="round"
-                style={{ pathLength: pathLengthFifth }}
-              />
-            </svg>
-          </div>
-
-          <div className="relative z-10 space-y-3">
-            <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-cyan-400">
-                Derniers Articles & Astuces de Révision
-              </span>
-            </h2>
-            <p className="text-xs sm:text-sm md:text-base text-slate-300 font-medium leading-relaxed max-w-2xl mx-auto">
-              Retrouvez nos conseils d'experts pour préparer vos examens officiels et propulser votre carrière IT.
-            </p>
-          </div>
-        </div>
-
         {/* Sous-Titre "Articles populaires" + Bouton "Voir tous les articles" */}
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 pt-4 border-t border-slate-800/60">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-t border-slate-800/60 pt-6">
           <h3 className="text-sm sm:text-lg font-black text-white uppercase tracking-wider text-left">
             Articles populaires
           </h3>

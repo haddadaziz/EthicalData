@@ -5,36 +5,22 @@ import { cn } from "@/lib/utils";
 
 interface NeuralBackgroundProps {
   className?: string;
-  /**
-   * Color of the particles. 
-   * Defaults to a cyan/indigo mix if not specified.
-   */
   color?: string;
-  /**
-   * The opacity of the trails (0.0 to 1.0).
-   * Lower = longer trails. Higher = shorter trails.
-   * Default: 0.15
-   */
   trailOpacity?: number;
-  /**
-   * Number of particles. Default: 600
-   */
   particleCount?: number;
-  /**
-   * Speed multiplier. Default: 1
-   */
   speed?: number;
 }
 
 export default function NeuralBackground({
   className,
-  color = "#06b6d4", // Cyan Fluo default matching theme
-  trailOpacity = 0.15,
-  particleCount = 500,
+  color = "#06b6d4",
+  trailOpacity = 0.18,
+  particleCount = 220, // Optimized count for 60 FPS GPU smoothness
   speed = 1,
 }: NeuralBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const isVisibleRef = useRef<boolean>(true);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -50,6 +36,20 @@ export default function NeuralBackground({
     let animationFrameId: number;
     let mouse = { x: -1000, y: -1000 };
 
+    // IntersectionObserver to pause canvas animation loop when off-screen (0% CPU/GPU waste)
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          isVisibleRef.current = entry.isIntersecting;
+          if (entry.isIntersecting && !animationFrameId) {
+            animate();
+          }
+        });
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(container);
+
     class Particle {
       x: number;
       y: number;
@@ -64,30 +64,30 @@ export default function NeuralBackground({
         this.vx = 0;
         this.vy = 0;
         this.age = 0;
-        this.life = Math.random() * 200 + 100; 
+        this.life = Math.random() * 180 + 90; 
       }
 
       update() {
         const angle = (Math.cos(this.x * 0.005) + Math.sin(this.y * 0.005)) * Math.PI;
         
-        this.vx += Math.cos(angle) * 0.2 * speed;
-        this.vy += Math.sin(angle) * 0.2 * speed;
+        this.vx += Math.cos(angle) * 0.18 * speed;
+        this.vy += Math.sin(angle) * 0.18 * speed;
 
         const dx = mouse.x - this.x;
         const dy = mouse.y - this.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        const interactionRadius = 150;
+        const interactionRadius = 140;
 
         if (distance < interactionRadius) {
           const force = (interactionRadius - distance) / interactionRadius;
-          this.vx -= dx * force * 0.05;
-          this.vy -= dy * force * 0.05;
+          this.vx -= dx * force * 0.04;
+          this.vy -= dy * force * 0.04;
         }
 
         this.x += this.vx;
         this.y += this.vy;
-        this.vx *= 0.95;
-        this.vy *= 0.95;
+        this.vx *= 0.94;
+        this.vy *= 0.94;
 
         this.age++;
         if (this.age > this.life) {
@@ -106,7 +106,7 @@ export default function NeuralBackground({
         this.vx = 0;
         this.vy = 0;
         this.age = 0;
-        this.life = Math.random() * 200 + 100;
+        this.life = Math.random() * 180 + 90;
       }
 
       draw(context: CanvasRenderingContext2D) {
@@ -118,7 +118,7 @@ export default function NeuralBackground({
     }
 
     const init = () => {
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = width * dpr;
       canvas.height = height * dpr;
       ctx.scale(dpr, dpr);
@@ -132,6 +132,11 @@ export default function NeuralBackground({
     };
 
     const animate = () => {
+      if (!isVisibleRef.current) {
+        animationFrameId = 0;
+        return;
+      }
+
       ctx.fillStyle = `rgba(2, 6, 23, ${trailOpacity})`; 
       ctx.fillRect(0, 0, width, height);
 
@@ -150,10 +155,15 @@ export default function NeuralBackground({
       init();
     };
 
+    let rAFMouse: number | null = null;
     const handleMouseMove = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      mouse.x = e.clientX - rect.left;
-      mouse.y = e.clientY - rect.top;
+      if (rAFMouse) return;
+      rAFMouse = requestAnimationFrame(() => {
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+        rAFMouse = null;
+      });
     };
 
     const handleMouseLeave = () => {
@@ -164,15 +174,16 @@ export default function NeuralBackground({
     init();
     animate();
 
-    window.addEventListener("resize", handleResize);
-    container.addEventListener("mousemove", handleMouseMove);
-    container.addEventListener("mouseleave", handleMouseLeave);
+    window.addEventListener("resize", handleResize, { passive: true });
+    container.addEventListener("mousemove", handleMouseMove, { passive: true });
+    container.addEventListener("mouseleave", handleMouseLeave, { passive: true });
 
     return () => {
+      observer.disconnect();
       window.removeEventListener("resize", handleResize);
       container.removeEventListener("mousemove", handleMouseMove);
       container.removeEventListener("mouseleave", handleMouseLeave);
-      cancelAnimationFrame(animationFrameId);
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };
   }, [color, trailOpacity, particleCount, speed]);
 
