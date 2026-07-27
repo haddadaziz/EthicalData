@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { apiFetch } from '@/lib/api';
 import { Award, BookOpen, BookMarked, Clock, FileText, FilePen, Globe, Plus, Trash2, ChevronDown, ChevronUp, ChevronLeft, Upload, Link, FilePlus, Send, Save, X, Layers, PlusCircle, AlertTriangle, Crop, Play, HelpCircle, CheckCircle, AlertCircle } from '@/components/icons';
+import { RichTextEditor } from '@/components/ui/RichTextEditor';
 
 // ... (keep rest of types)
 
@@ -82,6 +83,7 @@ type SectionId = 'ACCUEIL' | 'PARTICIPANTS' | 'MODULES' | 'SIMULATION';
 
 export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, onSaveDraft, onPublish }: CourseEditorProps) {
     const [activeSection, setActiveSection] = useState<SectionId>('ACCUEIL');
+    const [courseDescription, setCourseDescription] = useState<string>(editingCours?.description || '');
     const [saving, setSaving] = useState(false);
     const [hasChanges, setHasChanges] = useState(false);
     const [exitAction, setExitAction] = useState<'prompt' | 'save' | 'discard' | null>(null);
@@ -370,11 +372,6 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
             } catch { /* pas de simulation */ }
             finally { setSimLoading(false); }
         })();
-    }, [coursId]);
-
-    useEffect(() => {
-      document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = ''; };
     }, []);
 
     const collectFormData = () => {
@@ -382,7 +379,7 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
         const fd = new FormData(formRef.current);
         return {
             titre: (fd.get('titre') as string) || '',
-            description: (fd.get('description') as string) || '',
+            description: courseDescription || (fd.get('description') as string) || '',
             imageUrl: croppedImage || undefined,
             videoUrl: (fd.get('videoUrl') as string) || undefined,
             dureeEstimee: Number(fd.get('dureeEstimee') || 60),
@@ -552,12 +549,14 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                 </div>
                             </div>
 
-                            <div className="space-y-1">
-                                <label className="text-xs font-black text-slate-300">Description *</label>
-                                <textarea rows={4} name="description" required
-                                    defaultValue={editingCours?.description}
-                                    placeholder="Décrivez les objectifs généraux de ce cours..."
-                                    className="w-full px-4 py-2.5 bg-[#080d1a] border border-slate-800 focus:border-blue-600 text-white rounded-xl text-xs font-semibold outline-none resize-none transition-all" />
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-black text-slate-300">Description du cours (Éditeur Enrichi) *</label>
+                                <RichTextEditor
+                                    value={courseDescription}
+                                    onChange={setCourseDescription}
+                                    placeholder="Rédigez une présentation professionnelle et complète de votre cours..."
+                                    minHeight="140px"
+                                />
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -827,10 +826,15 @@ export function CourseEditor({ certs, editingCours, onClose, showToast, onSave, 
                                                 onChange={e => setModuleForm(p => ({ ...p, titre: e.target.value }))}
                                                 placeholder="Titre du module"
                                                 className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 rounded-xl text-xs font-semibold text-white outline-none" />
-                                            <textarea rows={4} value={moduleForm.contenu}
-                                                onChange={e => setModuleForm(p => ({ ...p, contenu: e.target.value }))}
-                                                placeholder="Contenu du module (markdown ou texte)"
-                                                className="w-full px-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-blue-600 rounded-xl text-xs font-semibold text-white outline-none resize-none" />
+                                            <div className="space-y-1">
+                                                <label className="text-[11px] font-bold text-slate-300">Contenu du module (Éditeur Enrichi)</label>
+                                                <RichTextEditor
+                                                    value={moduleForm.contenu || ''}
+                                                    onChange={(val) => setModuleForm(p => ({ ...p, contenu: val }))}
+                                                    placeholder="Structurez votre cours : titres H1/H2, texte gras/italique, puces, extraits de code, liens..."
+                                                    minHeight="180px"
+                                                />
+                                            </div>
                                             <input type="number" value={moduleForm.dureeEstimee}
                                                 onChange={e => setModuleForm(p => ({ ...p, dureeEstimee: Number(e.target.value) }))}
                                                 placeholder="Durée estimée (minutes)" min={1}
