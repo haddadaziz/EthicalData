@@ -55,51 +55,51 @@ export function BlogPreviewSection() {
     <section ref={ref} className="relative z-10 bg-[#020617] border-t border-slate-900 py-16 md:py-24 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 md:px-6 space-y-10 md:space-y-12 relative z-10">
         
-        {/* Header Block with Google Gemini SVG Laser Trace directly behind Title */}
-        <div className="relative py-12 px-6 rounded-3xl overflow-hidden bg-[#080d1a]/60 border border-slate-800/80 shadow-2xl max-w-4xl mx-auto text-center space-y-3">
+        {/* Header Block with Floating Google Gemini SVG Laser Trace (No Card Div Background) */}
+        <div className="relative py-10 px-4 max-w-4xl mx-auto text-center space-y-3">
           
           {/* Focused SVG Laser Animation Layer */}
-          <div className="absolute inset-0 z-0 flex items-center justify-center opacity-70 pointer-events-none">
+          <div className="absolute inset-0 z-0 flex items-center justify-center opacity-85 pointer-events-none">
             <svg
               width="100%"
               height="100%"
-              viewBox="0 0 1000 300"
+              viewBox="0 0 1000 260"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
               className="w-full h-full"
             >
               <motion.path
-                d="M 50 30 Q 300 140 500 150 T 950 270"
+                d="M 50 30 Q 300 130 500 130 T 950 230"
                 stroke="#2563eb"
-                strokeWidth="3.5"
+                strokeWidth="4"
                 strokeLinecap="round"
                 style={{ pathLength: pathLengthFirst }}
               />
               <motion.path
-                d="M 50 80 Q 350 160 500 150 T 950 220"
+                d="M 50 70 Q 350 140 500 130 T 950 190"
                 stroke="#06b6d4"
-                strokeWidth="3.5"
+                strokeWidth="4"
                 strokeLinecap="round"
                 style={{ pathLength: pathLengthSecond }}
               />
               <motion.path
-                d="M 50 130 Q 400 180 500 150 T 950 170"
+                d="M 50 110 Q 400 150 500 130 T 950 150"
                 stroke="#38bdf8"
-                strokeWidth="3"
+                strokeWidth="3.5"
                 strokeLinecap="round"
                 style={{ pathLength: pathLengthThird }}
               />
               <motion.path
-                d="M 50 180 Q 450 160 500 150 T 950 120"
+                d="M 50 150 Q 450 140 500 130 T 950 110"
                 stroke="#1d4ed8"
-                strokeWidth="3"
+                strokeWidth="3.5"
                 strokeLinecap="round"
                 style={{ pathLength: pathLengthFourth }}
               />
               <motion.path
-                d="M 50 230 Q 500 140 500 150 T 950 70"
+                d="M 50 190 Q 500 130 500 130 T 950 60"
                 stroke="#60a5fa"
-                strokeWidth="3"
+                strokeWidth="3.5"
                 strokeLinecap="round"
                 style={{ pathLength: pathLengthFifth }}
               />
@@ -107,7 +107,7 @@ export function BlogPreviewSection() {
           </div>
 
           <div className="relative z-10 space-y-3">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-cyan-400">
                 Derniers Articles & Astuces de Révision
               </span>
