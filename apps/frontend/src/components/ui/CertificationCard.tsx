@@ -72,8 +72,8 @@ export const CertificationCard = ({
             </div>
           </div>
 
-          {/* Content / Title Area (Relevé plus haut selon souhait utilisateur) */}
-          <div className="absolute bottom-14 left-0 w-full px-5 z-40 bg-gradient-to-t from-[#02050f]/60 via-[#02050f]/30 to-transparent pt-6">
+          {/* Content / Title Area (Relevé encore plus haut à bottom-20) */}
+          <div className="absolute bottom-20 left-0 w-full px-5 z-40 bg-gradient-to-t from-[#02050f]/60 via-[#02050f]/30 to-transparent pt-6">
             <h3 className="text-sm md:text-base font-bold text-white group-hover/glare:text-cyan-300 leading-snug line-clamp-2 transition-colors duration-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
               {cleanTitle(nom, codeExamen || "")}
             </h3>
