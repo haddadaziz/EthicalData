@@ -6,18 +6,18 @@ import { apiFetch } from '../lib/api';
 
 import { Navbar } from '@/components/landing/Navbar';
 import { HeroSection } from '@/components/landing/HeroSection';
-import { ClientsSection } from '@/components/landing/ClientsSection';
+import { PartnersSection } from '@/components/landing/PartnersSection';
 import { AboutSection } from '@/components/landing/AboutSection';
+import { ServicesSection } from '@/components/landing/ServicesSection';
+import { ClientsSection } from '@/components/landing/ClientsSection';
 import { CertificationsSection } from '@/components/landing/CertificationsSection';
 import { CoursesPreviewSection } from '@/components/landing/CoursesPreviewSection';
-import { ServicesSection } from '@/components/landing/ServicesSection';
-import { TestimonialsSection } from '@/components/landing/TestimonialsSection';
-import { BlogPreviewSection } from '@/components/landing/BlogPreviewSection';
 import { CommunityCoachingBanner } from '@/components/landing/CommunityCoachingBanner';
-import { PartnersSection } from '@/components/landing/PartnersSection';
+import { OpenSessionsSection } from '@/components/landing/OpenSessionsSection';
+import { BlogPreviewSection } from '@/components/landing/BlogPreviewSection';
+import { TestimonialsSection } from '@/components/landing/TestimonialsSection';
 import { FaqSection } from '@/components/landing/FaqSection';
 import { ContactSection } from '@/components/landing/ContactSection';
-
 
 const cleanTitle = (nom: string, code: string) => {
   if (!code || !nom) return nom;
@@ -72,9 +72,6 @@ export default function LandingPage() {
   const [isConnected, setIsConnected] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [mounted, setMounted] = useState(false);
-
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
   const [realCertifications, setRealCertifications] = useState<any[]>([]);
 
   useEffect(() => {
@@ -100,30 +97,58 @@ export default function LandingPage() {
 
   return (
     <main className="min-h-screen bg-[#020617] text-white relative overflow-hidden font-sans selection:bg-cyan-600 selection:text-white">
-      {/* Fine background grid lines - Fixed to viewport for performance */}
+      {/* Fine background grid lines */}
       <div className="fixed inset-0 bg-[linear-gradient(to_right,#ffffff02_1px,transparent_1px),linear-gradient(to_bottom,#ffffff02_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none z-0" />
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(37,99,235,0.05)_0%,transparent_70%)] pointer-events-none z-0" />
 
+      {/* ========================================================================= */}
+      {/* 3.1 Société EDS & expertise infra/cybersécurité (haut de page)           */}
+      {/* ========================================================================= */}
+      
+      {/* • Hero repris de l'ancien site + Mascotte Cyber Wolf conservée */}
       <HeroSection isConnected={isConnected}>
         <Navbar />
       </HeroSection>
 
-      <ClientsSection />
+      {/* • Bandeau logos partenaires certifiants (Pearson VUE, PECB, Palo Alto, Fortinet, CompTIA) */}
+      <PartnersSection />
+
+      {/* • Section « Qui sommes-nous » + 4 chiffres clés animés au scroll */}
       <AboutSection />
-      
+
+      {/* • Bloc « Notre priorité » à 4 cartes : Mission, Expérience, Certification, Solution IT */}
+      <ServicesSection />
+
+      {/* • Logos clients en appui de crédibilité (AXA, TCS, CTM, Adaptive IT, Dataprotect, UM6SS...) */}
+      <ClientsSection />
+
+      {/* ========================================================================= */}
+      {/* 3.2 Formation & Certification (milieu de page)                           */}
+      {/* ========================================================================= */}
+
+      {/* • Catalogue de formations (e-learning / visioconférence) & Lien Tous les certificats */}
       <CertificationsSection 
         realCertifications={realCertifications} 
         courses={courses} 
         cleanTitle={cleanTitle} 
       />
-      
       <CoursesPreviewSection />
-      
-      <ServicesSection />
-      <TestimonialsSection />
-      <BlogPreviewSection />
+
+      {/* • Examens blancs, Vouchers d'examen, Accès espace membres / coaching 1-on-1 */}
       <CommunityCoachingBanner />
-      <PartnersSection />
+
+      {/* ========================================================================= */}
+      {/* 3.3 Sessions ouvertes & Actualités (bas de page)                         */}
+      {/* ========================================================================= */}
+
+      {/* • Sessions de formation ouvertes en cartes visuelles (dates, places restantes, inscription) */}
+      <OpenSessionsSection />
+
+      {/* • Bloc Actualités reprenant les derniers articles de blog */}
+      <BlogPreviewSection />
+
+      {/* • Avis clients en carrousel visuel, FAQ et formulaire de contact repositionnés en fin de page */}
+      <TestimonialsSection />
       <FaqSection />
       <ContactSection />
 

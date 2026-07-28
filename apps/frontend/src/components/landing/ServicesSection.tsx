@@ -1,18 +1,33 @@
 import React from 'react';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
+import { ShieldCheck, Award, Cpu, Target } from '@/components/icons';
 
 export function ServicesSection() {
-  const services = [
-    { title: "Services IT", desc: "Nous vous accompagnons dans la mise en place, l'évolution et la sécurisation de votre infrastructure IT. Notre objectif est de garantir à votre entreprise performance, fiabilité et continuité, tout en assurant un haut niveau de disponibilité et de sécurité pour vos systèmes." },
-    { title: "Certification", desc: "Boostez votre carrière grâce à nos certifications professionnelles reconnues. Elles vous permettent de valider vos compétences, d'accroître votre crédibilité sur le marché de l'emploi et de répondre aux exigences actuelles des entreprises en matière de qualité et d'expertise métier." },
-    { title: "Formation", desc: "Nous proposons des formations spécialisées en IT et autres domaines clés. Adaptées aux professionnels et particuliers, elles visent à développer vos compétences, vous tenir à jour avec les nouvelles technologies, et répondre concrètement à vos objectifs de carrière ou d'entreprise." },
-    { title: "Infogérance", desc: "Confiez-nous la gestion de votre système d'information. Nous assurons la maintenance, la supervision, la sécurité et le bon fonctionnement de vos infrastructures IT, sur site ou à distance, pour vous permettre de rester concentré sur votre cœur de métier, en toute sérénité." },
-    { title: "Intégration", desc: "Nous vous aidons à intégrer des solutions technologiques sur mesure, compatibles avec votre environnement IT. Notre expertise vous permet de réussir votre transformation digitale en assurant la cohérence, la performance et l'optimisation de l'ensemble de votre système d'information." },
-    { title: "Services professionnels", desc: "Nos experts interviennent pour des missions de conseil, d'audit et de déploiement IT. Grâce à une approche sur mesure, nous vous apportons un accompagnement stratégique et opérationnel pour relever vos défis technologiques et garantir la réussite de vos projets." }
+  const priorities = [
+    {
+      icon: Target,
+      title: "Mission",
+      desc: "Accompagner la transformation digitale et assurer la continuité opérationnelle ainsi que la sécurité maximale de vos infrastructures IT."
+    },
+    {
+      icon: ShieldCheck,
+      title: "Expérience",
+      desc: "Une expertise éprouvée et des interventions sur-mesure réalisées par des auditeurs et ingénieurs seniors certifiés dans leurs domaines."
+    },
+    {
+      icon: Award,
+      title: "Certification",
+      desc: "Des cursus de formation officiels et qualifiants permettant de valider vos compétences IT avec des vouchers d'examen officiels."
+    },
+    {
+      icon: Cpu,
+      title: "Solution IT",
+      desc: "Déploiement d'architectures Cloud, infogérance proactive, intégration de systèmes et solutions de cybersécurité de pointe."
+    }
   ];
 
   return (
-    <section id="services" className="relative z-10 w-full py-20 overflow-hidden border-t border-slate-900 bg-[#020617]">
+    <section id="priorite" className="relative z-10 w-full py-20 overflow-hidden border-t border-slate-900 bg-[#020617]">
       
       <div className="absolute inset-0 z-0 pointer-events-none" style={{ contentVisibility: 'auto' }}>
         <img 
@@ -21,7 +36,6 @@ export function ServicesSection() {
           className="w-full h-full object-cover opacity-40 transform-gpu" 
           loading="lazy"
           decoding="async"
-          fetchPriority="low"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#020617] via-transparent to-[#020617]" />
       </div>
@@ -31,28 +45,30 @@ export function ServicesSection() {
         <AnimatedSection className="text-center max-w-2xl mx-auto mb-16">
           <div className="flex items-center justify-center gap-4 mb-4">
             <span className="w-10 h-[2px] bg-blue-600 rounded-full" />
-            <span className="text-sm font-black text-cyan-400 uppercase tracking-[0.2em]">Notre Expertise</span>
+            <span className="text-sm font-black text-cyan-400 uppercase tracking-[0.2em]">Engagements & Piliers</span>
             <span className="w-10 h-[2px] bg-blue-600 rounded-full" />
           </div>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white uppercase tracking-tighter">Nos Prestations</h2>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white uppercase tracking-tighter">Notre Priorité</h2>
         </AnimatedSection>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {services.map((srv, i) => (
-              <div key={i} className="group relative bg-[#0a0f1d]/60 border border-slate-900 hover:border-blue-900/50 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1">
-                <div className="flex items-start gap-4 mb-4">
-                  <span className="text-3xl font-black text-cyan-400/30 group-hover:text-cyan-400 transition-colors duration-500 leading-none mt-1">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <h3 className="text-lg font-bold text-white group-hover:text-cyan-300 transition-colors duration-300 leading-tight">
-                    {srv.title}
-                  </h3>
+        {/* Bloc Notre priorité à 4 cartes */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {priorities.map((item, i) => {
+            const Icon = item.icon;
+            return (
+              <div key={i} className="group relative bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-cyan-500/50 rounded-3xl p-6 transition-all duration-300 hover:-translate-y-1 shadow-xl text-left">
+                <div className="w-12 h-12 rounded-2xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center mb-5 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                  <Icon className="w-6 h-6 text-cyan-400 group-hover:text-white transition-colors" />
                 </div>
-                <p className="text-sm text-slate-400 leading-relaxed font-normal group-hover:text-slate-300 transition-colors duration-300">
-                  {srv.desc}
+                <h3 className="text-xl font-bold text-white group-hover:text-cyan-300 transition-colors duration-300 mb-3">
+                  {item.title}
+                </h3>
+                <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                  {item.desc}
                 </p>
               </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
