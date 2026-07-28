@@ -5,6 +5,14 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronDown } from '@/components/icons';
 
+const FORMATION_ITEMS = [
+  { label: 'Catalogue Formations', href: '/formations' },
+  { label: 'Tous les Certificats', href: '/certifications' },
+  { label: 'Examens Blancs & IA', href: '/examens-blancs' },
+  { label: 'Vouchers d\'Examen', href: '/vouchers' },
+  { label: 'Coaching & Mentoring', href: '/coaching' },
+];
+
 const SERVICES_ITEMS = [
   { label: 'Infogérance', href: '/services/infogerance' },
   { label: 'Intégration', href: '/services/integration' },
@@ -18,11 +26,18 @@ export function Navbar() {
   const [isConnected, setIsConnected] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  const [formationDropdownOpen, setFormationDropdownOpen] = useState(false);
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
+  
+  const [mobileFormationOpen, setMobileFormationOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
+  
   const [scrolled, setScrolled] = useState(false);
   const [navVisible, setNavVisible] = useState(true);
-  const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const formationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const servicesTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastScrollY = useRef(0);
 
   useEffect(() => {
@@ -57,13 +72,24 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleMouseEnterFormation = () => {
+    if (formationTimeoutRef.current) clearTimeout(formationTimeoutRef.current);
+    setFormationDropdownOpen(true);
+  };
+
+  const handleMouseLeaveFormation = () => {
+    formationTimeoutRef.current = setTimeout(() => {
+      setFormationDropdownOpen(false);
+    }, 150);
+  };
+
   const handleMouseEnterServices = () => {
-    if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
+    if (servicesTimeoutRef.current) clearTimeout(servicesTimeoutRef.current);
     setServicesDropdownOpen(true);
   };
 
   const handleMouseLeaveServices = () => {
-    dropdownTimeoutRef.current = setTimeout(() => {
+    servicesTimeoutRef.current = setTimeout(() => {
       setServicesDropdownOpen(false);
     }, 150);
   };
@@ -85,9 +111,47 @@ export function Navbar() {
             Accueil
           </Link>
           
-          <Link href="/formations" className={`px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
-            Formation
-          </Link>
+          {/* Menu Déroulant Formation */}
+          <div
+            className="relative"
+            onMouseEnter={handleMouseEnterFormation}
+            onMouseLeave={handleMouseLeaveFormation}
+          >
+            <button
+              onClick={() => setFormationDropdownOpen(!formationDropdownOpen)}
+              className={`px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-full flex items-center gap-1 transition-all duration-200 cursor-pointer ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}
+            >
+              <span>Formation</span>
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${formationDropdownOpen ? 'rotate-180 text-cyan-400' : ''}`} />
+            </button>
+
+            <AnimatePresence>
+              {formationDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-64 bg-[#080d1a]/95 backdrop-blur-xl border border-slate-800 rounded-2xl p-1.5 shadow-2xl z-50 text-left"
+                >
+                  <div className="space-y-0.5">
+                    {FORMATION_ITEMS.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setFormationDropdownOpen(false)}
+                        className="block px-3.5 py-2 rounded-xl hover:bg-blue-600/10 border border-transparent hover:border-blue-500/20 transition-all duration-150 group"
+                      >
+                        <p className="text-xs font-black text-slate-200 group-hover:text-cyan-400 uppercase tracking-wider transition-colors whitespace-nowrap">
+                          {item.label}
+                        </p>
+                      </Link>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           {/* Menu Déroulant Services */}
           <div
@@ -195,8 +259,39 @@ export function Navbar() {
           >
             <nav className="flex flex-col p-4 gap-1 text-xs font-black uppercase tracking-widest text-left">
               <Link href="/" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">Accueil</Link>
-              <Link href="/formations" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">Formation</Link>
               
+              {/* Accordéon Formation sur Mobile */}
+              <div>
+                <button
+                  onClick={() => setMobileFormationOpen(!mobileFormationOpen)}
+                  className="w-full px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors flex items-center justify-between cursor-pointer"
+                >
+                  <span>Formation</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${mobileFormationOpen ? 'rotate-180 text-cyan-400' : ''}`} />
+                </button>
+                <AnimatePresence>
+                  {mobileFormationOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="pl-4 pr-2 py-1 space-y-1 bg-slate-950/40 rounded-xl border border-slate-900/60 my-1"
+                    >
+                      {FORMATION_ITEMS.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => { setMobileMenuOpen(false); setMobileFormationOpen(false); }}
+                          className="block px-3 py-2 text-[11px] font-bold text-slate-300 hover:text-cyan-400 transition-colors"
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               {/* Accordéon Services sur Mobile */}
               <div>
                 <button

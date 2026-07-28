@@ -33,6 +33,8 @@ export function Footer() {
             <div className="text-sm space-y-2.5">
               <a href="/formations" className="block text-slate-400 hover:text-white transition-colors">Formations</a>
               <a href="/certifications" className="block text-slate-400 hover:text-white transition-colors">Certifications</a>
+              <a href="/examens-blancs" className="block text-slate-400 hover:text-white transition-colors">Examens Blancs & IA</a>
+              <a href="/vouchers" className="block text-slate-400 hover:text-white transition-colors">Vouchers d'Examen</a>
               <a href="/coaching" className="block text-slate-400 hover:text-white transition-colors">Coaching & Mentoring</a>
               <a href="/blog" className="block text-slate-400 hover:text-white transition-colors">Blog & Guides</a>
               <a href="/faq" className="block text-slate-400 hover:text-white transition-colors">FAQ</a>
