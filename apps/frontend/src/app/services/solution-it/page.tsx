@@ -87,13 +87,9 @@ const CATALOGUE_CATEGORIES = [
   {
     id: "dolibarr",
     name: "Dolibarr ERP/CRM",
-    badge: "Gestion d'Entreprise",
-    desc: "Progiciel de gestion intégré (ERP & CRM) open source adapté aux PME.",
-    items: [
-      { label: "Gestion Commerciale & Devis", desc: "Facturation, devis et suivi des commandes clients." },
-      { label: "Gestion de Stock & Achats", desc: "Inventaire en temps réel et commandes fournisseurs." },
-      { label: "Module Comptabilité", desc: "Export comptable et suivi de trésorerie." },
-    ]
+    badge: "ERP & CRM Open Source",
+    desc: "Progiciel de gestion intégré (ERP & CRM) open source dédié aux entreprises.",
+    detailedText: "ERP/CRM open source : Dolibarr est un logiciel gratuit dédié à la gestion commerciale de votre société. Intègre ERP et CRM dans un seul logiciel... Développé et distribué sous licence libre aux petites et moyennes entreprises, les indépendants, auto-entrepreneurs, ou les associations. Dolibarr est un logiciel open source, disponible sur toutes les plateformes web (Windows, MAC, Linux, Aix...) et fonctionne grâce à des technologies telles que PHP, MySQL et des serveurs web HTTP."
   },
   {
     id: "odoo",
@@ -306,7 +302,17 @@ export default function SolutionITPage() {
                 <p className="text-xs text-slate-400">{currentCat.desc}</p>
               </div>
 
-              {currentCat.simpleList ? (
+              {currentCat.detailedText ? (
+                <div className="p-6 bg-[#030712] border border-slate-800 rounded-2xl space-y-3">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-cyan-400 shrink-0" />
+                    <h4 className="text-sm font-black text-white uppercase tracking-wider">ERP/CRM Open Source</h4>
+                  </div>
+                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal pl-7">
+                    {currentCat.detailedText}
+                  </p>
+                </div>
+              ) : currentCat.simpleList ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                   {currentCat.simpleList.map((item, i) => (
                     <div key={i} className="flex items-center gap-3 p-3.5 bg-[#030712] border border-slate-800 rounded-xl hover:border-cyan-500/40 transition-colors">
