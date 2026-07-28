@@ -3,30 +3,39 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from '@/components/icons';
+import { Menu, X, ChevronDown } from '@/components/icons';
+
+const SERVICES_ITEMS = [
+  { label: 'Infogérance', href: '/services/infogerance', desc: 'Gestion et maintenance proactive de vos infrastructures IT' },
+  { label: 'Intégration', href: '/services/integration', desc: 'Déploiement et interconnexion de systèmes & réseaux' },
+  { label: 'Services professionnels', href: '/services/services-professionnels', desc: 'Conseil, audit et accompagnement d’experts IT' },
+  { label: 'Solution IT', href: '/services/solution-it', desc: 'Architecture Cloud, Cybersécurité & Données' },
+  { label: 'Portage Salarial', href: '/services/portage-salarial', desc: 'Gestion administrative & accompagnement des indépendants IT' },
+];
 
 export function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [navVisible, setNavVisible] = useState(true);
+  const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastScrollY = useRef(0);
 
   useEffect(() => {
-    // Auth logic
     setMounted(true);
     const token = localStorage.getItem('access_token');
     if (token) {
-        setIsConnected(true);
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            setIsAdmin(payload.roles?.includes('ADMIN') || payload.roles?.includes('SUPER_ADMIN'));
-        } catch { }
+      setIsConnected(true);
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        setIsAdmin(payload.roles?.includes('ADMIN') || payload.roles?.includes('SUPER_ADMIN'));
+      } catch { }
     }
 
-    // Scroll logic
     let ticking = false;
     const handleScroll = () => {
       if (!ticking) {
@@ -48,28 +57,83 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleMouseEnterServices = () => {
+    if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
+    setServicesDropdownOpen(true);
+  };
+
+  const handleMouseLeaveServices = () => {
+    dropdownTimeoutRef.current = setTimeout(() => {
+      setServicesDropdownOpen(false);
+    }, 150);
+  };
+
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${scrolled ? 'bg-[#020617] border-b border-slate-900 shadow-sm' : 'bg-transparent border-b border-transparent'} ${navVisible ? 'translate-y-0' : '-translate-y-full'}`}>
       <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
         
-        {/* White Logo for dark background */}
+        {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group cursor-pointer shrink-0">
           <div className="flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
             <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-10 md:h-8 w-auto object-contain" />
           </div>
         </Link>
 
-        {/* Navigation PC : Capsule Pill Flottante Ultra Stylée */}
+        {/* Navigation PC */}
         <nav className={`hidden lg:flex items-center gap-1 rounded-full px-3 py-1.5 transition-all duration-300 ${scrolled ? 'bg-slate-950/60 border border-slate-900' : 'bg-transparent border-0'}`}>
+          <Link href="/" className={`px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
+            Accueil
+          </Link>
+          
           <Link href="/formations" className={`px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
-            Formations
+            Formation
           </Link>
-          <Link href="/certifications" className={`px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
-            Certifications
-          </Link>
-          <Link href="/coaching" className={`px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
-            Coaching
-          </Link>
+
+          {/* Menu Déroulant Services */}
+          <div
+            className="relative"
+            onMouseEnter={handleMouseEnterServices}
+            onMouseLeave={handleMouseLeaveServices}
+          >
+            <button
+              onClick={() => setServicesDropdownOpen(!servicesDropdownOpen)}
+              className={`px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-full flex items-center gap-1 transition-all duration-200 cursor-pointer ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}
+            >
+              <span>Services</span>
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${servicesDropdownOpen ? 'rotate-180 text-cyan-400' : ''}`} />
+            </button>
+
+            <AnimatePresence>
+              {servicesDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-72 bg-[#080d1a]/95 backdrop-blur-xl border border-slate-800 rounded-2xl p-2 shadow-2xl z-50 text-left"
+                >
+                  <div className="space-y-0.5">
+                    {SERVICES_ITEMS.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setServicesDropdownOpen(false)}
+                        className="block px-3.5 py-2.5 rounded-xl hover:bg-blue-600/10 border border-transparent hover:border-blue-500/20 transition-all duration-150 group"
+                      >
+                        <p className="text-xs font-black text-slate-200 group-hover:text-cyan-400 uppercase tracking-wider transition-colors">
+                          {item.label}
+                        </p>
+                        <p className="text-[10px] text-slate-400 font-medium line-clamp-1 mt-0.5">
+                          {item.desc}
+                        </p>
+                      </Link>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
           <Link href="/blog" className={`px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
             Blog
           </Link>
@@ -112,7 +176,7 @@ export function Navbar() {
             </>
           )}
 
-          {/* Menu Hamburger */}
+          {/* Menu Hamburger Mobile */}
           <button 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className={`lg:hidden p-1.5 cursor-pointer rounded-lg transition-all ${scrolled ? 'text-slate-300 hover:text-white bg-slate-900/80 border border-slate-800' : 'text-white/80 hover:text-white bg-transparent border-0'}`}
@@ -123,6 +187,7 @@ export function Navbar() {
         </div>
       </div>
 
+      {/* Menu Mobile */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
@@ -132,9 +197,41 @@ export function Navbar() {
             className="lg:hidden border-t border-slate-900 bg-[#020617]/95 backdrop-blur-xl overflow-hidden shadow-2xl"
           >
             <nav className="flex flex-col p-4 gap-1 text-xs font-black uppercase tracking-widest text-left">
-              <Link href="/formations" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">Formations</Link>
-              <Link href="/certifications" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">Certifications</Link>
-              <Link href="/coaching" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">Coaching</Link>
+              <Link href="/" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">Accueil</Link>
+              <Link href="/formations" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">Formation</Link>
+              
+              {/* Accordéon Services sur Mobile */}
+              <div>
+                <button
+                  onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+                  className="w-full px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors flex items-center justify-between cursor-pointer"
+                >
+                  <span>Services</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${mobileServicesOpen ? 'rotate-180 text-cyan-400' : ''}`} />
+                </button>
+                <AnimatePresence>
+                  {mobileServicesOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="pl-4 pr-2 py-1 space-y-1 bg-slate-950/40 rounded-xl border border-slate-900/60 my-1"
+                    >
+                      {SERVICES_ITEMS.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => { setMobileMenuOpen(false); setMobileServicesOpen(false); }}
+                          className="block px-3 py-2 text-[11px] font-bold text-slate-300 hover:text-cyan-400 transition-colors"
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               <Link href="/blog" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">Blog</Link>
               <a href="/#testimonials" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">Avis</a>
               <a href="/#faq" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">FAQ</a>
