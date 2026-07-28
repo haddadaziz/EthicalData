@@ -46,12 +46,16 @@ const CATALOGUE_CATEGORIES = [
   {
     id: "microsoft",
     name: "Microsoft",
-    badge: "Licences & Cloud",
-    desc: "Licences officielles Microsoft 365, Windows Server et Azure pour entreprises.",
-    items: [
-      { label: "Microsoft 365 Business", desc: "Suite Office, Teams, Exchange et OneDrive entreprise." },
-      { label: "Windows Server 2022", desc: "Licences et CALs d'accès serveur d'entreprise." },
-      { label: "Azure Cloud", desc: "Déploiement et migration de vos serveurs sur le cloud Microsoft." },
+    badge: "Licences & Solutions",
+    desc: "Solutions et licences officielles Microsoft pour entreprises.",
+    simpleList: [
+      "Microsoft Dynamics 365",
+      "Microsoft 365",
+      "Azure",
+      "Windows",
+      "SQL Server",
+      "HYPER V",
+      "PowerBI"
     ]
   },
   {
@@ -298,17 +302,28 @@ export default function SolutionITPage() {
                 <p className="text-xs text-slate-400">{currentCat.desc}</p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {currentCat.items.map((item, i) => (
-                  <div key={i} className="p-4 bg-[#030712] border border-slate-800/80 rounded-2xl space-y-1.5 hover:border-cyan-500/40 transition-colors">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <h5 className="text-xs font-bold text-white uppercase tracking-wider">{item.label}</h5>
+              {currentCat.simpleList ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                  {currentCat.simpleList.map((item, i) => (
+                    <div key={i} className="flex items-center gap-3 p-3.5 bg-[#030712] border border-slate-800 rounded-xl hover:border-cyan-500/40 transition-colors">
+                      <CheckCircle className="w-4 h-4 text-cyan-400 shrink-0" />
+                      <span className="text-xs font-black text-white uppercase tracking-wider">{item}</span>
                     </div>
-                    <p className="text-[11px] text-slate-400 pl-6 leading-normal">{item.desc}</p>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {currentCat.items?.map((item, i) => (
+                    <div key={i} className="p-4 bg-[#030712] border border-slate-800/80 rounded-2xl space-y-1.5 hover:border-cyan-500/40 transition-colors">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+                        <h5 className="text-xs font-bold text-white uppercase tracking-wider">{item.label}</h5>
+                      </div>
+                      <p className="text-[11px] text-slate-400 pl-6 leading-normal">{item.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
           </div>
