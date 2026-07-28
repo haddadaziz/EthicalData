@@ -6,11 +6,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronDown } from '@/components/icons';
 
 const SERVICES_ITEMS = [
-  { label: 'Infogérance', href: '/services/infogerance', desc: 'Gestion et maintenance proactive de vos infrastructures IT' },
-  { label: 'Intégration', href: '/services/integration', desc: 'Déploiement et interconnexion de systèmes & réseaux' },
-  { label: 'Services professionnels', href: '/services/services-professionnels', desc: 'Conseil, audit et accompagnement d’experts IT' },
-  { label: 'Solution IT', href: '/services/solution-it', desc: 'Architecture Cloud, Cybersécurité & Données' },
-  { label: 'Portage Salarial', href: '/services/portage-salarial', desc: 'Gestion administrative & accompagnement des indépendants IT' },
+  { label: 'Infogérance', href: '/services/infogerance' },
+  { label: 'Intégration', href: '/services/integration' },
+  { label: 'Services professionnels', href: '/services/services-professionnels' },
+  { label: 'Solution IT', href: '/services/solution-it' },
+  { label: 'Portage Salarial', href: '/services/portage-salarial' },
 ];
 
 export function Navbar() {
@@ -110,7 +110,7 @@ export function Navbar() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 8, scale: 0.96 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-72 bg-[#080d1a]/95 backdrop-blur-xl border border-slate-800 rounded-2xl p-2 shadow-2xl z-50 text-left"
+                  className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-60 bg-[#080d1a]/95 backdrop-blur-xl border border-slate-800 rounded-2xl p-1.5 shadow-2xl z-50 text-left"
                 >
                   <div className="space-y-0.5">
                     {SERVICES_ITEMS.map((item) => (
@@ -118,13 +118,10 @@ export function Navbar() {
                         key={item.href}
                         href={item.href}
                         onClick={() => setServicesDropdownOpen(false)}
-                        className="block px-3.5 py-2.5 rounded-xl hover:bg-blue-600/10 border border-transparent hover:border-blue-500/20 transition-all duration-150 group"
+                        className="block px-3.5 py-2 rounded-xl hover:bg-blue-600/10 border border-transparent hover:border-blue-500/20 transition-all duration-150 group"
                       >
-                        <p className="text-xs font-black text-slate-200 group-hover:text-cyan-400 uppercase tracking-wider transition-colors">
+                        <p className="text-xs font-black text-slate-200 group-hover:text-cyan-400 uppercase tracking-wider transition-colors whitespace-nowrap">
                           {item.label}
-                        </p>
-                        <p className="text-[10px] text-slate-400 font-medium line-clamp-1 mt-0.5">
-                          {item.desc}
                         </p>
                       </Link>
                     ))}
