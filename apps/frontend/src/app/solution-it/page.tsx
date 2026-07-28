@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navbar } from '@/components/landing/Navbar';
 import { Footer } from '@/components/layout/Footer';
-import { Cpu, ShieldCheck, ArrowRight, CheckCircle, Phone, Clock, Award, ChevronRight, MessageSquare } from '@/components/icons';
+import { Cpu, ArrowRight, CheckCircle, Phone, Clock, Award, ChevronDown, MessageSquare } from '@/components/icons';
 
 const STEPS = [
   {
@@ -102,9 +102,11 @@ const CATALOGUE_CATEGORIES = [
 
 export default function SolutionITPage() {
   const [activeStep, setActiveStep] = useState(0);
-  const [activeCategory, setActiveCategory] = useState("microsoft");
+  const [openCategoryIndex, setOpenCategoryIndex] = useState<number | null>(0);
 
-  const currentCat = CATALOGUE_CATEGORIES.find(c => c.id === activeCategory) || CATALOGUE_CATEGORIES[0];
+  const toggleCategory = (idx: number) => {
+    setOpenCategoryIndex(prev => (prev === idx ? null : idx));
+  };
 
   return (
     <main className="min-h-screen bg-[#020617] text-white relative overflow-hidden font-sans">
@@ -245,7 +247,7 @@ export default function SolutionITPage() {
         </div>
       </section>
 
-      {/* SECTION CATALOGUE RIGOUREUSEMENT SÉLECTIONNÉ */}
+      {/* SECTION CATALOGUE ACCORDÉON (STYLE FAQ - 100% RESPONSIVE) */}
       <section className="py-16 md:py-24 relative z-10 bg-[#020617] border-t border-slate-900">
         <div className="max-w-7xl mx-auto px-4 md:px-6 space-y-12">
           
@@ -261,77 +263,90 @@ export default function SolutionITPage() {
             </p>
           </div>
 
-          {/* Grille Interactive : Catégories à gauche, Produits à droite */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 text-left">
-            
-            {/* Colonne Liste des Catégories (Tabs) */}
-            <div className="lg:col-span-4 space-y-2">
-              {CATALOGUE_CATEGORIES.map((cat) => {
-                const isSelected = activeCategory === cat.id;
-                return (
+          {/* ACCORDÉON STYLE FAQ (UN SEUL OUVERT À LA FOIS) */}
+          <div className="max-w-4xl mx-auto space-y-4 text-left">
+            {CATALOGUE_CATEGORIES.map((cat, idx) => {
+              const isOpen = openCategoryIndex === idx;
+              return (
+                <div
+                  key={cat.id}
+                  className={`border rounded-3xl overflow-hidden transition-all duration-300 ${
+                    isOpen
+                      ? 'bg-[#080d1a] border-cyan-500/50 shadow-2xl'
+                      : 'bg-[#080d1a]/70 border-slate-800 hover:border-slate-700'
+                  }`}
+                >
+                  {/* Accordion Header Button */}
                   <button
-                    key={cat.id}
-                    onClick={() => setActiveCategory(cat.id)}
-                    className={`w-full p-4 rounded-2xl border text-left transition-all duration-200 flex items-center justify-between cursor-pointer ${
-                      isSelected
-                        ? 'bg-blue-600/20 border-cyan-500/60 text-white shadow-lg'
-                        : 'bg-[#080d1a] border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
-                    }`}
+                    onClick={() => toggleCategory(idx)}
+                    className="w-full p-5 sm:p-6 flex items-center justify-between gap-4 cursor-pointer text-left focus:outline-none"
                   >
-                    <div>
-                      <h4 className="text-sm font-black uppercase tracking-wider">{cat.name}</h4>
-                      <p className="text-[11px] text-slate-400 mt-0.5">{cat.badge}</p>
-                    </div>
-                    <ChevronRight className={`w-4 h-4 transition-transform ${isSelected ? 'rotate-90 text-cyan-400' : 'text-slate-600'}`} />
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Colonne Détails de la Catégorie sélectionnée */}
-            <div className="lg:col-span-8 bg-[#080d1a] border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl">
-              <div className="border-b border-slate-800 pb-4 space-y-1">
-                <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400 px-3 py-1 bg-cyan-950/80 border border-cyan-800/60 rounded-full">
-                  {currentCat.badge}
-                </span>
-                <h3 className="text-2xl font-black text-white pt-2">{currentCat.name}</h3>
-                <p className="text-xs text-slate-400">{currentCat.desc}</p>
-              </div>
-
-              {currentCat.detailedText ? (
-                <div className="p-6 bg-[#030712] border border-slate-800 rounded-2xl space-y-3">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-5 h-5 text-cyan-400 shrink-0" />
-                    <h4 className="text-sm font-black text-white uppercase tracking-wider">ERP/CRM Open Source</h4>
-                  </div>
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal pl-7">
-                    {currentCat.detailedText}
-                  </p>
-                </div>
-              ) : currentCat.simpleList ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                  {currentCat.simpleList.map((item, i) => (
-                    <div key={i} className="flex items-center gap-3 p-3.5 bg-[#030712] border border-slate-800 rounded-xl hover:border-cyan-500/40 transition-colors">
-                      <CheckCircle className="w-4 h-4 text-cyan-400 shrink-0" />
-                      <span className="text-xs font-black text-white uppercase tracking-wider">{item}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {(currentCat as any).items?.map((item: any, i: number) => (
-                    <div key={i} className="p-4 bg-[#030712] border border-slate-800/80 rounded-2xl space-y-1.5 hover:border-cyan-500/40 transition-colors">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-                        <h5 className="text-xs font-bold text-white uppercase tracking-wider">{item.label}</h5>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400 px-3 py-1 bg-cyan-950/80 border border-cyan-800/60 rounded-full w-max">
+                        {cat.badge}
+                      </span>
+                      <div>
+                        <h3 className="text-lg sm:text-xl font-black text-white">{cat.name}</h3>
+                        <p className="text-xs text-slate-400 mt-0.5">{cat.desc}</p>
                       </div>
-                      <p className="text-[11px] text-slate-400 pl-6 leading-normal">{item.desc}</p>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                    <ChevronDown
+                      className={`w-5 h-5 text-cyan-400 shrink-0 transition-transform duration-300 ${
+                        isOpen ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
 
+                  {/* Accordion Animated Content */}
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: 'easeInOut' }}
+                        className="overflow-hidden"
+                      >
+                        <div className="p-5 sm:p-6 pt-2 border-t border-slate-800/80 space-y-4">
+                          {cat.detailedText ? (
+                            <div className="p-5 bg-[#030712] border border-slate-800 rounded-2xl space-y-2">
+                              <div className="flex items-center gap-2">
+                                <CheckCircle className="w-4 h-4 text-cyan-400 shrink-0" />
+                                <h4 className="text-xs font-black text-white uppercase tracking-wider">ERP/CRM Open Source</h4>
+                              </div>
+                              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal pl-6 whitespace-pre-line">
+                                {cat.detailedText}
+                              </p>
+                            </div>
+                          ) : cat.simpleList ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                              {cat.simpleList.map((item, i) => (
+                                <div key={i} className="flex items-center gap-3 p-3.5 bg-[#030712] border border-slate-800 rounded-xl hover:border-cyan-500/40 transition-colors">
+                                  <CheckCircle className="w-4 h-4 text-cyan-400 shrink-0" />
+                                  <span className="text-xs font-black text-white uppercase tracking-wider">{item}</span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              {(cat as any).items?.map((item: any, i: number) => (
+                                <div key={i} className="p-4 bg-[#030712] border border-slate-800/80 rounded-2xl space-y-1.5 hover:border-cyan-500/40 transition-colors">
+                                  <div className="flex items-center gap-2">
+                                    <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+                                    <h5 className="text-xs font-bold text-white uppercase tracking-wider">{item.label}</h5>
+                                  </div>
+                                  <p className="text-[11px] text-slate-400 pl-6 leading-normal">{item.desc}</p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
           </div>
 
         </div>
