@@ -49,13 +49,13 @@ const CATALOGUE_CATEGORIES = [
     name: "Hardware",
     badge: "Matériel Informatique",
     desc: "Équipements réseaux, serveurs et postes de travail professionnels haute performance.",
-    items: [
-      { label: "Laptop", desc: "Ordinateurs portables professionnels légers et puissants." },
-      { label: "Réseau : Router & Switch", desc: "Commutateurs et routeurs d'entreprise administrables." },
-      { label: "NAS Stockage", desc: "Serveurs de stockage réseau sécurisés avec sauvegardes automatisées." },
-      { label: "Onduleur & Protection", desc: "Alimentation sans coupure pour protéger vos serveurs." },
-      { label: "Serveur", desc: "Serveurs rack et tour d'entreprise évolutifs." },
-      { label: "Caméra de surveillance", desc: "Systèmes de vidéo-protection IP haute définition." },
+    simpleList: [
+      "Laptop",
+      "Réseau: Router & Switch",
+      "BAEI Stockage",
+      "Racks & Enduleur",
+      "Server",
+      "Caméra de surveillance"
     ]
   },
   {
