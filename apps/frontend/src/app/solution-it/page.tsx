@@ -30,20 +30,6 @@ const STEPS = [
 
 const CATALOGUE_CATEGORIES = [
   {
-    id: "hardware",
-    name: "Hardware",
-    badge: "Matériel Informatique",
-    desc: "Équipements réseaux, serveurs et postes de travail professionnels haute performance.",
-    items: [
-      { label: "Laptop", desc: "Ordinateurs portables professionnels légers et puissants." },
-      { label: "Réseau : Router & Switch", desc: "Commutateurs et routeurs d'entreprise administrables." },
-      { label: "NAS Stockage", desc: "Serveurs de stockage réseau sécurisés avec sauvegardes automatisées." },
-      { label: "Onduleur & Protection", desc: "Alimentation sans coupure pour protéger vos serveurs." },
-      { label: "Serveur", desc: "Serveurs rack et tour d'entreprise évolutifs." },
-      { label: "Caméra de surveillance", desc: "Systèmes de vidéo-protection IP haute définition." },
-    ]
-  },
-  {
     id: "microsoft",
     name: "Microsoft",
     badge: "Licences & Solutions",
@@ -56,6 +42,20 @@ const CATALOGUE_CATEGORIES = [
       "SQL Server",
       "HYPER V",
       "PowerBI"
+    ]
+  },
+  {
+    id: "hardware",
+    name: "Hardware",
+    badge: "Matériel Informatique",
+    desc: "Équipements réseaux, serveurs et postes de travail professionnels haute performance.",
+    items: [
+      { label: "Laptop", desc: "Ordinateurs portables professionnels légers et puissants." },
+      { label: "Réseau : Router & Switch", desc: "Commutateurs et routeurs d'entreprise administrables." },
+      { label: "NAS Stockage", desc: "Serveurs de stockage réseau sécurisés avec sauvegardes automatisées." },
+      { label: "Onduleur & Protection", desc: "Alimentation sans coupure pour protéger vos serveurs." },
+      { label: "Serveur", desc: "Serveurs rack et tour d'entreprise évolutifs." },
+      { label: "Caméra de surveillance", desc: "Systèmes de vidéo-protection IP haute définition." },
     ]
   },
   {
@@ -106,7 +106,7 @@ const CATALOGUE_CATEGORIES = [
 
 export default function SolutionITPage() {
   const [activeStep, setActiveStep] = useState(0);
-  const [activeCategory, setActiveCategory] = useState("hardware");
+  const [activeCategory, setActiveCategory] = useState("microsoft");
 
   const currentCat = CATALOGUE_CATEGORIES.find(c => c.id === activeCategory) || CATALOGUE_CATEGORIES[0];
 
