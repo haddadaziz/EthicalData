@@ -14,9 +14,9 @@ const FORMATION_ITEMS = [
 ];
 
 const SERVICES_ITEMS = [
-  { label: 'Infogérance', href: '/services/infogerance' },
-  { label: 'Intégration', href: '/services/integration' },
-  { label: 'Services professionnels', href: '/services/services-professionnels' },
+  { label: 'Infogérance', href: '/infogerance' },
+  { label: 'Intégration', href: '/integration' },
+  { label: 'Services professionnels', href: '/services-professionnels' },
   { label: 'Solution IT', href: '/services/solution-it' },
   { label: 'Portage Salarial', href: '/services/portage-salarial' },
 ];
