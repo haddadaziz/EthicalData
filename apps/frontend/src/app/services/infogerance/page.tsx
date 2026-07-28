@@ -50,18 +50,20 @@ export default function InfogerancePage() {
     <main className="min-h-screen bg-[#020617] text-white relative overflow-hidden font-sans">
       <Navbar />
 
-      {/* HERO SECTION */}
+      {/* HERO SECTION - Lightweight High-Performance Gradient Glow */}
       <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-[#020617] text-center">
-        {/* Background Cyber Glow & Watermark */}
         <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center overflow-hidden">
-          <div className="w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px]" />
+          <div
+            className="w-[600px] h-[600px] rounded-full pointer-events-none"
+            style={{ background: 'radial-gradient(circle, rgba(37,99,235,0.12) 0%, transparent 70%)' }}
+          />
           <span className="absolute text-6xl sm:text-8xl md:text-9xl font-black text-slate-800/10 tracking-tighter uppercase select-none whitespace-nowrap">
             ETHICAL DATA SECURITY
           </span>
         </div>
 
         <div className="relative z-10 max-w-5xl mx-auto px-4 md:px-6 space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-800/60 text-cyan-400 text-xs font-black uppercase tracking-widest backdrop-blur-md">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-800/60 text-cyan-400 text-xs font-black uppercase tracking-widest">
             <span>ETHICAL DATA SECURITY — l&apos;essentiel en un clic !</span>
           </div>
 
@@ -82,18 +84,20 @@ export default function InfogerancePage() {
         <div className="max-w-7xl mx-auto px-4 md:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
-            {/* Image d'illustration avec cadre Cyber & Badge 01 */}
+            {/* Image d'illustration */}
             <div className="lg:col-span-6 relative">
               <div className="relative rounded-3xl overflow-hidden border border-slate-800 bg-[#080d1a] p-3 shadow-2xl group">
                 <img
-                  src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?auto=format&fit=crop&w=1000&q=80"
+                  src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?auto=format&fit=crop&w=800&q=75"
                   alt="L'infogérance IT - Ingénieure en cybersécurité"
-                  className="w-full h-[350px] md:h-[420px] object-cover rounded-2xl group-hover:scale-105 transition-transform duration-700"
+                  className="w-full h-[350px] md:h-[420px] object-cover rounded-2xl group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent opacity-60 rounded-2xl pointer-events-none" />
                 
-                {/* Badge 01 Giga Style */}
-                <div className="absolute top-6 left-6 bg-[#020617]/90 backdrop-blur-md border border-cyan-500/40 px-5 py-2.5 rounded-2xl shadow-xl">
+                {/* Badge 01 */}
+                <div className="absolute top-6 left-6 bg-[#020617] border border-cyan-500/40 px-5 py-2.5 rounded-2xl shadow-xl">
                   <span className="text-3xl font-black text-cyan-400 tracking-wider">01</span>
                 </div>
               </div>
@@ -132,7 +136,7 @@ export default function InfogerancePage() {
         </div>
       </section>
 
-      {/* BANNER SECTION: PERFORMANCE, SÉCURITÉ ET SÉRÉNITÉ */}
+      {/* BANNER SECTION */}
       <section className="py-16 relative z-10 bg-[#020617] border-t border-slate-900 text-center">
         <div className="max-w-4xl mx-auto px-4 md:px-6 space-y-4">
           <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight">
@@ -146,7 +150,7 @@ export default function InfogerancePage() {
         </div>
       </section>
 
-      {/* GRILLE DE 6 PRESTATIONS D'INFOGÉRANCE */}
+      {/* GRILLE DE 6 PRESTATIONS D'INFOGÉRANCE (Fast Optimized Cards) */}
       <section className="py-16 md:py-24 relative z-10 bg-[#030712] border-t border-slate-900">
         <div className="max-w-7xl mx-auto px-4 md:px-6 space-y-12">
           
@@ -165,7 +169,7 @@ export default function InfogerancePage() {
               return (
                 <div
                   key={srv.number}
-                  className="group bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-cyan-500/50 rounded-3xl p-6 md:p-8 space-y-5 transition-all duration-300 hover:-translate-y-1 shadow-xl flex flex-col justify-between"
+                  className="group bg-[#080d1a] border border-slate-800 hover:border-cyan-500/50 rounded-3xl p-6 md:p-8 space-y-5 transition-all duration-200 hover:-translate-y-1 shadow-xl flex flex-col justify-between"
                 >
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
@@ -201,7 +205,7 @@ export default function InfogerancePage() {
       {/* CTA BOTTOM CONTACT BANNER */}
       <section className="py-16 relative z-10 bg-[#020617] border-t border-slate-900 text-center">
         <div className="max-w-4xl mx-auto px-4 md:px-6">
-          <div className="bg-gradient-to-r from-blue-950/60 via-[#080d1a] to-blue-950/60 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 shadow-2xl">
+          <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 shadow-2xl">
             <h2 className="text-2xl md:text-4xl font-black text-white">
               Prêt à sécuriser & optimiser votre infrastructure IT ?
             </h2>
