@@ -62,11 +62,13 @@ const CATALOGUE_CATEGORIES = [
     id: "cloud",
     name: "Cloud",
     badge: "Cloud & Virtualisation",
-    desc: "Infrastructures cloud hybrides et solutions de sauvegarde à distance.",
-    items: [
-      { label: "Cloud Hybride", desc: "Combinaison optimale de vos serveurs locaux et du cloud public." },
-      { label: "Sauvegarde Cloud Sécurisée", desc: "Backup automatique et chiffré hors-site." },
-      { label: "Virtualisation (VMware/Hyper-V)", desc: "Consolidation et optimisation de vos ressources serveurs." },
+    desc: "Infrastructures cloud privé, public et solutions hyperconvergées.",
+    simpleList: [
+      "Cloud privé : VSPHERE / KVM / OPENSHIFT ...",
+      "Cloud Management / vRealize Cloud Management",
+      "Hyperconverged / vSphere / vSAN / NSX Data Center",
+      "Disaster Recovery (SRM, Veeam, VDP...)",
+      "Cloud Public : AWS / AZURE / GCP / IBM"
     ]
   },
   {
