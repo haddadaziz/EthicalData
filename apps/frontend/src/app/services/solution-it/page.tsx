@@ -96,11 +96,7 @@ const CATALOGUE_CATEGORIES = [
     name: "Odoo",
     badge: "Suite ERP Intégrée",
     desc: "Plateforme complète d'applications d'entreprise interconnectées.",
-    items: [
-      { label: "Odoo CRM & Ventes", desc: "Gestion des pipelines de vente et relation client." },
-      { label: "Odoo Projets & Tâches", desc: "Suivi du temps, kanban et planification de projets." },
-      { label: "Odoo Ressources Humaines", desc: "Congés, notes de frais et gestion du personnel." },
-    ]
+    detailedText: "ERP/CRM open source : Vous souhaitez gérer votre activité à chaque étape de votre chaîne commerciale : les ventes, les achats, les stocks, la fabrication, les Prestations de services ? Découvrez l'ERP/CRM gratuit le plus efficace et le plus flexible du marché.\n\nL'ERP Odoo est un outil polyvalent pour la gestion d'entreprise, permet de centraliser vos données et informations importantes. Comme Dolibarr, Odoo est un logiciel open source qui fournit un riche ensemble de modules pouvant être appliqués aux entreprises de tous types et de toutes tailles."
   },
 ];
 
@@ -323,7 +319,7 @@ export default function SolutionITPage() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {currentCat.items?.map((item, i) => (
+                  {(currentCat as any).items?.map((item: any, i: number) => (
                     <div key={i} className="p-4 bg-[#030712] border border-slate-800/80 rounded-2xl space-y-1.5 hover:border-cyan-500/40 transition-colors">
                       <div className="flex items-center gap-2">
                         <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
