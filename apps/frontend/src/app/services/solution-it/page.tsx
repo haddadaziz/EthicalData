@@ -76,10 +76,12 @@ const CATALOGUE_CATEGORIES = [
     name: "Security",
     badge: "Cybersécurité Hardware & Software",
     desc: "Pare-feu de nouvelle génération, antivirus centralisés et protection endpoint.",
-    items: [
-      { label: "Firewall Fortinet & Palo Alto", desc: "Protection périmétrique et filtrage UTM d'entreprise." },
-      { label: "EDR & Antivirus Centralisé", desc: "Protection contre les ransonwares et cyberattaques." },
-      { label: "VPN Sécurisé", desc: "Accès à distance chiffré pour vos collaborateurs en télétravail." },
+    simpleList: [
+      "F5",
+      "Fortinet",
+      "Palo Alto",
+      "Sophos",
+      "Check Point"
     ]
   },
   {
