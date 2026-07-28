@@ -17,8 +17,8 @@ const SERVICES_ITEMS = [
   { label: 'Infogérance', href: '/infogerance' },
   { label: 'Intégration', href: '/integration' },
   { label: 'Services professionnels', href: '/services-professionnels' },
-  { label: 'Solution IT', href: '/services/solution-it' },
-  { label: 'Portage Salarial', href: '/services/portage-salarial' },
+  { label: 'Solution IT', href: '/solution-it' },
+  { label: 'Portage Salarial', href: '/portage-salarial' },
 ];
 
 export function Navbar() {
