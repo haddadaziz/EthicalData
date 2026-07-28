@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { MessageSquare, Calendar, ArrowRight, CheckCircle } from '@/components/icons';
+import { MessageSquare, Calendar, ArrowRight, CheckCircle, Sparkles, Tag, Play } from '@/components/icons';
 import NeuralBackground from '@/components/ui/flow-field-background';
 
 export function CommunityCoachingBanner() {
@@ -24,51 +24,70 @@ export function CommunityCoachingBanner() {
           {/* Contenu Texte Immersif */}
           <div className="lg:col-span-7 space-y-6">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-800/60 text-cyan-400 text-xs font-black uppercase tracking-wider backdrop-blur-md">
-              <span>Accompagnement Sur-Mesure & Entraide</span>
+              <span>Examens Blancs, Vouchers & Coaching</span>
             </div>
 
             <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
-              Ne révisez plus seul : <br className="hidden sm:inline" />
+              Maximisez vos chances de réussite : <br className="hidden sm:inline" />
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-cyan-400">
-                Bénéficiez d’une communauté active & d’un mentorat dédié
+                Examens Blancs IA, Vouchers & Mentoring
               </span>
             </h2>
 
             <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-2xl">
-              Rejoignez des centaines de candidats en préparation. Posez vos questions sur le forum, partagez vos résultats aux examens blancs et planifiez des séances individuelles avec des formateurs certifiés.
+              Entraînez-vous avec nos simulations chronométrées avec correction IA (Readiness Score), achetez vos vouchers d'examen officiel avec réductions EDS et planifiez un coaching 1-on-1 avec un formateur expert.
             </p>
 
-            {/* Points clés */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-              <div className="flex items-start gap-3 bg-[#080d1a]/80 backdrop-blur-md border border-slate-800 p-4 rounded-2xl">
-                <div className="w-9 h-9 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center shrink-0 mt-0.5">
-                  <MessageSquare className="w-4 h-4 text-cyan-400" />
+            {/* 3 Cartes Rapides */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+              <Link
+                href="/examens-blancs"
+                className="group flex flex-col p-3.5 bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-cyan-500/50 rounded-2xl transition-all duration-200"
+              >
+                <div className="w-8 h-8 rounded-xl bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center mb-2 text-cyan-400 group-hover:bg-cyan-600 group-hover:text-white transition-all">
+                  <Sparkles className="w-4 h-4" />
                 </div>
-                <div>
-                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">Forum Entraide Membres</h4>
-                  <p className="text-[11px] text-slate-400 mt-0.5 leading-normal">Échanges quotidiens et retours d'expérience d’examen.</p>
-                </div>
-              </div>
+                <h4 className="text-xs font-bold text-white group-hover:text-cyan-400 transition-colors">Examens Blancs IA</h4>
+                <p className="text-[10px] text-slate-400 mt-0.5">Readiness Score & IA</p>
+              </Link>
 
-              <div className="flex items-start gap-3 bg-[#080d1a]/80 backdrop-blur-md border border-slate-800 p-4 rounded-2xl">
-                <div className="w-9 h-9 rounded-xl bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center shrink-0 mt-0.5">
-                  <Calendar className="w-4 h-4 text-emerald-400" />
+              <Link
+                href="/vouchers"
+                className="group flex flex-col p-3.5 bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-emerald-500/50 rounded-2xl transition-all duration-200"
+              >
+                <div className="w-8 h-8 rounded-xl bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center mb-2 text-emerald-400 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                  <Tag className="w-4 h-4" />
                 </div>
-                <div>
-                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">Coaching 1-on-1</h4>
-                  <p className="text-[11px] text-slate-400 mt-0.5 leading-normal">Séances individuelles pour débloquer vos révisions.</p>
+                <h4 className="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">Vouchers Examen</h4>
+                <p className="text-[10px] text-slate-400 mt-0.5">Réductions EDS</p>
+              </Link>
+
+              <Link
+                href="/coaching"
+                className="group flex flex-col p-3.5 bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-blue-500/50 rounded-2xl transition-all duration-200"
+              >
+                <div className="w-8 h-8 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center mb-2 text-cyan-400 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                  <Calendar className="w-4 h-4" />
                 </div>
-              </div>
+                <h4 className="text-xs font-bold text-white group-hover:text-blue-400 transition-colors">Coaching 1-on-1</h4>
+                <p className="text-[10px] text-slate-400 mt-0.5">Mentors Certifiés</p>
+              </Link>
             </div>
 
             {/* Boutons CTA */}
             <div className="flex flex-wrap items-center gap-4 pt-4">
               <Link
-                href="/coaching"
-                className="px-8 py-3.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-blue-600/20 flex items-center gap-2 cursor-pointer hover:scale-105 active:scale-95"
+                href="/examens-blancs"
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-blue-600/20 flex items-center gap-2 cursor-pointer hover:scale-105 active:scale-95"
               >
-                <span>Découvrir l’Accompagnement</span>
+                <span>Découvrir les Examens Blancs</span>
                 <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/vouchers"
+                className="px-6 py-3 bg-[#080d1a] hover:bg-slate-900 border border-slate-800 text-cyan-400 hover:text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all flex items-center gap-2 cursor-pointer"
+              >
+                <span>Voir les Vouchers</span>
               </Link>
             </div>
           </div>
@@ -86,7 +105,7 @@ export function CommunityCoachingBanner() {
             </div>
 
             <blockquote className="text-xs sm:text-sm text-slate-300 italic leading-relaxed border-l-2 border-cyan-500 pl-4 py-1">
-              « Les échanges sur le forum et la séance de coaching m'ont permis de comprendre mes erreurs sur la gestion des sous-réseaux avant mon examen. Résultat : 920/1000 ! »
+              « L'examen blanc avec la correction IA et le voucher à tarif réduit m'ont permis d'obtenir l'AZ-900 du premier coup avec 920/1000 ! »
             </blockquote>
 
             <div className="pt-3 flex items-center justify-between text-xs text-slate-400 border-t border-slate-800">
