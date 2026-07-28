@@ -33,9 +33,9 @@ export function HeroSection({ isConnected, children }: HeroSectionProps) {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-xs sm:text-sm md:text-base text-white/80 uppercase tracking-widest font-black leading-relaxed max-w-xl drop-shadow-md"
+            className="text-xs sm:text-sm md:text-base text-slate-200 font-semibold leading-relaxed max-w-2xl drop-shadow-md"
           >
-            SUPPORT DE COURS ET ENTRAÎNEMENT PRATIQUE POUR VOS CERTIFICATIONS EN CYBERSÉCURITÉ ET EN SÉCURITÉ
+            Dynamisme, réactivité et innovation sont au cœur de nos engagements. Nous vous accompagnons dans la mise en place, l'évolution et la sécurisation de votre infrastructure IT, en garantissant performance, fiabilité et continuité pour vos systèmes.
           </motion.p>
 
           <motion.div
