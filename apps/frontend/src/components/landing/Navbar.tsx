@@ -18,7 +18,7 @@ const SERVICES_ITEMS = [
   { label: 'Intégration', href: '/integration' },
   { label: 'Services professionnels', href: '/services-professionnels' },
   { label: 'Solution IT', href: '/solution-it' },
-  { label: 'Partage Salarial', href: '/partage-salarial' },
+  { label: 'Portage Salarial', href: '/portage-salarial' },
 ];
 
 export function Navbar() {
