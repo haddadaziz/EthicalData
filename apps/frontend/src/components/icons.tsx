@@ -25,6 +25,7 @@ import {
   faUser, faUsers, faVideo, faWandMagicSparkles,
   faXmark, faTurnDown, faAt,
   faCamera, faListUl, faShield, faShieldHalved,
+  faBuilding, faLocationDot,
 } from '@fortawesome/free-solid-svg-icons';
 import type { FontAwesomeIconProps } from '@fortawesome/react-fontawesome';
 
@@ -54,6 +55,8 @@ export const Bolt = makeIcon(faBolt);
 export const BookmarkCheck = makeIcon(faBookmark);
 export const BookMarked = makeIcon(faBookBookmark);
 export const Briefcase = makeIcon(faBriefcase);
+export const Building = makeIcon(faBuilding);
+export const MapPin = makeIcon(faLocationDot);
 export const Calendar = makeIcon(faCalendar);
 export const CalendarCheck = makeIcon(faCalendarCheck);
 export const Camera = makeIcon(faCamera);
