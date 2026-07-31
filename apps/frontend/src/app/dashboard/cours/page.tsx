@@ -5,6 +5,7 @@ import { apiFetch } from '../../../lib/api';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { BookOpen, Clock, Users, Award, ChevronRight, Search, Play, CheckCircle, FileText } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
+import { enrollInCourse } from '@/lib/course-enrollments-storage';
 
 interface Cours {
     id: string;
@@ -199,9 +200,18 @@ export default function LearnerCoursesPage() {
                                     </div>
 
                                     <div className="border-t border-slate-800 p-3">
-                                        <button onClick={() => router.push(`/dashboard/cours/${c.id}?from=explorer`)}
+                                        <button onClick={() => {
+                                            enrollInCourse({
+                                                id: c.id,
+                                                title: c.titre,
+                                                certificationCode: c.certification?.codeExamen || 'CERT',
+                                                category: c.certification?.fournisseur?.nom || 'Formation IT',
+                                                trainerName: `${c.formateur?.prenom || 'Dr. Tariq'} ${c.formateur?.nom || 'Berrada'}`
+                                            });
+                                            router.push(`/dashboard/cours/${c.id}?from=explorer`);
+                                        }}
                                             className="w-full px-3 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-black rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5">
-                                            <Play className="w-3.5 h-3.5" /> Voir le cours
+                                            <Play className="w-3.5 h-3.5" /> Rejoindre le cours
                                         </button>
                                     </div>
                                 </div>

@@ -1,106 +1,54 @@
-"use client";
-
-import React, { useState } from 'react';
-import { BookOpen, Play, CheckCircle, Clock, ChevronRight, Award, GraduationCap } from '@/components/icons';
+import React, { useState, useEffect } from 'react';
+import { BookOpen, Play, CheckCircle, Clock, ChevronRight, Award, GraduationCap, ArrowRight } from '@/components/icons';
 import Link from 'next/link';
-
-interface CourseProgress {
-  id: string;
-  title: string;
-  certificationCode: string;
-  category: string;
-  progressPercent: number;
-  completedModules: number;
-  totalModules: number;
-  durationLeft: string;
-  lastLessonTitle: string;
-  trainerName: string;
-  deliveryType: 'E-learning 24/7' | 'Visioconférence Live';
-}
-
-const MOCK_COURSE_PROGRESS: CourseProgress[] = [
-  {
-    id: "cp-1",
-    title: "Palo Alto Networks PCNSA — Administration Next-Gen Firewall",
-    certificationCode: "PCNSA",
-    category: "Cybersécurité Périmétrique",
-    progressPercent: 75,
-    completedModules: 12,
-    totalModules: 16,
-    durationLeft: "3h 30m restantes",
-    lastLessonTitle: "Module 12 : Politiques de Sécurité WildFire & Profils Anti-Threats",
-    trainerName: "Dr. Tariq Berrada",
-    deliveryType: "E-learning 24/7"
-  },
-  {
-    id: "cp-2",
-    title: "PECB ISO 27001 Lead Implementer — Management SI",
-    certificationCode: "ISO-27001",
-    category: "Gouvernance & Conformité",
-    progressPercent: 100,
-    completedModules: 10,
-    totalModules: 10,
-    durationLeft: "Formation Terminée",
-    lastLessonTitle: "Examen de validation des compétences ISO 27001",
-    trainerName: "Dr. Tariq Berrada",
-    deliveryType: "E-learning 24/7"
-  },
-  {
-    id: "cp-3",
-    title: "Microsoft Azure Fundamentals (AZ-900) - Le Guide Complet",
-    certificationCode: "AZ-900",
-    category: "Cloud Infrastructure",
-    progressPercent: 60,
-    completedModules: 5,
-    totalModules: 8,
-    durationLeft: "4h 15m restantes",
-    lastLessonTitle: "Module 5 : Sécurité Entra ID & RBAC Groups",
-    trainerName: "Leila Naciri",
-    deliveryType: "E-learning 24/7"
-  },
-  {
-    id: "cp-4",
-    title: "AWS Solutions Architect Associate (SAA-C03) - Masterclass",
-    certificationCode: "SAA-C03",
-    category: "Cloud Architecture",
-    progressPercent: 40,
-    completedModules: 5,
-    totalModules: 12,
-    durationLeft: "8h 30m restantes",
-    lastLessonTitle: "Module 5 : Architectures résilientes Auto Scaling & Multi-AZ",
-    trainerName: "Leila Naciri",
-    deliveryType: "Visioconférence Live"
-  },
-  {
-    id: "cp-5",
-    title: "CompTIA Security+ (SY0-701) - BootCamp Cybersécurité",
-    certificationCode: "SY0-701",
-    category: "Sécurité Opérationnelle",
-    progressPercent: 25,
-    completedModules: 3,
-    totalModules: 11,
-    durationLeft: "12h 00m restantes",
-    lastLessonTitle: "Module 3 : Cryptographie assistée & Gestion des clefs PKI",
-    trainerName: "Dr. Tariq Berrada",
-    deliveryType: "E-learning 24/7"
-  },
-  {
-    id: "cp-6",
-    title: "AWS Certified Cloud Practitioner (CLF-C02) - Essentiels",
-    certificationCode: "CLF-C02",
-    category: "Cloud Essentials",
-    progressPercent: 10,
-    completedModules: 1,
-    totalModules: 10,
-    durationLeft: "14h 20m restantes",
-    lastLessonTitle: "Module 1 : Introduction à l'écosystème AWS & Global Infrastructure",
-    trainerName: "Leila Naciri",
-    deliveryType: "E-learning 24/7"
-  }
-];
+import { getUserCourseEnrollments, UserCourseEnrollment } from '@/lib/course-enrollments-storage';
+import { apiFetch } from '@/lib/api';
 
 export default function CourseProgressSection() {
-  const [courses] = useState<CourseProgress[]>(MOCK_COURSE_PROGRESS);
+  const [courses, setCourses] = useState<UserCourseEnrollment[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadEnrollments = async () => {
+      // 1. Try fetching from backend API
+      try {
+        const data = await apiFetch('/cours/mes-inscriptions');
+        if (Array.isArray(data) && data.length > 0) {
+          const mapped: UserCourseEnrollment[] = data.map((i: any) => ({
+            id: i.id,
+            courseId: i.cours?.id || i.id,
+            title: i.cours?.titre || 'Cours',
+            certificationCode: i.cours?.certification?.codeExamen || 'CERT',
+            category: i.cours?.certification?.fournisseur?.nom || 'Formation IT',
+            progressPercent: i.progression || 0,
+            completedModules: Math.round(((i.progression || 0) / 100) * (i.cours?._count?.modules || 10)),
+            totalModules: i.cours?._count?.modules || 10,
+            durationLeft: i.progression >= 100 ? 'Formation Terminée' : 'En cours',
+            lastLessonTitle: 'Module en cours de visionnage',
+            trainerName: `${i.cours?.formateur?.prenom || 'Tariq'} ${i.cours?.formateur?.nom || 'Berrada'}`,
+            deliveryType: 'E-learning 24/7',
+            enrolledAt: i.dateInscription
+          }));
+          setCourses(mapped);
+          setLoading(false);
+          return;
+        }
+      } catch (err) {
+        // Fallback to local storage if API fails or empty
+      }
+
+      // 2. Read local storage
+      const local = getUserCourseEnrollments();
+      setCourses(local);
+      setLoading(false);
+    };
+
+    loadEnrollments();
+
+    const handleUpdate = () => loadEnrollments();
+    window.addEventListener('enrollmentsUpdated', handleUpdate);
+    return () => window.removeEventListener('enrollmentsUpdated', handleUpdate);
+  }, []);
 
   return (
     <div className="space-y-6 text-left">
@@ -121,16 +69,40 @@ export default function CourseProgressSection() {
         </div>
       </div>
 
-      {/* Progress Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {courses.map((c) => {
-          const isCompleted = c.progressPercent === 100;
+      {/* Progress Cards / Empty State */}
+      {loading ? (
+        <div className="py-12 text-center text-slate-400 font-bold text-xs bg-[#080d1a] border border-slate-800 rounded-3xl">
+          Chargement de vos cours...
+        </div>
+      ) : courses.length === 0 ? (
+        <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-8 text-center space-y-4 shadow-xl">
+          <div className="w-12 h-12 rounded-2xl bg-cyan-950/80 border border-cyan-800/60 flex items-center justify-center text-cyan-400 mx-auto">
+            <BookOpen className="w-6 h-6" />
+          </div>
+          <div className="space-y-1 max-w-md mx-auto">
+            <h4 className="text-base font-black text-white">Vous n&apos;avez rejoint aucun cours pour le moment</h4>
+            <p className="text-xs text-slate-400">
+              Parcourez notre catalogue complet de formations IT & Cybersécurité et inscrivez-vous pour suivre votre progression de visionnage vidéo en temps réel !
+            </p>
+          </div>
+          <Link
+            href="/dashboard/cours"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-blue-600/20 cursor-pointer"
+          >
+            <span>Explorer le Catalogue des Cours</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {courses.map((c) => {
+            const isCompleted = c.progressPercent === 100;
 
-          return (
-            <div
-              key={c.id}
-              className="bg-[#080d1a] border border-slate-800 rounded-3xl p-5 space-y-4 shadow-xl flex flex-col justify-between hover:border-slate-700 transition-all group"
-            >
+            return (
+              <div
+                key={c.id}
+                className="bg-[#080d1a] border border-slate-800 rounded-3xl p-5 space-y-4 shadow-xl flex flex-col justify-between hover:border-slate-700 transition-all group"
+              >
               <div className="space-y-3">
                 {/* Header Tag */}
                 <div className="flex items-center justify-between">
@@ -201,10 +173,11 @@ export default function CourseProgressSection() {
                   )}
                 </Link>
               </div>
-            </div>
-          );
-        })}
-      </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
