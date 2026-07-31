@@ -47,10 +47,6 @@ export function OpenSessionsSection() {
         
         {/* En-tête */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-800/60 text-cyan-400 text-xs font-black uppercase tracking-wider">
-            <Calendar className="w-3.5 h-3.5" />
-            <span>Planning & Calendrier</span>
-          </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white uppercase tracking-tight leading-tight">
             Sessions de Formation Ouvertes
           </h2>
