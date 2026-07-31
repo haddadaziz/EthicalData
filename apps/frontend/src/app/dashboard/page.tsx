@@ -30,7 +30,8 @@ import ReplaysSection from '@/components/dashboard/ReplaysSection';
 import ExamHistorySection from '@/components/dashboard/ExamHistorySection';
 import PurchaseHistorySection from '@/components/dashboard/PurchaseHistorySection';
 import TrainerManagementSection from '@/components/dashboard/TrainerManagementSection';
-import { DownloadCloud, Video, ShoppingBag, Bell, Video as VideoIcon, Send } from '@/components/icons';
+import CourseProgressSection from '@/components/dashboard/CourseProgressSection';
+import { DownloadCloud, Video, ShoppingBag, Bell, Video as VideoIcon, Send, GraduationCap } from '@/components/icons';
 
 export default function StudentDashboard() {
     const router = useRouter();
@@ -56,7 +57,7 @@ export default function StudentDashboard() {
     const [myAppointments, setMyAppointments] = useState<any[]>([]);
     const [me, setMe] = useState<any>(null);
     const [enrolledCerts, setEnrolledCerts] = useState<any[]>([]);
-    const [activeSectionTab, setActiveSectionTab] = useState<'replays' | 'exams' | 'purchases'>('replays');
+    const [activeSectionTab, setActiveSectionTab] = useState<'progress' | 'replays' | 'exams' | 'purchases'>('progress');
     const [attestationModalOpen, setAttestationModalOpen] = useState(false);
     const [liveModalOpen, setLiveModalOpen] = useState(false);
 
@@ -1066,6 +1067,18 @@ export default function StudentDashboard() {
             <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl">
                 <div className="flex flex-wrap items-center gap-3 border-b border-slate-800 pb-4">
                     <button
+                        onClick={() => setActiveSectionTab('progress')}
+                        className={`px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 ${
+                            activeSectionTab === 'progress'
+                                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/25 border border-cyan-400/40'
+                                : 'bg-[#030712] text-slate-400 hover:text-white border border-slate-800'
+                        }`}
+                    >
+                        <GraduationCap className="w-4 h-4" />
+                        <span>Progression par Cours</span>
+                    </button>
+
+                    <button
                         onClick={() => setActiveSectionTab('replays')}
                         className={`px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 ${
                             activeSectionTab === 'replays'
@@ -1102,6 +1115,7 @@ export default function StudentDashboard() {
                     </button>
                 </div>
 
+                {activeSectionTab === 'progress' && <CourseProgressSection />}
                 {activeSectionTab === 'replays' && <ReplaysSection />}
                 {activeSectionTab === 'exams' && <ExamHistorySection />}
                 {activeSectionTab === 'purchases' && <PurchaseHistorySection />}

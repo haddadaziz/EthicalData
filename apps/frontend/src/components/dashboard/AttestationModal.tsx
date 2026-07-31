@@ -43,18 +43,24 @@ export default function AttestationModal({ isOpen, onClose, data }: AttestationM
       const filename = `Attestation_EDS_${data.studentName.replace(/\s+/g, '_')}.pdf`;
 
       const options = {
-        margin: 5,
+        margin: 0,
         filename: filename,
         image: { type: 'jpeg' as const, quality: 0.98 },
         html2canvas: {
           scale: 2,
           useCORS: true,
           backgroundColor: '#020617',
+          windowWidth: 1120,
           onclone: (clonedDoc: Document) => {
             const el = clonedDoc.getElementById('printable-attestation');
             if (el) {
               el.style.backgroundColor = '#020617';
               el.style.color = '#ffffff';
+              el.style.width = '1120px';
+              el.style.maxWidth = 'none';
+              el.style.borderRadius = '0px';
+              el.style.padding = '40px';
+              el.style.boxSizing = 'border-box';
             }
           }
         },
