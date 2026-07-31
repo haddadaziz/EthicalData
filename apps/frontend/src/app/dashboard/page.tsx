@@ -29,6 +29,7 @@ import AttestationModal from '@/components/dashboard/AttestationModal';
 import ReplaysSection from '@/components/dashboard/ReplaysSection';
 import ExamHistorySection from '@/components/dashboard/ExamHistorySection';
 import PurchaseHistorySection from '@/components/dashboard/PurchaseHistorySection';
+import TrainerManagementSection from '@/components/dashboard/TrainerManagementSection';
 import { DownloadCloud, Video, ShoppingBag, Bell, Video as VideoIcon } from '@/components/icons';
 
 export default function StudentDashboard() {
@@ -392,6 +393,9 @@ export default function StudentDashboard() {
                         </div>
                     </div>
                 </div>
+
+                {/* SECTIONS FORMATEUR (SESSIONS TEAMS, VALIDATION PRÉSENCE, UPLOADS) */}
+                <TrainerManagementSection />
             </div>
         );
     }
