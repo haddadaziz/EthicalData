@@ -1,14 +1,33 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, BookOpen, Edit, Upload, Clock, Users, PlusCircle, Trash2 } from '@/components/icons';
+import { X, BookOpen, Edit, Upload, Clock, Users, PlusCircle, Trash2, Search, ChevronDown, Award, Check } from '@/components/icons';
 import { useToast } from '@/context/ToastContext';
 
 interface CertificationInfo {
   id: string;
   nom: string;
   codeExamen: string;
+  image?: string | null;
+  badgeLogo?: string | null;
+  logoUrl?: string | null;
   fournisseur?: { nom: string } | null;
 }
+
+interface FormateurOption {
+  id: string;
+  prenom: string;
+  nom: string;
+  specialite: string;
+  avatar?: string | null;
+}
+
+const TRAINERS_LIST: FormateurOption[] = [
+  { id: 't1', prenom: 'Dr. Tariq', nom: 'Berrada', specialite: 'Expert Cybersécurité, Palo Alto & ISO 27001' },
+  { id: 't2', prenom: 'Leila', nom: 'Naciri', specialite: 'Architecte Cloud Solutions Azure & AWS' },
+  { id: 't3', prenom: 'Mehdi', nom: 'Kabbaj', specialite: 'Spécialiste Pentest & Sécurité Opérationnelle' },
+  { id: 't4', prenom: 'Dr. Youssef', nom: 'Benjelloun', specialite: 'Formateur Réseaux IT & Infrastructure' },
+  { id: 't5', prenom: 'Sofia', nom: 'Alami', specialite: 'Experte Gouvernance SI, GRC & ISO 27005' },
+];
 
 interface CoursePayload {
   titre: string;
@@ -56,6 +75,10 @@ export const CourseFormModal = React.memo(function CourseFormModal({
   const [objectifsList, setObjectifsList] = useState<string[]>(['']);
   const [prerequisList, setPrerequisList] = useState<string[]>(['']);
   const [publicCibleList, setPublicCibleList] = useState<string[]>(['']);
+
+  const [certDropdownOpen, setCertDropdownOpen] = useState(false);
+  const [trainerDropdownOpen, setTrainerDropdownOpen] = useState(false);
+  const [trainerSearchQuery, setTrainerSearchQuery] = useState('');
 
   useEffect(() => {
     if (isOpen) {
@@ -176,16 +199,71 @@ export const CourseFormModal = React.memo(function CourseFormModal({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5">
+            {/* Certification dropdown avec Logos images */}
+            <div className="space-y-1.5 relative">
               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Certification associée</label>
-              <select value={certificationId} onChange={(e) => setCertificationId(e.target.value)}
-                className="w-full px-4 py-2.5 bg-[#080d1a] shadow-sm border border-slate-800/80 focus:border-blue-600 rounded-xl text-white text-sm outline-none transition-all font-semibold">
-                <option value="">Aucune certification</option>
-                {certifications.map((c) => (
-                  <option key={c.id} value={c.id}>{c.codeExamen ? `[${c.codeExamen}] ` : ''}{c.nom}</option>
-                ))}
-              </select>
+              
+              <button
+                type="button"
+                onClick={() => setCertDropdownOpen(!certDropdownOpen)}
+                className="w-full px-4 py-2.5 bg-[#080d1a] border border-slate-800 focus:border-cyan-500 rounded-xl text-white text-sm font-semibold outline-none flex items-center justify-between gap-2 text-left cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5 truncate">
+                  {selectedCert && (selectedCert.image || selectedCert.badgeLogo || selectedCert.logoUrl) ? (
+                    <img
+                      src={selectedCert.image || selectedCert.badgeLogo || selectedCert.logoUrl || ''}
+                      alt=""
+                      className="w-5 h-5 object-contain rounded shrink-0 bg-slate-900 p-0.5"
+                    />
+                  ) : (
+                    <Award className="w-4 h-4 text-slate-500 shrink-0" />
+                  )}
+                  <span className="truncate">
+                    {selectedCert ? `${selectedCert.codeExamen ? `[${selectedCert.codeExamen}] ` : ''}${selectedCert.nom}` : 'Aucune certification'}
+                  </span>
+                </div>
+                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${certDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {certDropdownOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setCertDropdownOpen(false)} />
+                  <div className="absolute top-full left-0 right-0 mt-1 z-50 bg-[#080d1a] border border-slate-800 rounded-xl shadow-2xl max-h-60 overflow-y-auto divide-y divide-slate-800/60">
+                    <button
+                      type="button"
+                      onClick={() => { setCertificationId(''); setCertDropdownOpen(false); }}
+                      className={`w-full px-4 py-2.5 text-xs font-bold text-left flex items-center gap-2.5 hover:bg-slate-900 transition-colors ${!certificationId ? 'text-cyan-400 bg-cyan-950/30' : 'text-slate-400'}`}
+                    >
+                      <Award className="w-4 h-4 text-slate-500" />
+                      <span>Aucune certification</span>
+                    </button>
+                    {certifications.map((c) => {
+                      const logo = c.image || c.badgeLogo || c.logoUrl;
+                      const isSelected = String(c.id) === String(certificationId);
+                      return (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => { setCertificationId(String(c.id)); setCertDropdownOpen(false); }}
+                          className={`w-full px-4 py-2.5 text-xs font-bold text-left flex items-center justify-between gap-2.5 hover:bg-slate-900 transition-colors ${isSelected ? 'text-cyan-400 bg-cyan-950/30' : 'text-slate-200'}`}
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            {logo ? (
+                              <img src={logo} alt="" className="w-5 h-5 object-contain rounded shrink-0 bg-slate-900 p-0.5" />
+                            ) : (
+                              <Award className="w-4 h-4 text-slate-500 shrink-0" />
+                            )}
+                            <span className="truncate">{c.codeExamen ? `[${c.codeExamen}] ` : ''}{c.nom}</span>
+                          </div>
+                          {isSelected && <Check className="w-4 h-4 text-cyan-400 shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
             </div>
+
             <div className="space-y-1.5">
               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Durée estimée (heures)</label>
               <input type="number" required min={1} value={dureeEstimee}
@@ -195,12 +273,13 @@ export const CourseFormModal = React.memo(function CourseFormModal({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Format sans icônes/émojis */}
             <div className="space-y-1.5">
               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Format de Formation *</label>
               <select value={deliveryType} onChange={(e) => setDeliveryType(e.target.value as any)}
                 className="w-full px-4 py-2.5 bg-[#080d1a] shadow-sm border border-slate-800/80 focus:border-cyan-500 rounded-xl text-cyan-400 text-sm outline-none font-bold">
-                <option value="E-learning 24/7">💻 E-learning (Autoformation 24/7)</option>
-                <option value="Visioconférence Live">🎥 Formation Visioconférence Live (Teams)</option>
+                <option value="E-learning 24/7">E-learning (Autoformation 24/7)</option>
+                <option value="Visioconférence Live">Formation Visioconférence Live (Teams)</option>
               </select>
             </div>
 
@@ -213,14 +292,82 @@ export const CourseFormModal = React.memo(function CourseFormModal({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5">
+            {/* Formateur assigné avec Barre de Recherche Dynamique */}
+            <div className="space-y-1.5 relative">
               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Formateur Assigné *</label>
-              <select value={formateurId} onChange={(e) => setFormateurId(e.target.value)}
-                className="w-full px-4 py-2.5 bg-[#080d1a] shadow-sm border border-slate-800/80 focus:border-cyan-500 rounded-xl text-white text-sm outline-none font-semibold">
-                <option value="t1">Dr. Tariq Berrada (Expert Cybersécurité)</option>
-                <option value="t2">Leila Naciri (Architecte Cloud Azure/AWS)</option>
-                <option value="t3">Mehdi Kabbaj (Spécialiste Pentest)</option>
-              </select>
+              
+              {/* Trigger Input */}
+              <button
+                type="button"
+                onClick={() => setTrainerDropdownOpen(!trainerDropdownOpen)}
+                className="w-full px-4 py-2.5 bg-[#080d1a] border border-slate-800 focus:border-cyan-500 rounded-xl text-white text-sm font-semibold outline-none flex items-center justify-between gap-2 text-left cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5 truncate">
+                  <div className="w-5 h-5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800 flex items-center justify-center text-[9px] font-black shrink-0">
+                    {TRAINERS_LIST.find(t => t.id === formateurId)?.prenom?.[0] || 'F'}
+                  </div>
+                  <span className="truncate">
+                    {TRAINERS_LIST.find(t => t.id === formateurId)
+                      ? `${TRAINERS_LIST.find(t => t.id === formateurId)?.prenom} ${TRAINERS_LIST.find(t => t.id === formateurId)?.nom}`
+                      : 'Sélectionner un formateur'}
+                  </span>
+                </div>
+                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${trainerDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {/* Dropdown Menu avec Barre de Recherche */}
+              {trainerDropdownOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setTrainerDropdownOpen(false)} />
+                  <div className="absolute top-full left-0 right-0 mt-1 z-50 bg-[#080d1a] border border-slate-800 rounded-xl shadow-2xl overflow-hidden p-2 space-y-2">
+                    {/* Input Recherche Dynamique */}
+                    <div className="relative">
+                      <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        placeholder="Rechercher un formateur..."
+                        value={trainerSearchQuery}
+                        onChange={(e) => setTrainerSearchQuery(e.target.value)}
+                        className="w-full pl-9 pr-3 py-1.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-lg text-xs text-white placeholder-slate-500 outline-none font-medium"
+                      />
+                    </div>
+
+                    <div className="max-h-52 overflow-y-auto space-y-1">
+                      {TRAINERS_LIST.filter(t => 
+                        !trainerSearchQuery.trim() || 
+                        `${t.prenom} ${t.nom}`.toLowerCase().includes(trainerSearchQuery.toLowerCase()) ||
+                        t.specialite.toLowerCase().includes(trainerSearchQuery.toLowerCase())
+                      ).map((t) => {
+                        const isSelected = t.id === formateurId;
+                        return (
+                          <button
+                            key={t.id}
+                            type="button"
+                            onClick={() => {
+                              setFormateurId(t.id);
+                              setTrainerDropdownOpen(false);
+                            }}
+                            className={`w-full p-2 rounded-lg text-left flex items-start gap-2.5 hover:bg-slate-900 transition-colors cursor-pointer ${
+                              isSelected ? 'bg-cyan-950/40 border border-cyan-800/60' : ''
+                            }`}
+                          >
+                            <div className="w-7 h-7 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800 flex items-center justify-center text-xs font-black shrink-0 mt-0.5">
+                              {t.prenom[0]}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs font-black text-white truncate">{t.prenom} {t.nom}</span>
+                                {isSelected && <Check className="w-3.5 h-3.5 text-cyan-400 shrink-0" />}
+                              </div>
+                              <p className="text-[10px] text-slate-400 font-medium truncate">{t.specialite}</p>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             <div className="space-y-1.5">
