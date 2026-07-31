@@ -1,6 +1,9 @@
 import React from 'react';
+import { useLanguage } from '@/context/LanguageContext';
 
 export function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer className="relative z-10 bg-[#020617] text-[#A3A3A3] overflow-hidden">
       
@@ -22,35 +25,33 @@ export function Footer() {
         <div className="max-w-xl space-y-4 text-left">
           <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-10 w-auto object-contain" />
           <p className="text-sm leading-relaxed text-slate-400">
-            Dynamisme, réactivité et innovation sont au cœur de nos engagements. Nos solutions,<br className="hidden md:block" />
-            conçues par des experts, visent à surpasser vos attentes.
+            {t('footer_tagline')}
           </p>
         </div>
 
         <div className="flex flex-col md:flex-row gap-8 md:gap-12 text-left">
           <div className="space-y-4">
-            <h4 className="text-base font-bold text-white uppercase tracking-wider">Liens</h4>
+            <h4 className="text-base font-bold text-white uppercase tracking-wider">{t('footer_col1')}</h4>
             <div className="text-sm space-y-2.5">
-              <a href="/formations" className="block text-slate-400 hover:text-white transition-colors">Formations</a>
-              <a href="/certifications" className="block text-slate-400 hover:text-white transition-colors">Certifications</a>
-              <a href="/examens-blancs" className="block text-slate-400 hover:text-white transition-colors">Examens Blancs & IA</a>
-              <a href="/vouchers" className="block text-slate-400 hover:text-white transition-colors">Vouchers d'Examen</a>
-              <a href="/coaching" className="block text-slate-400 hover:text-white transition-colors">Coaching & Mentoring</a>
-              <a href="/blog" className="block text-slate-400 hover:text-white transition-colors">Blog & Guides</a>
-              <a href="/faq" className="block text-slate-400 hover:text-white transition-colors">FAQ</a>
-              <a href="/contact" className="block text-slate-400 hover:text-white transition-colors">Contact</a>
+              <a href="/formations" className="block text-slate-400 hover:text-white transition-colors">{t('sub_cat_formations')}</a>
+              <a href="/certifications" className="block text-slate-400 hover:text-white transition-colors">{t('nav_certifications')}</a>
+              <a href="/examens-blancs" className="block text-slate-400 hover:text-white transition-colors">{t('sub_exam_ia')}</a>
+              <a href="/vouchers" className="block text-slate-400 hover:text-white transition-colors">{t('sub_vouchers')}</a>
+              <a href="/coaching" className="block text-slate-400 hover:text-white transition-colors">{t('sub_coaching')}</a>
             </div>
           </div>
           <div className="space-y-4">
-            <h4 className="text-base font-bold text-white uppercase tracking-wider">Légal</h4>
+            <h4 className="text-base font-bold text-white uppercase tracking-wider">{t('footer_col2')}</h4>
             <div className="text-sm space-y-2.5">
-              <a href="/legal" className="block text-slate-400 hover:text-white transition-colors">Mentions Légales</a>
-              <a href="/cgu" className="block text-slate-400 hover:text-white transition-colors">CGU</a>
-              <a href="/legal#cookies" className="block text-slate-400 hover:text-white transition-colors">Cookies</a>
+              <a href="/infogerance" className="block text-slate-400 hover:text-white transition-colors">{t('sub_infogerance')}</a>
+              <a href="/integration" className="block text-slate-400 hover:text-white transition-colors">{t('sub_integration')}</a>
+              <a href="/services-professionnels" className="block text-slate-400 hover:text-white transition-colors">{t('sub_prof_services')}</a>
+              <a href="/solution-it" className="block text-slate-400 hover:text-white transition-colors">{t('sub_solution_it')}</a>
+              <a href="/portage-salarial" className="block text-slate-400 hover:text-white transition-colors">{t('sub_portage')}</a>
             </div>
           </div>
           <div className="space-y-4">
-            <h4 className="text-base font-bold text-white uppercase tracking-wider">Contact</h4>
+            <h4 className="text-base font-bold text-white uppercase tracking-wider">{t('footer_col3')}</h4>
             <div className="text-sm space-y-3">
               <p><span className="font-bold text-[#E5E5E5]">Email :</span> contact@ethicaldatasecurity.ma</p>
               <p><span className="font-bold text-[#E5E5E5]">Tél :</span> +212 664 244 343 // +212 520 572 631</p>

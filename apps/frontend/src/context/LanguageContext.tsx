@@ -120,7 +120,51 @@ export const dictionary: Translations = {
   btn_discover_exams: { fr: "Découvrir les Examens Blancs", ar: "استكشف الامتحانات التجريبية", en: "Discover Mock Exams" },
   btn_view_vouchers: { fr: "Voir les Vouchers", ar: "عرض القسائم المتاحة", en: "View Vouchers" },
 
+  // Courses Preview Section
+  courses_preview_title: { fr: "Formations Populaires & Certifiantes", ar: "دورات تدريبية شائعة ومشهورة", en: "Popular & Certified Courses" },
+  courses_preview_desc: {
+    fr: "Préparez et réussissez vos certifications IT officielles grâce à nos programmes immersifs avec cours, labs et examens blancs IA.",
+    ar: "استعد وانجح في شهادات تكنولوجيا المعلومات الرسمية من خلال برامجنا مع المختبرات والامتحانات المحاكاة.",
+    en: "Prepare and pass your official IT certifications with our immersive courses, labs, and AI mock exams."
+  },
+  btn_all_courses: { fr: "Voir tout le catalogue des formations", ar: "عرض جميع الدورات التدريبية", en: "View All Courses" },
+
+  // Testimonials Section
+  testimonials_tag: { fr: "Témoignages & Avis", ar: "آراء وشهادات الطلاب", en: "Testimonials & Reviews" },
+  testimonials_title: { fr: "Ce que disent nos apprenants", ar: "ما يقوله طلابنا", en: "What Our Learners Say" },
+  testimonials_subtitle: {
+    fr: "Retours d'expérience et réussites de nos diplômés et professionnels certifiés.",
+    ar: "تجارب وقصص نجاح خريجينا والمهنيين المعتمدين.",
+    en: "Success stories and feedback from our certified graduates and professionals."
+  },
+
+  // FAQ Section
+  faq_tag: { fr: "Questions Fréquentes", ar: "الأسئلة الشائعة", en: "Frequently Asked Questions" },
+  faq_title: { fr: "Tout ce que vous devez savoir", ar: "كل ما تحتاج إلى معرفته", en: "Everything You Need to Know" },
+  faq_subtitle: {
+    fr: "Trouvez des réponses claires sur nos formations, certifications, vouchers et accompagnement IA.",
+    ar: "إجابات واضحة حول دوراتنا وشهاداتنا وقسائم الامتحانات والمرافقة.",
+    en: "Find clear answers about our courses, certifications, vouchers, and AI support."
+  },
+
+  // Contact Section
+  contact_title: { fr: "Contactez Nos Experts IT", ar: "تواصل مع خبراء تكنولوجيا المعلومات", en: "Contact Our IT Experts" },
+  contact_subtitle: {
+    fr: "Besoin d'un conseil personnalisé, d'un devis entreprise ou d'une information sur un voucher ? Notre équipe est à votre écoute.",
+    ar: "هل تحتاج إلى استشارة خاصة، أو عرض سعر للشركة، أو معلومات حول القسائم؟ فريقنا في خدمتك.",
+    en: "Need personalized advice, a corporate quote, or information on vouchers? Our team is at your service."
+  },
+  contact_btn_send: { fr: "Envoyer le message", ar: "إرسال الرسالة", en: "Send Message" },
+
   // Footer & Miscellaneous
+  footer_tagline: {
+    fr: "Plateforme leader de formation et certification officielle Cloud, Cybersécurité & IA au Maroc et en Afrique.",
+    ar: "المنصة الرائدة للتدريب والشهادات الرسمية في السحابة والأمن السبراني والذكاء الاصطناعي في المغرب وإفريقيا.",
+    en: "Leading platform for official Cloud, Cybersecurity & AI training and certification in Morocco & Africa."
+  },
+  footer_col1: { fr: "Formations", ar: "الدورات", en: "Courses" },
+  footer_col2: { fr: "Services IT", ar: "خدمات التكنولوجيا", en: "IT Services" },
+  footer_col3: { fr: "Contact & Support", ar: "التواصل والدعم", en: "Contact & Support" },
   rights_reserved: { fr: "Tous droits réservés.", ar: "جميع الحقوق محفوظة.", en: "All rights reserved." },
   select_lang: { fr: "Langue", ar: "اللغة", en: "Language" },
 };

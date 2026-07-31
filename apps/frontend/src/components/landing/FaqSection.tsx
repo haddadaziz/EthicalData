@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from '@/components/icons';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
+import { useLanguage } from '@/context/LanguageContext';
 
 export function FaqSection() {
+  const { t } = useLanguage();
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const toggleFaq = (idx: number) => setActiveFaq(activeFaq === idx ? null : idx);
 
@@ -42,9 +44,10 @@ export function FaqSection() {
       </div>
 
       <div className="relative z-10 max-w-4xl mx-auto px-6">
-        <AnimatedSection className="text-center mb-16">
-          <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest">Support</span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mt-3 uppercase tracking-tight">Questions Fréquentes</h2>
+        <AnimatedSection className="text-center mb-16 space-y-2">
+          <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest">{t('faq_tag')}</span>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white uppercase tracking-tight">{t('faq_title')}</h2>
+          <p className="text-xs sm:text-sm text-slate-400 font-medium">{t('faq_subtitle')}</p>
         </AnimatedSection>
 
         <div className="space-y-3">

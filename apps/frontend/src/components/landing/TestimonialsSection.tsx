@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useLanguage } from '@/context/LanguageContext';
 
 const googleReviews = [
   {
@@ -43,6 +44,7 @@ const googleReviews = [
 ];
 
 export function TestimonialsSection() {
+  const { t } = useLanguage();
   const [reviewIndex, setReviewIndex] = useState(0);
   const [itemsPerView, setItemsPerView] = useState(1);
   const [expandedReviews, setExpandedReviews] = useState<number[]>([]);
@@ -68,13 +70,6 @@ export function TestimonialsSection() {
   }, []);
 
   const maxIndex = Math.max(0, googleReviews.length - itemsPerView);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setReviewIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [maxIndex]);
 
   const handlePrev = () => {
     setReviewIndex(prev => Math.max(0, prev - 1));
@@ -126,10 +121,10 @@ export function TestimonialsSection() {
         
         {/* En-tête Google */}
         <div className="flex flex-col items-center justify-center text-center space-y-3 mb-10 md:mb-14">
-          <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">Ce que disent nos clients</h2>
+          <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">{t('testimonials_title')}</h2>
           
           <div className="flex flex-col items-center space-y-1">
-            <span className="text-base sm:text-lg font-black text-white uppercase tracking-widest">Excellent</span>
+            <span className="text-base sm:text-lg font-black text-white uppercase tracking-widest">{t('testimonials_excellent')}</span>
             <div className="flex gap-1">
               {[...Array(5)].map((_, i) => (
                 <svg key={i} className="w-5 h-5 sm:w-7 sm:h-7 text-[#FFC107] fill-current" viewBox="0 0 512 512">

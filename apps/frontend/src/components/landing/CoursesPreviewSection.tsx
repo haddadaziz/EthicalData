@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { BookOpen, Clock, Users, ArrowRight } from '@/components/icons';
 import { BackgroundBeamsWithCollision } from '@/components/ui/background-beams-with-collision';
+import { useLanguage } from '@/context/LanguageContext';
 
 const FEATURED_COURSES = [
   {
@@ -42,6 +43,8 @@ const FEATURED_COURSES = [
 ];
 
 export function CoursesPreviewSection() {
+  const { t } = useLanguage();
+
   return (
     <section className="relative z-10 bg-[#020617] border-t border-slate-900 overflow-hidden">
       <BackgroundBeamsWithCollision className="py-20 px-4 md:px-6">
@@ -52,20 +55,20 @@ export function CoursesPreviewSection() {
             <div className="space-y-3 max-w-2xl">
               <h2 className="text-2xl md:text-5xl font-black text-white tracking-tight">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-cyan-400">
-                  Cours & Formations Interactives
+                  {t('courses_preview_title')}
                 </span>
               </h2>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                Consultez nos modules de cours structurés, conçus pour vous faire progresser pas à pas et valider vos examens professionnels.
+              <p className="text-slate-400 text-xs sm:text-sm leading-relaxed font-medium">
+                {t('courses_preview_desc')}
               </p>
             </div>
 
             <Link
               href="/formations"
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#080d1a] hover:bg-slate-900 border border-slate-800 text-cyan-400 hover:text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm shrink-0 cursor-pointer w-full sm:w-auto self-start md:self-auto"
+              className="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 font-bold text-xs uppercase tracking-wider group cursor-pointer shrink-0"
             >
-              <span>Voir tout le catalogue</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>{t('btn_all_courses')}</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 
