@@ -22,6 +22,37 @@ const SERVICES_ITEMS = [
   { label: 'Portage Salarial', href: '/portage-salarial' },
 ];
 
+function FlagFR({ className = "w-4 h-3 rounded-xs" }: { className?: string }) {
+  return (
+    <svg className={`${className} inline-block overflow-hidden shadow-xs shrink-0`} viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#fff" d="M0 0h640v480H0z"/>
+      <path fill="#00267f" d="M0 0h213.3v480H0z"/>
+      <path fill="#f31830" d="M426.7 0H640v480H426.7z"/>
+    </svg>
+  );
+}
+
+function FlagMA({ className = "w-4 h-3 rounded-xs" }: { className?: string }) {
+  return (
+    <svg className={`${className} inline-block overflow-hidden shadow-xs shrink-0`} viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#c1272d" d="M0 0h640v480H0z"/>
+      <path fill="none" stroke="#006233" strokeWidth="14" d="M320 179.4l19.5 60.1h63.2l-51.1 37.2 19.5 60.1-51.1-37.1-51.1 37.1 19.5-60.1-51.1-37.2h63.2z"/>
+    </svg>
+  );
+}
+
+function FlagGB({ className = "w-4 h-3 rounded-xs" }: { className?: string }) {
+  return (
+    <svg className={`${className} inline-block overflow-hidden shadow-xs shrink-0`} viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#012169" d="M0 0h640v480H0z"/>
+      <path fill="#fff" d="m75 0 245 180L565 0h75v55L400 240l240 185v55h-75L320 300 75 480H0v-55l240-185L0 55V0h75z"/>
+      <path fill="#c8102e" d="m425 240 215 165v25h-35L390 265l35-25zm-210 0L0 75V50h35l215 165-35 25zM0 405l215-165 35 25L35 430H0v-25zM640 75 425 240l-35-25L605 50h35v25z"/>
+      <path fill="#fff" d="M240 0v480h160V0H240zM0 160v160h640V160H0z"/>
+      <path fill="#c8102e" d="M267 0v480h106V0H267zM0 187v106h640V187H0z"/>
+    </svg>
+  );
+}
+
 export function Navbar() {
   const { language, setLanguage, t } = useLanguage();
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
@@ -223,8 +254,8 @@ export function Navbar() {
               onClick={() => setLangDropdownOpen(!langDropdownOpen)}
               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-cyan-500/50 text-white text-xs font-bold transition-all cursor-pointer"
             >
-              <Globe className="w-3.5 h-3.5 text-cyan-400" />
-              <span>{language === 'fr' ? '🇫🇷 FR' : language === 'ar' ? '🇲🇦 AR' : '🇬🇧 EN'}</span>
+              {language === 'fr' ? <FlagFR className="w-4 h-3 rounded-xs" /> : language === 'ar' ? <FlagMA className="w-4 h-3 rounded-xs" /> : <FlagGB className="w-4 h-3 rounded-xs" />}
+              <span>{language === 'fr' ? 'FR' : language === 'ar' ? 'AR' : 'EN'}</span>
               <ChevronDown className="w-3 h-3 text-slate-400" />
             </button>
 
@@ -239,21 +270,24 @@ export function Navbar() {
                 >
                   <button
                     onClick={() => { setLanguage('fr'); setLangDropdownOpen(false); }}
-                    className={`w-full flex items-center justify-between px-3 py-1.5 text-xs rounded-lg transition-colors font-bold ${language === 'fr' ? 'bg-cyan-950/80 text-cyan-400 border border-cyan-800/60' : 'text-slate-300 hover:bg-slate-900'}`}
+                    className={`w-full flex items-center gap-2 px-3 py-1.5 text-xs rounded-lg transition-colors font-bold ${language === 'fr' ? 'bg-cyan-950/80 text-cyan-400 border border-cyan-800/60' : 'text-slate-300 hover:bg-slate-900'}`}
                   >
-                    <span>🇫🇷 Français</span>
+                    <FlagFR className="w-4 h-3 rounded-xs" />
+                    <span>Français</span>
                   </button>
                   <button
                     onClick={() => { setLanguage('ar'); setLangDropdownOpen(false); }}
-                    className={`w-full flex items-center justify-between px-3 py-1.5 text-xs rounded-lg transition-colors font-bold ${language === 'ar' ? 'bg-cyan-950/80 text-cyan-400 border border-cyan-800/60' : 'text-slate-300 hover:bg-slate-900'}`}
+                    className={`w-full flex items-center gap-2 px-3 py-1.5 text-xs rounded-lg transition-colors font-bold ${language === 'ar' ? 'bg-cyan-950/80 text-cyan-400 border border-cyan-800/60' : 'text-slate-300 hover:bg-slate-900'}`}
                   >
-                    <span>🇲🇦 العربية</span>
+                    <FlagMA className="w-4 h-3 rounded-xs" />
+                    <span>العربية</span>
                   </button>
                   <button
                     onClick={() => { setLanguage('en'); setLangDropdownOpen(false); }}
-                    className={`w-full flex items-center justify-between px-3 py-1.5 text-xs rounded-lg transition-colors font-bold ${language === 'en' ? 'bg-cyan-950/80 text-cyan-400 border border-cyan-800/60' : 'text-slate-300 hover:bg-slate-900'}`}
+                    className={`w-full flex items-center gap-2 px-3 py-1.5 text-xs rounded-lg transition-colors font-bold ${language === 'en' ? 'bg-cyan-950/80 text-cyan-400 border border-cyan-800/60' : 'text-slate-300 hover:bg-slate-900'}`}
                   >
-                    <span>🇬🇧 English</span>
+                    <FlagGB className="w-4 h-3 rounded-xs" />
+                    <span>English</span>
                   </button>
                 </motion.div>
               )}
