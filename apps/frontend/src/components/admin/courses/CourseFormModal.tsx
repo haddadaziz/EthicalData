@@ -21,12 +21,42 @@ interface FormateurOption {
   avatar?: string | null;
 }
 
-const TRAINERS_LIST: FormateurOption[] = [
-  { id: 't1', prenom: 'Dr. Tariq', nom: 'Berrada', specialite: 'Expert Cybersécurité, Palo Alto & ISO 27001' },
-  { id: 't2', prenom: 'Leila', nom: 'Naciri', specialite: 'Architecte Cloud Solutions Azure & AWS' },
-  { id: 't3', prenom: 'Mehdi', nom: 'Kabbaj', specialite: 'Spécialiste Pentest & Sécurité Opérationnelle' },
-  { id: 't4', prenom: 'Dr. Youssef', nom: 'Benjelloun', specialite: 'Formateur Réseaux IT & Infrastructure' },
-  { id: 't5', prenom: 'Sofia', nom: 'Alami', specialite: 'Experte Gouvernance SI, GRC & ISO 27005' },
+const REAL_TRAINERS_LIST: FormateurOption[] = [
+  { 
+    id: 't1', 
+    prenom: 'Dr. Tariq', 
+    nom: 'Berrada', 
+    specialite: 'Expert Cybersécurité, Palo Alto & ISO 27001',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'
+  },
+  { 
+    id: 't2', 
+    prenom: 'Leila', 
+    nom: 'Naciri', 
+    specialite: 'Architecte Cloud Solutions Azure & AWS',
+    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80'
+  },
+  { 
+    id: 't3', 
+    prenom: 'Mehdi', 
+    nom: 'Kabbaj', 
+    specialite: 'Spécialiste Pentest & Sécurité Opérationnelle',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80'
+  },
+  { 
+    id: 't4', 
+    prenom: 'Dr. Youssef', 
+    nom: 'Benjelloun', 
+    specialite: 'Formateur Réseaux IT & Infrastructure',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80'
+  },
+  { 
+    id: 't5', 
+    prenom: 'Sofia', 
+    nom: 'Alami', 
+    specialite: 'Experte Gouvernance SI, GRC & ISO 27005',
+    avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80'
+  },
 ];
 
 interface CoursePayload {
@@ -219,7 +249,7 @@ export const CourseFormModal = React.memo(function CourseFormModal({
                     <Award className="w-4 h-4 text-slate-500 shrink-0" />
                   )}
                   <span className="truncate">
-                    {selectedCert ? `${selectedCert.codeExamen ? `[${selectedCert.codeExamen}] ` : ''}${selectedCert.nom}` : 'Aucune certification'}
+                    {selectedCert ? selectedCert.nom : 'Aucune certification'}
                   </span>
                 </div>
                 <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${certDropdownOpen ? 'rotate-180' : ''}`} />
@@ -253,7 +283,7 @@ export const CourseFormModal = React.memo(function CourseFormModal({
                             ) : (
                               <Award className="w-4 h-4 text-slate-500 shrink-0" />
                             )}
-                            <span className="truncate">{c.codeExamen ? `[${c.codeExamen}] ` : ''}{c.nom}</span>
+                            <span className="truncate">{c.nom}</span>
                           </div>
                           {isSelected && <Check className="w-4 h-4 text-cyan-400 shrink-0" />}
                         </button>
@@ -292,23 +322,31 @@ export const CourseFormModal = React.memo(function CourseFormModal({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Formateur assigné avec Barre de Recherche Dynamique */}
+            {/* Formateur assigné avec Photo de Profil réelle & Barre de Recherche Dynamique */}
             <div className="space-y-1.5 relative">
               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Formateur Assigné *</label>
               
-              {/* Trigger Input */}
+              {/* Trigger Input avec Photo de Profil */}
               <button
                 type="button"
                 onClick={() => setTrainerDropdownOpen(!trainerDropdownOpen)}
                 className="w-full px-4 py-2.5 bg-[#080d1a] border border-slate-800 focus:border-cyan-500 rounded-xl text-white text-sm font-semibold outline-none flex items-center justify-between gap-2 text-left cursor-pointer"
               >
                 <div className="flex items-center gap-2.5 truncate">
-                  <div className="w-5 h-5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800 flex items-center justify-center text-[9px] font-black shrink-0">
-                    {TRAINERS_LIST.find(t => t.id === formateurId)?.prenom?.[0] || 'F'}
-                  </div>
+                  {REAL_TRAINERS_LIST.find(t => t.id === formateurId)?.avatar ? (
+                    <img
+                      src={REAL_TRAINERS_LIST.find(t => t.id === formateurId)?.avatar || ''}
+                      alt=""
+                      className="w-6 h-6 rounded-full object-cover shrink-0 border border-slate-700"
+                    />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800 flex items-center justify-center text-[9px] font-black shrink-0">
+                      {REAL_TRAINERS_LIST.find(t => t.id === formateurId)?.prenom?.[0] || 'F'}
+                    </div>
+                  )}
                   <span className="truncate">
-                    {TRAINERS_LIST.find(t => t.id === formateurId)
-                      ? `${TRAINERS_LIST.find(t => t.id === formateurId)?.prenom} ${TRAINERS_LIST.find(t => t.id === formateurId)?.nom}`
+                    {REAL_TRAINERS_LIST.find(t => t.id === formateurId)
+                      ? `${REAL_TRAINERS_LIST.find(t => t.id === formateurId)?.prenom} ${REAL_TRAINERS_LIST.find(t => t.id === formateurId)?.nom}`
                       : 'Sélectionner un formateur'}
                   </span>
                 </div>
@@ -325,15 +363,15 @@ export const CourseFormModal = React.memo(function CourseFormModal({
                       <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                       <input
                         type="text"
-                        placeholder="Rechercher un formateur..."
+                        placeholder="Rechercher un formateur par nom..."
                         value={trainerSearchQuery}
                         onChange={(e) => setTrainerSearchQuery(e.target.value)}
                         className="w-full pl-9 pr-3 py-1.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-lg text-xs text-white placeholder-slate-500 outline-none font-medium"
                       />
                     </div>
 
-                    <div className="max-h-52 overflow-y-auto space-y-1">
-                      {TRAINERS_LIST.filter(t => 
+                    <div className="max-h-56 overflow-y-auto space-y-1">
+                      {REAL_TRAINERS_LIST.filter(t => 
                         !trainerSearchQuery.trim() || 
                         `${t.prenom} ${t.nom}`.toLowerCase().includes(trainerSearchQuery.toLowerCase()) ||
                         t.specialite.toLowerCase().includes(trainerSearchQuery.toLowerCase())
@@ -347,17 +385,25 @@ export const CourseFormModal = React.memo(function CourseFormModal({
                               setFormateurId(t.id);
                               setTrainerDropdownOpen(false);
                             }}
-                            className={`w-full p-2 rounded-lg text-left flex items-start gap-2.5 hover:bg-slate-900 transition-colors cursor-pointer ${
+                            className={`w-full p-2.5 rounded-xl text-left flex items-center gap-3 hover:bg-slate-900 transition-colors cursor-pointer ${
                               isSelected ? 'bg-cyan-950/40 border border-cyan-800/60' : ''
                             }`}
                           >
-                            <div className="w-7 h-7 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800 flex items-center justify-center text-xs font-black shrink-0 mt-0.5">
-                              {t.prenom[0]}
-                            </div>
+                            {t.avatar ? (
+                              <img
+                                src={t.avatar}
+                                alt={t.prenom}
+                                className="w-9 h-9 rounded-full object-cover shrink-0 border border-slate-700 shadow-sm"
+                              />
+                            ) : (
+                              <div className="w-9 h-9 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800 flex items-center justify-center text-xs font-black shrink-0">
+                                {t.prenom[0]}
+                              </div>
+                            )}
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between">
                                 <span className="text-xs font-black text-white truncate">{t.prenom} {t.nom}</span>
-                                {isSelected && <Check className="w-3.5 h-3.5 text-cyan-400 shrink-0" />}
+                                {isSelected && <Check className="w-4 h-4 text-cyan-400 shrink-0" />}
                               </div>
                               <p className="text-[10px] text-slate-400 font-medium truncate">{t.specialite}</p>
                             </div>
