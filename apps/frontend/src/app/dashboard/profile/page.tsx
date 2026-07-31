@@ -7,6 +7,8 @@ import { User, ShieldCheck, KeyRound, CheckCircle, Save, RefreshCw, MessageCircl
 import { motion, AnimatePresence } from 'framer-motion';
 import PurchaseHistorySection from '@/components/dashboard/PurchaseHistorySection';
 import { ShoppingBag } from '@/components/icons';
+import CertificatScoreModal from '@/components/dashboard/CertificatScoreModal';
+import AttestationModal from '@/components/dashboard/AttestationModal';
 import { getObtainedCertifications, GrantedCertificate } from '@/lib/certificate-storage';
 import { getCertificateBadgeLogo } from '@/lib/certification-utils';
 
@@ -36,6 +38,8 @@ export default function ProfilePage() {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'INFO' | 'SECURITY' | 'ACHATS'>('INFO');
     const [obtainedList, setObtainedList] = useState<GrantedCertificate[]>([]);
+    const [certScoreModalData, setCertScoreModalData] = useState<any | null>(null);
+    const [attestationModalData, setAttestationModalData] = useState<any | null>(null);
 
     useEffect(() => {
         setObtainedList(getObtainedCertifications());
@@ -603,9 +607,9 @@ export default function ProfilePage() {
                     </AnimatePresence>
                 </div>
 
-                {/* ── COLONNE DROITE : CERTIFICATIONS (1/3) ── */}
+                {/* ── COLONNE DROITE : CERTIFICATS & ATTESTATIONS (1/3) ── */}
                 <div className="space-y-6">
-                    {/* Certifications obtenues */}
+                    {/* DOCUMENT 1 : CERTIFICATS D'EXAMEN (SCORES %) */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -615,12 +619,12 @@ export default function ProfilePage() {
                         <div className="h-1 bg-gradient-to-r from-emerald-500 to-emerald-400" />
                         <div className="p-6 space-y-4">
                             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                                <h3 className="text-sm font-black text-white tracking-tight flex items-center gap-2">
+                                <h3 className="text-xs font-black text-white tracking-tight flex items-center gap-2">
                                     <CheckCircle className="w-4 h-4 text-emerald-500" />
-                                    <span>Certifications Obtenues</span>
+                                    <span>Certificats de Réussite (Examen)</span>
                                 </h3>
-                                <span className="px-2.5 py-0.5 bg-emerald-950/30 text-emerald-500 font-extrabold text-[9px] rounded-full border border-emerald-900/50">
-                                    {obtainedList.length} Validées
+                                <span className="px-2 py-0.5 bg-emerald-950/30 text-emerald-500 font-extrabold text-[9px] rounded-full border border-emerald-900/50">
+                                    {obtainedList.length} Diplômes
                                 </span>
                             </div>
                             
@@ -629,7 +633,7 @@ export default function ProfilePage() {
                                     return (
                                         <div
                                             key={cert.id}
-                                            className="p-3.5 bg-[#020617] border border-slate-800 rounded-2xl hover:border-emerald-900/60 transition-all space-y-2 text-left"
+                                            className="p-3 bg-[#020617] border border-slate-800 rounded-2xl hover:border-emerald-900/60 transition-all space-y-2 text-left"
                                         >
                                             <div className="flex items-center justify-between gap-2">
                                                 <span className="text-[9px] font-black uppercase tracking-wider text-emerald-400 px-2 py-0.5 bg-emerald-950/80 border border-emerald-800/60 rounded">
@@ -642,11 +646,18 @@ export default function ProfilePage() {
 
                                             <button
                                                 type="button"
-                                                onClick={() => showToast(`Téléchargement du Certificat de Réussite "${cert.nom}" en cours...`, "success")}
-                                                className="w-full py-1.5 px-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-cyan-400 hover:text-white rounded-xl text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                                                onClick={() => setCertScoreModalData({
+                                                    studentName: profile ? `${profile.prenom} ${profile.nom}` : 'Karim Bennani',
+                                                    certificationName: cert.nom,
+                                                    examCode: cert.code,
+                                                    score: cert.score,
+                                                    dateObtained: cert.date,
+                                                    verificationCode: `EDS-CERT-${cert.code}-${cert.score}`
+                                                })}
+                                                className="w-full py-1.5 px-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-emerald-400 hover:text-white rounded-xl text-[10px] font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                                             >
-                                                <Upload className="w-3.5 h-3.5 rotate-180" />
-                                                <span>Télécharger Certificat Officiel (PDF)</span>
+                                                <Upload className="w-3.5 h-3.5 rotate-180 text-emerald-400" />
+                                                <span>Télécharger Certificat d&apos;Examen (PDF)</span>
                                             </button>
                                         </div>
                                     );
@@ -655,7 +666,7 @@ export default function ProfilePage() {
                         </div>
                     </motion.div>
 
-                    {/* Certifications visées */}
+                    {/* DOCUMENT 2 : ATTESTATIONS DE FORMATION (COMPLÉTION & PRÉSENCE) */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}

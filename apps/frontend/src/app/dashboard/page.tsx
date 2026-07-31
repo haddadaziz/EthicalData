@@ -31,6 +31,7 @@ import ExamHistorySection from '@/components/dashboard/ExamHistorySection';
 import PurchaseHistorySection from '@/components/dashboard/PurchaseHistorySection';
 import TrainerManagementSection from '@/components/dashboard/TrainerManagementSection';
 import CourseProgressSection from '@/components/dashboard/CourseProgressSection';
+import CertificatScoreModal from '@/components/dashboard/CertificatScoreModal';
 import { getObtainedCertifications, GrantedCertificate } from '@/lib/certificate-storage';
 import { DownloadCloud, Video, ShoppingBag, Bell, Video as VideoIcon, Send, GraduationCap } from '@/components/icons';
 
@@ -67,6 +68,7 @@ export default function StudentDashboard() {
         return () => window.removeEventListener('certificationsUpdated', handleUpdate);
     }, []);
     const [attestationModalOpen, setAttestationModalOpen] = useState(false);
+    const [certScoreModalData, setCertScoreModalData] = useState<any | null>(null);
     const [liveModalOpen, setLiveModalOpen] = useState(false);
 
     useEffect(() => {
@@ -1057,10 +1059,17 @@ export default function StudentDashboard() {
                                 </div>
                             </div>
                             <button
-                                onClick={() => setAttestationModalOpen(true)}
-                                className="px-3 py-1.5 bg-slate-900 border border-slate-700 text-cyan-400 hover:text-white rounded-lg text-xs font-bold shrink-0 cursor-pointer"
+                                onClick={() => setCertScoreModalData({
+                                    studentName: me ? `${me.prenom || ''} ${me.nom || ''}`.trim() || 'Karim Bennani' : 'Karim Bennani',
+                                    certificationName: cert.nom,
+                                    examCode: cert.code,
+                                    score: cert.score,
+                                    dateObtained: cert.date,
+                                    verificationCode: `EDS-CERT-${cert.code}-${cert.score}`
+                                })}
+                                className="px-3 py-1.5 bg-slate-900 border border-slate-700 text-emerald-400 hover:text-white rounded-lg text-xs font-bold shrink-0 cursor-pointer"
                             >
-                                Télécharger
+                                Télécharger Certificat (PDF)
                             </button>
                         </div>
                     ))}
@@ -1072,7 +1081,13 @@ export default function StudentDashboard() {
                 <ExamHistorySection />
             </div>
 
-            {/* ATTESTATION MODAL DISPLAY */}
+            {/* MODALS DÉDIÉES */}
+            <CertificatScoreModal
+                isOpen={!!certScoreModalData}
+                onClose={() => setCertScoreModalData(null)}
+                data={certScoreModalData}
+            />
+
             <AttestationModal
                 isOpen={attestationModalOpen}
                 onClose={() => setAttestationModalOpen(false)}
