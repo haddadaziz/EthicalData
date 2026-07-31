@@ -46,14 +46,24 @@ export default function AttestationModal({ isOpen, onClose, data }: AttestationM
         margin: 5,
         filename: filename,
         image: { type: 'jpeg' as const, quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#020617' },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#020617',
+          onclone: (clonedDoc: Document) => {
+            const el = clonedDoc.getElementById('printable-attestation');
+            if (el) {
+              el.style.backgroundColor = '#020617';
+              el.style.color = '#ffffff';
+            }
+          }
+        },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' as const }
       };
 
       await html2pdf().set(options).from(element).save();
     } catch (err) {
       console.error("Erreur génération PDF:", err);
-      // Fallback print if html2pdf encounters issues
       window.print();
     } finally {
       setDownloading(false);
@@ -111,7 +121,7 @@ export default function AttestationModal({ isOpen, onClose, data }: AttestationM
           {/* Header Controls (Fixed at top) */}
           <div className="flex items-center justify-between border-b border-slate-800 pb-3 shrink-0">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-cyan-950/80 border border-cyan-800/60 flex items-center justify-center text-cyan-400">
+              <div className="w-8 h-8 rounded-lg bg-[#082f49] border border-[#075985] flex items-center justify-center text-[#22d3ee]">
                 <Award className="w-4 h-4" />
               </div>
               <div className="text-left">
@@ -124,7 +134,7 @@ export default function AttestationModal({ isOpen, onClose, data }: AttestationM
               <button
                 type="button"
                 onClick={handlePrint}
-                className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 rounded-xl text-[11px] font-bold transition-all cursor-pointer"
+                className="px-3 py-1.5 bg-[#0f172a] hover:bg-[#1e293b] border border-[#334155] text-[#e2e8f0] rounded-xl text-[11px] font-bold transition-all cursor-pointer"
               >
                 🖨️ Imprimer
               </button>
@@ -132,7 +142,7 @@ export default function AttestationModal({ isOpen, onClose, data }: AttestationM
                 type="button"
                 onClick={handleDownloadPDF}
                 disabled={downloading}
-                className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md shadow-blue-600/20 cursor-pointer disabled:opacity-50"
+                className="px-3.5 py-1.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-xl text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md cursor-pointer disabled:opacity-50"
               >
                 <DownloadCloud className="w-3.5 h-3.5" />
                 <span>{downloading ? 'Génération...' : 'Télécharger PDF'}</span>
@@ -140,79 +150,80 @@ export default function AttestationModal({ isOpen, onClose, data }: AttestationM
               <button
                 type="button"
                 onClick={onClose}
-                className="p-1.5 text-slate-400 hover:text-white rounded-xl bg-slate-900 border border-slate-800 cursor-pointer"
+                className="p-1.5 text-slate-400 hover:text-white rounded-xl bg-[#0f172a] border border-[#1e293b] cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          {/* PRINTABLE ATTESTATION DIPLOMA CARD */}
+          {/* PRINTABLE ATTESTATION DIPLOMA CARD WITH HEX COLOR FALLBACKS */}
           <div
             id="printable-attestation"
             ref={printRef}
-            className="bg-[#020617] border border-cyan-500/40 rounded-2xl p-6 sm:p-8 space-y-5 relative overflow-hidden text-center shadow-inner overflow-y-auto max-h-[76vh]"
+            style={{ backgroundColor: '#020617', color: '#ffffff' }}
+            className="bg-[#020617] border border-[#0891b2] rounded-2xl p-6 sm:p-8 space-y-5 relative overflow-hidden text-center shadow-inner overflow-y-auto max-h-[76vh]"
           >
             {/* Corner Decorative Borders */}
-            <div className="absolute top-2 left-2 w-6 h-6 border-t border-l border-cyan-400/60 pointer-events-none" />
-            <div className="absolute top-2 right-2 w-6 h-6 border-t border-r border-cyan-400/60 pointer-events-none" />
-            <div className="absolute bottom-2 left-2 w-6 h-6 border-b border-l border-cyan-400/60 pointer-events-none" />
-            <div className="absolute bottom-2 right-2 w-6 h-6 border-b border-r border-cyan-400/60 pointer-events-none" />
+            <div className="absolute top-2 left-2 w-6 h-6 border-t border-l border-[#22d3ee] pointer-events-none" />
+            <div className="absolute top-2 right-2 w-6 h-6 border-t border-r border-[#22d3ee] pointer-events-none" />
+            <div className="absolute bottom-2 left-2 w-6 h-6 border-b border-l border-[#22d3ee] pointer-events-none" />
+            <div className="absolute bottom-2 right-2 w-6 h-6 border-b border-r border-[#22d3ee] pointer-events-none" />
 
             {/* Logo & Title Header */}
             <div className="space-y-2">
               <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-9 mx-auto object-contain" />
-              <h1 className="text-xl sm:text-2xl font-black uppercase tracking-wider text-white">
+              <h1 className="text-xl sm:text-2xl font-black uppercase tracking-wider text-white" style={{ color: '#ffffff' }}>
                 ATTESTATION DE FORMATION
               </h1>
-              <p className="text-[10px] text-slate-400 italic">
+              <p className="text-[10px] text-[#94a3b8] italic" style={{ color: '#94a3b8' }}>
                 Document Officiel de Validation des Acquis et de Présence (Non-Examen)
               </p>
             </div>
 
             {/* Main Attestation Statement */}
-            <div className="space-y-2 max-w-xl mx-auto py-3 border-y border-slate-800/80">
-              <p className="text-[11px] text-slate-300">
-                Le Centre d&apos;Expertise et de Formation <strong className="text-white">Ethical Data Security</strong> atteste par la présente que :
+            <div className="space-y-2 max-w-xl mx-auto py-3 border-y border-[#1e293b]">
+              <p className="text-[11px] text-[#cbd5e1]" style={{ color: '#cbd5e1' }}>
+                Le Centre d&apos;Expertise et de Formation <strong className="text-white" style={{ color: '#ffffff' }}>Ethical Data Security</strong> atteste par la présente que :
               </p>
               
-              <h2 className="text-lg sm:text-xl font-black text-cyan-400 uppercase tracking-tight py-1 border-b border-cyan-500/30 inline-block px-4">
+              <h2 className="text-lg sm:text-xl font-black text-[#22d3ee] uppercase tracking-tight py-1 border-b border-[#0891b2] inline-block px-4" style={{ color: '#22d3ee' }}>
                 {data.studentName}
               </h2>
 
-              <p className="text-[11px] text-slate-300 pt-1">
+              <p className="text-[11px] text-[#cbd5e1] pt-1" style={{ color: '#cbd5e1' }}>
                 a suivi et complété avec succès l&apos;intégralité du programme de formation certifiant :
               </p>
 
-              <h3 className="text-sm sm:text-base font-black text-white">
+              <h3 className="text-sm sm:text-base font-black text-white" style={{ color: '#ffffff' }}>
                 &laquo; {data.courseTitle} &raquo;
               </h3>
             </div>
 
             {/* Technical Metadata Details Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-left max-w-2xl mx-auto bg-[#080d1a] border border-slate-800 rounded-xl p-3 text-[11px]">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-left max-w-2xl mx-auto bg-[#080d1a] border border-[#1e293b] rounded-xl p-3 text-[11px]" style={{ backgroundColor: '#080d1a' }}>
               <div className="space-y-0.5">
-                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider block">Modalité</span>
-                <span className="font-bold text-cyan-400">{data.deliveryType}</span>
+                <span className="text-[9px] font-bold text-[#64748b] uppercase tracking-wider block" style={{ color: '#64748b' }}>Modalité</span>
+                <span className="font-bold text-[#22d3ee]" style={{ color: '#22d3ee' }}>{data.deliveryType}</span>
               </div>
               <div className="space-y-0.5">
-                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider block">Période</span>
-                <span className="font-bold text-slate-200">{data.startDate} — {data.endDate}</span>
+                <span className="text-[9px] font-bold text-[#64748b] uppercase tracking-wider block" style={{ color: '#64748b' }}>Période</span>
+                <span className="font-bold text-[#e2e8f0]" style={{ color: '#e2e8f0' }}>{data.startDate} — {data.endDate}</span>
               </div>
               <div className="space-y-0.5">
-                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider block">Volume Horaire</span>
-                <span className="font-bold text-slate-200">{data.durationHours} Heures</span>
+                <span className="text-[9px] font-bold text-[#64748b] uppercase tracking-wider block" style={{ color: '#64748b' }}>Volume Horaire</span>
+                <span className="font-bold text-[#e2e8f0]" style={{ color: '#e2e8f0' }}>{data.durationHours} Heures</span>
               </div>
               <div className="space-y-0.5">
-                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider block">Formateur</span>
-                <span className="font-bold text-slate-200">{data.trainerName}</span>
+                <span className="text-[9px] font-bold text-[#64748b] uppercase tracking-wider block" style={{ color: '#64748b' }}>Formateur</span>
+                <span className="font-bold text-[#e2e8f0]" style={{ color: '#e2e8f0' }}>{data.trainerName}</span>
               </div>
             </div>
 
             {/* Verification Code Footer */}
-            <div className="pt-2 border-t border-slate-800/80 text-center max-w-2xl mx-auto">
-              <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Code de Vérification Unique</span>
-              <span className="font-mono text-[10px] font-black text-cyan-400 bg-cyan-950/60 border border-cyan-800/60 px-3 py-1 rounded inline-block">
+            <div className="pt-2 border-t border-[#1e293b] text-center max-w-2xl mx-auto">
+              <span className="text-[9px] font-bold text-[#64748b] uppercase tracking-wider block mb-1" style={{ color: '#64748b' }}>Code de Vérification Unique</span>
+              <span className="font-mono text-[10px] font-black text-[#22d3ee] bg-[#082f49] border border-[#075985] px-3 py-1 rounded inline-block" style={{ color: '#22d3ee', backgroundColor: '#082f49' }}>
                 {data.verificationCode}
               </span>
             </div>
