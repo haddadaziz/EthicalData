@@ -111,46 +111,73 @@ export default function LandingPage() {
       </HeroSection>
 
       {/* • Bandeau logos partenaires certifiants (Pearson VUE, PECB, Palo Alto, Fortinet, CompTIA) */}
-      <PartnersSection />
+      <div className="section-lazy">
+        <PartnersSection />
+      </div>
 
       {/* • Section « Qui sommes-nous » + 4 chiffres clés animés au scroll */}
-      <AboutSection />
+      <div className="section-lazy">
+        <AboutSection />
+      </div>
 
       {/* • Bloc « Notre priorité » à 4 cartes : Mission, Expérience, Certification, Solution IT */}
-      <ServicesSection />
+      <div className="section-lazy">
+        <ServicesSection />
+      </div>
 
       {/* • Logos clients en appui de crédibilité (AXA, TCS, CTM, Adaptive IT, Dataprotect, UM6SS...) */}
-      <ClientsSection />
+      <div className="section-lazy">
+        <ClientsSection />
+      </div>
 
       {/* ========================================================================= */}
       {/* 3.2 Formation & Certification (milieu de page)                           */}
       {/* ========================================================================= */}
 
       {/* • Catalogue de formations (e-learning / visioconférence) & Lien Tous les certificats */}
-      <CertificationsSection 
-        realCertifications={realCertifications} 
-        courses={courses} 
-        cleanTitle={cleanTitle} 
-      />
-      <CoursesPreviewSection />
+      <div className="section-lazy">
+        <CertificationsSection 
+          realCertifications={realCertifications} 
+          courses={courses} 
+          cleanTitle={cleanTitle} 
+        />
+      </div>
+
+      <div className="section-lazy">
+        <CoursesPreviewSection />
+      </div>
 
       {/* • Examens blancs, Vouchers d'examen, Accès espace membres / coaching 1-on-1 */}
-      <CommunityCoachingBanner />
+      <div className="section-lazy">
+        <CommunityCoachingBanner />
+      </div>
 
       {/* ========================================================================= */}
       {/* 3.3 Sessions ouvertes & Actualités (bas de page)                         */}
       {/* ========================================================================= */}
 
       {/* • Sessions de formation ouvertes en cartes visuelles (dates, places restantes, inscription) */}
-      <OpenSessionsSection />
+      <div className="section-lazy">
+        <OpenSessionsSection />
+      </div>
 
       {/* • Bloc Actualités reprenant les derniers articles de blog */}
-      <BlogPreviewSection />
+      <div className="section-lazy">
+        <BlogPreviewSection />
+      </div>
 
       {/* • Avis clients en carrousel visuel, FAQ et formulaire de contact repositionnés en fin de page */}
-      <TestimonialsSection />
-      <FaqSection />
-      <ContactSection />
+      <div className="section-lazy">
+        <TestimonialsSection />
+      </div>
+
+      <div className="section-lazy">
+        <FaqSection />
+      </div>
+
+      <div className="section-lazy">
+        <ContactSection />
+      </div>
 
       <Footer />
     </main>

@@ -31,9 +31,27 @@
   }
 }
 
+html {
+  scroll-behavior: smooth;
+  text-rendering: optimizeSpeed;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+}
+
+/* GPU Hardware Acceleration & Smooth Rendering Utilities */
+.section-lazy {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 700px;
+}
+
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
