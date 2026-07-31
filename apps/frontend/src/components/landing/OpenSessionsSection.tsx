@@ -69,10 +69,7 @@ export function OpenSessionsSection() {
               className="bg-[#080d1a] border border-slate-800 hover:border-slate-700 rounded-3xl p-6 flex flex-col justify-between space-y-6 shadow-xl transition-all duration-300 hover:-translate-y-1"
             >
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className={`px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded-full ${session.badgeClass}`}>
-                    {session.badge}
-                  </span>
+                <div className="flex items-center justify-end">
                   <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1">
                     <Users className="w-3.5 h-3.5 text-cyan-400" />
                     {session.placesLeft} places restantes
