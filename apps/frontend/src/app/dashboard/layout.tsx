@@ -212,8 +212,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         if (pathname === '/dashboard/downloads') {
             return { title: 'Bibliothèque de Ressources', subtitle: 'Toutes les ressources téléchargeables de vos cours' };
         }
-        if (pathname === '/dashboard/cours') {
-            return { title: 'Explorer les Cours', subtitle: 'Découvrez, inscrivez-vous et suivez votre progression' };
+        if (pathname.startsWith('/dashboard/cours')) {
+            return { title: 'Mes Cours & Formations', subtitle: 'Suivez votre progression de cours et étudiez vos modules' };
         }
         if (pathname === '/dashboard/community') {
             return { title: 'Communauté & Entraide', subtitle: 'Échangez avec les apprenants et posez vos questions d\'examen' };
