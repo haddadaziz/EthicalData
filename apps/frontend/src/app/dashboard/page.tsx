@@ -424,14 +424,15 @@ export default function StudentDashboard() {
                         </div>
                     </div>
 
-                    <button
-                        type="button"
-                        onClick={() => setLiveModalOpen(true)}
+                    <a
+                        href="https://teams.microsoft.com"
+                        target="_blank"
+                        rel="noreferrer"
                         className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg shadow-cyan-600/20 cursor-pointer shrink-0"
                     >
                         <Video className="w-4 h-4" />
-                        <span>Rejoindre la Session (Direct)</span>
-                    </button>
+                        <span>Rejoindre la Session (Direct Teams)</span>
+                    </a>
                 </div>
             </div>
 
@@ -1122,153 +1123,7 @@ export default function StudentDashboard() {
                 }}
             />
 
-            {/* MODAL SALLE VIRTUELLE LIVE VISIOCONFÉRENCE DIRECT */}
-            <AnimatePresence>
-                {liveModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            className="bg-[#080d1a] border border-slate-800 rounded-3xl max-w-4xl w-full p-6 space-y-5 shadow-2xl relative text-left"
-                        >
-                            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-cyan-950 border border-cyan-800 flex items-center justify-center text-cyan-400">
-                                        <Video className="w-5 h-5 animate-pulse" />
-                                    </div>
-                                    <div>
-                                        <h4 className="text-base font-black text-white">Session Live #05 — Architecture Cloud AWS Security Specialist</h4>
-                                        <p className="text-xs text-cyan-400 font-bold">Intervenante : Leila Naciri • En direct (Microsoft Teams Sync)</p>
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={() => setLiveModalOpen(false)}
-                                    className="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-900 border border-slate-800 cursor-pointer"
-                                >
-                                    <X className="w-5 h-5" />
-                                </button>
-                            </div>
 
-                            {/* Full Web Visio Room Interface */}
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-[420px]">
-                                {/* Main Presentation / Video Stream Window (8 cols) */}
-                                <div className="lg:col-span-8 bg-[#020617] border border-slate-800 rounded-2xl relative overflow-hidden flex flex-col justify-between p-4 shadow-inner group">
-                                    {/* Video Stream Simulated Slides Background */}
-                                    <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-[#030a1a] to-slate-900 flex items-center justify-center p-6 text-center">
-                                        <div className="space-y-3 max-w-sm">
-                                            <div className="w-12 h-12 rounded-2xl bg-cyan-950 border border-cyan-800 flex items-center justify-center text-cyan-400 mx-auto animate-pulse">
-                                                <Video className="w-6 h-6" />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <span className="text-[10px] font-black text-cyan-400 uppercase tracking-widest bg-cyan-950/80 px-2.5 py-0.5 rounded-full border border-cyan-800">
-                                                    Partage d&apos;Écran Formateur (En Direct)
-                                                </span>
-                                                <h5 className="text-sm font-black text-white">Module 3 : Security Groups, NACLs & IAM Policies AWS</h5>
-                                                <p className="text-[11px] text-slate-400">Présentation en direct par Leila Naciri (14 Participants)</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Top Controls Overlay */}
-                                    <div className="relative z-10 flex items-center justify-between">
-                                        <span className="px-3 py-1 bg-red-600/90 text-white font-black text-[10px] uppercase tracking-widest rounded-lg flex items-center gap-1.5 shadow-md">
-                                            <span className="w-2 h-2 rounded-full bg-white animate-ping" />
-                                            <span>EN DIRECT (REC)</span>
-                                        </span>
-                                        <span className="px-3 py-1 bg-slate-900/90 border border-slate-800 text-slate-300 font-mono text-[11px] rounded-lg">
-                                            00:42:15
-                                        </span>
-                                    </div>
-
-                                    {/* Trainer PIP Webcam Overlay (Bottom Right) */}
-                                    <div className="relative z-10 flex items-end justify-between">
-                                        <div className="flex items-center gap-2 bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-xl">
-                                            <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                                            <span className="text-[11px] font-bold text-white">Leila Naciri (Formateur)</span>
-                                        </div>
-
-                                        <div className="w-32 h-20 bg-slate-900 border-2 border-cyan-500/50 rounded-xl overflow-hidden shadow-2xl relative">
-                                            <img
-                                                src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=75"
-                                                alt="Leila Naciri"
-                                                className="w-full h-full object-cover"
-                                            />
-                                            <span className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-black/80 text-[8px] font-mono text-cyan-400 rounded">
-                                                Webcam 1080p
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Right Side Chat & Participants Sidebar (4 cols) */}
-                                <div className="lg:col-span-4 bg-[#030712] border border-slate-800 rounded-2xl p-4 flex flex-col justify-between space-y-3">
-                                    <div className="space-y-3 flex-1 flex flex-col">
-                                        <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                                            <span className="text-xs font-black text-white uppercase tracking-wider">Chat en Direct</span>
-                                            <span className="text-[10px] font-bold text-cyan-400">14 Participants</span>
-                                        </div>
-
-                                        <div className="flex-1 space-y-2 overflow-y-auto text-xs pr-1">
-                                            <div className="bg-[#080d1a] p-2.5 rounded-xl border border-slate-800 space-y-0.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="font-bold text-cyan-400 text-[11px]">Leila Naciri</span>
-                                                    <span className="text-[9px] text-slate-500">16:12</span>
-                                                </div>
-                                                <p className="text-slate-300 text-[11px]">Bienvenue à tous ! N&apos;hésitez pas à poser vos questions sur les règles NACL.</p>
-                                            </div>
-
-                                            <div className="bg-[#080d1a] p-2.5 rounded-xl border border-slate-800 space-y-0.5">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="font-bold text-white text-[11px]">Karim Bennani</span>
-                                                    <span className="text-[9px] text-slate-500">16:15</span>
-                                                </div>
-                                                <p className="text-slate-300 text-[11px]">Est-ce que l&apos;ordre des règles NACL est évalué dans l&apos;examen AWS ?</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Chat Input */}
-                                    <div className="pt-2 border-t border-slate-800 flex items-center gap-2">
-                                        <input
-                                            type="text"
-                                            placeholder="Posez une question..."
-                                            className="w-full bg-[#080d1a] border border-slate-800 rounded-xl p-2 text-white text-xs outline-none focus:border-cyan-500"
-                                        />
-                                        <button className="p-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-bold shrink-0 cursor-pointer">
-                                            <Send className="w-3.5 h-3.5" />
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Bottom Visio Action Bar */}
-                            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-800 pt-3">
-                                <div className="text-[11px] text-slate-400">
-                                    💡 <em>Mode démo Web Direct actif. Pour l&apos;application Teams en production, nécessite les licences M365 des consultants.</em>
-                                </div>
-
-                                <div className="flex items-center gap-3">
-                                    <a
-                                        href="https://teams.microsoft.com"
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="px-4 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-cyan-400 text-xs font-bold rounded-xl transition-all cursor-pointer"
-                                    >
-                                        Lien M365 Teams App
-                                    </a>
-                                    <button
-                                        onClick={() => setLiveModalOpen(false)}
-                                        className="px-5 py-2 bg-red-600 hover:bg-red-500 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md shadow-red-600/20"
-                                    >
-                                        Quitter la session
-                                    </button>
-                                </div>
-                            </div>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
 
             {/* Modal détail */}
             <AnimatePresence>
