@@ -57,10 +57,15 @@ export default function AttestationModal({ isOpen, onClose, data }: AttestationM
               el.style.backgroundColor = '#020617';
               el.style.color = '#ffffff';
               el.style.width = '1120px';
+              el.style.minHeight = '792px';
+              el.style.height = '792px';
               el.style.maxWidth = 'none';
               el.style.borderRadius = '0px';
-              el.style.padding = '40px';
+              el.style.padding = '48px 60px';
               el.style.boxSizing = 'border-box';
+              el.style.display = 'flex';
+              el.style.flexDirection = 'column';
+              el.style.justifyContent = 'space-between';
             }
           }
         },
