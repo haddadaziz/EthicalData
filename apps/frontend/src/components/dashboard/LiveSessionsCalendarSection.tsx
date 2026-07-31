@@ -146,10 +146,6 @@ export default function LiveSessionsCalendarSection() {
             Rejoignez les visioconférences Teams interactives ou visionnez l&apos;enregistrement automatique mis à disposition après chaque session.
           </p>
         </div>
-
-        <div className="px-3 py-1 bg-cyan-950/80 border border-cyan-800/60 rounded-full text-cyan-400 text-xs font-bold w-max">
-          🎥 Enregistrement Automatique Activé HD
-        </div>
       </div>
 
       {/* Filter Bar */}
