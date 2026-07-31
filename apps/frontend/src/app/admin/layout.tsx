@@ -105,6 +105,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       subItems: [
         { name: 'Certifications', href: '/admin/certifications', icon: Award },
         { name: 'Gestion des Cours', href: '/admin/courses', icon: BookOpen },
+        { name: 'Services IT (Multilingue)', href: '/admin/services', icon: ShieldCheck },
         { name: 'Sessions Live', href: '/admin/sessions', icon: Video },
         { name: 'Ressources', href: '/admin/resources', icon: DownloadCloud },
         { name: 'Historique Téléchargements', href: '/admin/downloads', icon: DownloadCloud },
@@ -153,6 +154,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
     if (pathname === '/admin/courses') {
       return { title: 'Gestion des Cours', subtitle: 'Catalogue global de cours de la plateforme' };
+    }
+    if (pathname === '/admin/services') {
+      return { title: 'Gestion des Services IT', subtitle: 'Édition multilingue des fiches de services en FR, AR et EN' };
     }
     if (pathname === '/admin/sessions') {
       return { title: 'Gestion des Sessions Live', subtitle: 'Planification, formateurs affectés, places et statut des sessions' };
