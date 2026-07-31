@@ -100,12 +100,12 @@ export function CommunityCoachingBanner() {
             <div className="flex items-center gap-3">
               <img
                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
-                alt="Youssef Bennani"
+                alt="Sofia Alami"
                 className="w-11 h-11 rounded-full object-cover border-2 border-cyan-500/80 shadow-md shrink-0"
               />
               <div>
-                <h4 className="text-sm font-bold text-white">Youssef Bennani</h4>
-                <p className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">Apprenant Certifié AZ-900 & AWS</p>
+                <h4 className="text-sm font-bold text-white">Sofia Alami</h4>
+                <p className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">Apprenante Certifiée AZ-900 & AWS</p>
               </div>
             </div>
 
