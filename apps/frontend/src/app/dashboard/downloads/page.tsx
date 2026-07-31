@@ -6,7 +6,7 @@ import { Search, Download, BookOpen, FolderOpen, FileText, ChevronLeft, Globe, V
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '../../../context/ToastContext';
-import ReplaysSection from '@/components/dashboard/ReplaysSection';
+import LiveSessionsCalendarSection from '@/components/dashboard/LiveSessionsCalendarSection';
 
 type Tab = 'replays' | 'generales' | 'mes-cours' | 'historique';
 
@@ -225,10 +225,10 @@ export default function DownloadsPage() {
                 </div>
             </div>
 
-            {/* --- ONGLET REPLAYS VIDÉO --- */}
+            {/* --- ONGLET CALENDRIER SESSIONS LIVE & REPLAYS --- */}
             {activeTab === 'replays' && (
                 <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 shadow-xl">
-                    <ReplaysSection />
+                    <LiveSessionsCalendarSection />
                 </div>
             )}
 
