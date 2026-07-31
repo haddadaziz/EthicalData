@@ -30,9 +30,52 @@ export default function AttestationModal({ isOpen, onClose, data }: AttestationM
     window.print();
   };
 
+  const handleDownloadPDF = () => {
+    window.print();
+  };
+
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md overflow-hidden">
+        {/* PRINT MEDIA STYLES - A4 LANDSCAPE EXACT & PRESERVE COLOR BACKGROUND */}
+        <style jsx global>{`
+          @media print {
+            @page {
+              size: A4 landscape;
+              margin: 0;
+            }
+            body {
+              background: #020617 !important;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+            body * {
+              visibility: hidden;
+            }
+            #printable-attestation, #printable-attestation * {
+              visibility: visible;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+            #printable-attestation {
+              position: fixed !important;
+              left: 0 !important;
+              top: 0 !important;
+              width: 297mm !important;
+              height: 210mm !important;
+              margin: 0 !important;
+              padding: 20mm !important;
+              background-color: #020617 !important;
+              border: 2px solid #06b6d4 !important;
+              box-sizing: border-box !important;
+              display: flex !important;
+              flex-direction: column !important;
+              justify-content: space-between !important;
+              z-index: 99999 !important;
+            }
+          }
+        `}</style>
+
         <motion.div
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -53,13 +96,22 @@ export default function AttestationModal({ isOpen, onClose, data }: AttestationM
 
             <div className="flex items-center gap-2">
               <button
+                type="button"
                 onClick={handlePrint}
+                className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 rounded-xl text-[11px] font-bold transition-all cursor-pointer"
+              >
+                🖨️ Imprimer
+              </button>
+              <button
+                type="button"
+                onClick={handleDownloadPDF}
                 className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md shadow-blue-600/20 cursor-pointer"
               >
                 <DownloadCloud className="w-3.5 h-3.5" />
-                <span>Imprimer / PDF</span>
+                <span>Télécharger PDF (A4 Paysage)</span>
               </button>
               <button
+                type="button"
                 onClick={onClose}
                 className="p-1.5 text-slate-400 hover:text-white rounded-xl bg-slate-900 border border-slate-800 cursor-pointer"
               >
@@ -70,6 +122,7 @@ export default function AttestationModal({ isOpen, onClose, data }: AttestationM
 
           {/* PRINTABLE ATTESTATION DIPLOMA CARD */}
           <div
+            id="printable-attestation"
             ref={printRef}
             className="bg-[#020617] border border-cyan-500/40 rounded-2xl p-6 sm:p-8 space-y-5 relative overflow-hidden text-center shadow-inner overflow-y-auto max-h-[76vh]"
           >
