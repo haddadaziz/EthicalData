@@ -64,24 +64,24 @@ export function ServicesSection() {
           {priorities.map((item, i) => (
             <div
               key={i}
-              className={`group relative bg-[#080d1a] border border-slate-800 ${item.borderColor} rounded-3xl overflow-hidden transition-all duration-500 hover:-translate-y-2 shadow-2xl flex flex-col justify-end min-h-[390px] h-full text-left transform-gpu cursor-pointer`}
+              className={`group relative bg-[#080d1a] border border-slate-800 ${item.borderColor} rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1.5 shadow-xl flex flex-col justify-end min-h-[210px] text-left transform-gpu cursor-pointer`}
             >
               {/* Image de fond thématique unique avec Zoom au Survol */}
               <div className="absolute inset-0 z-0 overflow-hidden">
                 <img
                   src={item.bgImage}
                   alt={item.title}
-                  className="w-full h-full object-cover opacity-45 group-hover:opacity-65 group-hover:scale-110 transition-all duration-700 ease-out transform-gpu"
+                  className="w-full h-full object-cover opacity-40 group-hover:opacity-60 group-hover:scale-110 transition-all duration-700 ease-out transform-gpu"
                   loading="lazy"
                   decoding="async"
                 />
                 {/* Gradient sombre pour lisibilité parfaite du texte */}
-                <div className={`absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/85 to-transparent ${item.accentColor} opacity-95 group-hover:opacity-90 transition-opacity duration-500`} />
+                <div className={`absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/90 to-[#020617]/40 ${item.accentColor} opacity-95 group-hover:opacity-90 transition-opacity duration-500`} />
               </div>
 
               {/* Titre & Description au Premier Plan sur fond verrier avec accents cybernétiques */}
-              <div className="relative z-10 p-6 space-y-3 bg-gradient-to-t from-[#020617] via-[#020617]/95 to-transparent pt-12">
-                <h3 className="text-xl font-black text-white group-hover:text-cyan-300 transition-colors duration-300 tracking-tight">
+              <div className="relative z-10 p-5 md:p-6 space-y-2.5 bg-gradient-to-t from-[#020617] via-[#020617]/95 to-transparent pt-6">
+                <h3 className="text-lg font-black text-white group-hover:text-cyan-300 transition-colors duration-300 tracking-tight">
                   {item.title}
                 </h3>
                 <p className="text-xs text-slate-200 leading-relaxed font-semibold">
