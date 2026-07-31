@@ -87,10 +87,13 @@ export function CertificationsSection({ realCertifications, courses, cleanTitle 
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         
-        <AnimatedSection className="text-center max-w-2xl mx-auto mb-16">
-          <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest">Offres phares</span>
-          <h2 className="text-3xl font-black text-white mt-3 uppercase tracking-tight">Certifications</h2>
-          <p className="text-sm text-slate-400 mt-4 leading-relaxed font-semibold">
+        <AnimatedSection className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight leading-tight">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-cyan-400">
+              Certifications
+            </span>
+          </h2>
+          <p className="text-slate-400 text-xs sm:text-sm md:text-base font-medium leading-relaxed">
             Sélectionnez votre parcours, entraînez-vous sur nos simulateurs et décrochez votre certification internationale.
           </p>
         </AnimatedSection>
