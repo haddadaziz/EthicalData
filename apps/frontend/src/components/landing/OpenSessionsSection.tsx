@@ -47,8 +47,10 @@ export function OpenSessionsSection() {
         
         {/* En-tête */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white uppercase tracking-tight leading-tight">
-            Sessions de Formation Ouvertes
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight leading-tight">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-cyan-400">
+              Sessions de Formation Ouvertes
+            </span>
           </h2>
           <p className="text-slate-400 text-xs sm:text-sm md:text-base font-medium leading-relaxed">
             Réservez votre place pour nos prochaines sessions de formation en visioconférence ou bootcamp intensif avec formateurs certifiés.
