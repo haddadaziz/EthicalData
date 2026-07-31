@@ -35,6 +35,14 @@ export default function ProfilePage() {
     const [certs, setCerts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'INFO' | 'SECURITY' | 'ACHATS'>('INFO');
+    const [obtainedList, setObtainedList] = useState<GrantedCertificate[]>([]);
+
+    useEffect(() => {
+        setObtainedList(getObtainedCertifications());
+        const handleUpdate = () => setObtainedList(getObtainedCertifications());
+        window.addEventListener('certificationsUpdated', handleUpdate);
+        return () => window.removeEventListener('certificationsUpdated', handleUpdate);
+    }, []);
 
     // Formulaire d'informations personnelles
     const [prenom, setPrenom] = useState('');
@@ -211,15 +219,6 @@ export default function ProfilePage() {
 
     const targetCertIds = (profile?.preferences?.targetCertifications || []).map((id: any) => id.toString());
     const targetedCerts = certs.filter(c => targetCertIds.includes(c.id.toString()));
-
-    const [obtainedList, setObtainedList] = useState<GrantedCertificate[]>([]);
-
-    useEffect(() => {
-        setObtainedList(getObtainedCertifications());
-        const handleUpdate = () => setObtainedList(getObtainedCertifications());
-        window.addEventListener('certificationsUpdated', handleUpdate);
-        return () => window.removeEventListener('certificationsUpdated', handleUpdate);
-    }, []);
 
     const passwordStrength = getPasswordStrength(newPassword);
 
