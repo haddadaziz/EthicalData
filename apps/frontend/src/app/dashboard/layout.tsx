@@ -154,7 +154,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             subItems: [
                 { name: 'Mes Cours & Progrès', href: '/dashboard/cours', icon: BookOpen },
                 { name: 'Entraînement', href: '/dashboard/practice', icon: HelpCircle },
-                { name: 'Certifications & Scores', href: '/dashboard/certifications', icon: Award },
             ]
         },
         { name: 'Ressources & Replays', href: '/dashboard/downloads', icon: DownloadCloud },
