@@ -23,9 +23,6 @@ export function CommunityCoachingBanner() {
           
           {/* Contenu Texte Immersif */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-800/60 text-cyan-400 text-xs font-black uppercase tracking-wider backdrop-blur-md">
-              <span>Examens Blancs, Vouchers & Coaching</span>
-            </div>
 
             <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
               Maximisez vos chances de réussite : <br className="hidden sm:inline" />
