@@ -8,6 +8,8 @@ import { getProviderLogo } from '@/lib/certification-utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '../../../context/ToastContext';
 import { useMutationGuard } from '../../../hooks/useMutationGuard';
+import { addObtainedCertification } from '@/lib/certificate-storage';
+import { ShoppingBag, ShieldCheck, CheckCircle } from '@/components/icons';
 
 function getLevelBadgeStyle(niv: string) {
   switch (niv) {
@@ -58,6 +60,22 @@ export default function LearnerCertificationsPage() {
   const [providerDropdownOpen, setProviderDropdownOpen] = useState(false);
   const [levelDropdownOpen, setLevelDropdownOpen] = useState(false);
   const [onlyTargeted, setOnlyTargeted] = useState(false);
+  const [paymentModalCert, setPaymentModalCert] = useState<Certification | null>(null);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+
+  const handleTestPayment = (cert: Certification) => {
+    setIsProcessingPayment(true);
+    setTimeout(() => {
+      setIsProcessingPayment(false);
+      addObtainedCertification({
+        nom: cert.nom,
+        code: cert.codeExamen || cert.slug.toUpperCase(),
+        score: Math.floor(Math.random() * 15) + 85,
+      });
+      showToast(`Paiement Test CMI réussi ! Examen validé & Certificat "${cert.nom}" ajouté à votre profil.`, "success");
+      setPaymentModalCert(null);
+    }, 1200);
+  };
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -387,16 +405,11 @@ export default function LearnerCertificationsPage() {
                     </button>
 
                     <button
-                      onClick={() => toggleTargetCertification(cert.id.toString())}
-                      className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer border flex items-center justify-center gap-1.5 ${
-                        targetCertIds.includes(cert.id.toString())
-                          ? 'bg-emerald-950/20 text-emerald-500 border-emerald-900/50 hover:bg-emerald-950/40'
-                          : 'bg-[#020617] text-slate-400 border-slate-800 hover:text-white hover:border-slate-700'
-                      }`}
-                      title={targetCertIds.includes(cert.id.toString()) ? "Retirer des objectifs" : "Ajouter aux objectifs"}
+                      onClick={() => setPaymentModalCert(cert)}
+                      className="w-full mt-2 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-md shadow-emerald-600/20"
                     >
-                      {targetCertIds.includes(cert.id.toString()) ? <Check className="w-3.5 h-3.5" /> : <Target className="w-3.5 h-3.5" />}
-                      <span>{targetCertIds.includes(cert.id.toString()) ? 'Visé' : 'Viser'}</span>
+                      <ShoppingBag className="w-3.5 h-3.5" />
+                      <span>Passer / Valider Examen</span>
                     </button>
                   </div>
                 </div>
@@ -415,6 +428,60 @@ export default function LearnerCertificationsPage() {
                   <CertDetailModal cert={selectedCertModal} onClose={() => setSelectedCertModal(null)} onPractice={(c: Certification) => { setSelectedCertModal(null); router.push(`/dashboard/practice?cert=${c.slug}`); }} isTargeted={targetCertIds.includes(selectedCertModal.id.toString())} onToggleTarget={() => toggleTargetCertification(selectedCertModal.id.toString())} />
                 </motion.div>
               </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* MODAL SIMULATION PAIEMENT CMI TEST */}
+          <AnimatePresence>
+            {paymentModalCert && (
+              <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+                <div className="bg-[#080d1a] border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-5 text-left shadow-2xl relative">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-9 h-9 rounded-xl bg-emerald-950/80 border border-emerald-800/60 flex items-center justify-center text-emerald-400">
+                        <ShoppingBag className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-black text-white">Validation Examen & Pass CMI</h4>
+                        <p className="text-[10px] text-slate-400">Paiement Test (CMI Maroc / Stripe Simulation)</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setPaymentModalCert(null)}
+                      className="p-1.5 text-slate-400 hover:text-white rounded-xl bg-slate-900 border border-slate-800 cursor-pointer"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <div className="bg-[#030712] border border-slate-800 rounded-2xl p-4 space-y-2">
+                    <span className="text-[9px] font-black uppercase text-emerald-400 px-2 py-0.5 bg-emerald-950 border border-emerald-800 rounded">
+                      Pass Examen Officiel
+                    </span>
+                    <h3 className="text-sm font-black text-white">{paymentModalCert.nom}</h3>
+                    <div className="flex items-center justify-between text-xs font-bold pt-2 border-t border-slate-800 text-slate-300">
+                      <span>Fais d&apos;inscription Examen</span>
+                      <span className="text-emerald-400 text-sm font-black">1 500 MAD (Mode Test)</span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    disabled={isProcessingPayment}
+                    onClick={() => handleTestPayment(paymentModalCert)}
+                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-emerald-600/20 disabled:opacity-50"
+                  >
+                    {isProcessingPayment ? (
+                      <span>Validation du paiement CMI en cours...</span>
+                    ) : (
+                      <>
+                        <ShieldCheck className="w-4 h-4" />
+                        <span>Payer & Valider la Certification (Mode Test CMI)</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
             )}
           </AnimatePresence>
 

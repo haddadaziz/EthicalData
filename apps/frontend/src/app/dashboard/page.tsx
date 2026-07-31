@@ -31,6 +31,7 @@ import ExamHistorySection from '@/components/dashboard/ExamHistorySection';
 import PurchaseHistorySection from '@/components/dashboard/PurchaseHistorySection';
 import TrainerManagementSection from '@/components/dashboard/TrainerManagementSection';
 import CourseProgressSection from '@/components/dashboard/CourseProgressSection';
+import { getObtainedCertifications, GrantedCertificate } from '@/lib/certificate-storage';
 import { DownloadCloud, Video, ShoppingBag, Bell, Video as VideoIcon, Send, GraduationCap } from '@/components/icons';
 
 export default function StudentDashboard() {
@@ -57,7 +58,14 @@ export default function StudentDashboard() {
     const [myAppointments, setMyAppointments] = useState<any[]>([]);
     const [me, setMe] = useState<any>(null);
     const [enrolledCerts, setEnrolledCerts] = useState<any[]>([]);
-    const [activeSectionTab, setActiveSectionTab] = useState<'progress' | 'replays' | 'exams' | 'purchases'>('progress');
+    const [obtainedCertsList, setObtainedCertsList] = useState<GrantedCertificate[]>([]);
+
+    useEffect(() => {
+        setObtainedCertsList(getObtainedCertifications());
+        const handleUpdate = () => setObtainedCertsList(getObtainedCertifications());
+        window.addEventListener('certificationsUpdated', handleUpdate);
+        return () => window.removeEventListener('certificationsUpdated', handleUpdate);
+    }, []);
     const [attestationModalOpen, setAttestationModalOpen] = useState(false);
     const [liveModalOpen, setLiveModalOpen] = useState(false);
 
@@ -1040,31 +1048,22 @@ export default function StudentDashboard() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="p-4 bg-[#030712] border border-slate-800 rounded-2xl flex items-center justify-between">
-                        <div className="space-y-1">
-                            <div className="text-xs font-black text-white">Attestation de Formation Pentest & Cybersécurité</div>
-                            <div className="text-[10px] text-slate-400">Période: 10/06 - 15/07/2026 • 45h • Dr. Tariq Berrada</div>
+                    {obtainedCertsList.map((cert) => (
+                        <div key={cert.id} className="p-4 bg-[#030712] border border-slate-800 rounded-2xl flex items-center justify-between hover:border-emerald-900/60 transition-all">
+                            <div className="space-y-1">
+                                <div className="text-xs font-black text-white">{cert.nom}</div>
+                                <div className="text-[10px] text-slate-400">
+                                    Code: <strong className="text-cyan-400">{cert.code}</strong> • Score: <strong className="text-emerald-400">{cert.score}%</strong> • Date: {cert.date}
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setAttestationModalOpen(true)}
+                                className="px-3 py-1.5 bg-slate-900 border border-slate-700 text-cyan-400 hover:text-white rounded-lg text-xs font-bold shrink-0 cursor-pointer"
+                            >
+                                Télécharger
+                            </button>
                         </div>
-                        <button
-                            onClick={() => setAttestationModalOpen(true)}
-                            className="px-3 py-1.5 bg-slate-900 border border-slate-700 text-cyan-400 hover:text-white rounded-lg text-xs font-bold shrink-0 cursor-pointer"
-                        >
-                            Télécharger
-                        </button>
-                    </div>
-
-                    <div className="p-4 bg-[#030712] border border-slate-800 rounded-2xl flex items-center justify-between">
-                        <div className="space-y-1">
-                            <div className="text-xs font-black text-white">Certificat de Réussite Palo Alto PCNSA (88%)</div>
-                            <div className="text-[10px] text-slate-400">Délivré le 25/07/2026 • Validation IA Officielle</div>
-                        </div>
-                        <button
-                            onClick={() => setAttestationModalOpen(true)}
-                            className="px-3 py-1.5 bg-slate-900 border border-slate-700 text-cyan-400 hover:text-white rounded-lg text-xs font-bold shrink-0 cursor-pointer"
-                        >
-                            Télécharger
-                        </button>
-                    </div>
+                    ))}
                 </div>
             </div>
 

@@ -4,8 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useConfirm } from '../../../context/ConfirmContext';
-import { Users, Search, ShieldCheck, Plus, Edit, Trash2, X, RefreshCw, Mail, Phone, Calendar, Lock, Eye, EyeOff, ArrowLeft, ArrowRight } from '@/components/icons';
+import { Users, Search, ShieldCheck, Plus, Edit, Trash2, X, RefreshCw, Mail, Phone, Calendar, Lock, Eye, EyeOff, ArrowLeft, ArrowRight, Award } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
+import { addObtainedCertification } from '@/lib/certificate-storage';
 
 interface Role {
     id: string;
@@ -54,6 +55,24 @@ export default function AdminUsersPage() {
     const [editEmail, setEditEmail] = useState('');
     const [editPhone, setEditPhone] = useState('');
     const [updateLoading, setUpdateLoading] = useState(false);
+    // Modale Attribution de Certification (Admin)
+    const [grantCertUser, setGrantCertUser] = useState<UserData | null>(null);
+    const [grantCertName, setGrantCertName] = useState('Palo Alto Networks PCNSA Certified');
+    const [grantCertCode, setGrantCertCode] = useState('PCNSA-2026');
+    const [grantCertScore, setGrantCertScore] = useState<number>(90);
+
+    const handleGrantCertSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!grantCertUser) return;
+        addObtainedCertification({
+            nom: grantCertName,
+            code: grantCertCode,
+            score: Number(grantCertScore),
+            studentName: `${grantCertUser.prenom} ${grantCertUser.nom}`
+        });
+        showToast(`Certification "${grantCertName}" attribuée avec succès à ${grantCertUser.prenom} ${grantCertUser.nom} !`, "success");
+        setGrantCertUser(null);
+    };
 
     const [currentUserRoles, setCurrentUserRoles] = useState<string[]>([]);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -292,6 +311,18 @@ export default function AdminUsersPage() {
                             {/* Actions sur le Compte */}
                             <div className="flex items-center gap-2 pt-2 border-t border-slate-800">
                                 <button
+                                    onClick={() => {
+                                        setGrantCertUser(user);
+                                        setGrantCertName('Palo Alto Networks PCNSA Certified');
+                                        setGrantCertCode('PCNSA-2026');
+                                    }}
+                                    className="py-2 px-3 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-800/80 text-emerald-300 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                                >
+                                    <Award className="w-3.5 h-3.5" />
+                                    <span>Accorder Certif</span>
+                                </button>
+
+                                <button
                                     onClick={() => handleOpenEditModal(user)}
                                     className="flex-1 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                                 >
@@ -301,10 +332,9 @@ export default function AdminUsersPage() {
 
                                 <button
                                     onClick={() => handleDeleteUser(user)}
-                                    className="flex-1 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                                    className="p-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs flex items-center justify-center transition-all cursor-pointer"
                                 >
                                     <Trash2 className="w-3.5 h-3.5" />
-                                    <span>Supprimer</span>
                                 </button>
                             </div>
                         </div>
@@ -651,7 +681,107 @@ export default function AdminUsersPage() {
                                         className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 transition-all shadow-md shadow-red-600/20 cursor-pointer disabled:opacity-50"
                                     >
                                         {updateLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-                                        <span>Enregistrer</span>
+                                        <span>Enregistrer les modifications</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* MODALE D'ATTRIBUTION DE CERTIFICATION (ADMIN) */}
+            <AnimatePresence>
+                {grantCertUser && (
+                    <div
+                        onClick={() => setGrantCertUser(null)}
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md"
+                    >
+                        <motion.div
+                            onClick={(e) => e.stopPropagation()}
+                            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 15 }}
+                            className="w-full max-w-md bg-[#080d1a] border border-slate-800 rounded-3xl shadow-2xl p-6 md:p-8 space-y-6 text-left relative"
+                        >
+                            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-2xl bg-emerald-950/80 border border-emerald-800/60 flex items-center justify-center text-emerald-400">
+                                        <Award className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-extrabold text-white text-base">Accorder une Certification</h3>
+                                        <p className="text-xs text-slate-400">Pour {grantCertUser.prenom} {grantCertUser.nom}</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setGrantCertUser(null)}
+                                    className="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-900 border border-slate-800 cursor-pointer"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+                            </div>
+
+                            <form onSubmit={handleGrantCertSubmit} className="space-y-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-bold text-slate-300">Intitulé de la Certification *</label>
+                                    <select
+                                        value={grantCertName}
+                                        onChange={(e) => {
+                                            const val = e.target.value;
+                                            setGrantCertName(val);
+                                            if (val.includes('Palo Alto')) setGrantCertCode('PCNSA-2026');
+                                            else if (val.includes('ISO 27001')) setGrantCertCode('ISO-27001-LI');
+                                            else if (val.includes('Azure')) setGrantCertCode('AZ-900');
+                                            else setGrantCertCode('AWS-SEC');
+                                        }}
+                                        className="w-full p-3.5 bg-[#020617] border border-slate-800 focus:border-emerald-500 text-white rounded-2xl text-xs font-semibold outline-none cursor-pointer"
+                                    >
+                                        <option value="Palo Alto Networks PCNSA Certified">Palo Alto Networks PCNSA Certified</option>
+                                        <option value="PECB ISO 27001 Lead Implementer">PECB ISO 27001 Lead Implementer</option>
+                                        <option value="Microsoft Azure Fundamentals AZ-900">Microsoft Azure Fundamentals AZ-900</option>
+                                        <option value="AWS Certified Security Specialty">AWS Certified Security Specialty</option>
+                                    </select>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1.5">
+                                        <label className="text-xs font-bold text-slate-300">Code Examen</label>
+                                        <input
+                                            type="text"
+                                            value={grantCertCode}
+                                            onChange={(e) => setGrantCertCode(e.target.value)}
+                                            className="w-full p-3.5 bg-[#020617] border border-slate-800 text-white rounded-2xl text-xs font-semibold outline-none"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-1.5">
+                                        <label className="text-xs font-bold text-slate-300">Score Obtenu (%)</label>
+                                        <input
+                                            type="number"
+                                            min="70"
+                                            max="100"
+                                            value={grantCertScore}
+                                            onChange={(e) => setGrantCertScore(Number(e.target.value))}
+                                            className="w-full p-3.5 bg-[#020617] border border-slate-800 text-emerald-400 rounded-2xl text-xs font-bold outline-none"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+                                    <button
+                                        type="button"
+                                        onClick={() => setGrantCertUser(null)}
+                                        className="px-5 py-2.5 bg-slate-900 border border-slate-800 text-slate-400 font-bold rounded-xl text-xs cursor-pointer"
+                                    >
+                                        Annuler
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 transition-all shadow-md shadow-emerald-600/20 cursor-pointer"
+                                    >
+                                        <Award className="w-4 h-4" />
+                                        <span>Attribuer la Certification</span>
                                     </button>
                                 </div>
                             </form>
