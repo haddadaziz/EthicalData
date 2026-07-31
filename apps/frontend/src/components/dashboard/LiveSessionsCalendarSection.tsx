@@ -111,14 +111,12 @@ export default function LiveSessionsCalendarSection() {
   });
 
   const handleRegister = (sessionId: string) => {
+    let actionType: 'REGISTER' | 'UNREGISTER' = 'REGISTER';
+
     setSessions(prev => prev.map(s => {
       if (s.id === sessionId) {
         const newRegistered = !s.isRegistered;
-        if (newRegistered) {
-          showToast(`Inscription réussie à la session live ! Un lien Teams automatique vous a été attribué.`, 'success');
-        } else {
-          showToast(`Désinscription effectuée pour cette session.`, 'info');
-        }
+        actionType = newRegistered ? 'REGISTER' : 'UNREGISTER';
         return {
           ...s,
           isRegistered: newRegistered,
@@ -127,6 +125,12 @@ export default function LiveSessionsCalendarSection() {
       }
       return s;
     }));
+
+    if (actionType === 'REGISTER') {
+      showToast(`Inscription réussie à la session live ! Un lien Teams automatique vous a été attribué.`, 'success');
+    } else {
+      showToast(`Désinscription effectuée pour cette session.`, 'info');
+    }
   };
 
   return (

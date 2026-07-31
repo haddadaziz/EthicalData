@@ -11,21 +11,21 @@ import LiveSessionsCalendarSection from '@/components/dashboard/LiveSessionsCale
 type Tab = 'replays' | 'generales' | 'mes-cours' | 'historique';
 
 export default function DownloadsPage() {
-    const [activeTab, setActiveTab] = useState<Tab>('mes-cours');
+    const [activeTab, setActiveTab] = useState<Tab>('replays');
     const [searchTerm, setSearchTerm] = useState('');
 
     // Ressources générales
     const [publicResources, setPublicResources] = useState<any[]>([]);
     const [certs, setCerts] = useState<any[]>([]);
-    const [loadingPublic, setLoadingPublic] = useState(true);
+    const [loadingPublic, setLoadingPublic] = useState(false);
 
     // Mes cours (inscriptions)
     const [inscriptions, setInscriptions] = useState<any[]>([]);
-    const [loadingInscriptions, setLoadingInscriptions] = useState(true);
+    const [loadingInscriptions, setLoadingInscriptions] = useState(false);
 
     // Historique des téléchargements
     const [downloadHistory, setDownloadHistory] = useState<any[]>([]);
-    const [loadingHistory, setLoadingHistory] = useState(true);
+    const [loadingHistory, setLoadingHistory] = useState(false);
     const [expandedResources, setExpandedResources] = useState<Record<string, boolean>>({});
 
     const { showToast } = useToast();
@@ -62,6 +62,9 @@ export default function DownloadsPage() {
     const [selectedCourse, setSelectedCourse] = useState<any | null>(null);
 
     useEffect(() => {
+        setLoadingPublic(true);
+        setLoadingInscriptions(true);
+        
         apiFetch('/resources')
             .then((data) => setPublicResources(Array.isArray(data) ? data : []))
             .catch(() => {})
@@ -82,34 +85,42 @@ export default function DownloadsPage() {
             .finally(() => setLoadingHistory(false));
     }, []);
 
-    const uniqueTypes = Array.from(new Set(publicResources.map(r => r.type))).sort();
+    const uniqueTypes = React.useMemo(() => {
+        return Array.from(new Set(publicResources.map(r => r.type))).sort();
+    }, [publicResources]);
 
-    const filteredPublic = publicResources.filter((res: any) => {
-        const q = searchTerm.toLowerCase().trim();
-        const matchesSearch = !q ||
-            res.titre?.toLowerCase().includes(q) ||
-            res.description?.toLowerCase().includes(q) ||
-            res.type?.toLowerCase().includes(q);
-        const matchesCert = selectedCertFilter === 'TOUS' || res.certification?.id === selectedCertFilter;
-        const matchesType = selectedTypeFilter === 'TOUS' || res.type === selectedTypeFilter;
-        return matchesSearch && matchesCert && matchesType;
-    });
+    const filteredPublic = React.useMemo(() => {
+        return publicResources.filter((res: any) => {
+            const q = searchTerm.toLowerCase().trim();
+            const matchesSearch = !q ||
+                res.titre?.toLowerCase().includes(q) ||
+                res.description?.toLowerCase().includes(q) ||
+                res.type?.toLowerCase().includes(q);
+            const matchesCert = selectedCertFilter === 'TOUS' || res.certification?.id === selectedCertFilter;
+            const matchesType = selectedTypeFilter === 'TOUS' || res.type === selectedTypeFilter;
+            return matchesSearch && matchesCert && matchesType;
+        });
+    }, [publicResources, searchTerm, selectedCertFilter, selectedTypeFilter]);
 
     const totalPages = Math.ceil(filteredPublic.length / ITEMS_PER_PAGE);
     const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
     const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
-    const currentPublic = filteredPublic.slice(indexOfFirstItem, indexOfLastItem);
+    const currentPublic = React.useMemo(() => {
+        return filteredPublic.slice(indexOfFirstItem, indexOfLastItem);
+    }, [filteredPublic, indexOfFirstItem, indexOfLastItem]);
 
     useEffect(() => { setCurrentPage(1); }, [searchTerm, selectedCertFilter, selectedTypeFilter]);
 
-    const filteredInscriptions = inscriptions.filter((insc: any) => {
-        const q = searchTerm.toLowerCase().trim();
-        const matchesSearch = !q || insc.cours?.titre?.toLowerCase().includes(q);
-        const matchesProgression = progressionFilter === 'TOUS' ||
-            (progressionFilter === 'EN_COURS' && insc.progression < 100) ||
-            (progressionFilter === 'TERMINE' && insc.progression >= 100);
-        return matchesSearch && matchesProgression;
-    });
+    const filteredInscriptions = React.useMemo(() => {
+        return inscriptions.filter((insc: any) => {
+            const q = searchTerm.toLowerCase().trim();
+            const matchesSearch = !q || insc.cours?.titre?.toLowerCase().includes(q);
+            const matchesProgression = progressionFilter === 'TOUS' ||
+                (progressionFilter === 'EN_COURS' && insc.progression < 100) ||
+                (progressionFilter === 'TERMINE' && insc.progression >= 100);
+            return matchesSearch && matchesProgression;
+        });
+    }, [inscriptions, searchTerm, progressionFilter]);
 
     const formatBytes = (bytes: number | null) => {
         if (!bytes) return null;
