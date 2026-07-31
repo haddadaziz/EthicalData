@@ -212,17 +212,16 @@ export default function LiveSessionsCalendarSection() {
                   </span>
 
                   {isLiveNow ? (
-                    <span className="px-3 py-0.5 bg-red-950/90 text-red-400 font-extrabold text-[10px] rounded-full border border-red-800/80 animate-pulse flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                    <span className="px-3 py-0.5 bg-red-950/90 text-red-400 font-extrabold text-[10px] rounded-full border border-red-800/80">
                       SESSION EN DIRECT TEAMS
                     </span>
                   ) : isFinished ? (
                     <span className="px-2.5 py-0.5 bg-emerald-950/80 text-emerald-400 font-extrabold text-[10px] rounded-full border border-emerald-800/60">
-                      ✅ Session Enregistrée (Replay Dispo)
+                      Session Enregistrée (Replay Dispo)
                     </span>
                   ) : (
                     <span className="px-2.5 py-0.5 bg-blue-950/80 text-blue-400 font-extrabold text-[10px] rounded-full border border-blue-800/60">
-                      📅 Session Live Planifiée
+                      Session Live Planifiée
                     </span>
                   )}
                 </div>
@@ -232,12 +231,10 @@ export default function LiveSessionsCalendarSection() {
                 </h4>
 
                 <div className="text-xs text-slate-400 space-y-1">
-                  <p className="flex items-center gap-2">
-                    <Clock className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                  <p>
                     <span><strong>Date & Horaire :</strong> {session.date} • {session.time}</span>
                   </p>
-                  <p className="flex items-center gap-2">
-                    <User className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                  <p>
                     <span><strong>Formateur :</strong> {session.trainerName} ({session.trainerRole})</span>
                   </p>
                 </div>
