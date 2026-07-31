@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ChevronDown } from '@/components/icons';
+import { Menu, X, ChevronDown, Globe } from '@/components/icons';
+import { useLanguage } from '@/context/LanguageContext';
 
 const FORMATION_ITEMS = [
   { label: 'Catalogue Formations', href: '/formations' },
@@ -22,6 +23,8 @@ const SERVICES_ITEMS = [
 ];
 
 export function Navbar() {
+  const { language, setLanguage, t } = useLanguage();
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -108,7 +111,7 @@ export function Navbar() {
         {/* Navigation PC */}
         <nav className={`hidden lg:flex items-center gap-1 rounded-full px-3 py-1.5 transition-all duration-300 ${scrolled ? 'bg-slate-950/60 border border-slate-900' : 'bg-transparent border-0'}`}>
           <Link href="/" className={`px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
-            Accueil
+            {t('nav_home')}
           </Link>
           
           {/* Menu Déroulant Formation */}
@@ -121,7 +124,7 @@ export function Navbar() {
               onClick={() => setFormationDropdownOpen(!formationDropdownOpen)}
               className={`px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-full flex items-center gap-1 transition-all duration-200 cursor-pointer ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}
             >
-              <span>Formation</span>
+              <span>{t('nav_formations')}</span>
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${formationDropdownOpen ? 'rotate-180 text-cyan-400' : ''}`} />
             </button>
 
@@ -163,7 +166,7 @@ export function Navbar() {
               onClick={() => setServicesDropdownOpen(!servicesDropdownOpen)}
               className={`px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-full flex items-center gap-1 transition-all duration-200 cursor-pointer ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}
             >
-              <span>Services</span>
+              <span>{t('nav_services')}</span>
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${servicesDropdownOpen ? 'rotate-180 text-cyan-400' : ''}`} />
             </button>
 
@@ -196,10 +199,10 @@ export function Navbar() {
           </div>
 
           <Link href="/about" className={`px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
-            À propos
+            {t('nav_about')}
           </Link>
           <Link href="/blog" className={`px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
-            Blog
+            {t('nav_blog')}
           </Link>
           <a href="/#testimonials" className={`px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
             Avis
@@ -208,12 +211,55 @@ export function Navbar() {
             FAQ
           </a>
           <a href="/#contact" className={`px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
-            Contact
+            {t('nav_contact')}
           </a>
         </nav>
 
         {/* Actions à droite */}
         <div className="flex items-center gap-1.5 md:gap-3">
+          {/* Sélecteur de Langue Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-cyan-500/50 text-white text-xs font-bold transition-all cursor-pointer"
+            >
+              <Globe className="w-3.5 h-3.5 text-cyan-400" />
+              <span>{language === 'fr' ? '🇫🇷 FR' : language === 'ar' ? '🇲🇦 AR' : '🇬🇧 EN'}</span>
+              <ChevronDown className="w-3 h-3 text-slate-400" />
+            </button>
+
+            <AnimatePresence>
+              {langDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 6, scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute right-0 top-full mt-1.5 w-32 bg-[#080d1a]/95 backdrop-blur-xl border border-slate-800 rounded-xl p-1 shadow-2xl z-50"
+                >
+                  <button
+                    onClick={() => { setLanguage('fr'); setLangDropdownOpen(false); }}
+                    className={`w-full flex items-center justify-between px-3 py-1.5 text-xs rounded-lg transition-colors font-bold ${language === 'fr' ? 'bg-cyan-950/80 text-cyan-400 border border-cyan-800/60' : 'text-slate-300 hover:bg-slate-900'}`}
+                  >
+                    <span>🇫🇷 Français</span>
+                  </button>
+                  <button
+                    onClick={() => { setLanguage('ar'); setLangDropdownOpen(false); }}
+                    className={`w-full flex items-center justify-between px-3 py-1.5 text-xs rounded-lg transition-colors font-bold ${language === 'ar' ? 'bg-cyan-950/80 text-cyan-400 border border-cyan-800/60' : 'text-slate-300 hover:bg-slate-900'}`}
+                  >
+                    <span>🇲🇦 العربية</span>
+                  </button>
+                  <button
+                    onClick={() => { setLanguage('en'); setLangDropdownOpen(false); }}
+                    className={`w-full flex items-center justify-between px-3 py-1.5 text-xs rounded-lg transition-colors font-bold ${language === 'en' ? 'bg-cyan-950/80 text-cyan-400 border border-cyan-800/60' : 'text-slate-300 hover:bg-slate-900'}`}
+                  >
+                    <span>🇬🇧 English</span>
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
           {!mounted ? (
             <div className="flex items-center gap-1.5 md:gap-3">
               <div className="w-[60px] md:w-[80px] h-[32px] md:h-[36px]" />
@@ -224,18 +270,18 @@ export function Navbar() {
               href={isAdmin ? "/admin" : "/dashboard"}
               className="inline-flex items-center justify-center px-4 py-2 md:px-5 md:py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-[10px] md:text-xs font-black uppercase tracking-wider rounded-lg md:rounded-xl transition-all shadow-md shadow-blue-600/20 cursor-pointer shrink-0 whitespace-nowrap active:scale-95"
             >
-              Mon Espace
+              {t('nav_dashboard')}
             </a>
           ) : (
             <>
               <a href="/login" className={`hidden md:inline-flex px-4 py-2 text-xs font-black uppercase tracking-wider transition-colors cursor-pointer ${scrolled ? 'text-slate-300 hover:text-cyan-400' : 'text-white/80 hover:text-white'}`}>
-                Connexion
+                {t('nav_login')}
               </a>
               <Link
                 href="/register"
                 className="px-3 py-2 md:px-5 md:py-2.5 text-[10px] md:text-xs font-black uppercase tracking-wider rounded-lg md:rounded-xl transition-all hover:scale-105 active:scale-95 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20"
               >
-                S&apos;inscrire
+                {t('nav_register')}
               </Link>
             </>
           )}

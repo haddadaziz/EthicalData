@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight } from '@/components/icons';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface HeroSectionProps {
   isConnected: boolean;
@@ -8,6 +9,8 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ isConnected, children }: HeroSectionProps) {
+  const { t } = useLanguage();
+
   return (
     <section className="relative min-h-screen lg:min-h-[80vh] flex flex-col justify-between overflow-hidden bg-[#020617] text-white">
       {/* Navigation container */}
@@ -26,7 +29,7 @@ export function HeroSection({ isConnected, children }: HeroSectionProps) {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-white uppercase leading-tight md:leading-none drop-shadow-lg"
           >
-            Ethical Data Security – L&apos;essentiel en un clic !
+            {t('hero_title')}
           </motion.h1>
 
           <motion.p
@@ -35,7 +38,7 @@ export function HeroSection({ isConnected, children }: HeroSectionProps) {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-xs sm:text-sm md:text-base text-slate-200 font-semibold leading-relaxed max-w-2xl drop-shadow-md"
           >
-            Dynamisme, réactivité et innovation sont au cœur de nos engagements. Nous vous accompagnons dans la mise en place, l'évolution et la sécurisation de votre infrastructure IT, en garantissant performance, fiabilité et continuité pour vos systèmes.
+            {t('hero_subtitle')}
           </motion.p>
 
           <motion.div
@@ -48,7 +51,7 @@ export function HeroSection({ isConnected, children }: HeroSectionProps) {
               href={isConnected ? "/dashboard/practice" : "/login"}
               className="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl transition-all duration-300 flex items-center justify-center gap-2.5 cursor-pointer shadow-lg shadow-blue-600/30 text-xs sm:text-sm uppercase tracking-wider hover:scale-105 active:scale-95"
             >
-              <span>Réserver un diagnostic</span>
+              <span>{t('hero_cta')}</span>
               <ArrowRight className="w-4 h-4" />
             </a>
           </motion.div>

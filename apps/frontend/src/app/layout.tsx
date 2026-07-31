@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "../context/ToastContext";
-
 import { ConfirmProvider } from "../context/ConfirmContext";
+import { LanguageProvider } from "../context/LanguageContext";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -60,11 +60,13 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        <ToastProvider>
-          <ConfirmProvider>
-            {children}
-          </ConfirmProvider>
-        </ToastProvider>
+        <LanguageProvider>
+          <ToastProvider>
+            <ConfirmProvider>
+              {children}
+            </ConfirmProvider>
+          </ToastProvider>
+        </LanguageProvider>
       </body>
     </html>
   );
