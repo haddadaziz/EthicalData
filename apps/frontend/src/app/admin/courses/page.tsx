@@ -6,6 +6,7 @@ import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useConfirm } from '../../../context/ConfirmContext';
 import { BookOpen, Plus, Search, Edit, Trash2, Globe, Clock, User, Users, ArrowRight, ChevronDown, Award } from '@/components/icons';
+import { CourseFormModal } from '@/components/admin/courses/CourseFormModal';
 
 interface FormateurInfo {
     id: string;
@@ -52,6 +53,22 @@ export default function AdminCoursesPage() {
     const [statusFilter, setStatusFilter] = useState('ALL');
     const [certFilter, setCertFilter] = useState('ALL');
     const [certDropdownOpen, setCertDropdownOpen] = useState(false);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [createLoading, setCreateLoading] = useState(false);
+
+    const handleCreateCourse = async (payload: any) => {
+        setCreateLoading(true);
+        try {
+            await apiFetch('/cours', { method: 'POST', body: payload });
+            showToast(`Formation "${payload.titre}" créée avec succès !`, "success");
+            setIsCreateModalOpen(false);
+            fetchCoursesAndCerts();
+        } catch (err: any) {
+            showToast(err.message || "Erreur lors de la création de la formation.", "error");
+        } finally {
+            setCreateLoading(false);
+        }
+    };
 
     
 
@@ -270,6 +287,14 @@ export default function AdminCoursesPage() {
                         )}
                     </div>
                 </div>
+
+                <button
+                    onClick={() => setIsCreateModalOpen(true)}
+                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-600/20 cursor-pointer shrink-0"
+                >
+                    <Plus className="w-4 h-4" />
+                    <span>Nouvelle Formation</span>
+                </button>
             </div>
 
             {/* GRILLE RESPONSIVE DE COURS */}
@@ -390,6 +415,14 @@ export default function AdminCoursesPage() {
                 </div>
             )}
 
+            <CourseFormModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                onSubmit={handleCreateCourse}
+                certifications={certifications}
+                modalLoading={createLoading}
+                modalError={null}
+            />
         </div>
     );
 }

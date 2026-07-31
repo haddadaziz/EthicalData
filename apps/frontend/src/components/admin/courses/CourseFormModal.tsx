@@ -14,6 +14,10 @@ interface CoursePayload {
   titre: string;
   description?: string | null;
   dureeEstimee?: number | null;
+  deliveryType?: 'E-learning 24/7' | 'Visioconférence Live';
+  priceMad?: number | null;
+  formateurId?: string | null;
+  maxCapacity?: number | null;
   imageUrl?: string | null;
   certificationId?: number | null;
   objectifs: string[];
@@ -41,6 +45,10 @@ export const CourseFormModal = React.memo(function CourseFormModal({
   const [titre, setTitre] = useState('');
   const [description, setDescription] = useState('');
   const [dureeEstimee, setDureeEstimee] = useState<number>(10);
+  const [deliveryType, setDeliveryType] = useState<'E-learning 24/7' | 'Visioconférence Live'>('E-learning 24/7');
+  const [priceMad, setPriceMad] = useState<number>(2500);
+  const [formateurId, setFormateurId] = useState<string>('t1');
+  const [maxCapacity, setMaxCapacity] = useState<number>(20);
   const [imageUrl, setImageUrl] = useState('');
   const [imageError, setImageError] = useState(false);
   const [certificationId, setCertificationId] = useState('');
@@ -55,6 +63,10 @@ export const CourseFormModal = React.memo(function CourseFormModal({
         setTitre(initialData.titre);
         setDescription(initialData.description || '');
         setDureeEstimee(initialData.dureeEstimee || 10);
+        setDeliveryType(initialData.deliveryType || 'E-learning 24/7');
+        setPriceMad(initialData.priceMad || 2500);
+        setFormateurId(initialData.formateurId || 't1');
+        setMaxCapacity(initialData.maxCapacity || 20);
         setImageUrl(initialData.imageUrl || '');
         setCertificationId(initialData.certificationId?.toString() || '');
         setStatut(initialData.statut);
@@ -65,6 +77,10 @@ export const CourseFormModal = React.memo(function CourseFormModal({
         setTitre('');
         setDescription('');
         setDureeEstimee(10);
+        setDeliveryType('E-learning 24/7');
+        setPriceMad(2500);
+        setFormateurId('t1');
+        setMaxCapacity(20);
         setImageUrl('');
         setCertificationId('');
         setStatut('BROUILLON');
@@ -105,6 +121,10 @@ export const CourseFormModal = React.memo(function CourseFormModal({
       titre,
       description: description || null,
       dureeEstimee: Number(dureeEstimee) || null,
+      deliveryType,
+      priceMad: Number(priceMad) || 2500,
+      formateurId: formateurId || null,
+      maxCapacity: Number(maxCapacity) || 20,
       imageUrl: imageUrl || null,
       certificationId: certificationId ? Number(certificationId) : null,
       objectifs: objectifsList.filter(v => v.trim()),
@@ -174,13 +194,50 @@ export const CourseFormModal = React.memo(function CourseFormModal({
             </div>
           </div>
 
-          {/* Statut */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Format de Formation *</label>
+              <select value={deliveryType} onChange={(e) => setDeliveryType(e.target.value as any)}
+                className="w-full px-4 py-2.5 bg-[#080d1a] shadow-sm border border-slate-800/80 focus:border-cyan-500 rounded-xl text-cyan-400 text-sm outline-none font-bold">
+                <option value="E-learning 24/7">💻 E-learning (Autoformation 24/7)</option>
+                <option value="Visioconférence Live">🎥 Formation Visioconférence Live (Teams)</option>
+              </select>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Tarif Formation (MAD) *</label>
+              <input type="number" required min={0} value={priceMad}
+                onChange={(e) => setPriceMad(Number(e.target.value))}
+                className="w-full px-4 py-2.5 bg-[#080d1a] shadow-sm border border-slate-800/80 focus:border-emerald-500 rounded-xl text-emerald-400 font-bold text-sm outline-none" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Formateur Assigné *</label>
+              <select value={formateurId} onChange={(e) => setFormateurId(e.target.value)}
+                className="w-full px-4 py-2.5 bg-[#080d1a] shadow-sm border border-slate-800/80 focus:border-cyan-500 rounded-xl text-white text-sm outline-none font-semibold">
+                <option value="t1">Dr. Tariq Berrada (Expert Cybersécurité)</option>
+                <option value="t2">Leila Naciri (Architecte Cloud Azure/AWS)</option>
+                <option value="t3">Mehdi Kabbaj (Spécialiste Pentest)</option>
+              </select>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Capacité Max (Places Visio)</label>
+              <input type="number" required min={5} max={100} value={maxCapacity}
+                onChange={(e) => setMaxCapacity(Number(e.target.value))}
+                className="w-full px-4 py-2.5 bg-[#080d1a] shadow-sm border border-slate-800/80 focus:border-cyan-500 rounded-xl text-white text-sm outline-none font-semibold" />
+            </div>
+          </div>
+
+          {/* Statut & Publication */}
           <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Statut</label>
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Statut & Publication *</label>
             <select value={statut} onChange={(e) => setStatut(e.target.value as any)}
               className="w-full px-4 py-2.5 bg-[#080d1a] shadow-sm border border-slate-800/80 focus:border-blue-600 rounded-xl text-white text-sm outline-none transition-all font-semibold">
-              <option value="BROUILLON">Brouillon (Privé)</option>
-              <option value="PUBLIE">Publié (Visible par tous)</option>
+              <option value="BROUILLON">Brouillon (Dépublié / Privé)</option>
+              <option value="PUBLIE">Publié (En ligne - Visible par tous)</option>
               <option value="ARCHIVE">Archivé (Désactivé)</option>
             </select>
           </div>
