@@ -1,32 +1,35 @@
 import React from 'react';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
+import { useLanguage } from '@/context/LanguageContext';
 
 export function ServicesSection() {
+  const { t } = useLanguage();
+
   const priorities = [
     {
-      title: "Notre Mission",
-      desc: "Accompagner votre transformation digitale, sécuriser vos infrastructures critiques et garantir la continuité de vos systèmes.",
+      title: t('card1_title'),
+      desc: t('card1_desc'),
       bgImage: "/images/cyber_mission_card.png",
       accentColor: "from-blue-600/30 to-cyan-600/10",
       borderColor: "group-hover:border-cyan-500/60"
     },
     {
-      title: "Dix Ans d'Expertise",
-      desc: "Une équipe d'auditeurs et ingénieurs certifiés seniors, ayant prouvé leur savoir-faire sur des projets d'envergure bancaires et étatiques.",
+      title: t('card2_title'),
+      desc: t('card2_desc'),
       bgImage: "/images/cyber_experience_card.png",
       accentColor: "from-purple-600/30 to-blue-600/10",
       borderColor: "group-hover:border-purple-500/60"
     },
     {
-      title: "Certifications Récents",
-      desc: "Plus de 500 cursus qualifiants et vouchers officiels (Microsoft, AWS, Palo Alto, PECB) pour propulser votre carrière internationale.",
+      title: t('card3_title'),
+      desc: t('card3_desc'),
       bgImage: "/images/cyber_certif_card.png",
       accentColor: "from-emerald-600/30 to-teal-600/10",
       borderColor: "group-hover:border-emerald-500/60"
     },
     {
-      title: "Solutions IT Intégrées",
-      desc: "Conception Cloud, intégration d'équipements réseaux sécurisés (F5, Fortinet, Sophos) et infogérance managée 24/7.",
+      title: t('card4_title'),
+      desc: t('card4_desc'),
       bgImage: "/images/cyber_solutions_card.png",
       accentColor: "from-amber-600/30 to-orange-600/10",
       borderColor: "group-hover:border-amber-500/60"
@@ -53,10 +56,10 @@ export function ServicesSection() {
         <AnimatedSection className="text-center max-w-2xl mx-auto mb-16">
           <div className="flex items-center justify-center gap-4 mb-4">
             <span className="w-10 h-[2px] bg-blue-600 rounded-full" />
-            <span className="text-sm font-black text-cyan-400 uppercase tracking-[0.2em]">Engagements & Piliers</span>
+            <span className="text-sm font-black text-cyan-400 uppercase tracking-[0.2em]">{t('priorities_tag')}</span>
             <span className="w-10 h-[2px] bg-blue-600 rounded-full" />
           </div>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white uppercase tracking-tighter">Notre Priorité</h2>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white uppercase tracking-tighter">{t('priorities_title')}</h2>
         </AnimatedSection>
 
         {/* Cartes Visuelles Sublimées avec Fond Image HD & Texte au Premier Plan */}

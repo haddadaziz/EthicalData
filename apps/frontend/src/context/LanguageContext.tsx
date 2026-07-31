@@ -52,11 +52,73 @@ export const dictionary: Translations = {
   },
   hero_cta: { fr: "Réserver un diagnostic", ar: "حجز تشخيص مجاني", en: "Book a Diagnostic" },
 
-  // Sections Headings
+  // Services / Priorités Section
   priorities_tag: { fr: "Engagements & Piliers", ar: "التزاماتنا وركائزنا", en: "Commitments & Pillars" },
   priorities_title: { fr: "Notre Priorité", ar: "أولويتنا", en: "Our Priority" },
+  card1_title: { fr: "Notre Mission", ar: "مهمتنا", en: "Our Mission" },
+  card1_desc: {
+    fr: "Accompagner les entreprises et professionnels dans la sécurisation, l'optimisation et la transformation digitale de leurs infrastructures stratégiques.",
+    ar: "مرافقة الشركات والمهنيين في تأمين وتحسين التحول الرقمي للبنى التحتية الاستراتيجية.",
+    en: "Support companies and professionals in securing, optimizing, and digitally transforming their strategic IT infrastructure."
+  },
+  card2_title: { fr: "Notre Expérience", ar: "خبرتنا", en: "Our Experience" },
+  card2_desc: {
+    fr: "Plus de 10 ans d'expertise dans le conseil IT, l'audit de cybersécurité, le cloud hybride et la formation certifiante de haut niveau.",
+    ar: "أكثر من 10 سنوات من الخبرة في الاستشارات وتدقيق الأمن السبراني والدورات التدريبية المعتمدة.",
+    en: "Over 10 years of expertise in IT consulting, cybersecurity audit, hybrid cloud, and high-level certified training."
+  },
+  card3_title: { fr: "Formations & Vouchers", ar: "التدريب والقسائم", en: "Training & Vouchers" },
+  card3_desc: {
+    fr: "Plus de 500 cursus qualifiants et vouchers officiels (Microsoft, AWS, Palo Alto, PECB) pour propulser votre carrière internationale.",
+    ar: "أكثر من 500 دورة تدريبية وقسائم امتحانات رسمية (Microsoft, AWS, Palo Alto, PECB) لتطوير حياتك المهنية.",
+    en: "Over 500 qualifying courses and official vouchers (Microsoft, AWS, Palo Alto, PECB) to boost your global career."
+  },
+  card4_title: { fr: "Solutions IT Sur Mesure", ar: "حلول تكنولوجيا مخصصة", en: "Custom IT Solutions" },
+  card4_desc: {
+    fr: "Infogérance 24/7, intégration de systèmes complexes et portage salarial pour répondre avec réactivité aux exigences de votre entreprise.",
+    ar: "إدارة البنية التحتية 24/7 وتكامل الأنظمة المعقدة لتلبية متطلبات مؤسستك بسرعة واستجابة عالية.",
+    en: "24/7 Managed services, complex system integration, and umbrella services to responsively meet your business needs."
+  },
+
+  // Open Sessions Section
   open_sessions_title: { fr: "Sessions de Formation Ouvertes", ar: "دورات تدريبية مفتوحة", en: "Open Training Sessions" },
+  open_sessions_desc: {
+    fr: "Réservez votre place pour nos prochaines sessions de formation en visioconférence ou bootcamp intensif avec formateurs certifiés.",
+    ar: "احجز مقعدك في دوراتنا التدريبية القادمة عبر الإنترنت أو المعسكرات المكثفة مع مدربين معتمدين.",
+    en: "Book your seat for our upcoming live online sessions or intensive bootcamps with certified instructors."
+  },
+  places_left: { fr: "places restantes", ar: "أماكن متبقية", en: "seats remaining" },
+  btn_register_session: { fr: "S'inscrire à cette session", ar: "التسجيل في هذه الدورة", en: "Register for Session" },
+
+  // Certifications Section
   certifications_title: { fr: "Certifications", ar: "الشهادات الدولية", en: "Certifications" },
+  certifications_desc: {
+    fr: "Sélectionnez votre parcours, entraînez-vous sur nos simulateurs et décrochez votre certification internationale.",
+    ar: "اختر مسارك التدريبي، وتدرب على منصات المحاكاة واحصل على شهادتك الدولية.",
+    en: "Select your track, practice on our simulators, and earn your official international certification."
+  },
+
+  // Community & Mentoring Section
+  coaching_headline: {
+    fr: "Maximisez vos chances de réussite :",
+    ar: "ضاعف فرصك في النجاح:",
+    en: "Maximize your chances of success:"
+  },
+  coaching_gradient_text: {
+    fr: "Examens Blancs IA, Vouchers & Mentoring",
+    ar: "امتحانات الذكاء الاصطناعي وقسائم الامتحانات والتوجيه",
+    en: "AI Mock Exams, Vouchers & Mentoring"
+  },
+  coaching_subtext: {
+    fr: "Entraînez-vous avec nos simulations chronométrées avec correction IA (Readiness Score), achetez vos vouchers d'examen officiel avec réductions EDS et planifiez un coaching 1-on-1 avec un formateur expert.",
+    ar: "تدرب مع امتحانات المحاكاة الموقوتة بالتصحيح الذكي، واشترِ قسائم الامتحانات الرسمية بخصومات ممتازة، واحجز جلسات توجيه خاصة.",
+    en: "Practice with timed exam simulations with AI scoring, purchase official exam vouchers at discounted rates, and schedule 1-on-1 coaching with expert mentors."
+  },
+  card_exam_ia: { fr: "Examens Blancs IA", ar: "امتحانات تجريبية بالذكاء الاصطناعي", en: "AI Mock Exams" },
+  card_vouchers: { fr: "Vouchers Examen", ar: "قسائم الامتحانات", en: "Exam Vouchers" },
+  card_coaching: { fr: "Coaching 1-on-1", ar: "توجيه فردي", en: "1-on-1 Coaching" },
+  btn_discover_exams: { fr: "Découvrir les Examens Blancs", ar: "استكشف الامتحانات التجريبية", en: "Discover Mock Exams" },
+  btn_view_vouchers: { fr: "Voir les Vouchers", ar: "عرض القسائم المتاحة", en: "View Vouchers" },
 
   // Footer & Miscellaneous
   rights_reserved: { fr: "Tous droits réservés.", ar: "جميع الحقوق محفوظة.", en: "All rights reserved." },

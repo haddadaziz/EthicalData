@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Calendar, Users, Clock, ArrowRight, CheckCircle } from '@/components/icons';
 import ParticlesComponent from '@/components/ui/particles-bg';
+import { useLanguage } from '@/context/LanguageContext';
 
 const SESSIONS = [
   {
@@ -40,6 +41,8 @@ const SESSIONS = [
 ];
 
 export function OpenSessionsSection() {
+  const { t } = useLanguage();
+
   return (
     <section className="relative z-10 py-20 bg-[#020617] border-t border-slate-900 overflow-hidden">
       {/* Background Particles Animation */}
@@ -53,11 +56,11 @@ export function OpenSessionsSection() {
         <div className="text-center max-w-3xl mx-auto space-y-3">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight leading-tight">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-cyan-400">
-              Sessions de Formation Ouvertes
+              {t('open_sessions_title')}
             </span>
           </h2>
           <p className="text-slate-400 text-xs sm:text-sm md:text-base font-medium leading-relaxed">
-            Réservez votre place pour nos prochaines sessions de formation en visioconférence ou bootcamp intensif avec formateurs certifiés.
+            {t('open_sessions_desc')}
           </p>
         </div>
 
@@ -72,7 +75,7 @@ export function OpenSessionsSection() {
                 <div className="flex items-center justify-end">
                   <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1">
                     <Users className="w-3.5 h-3.5 text-cyan-400" />
-                    {session.placesLeft} places restantes
+                    {session.placesLeft} {t('places_left')}
                   </span>
                 </div>
 
@@ -101,7 +104,7 @@ export function OpenSessionsSection() {
                 href="/register"
                 className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span>S’inscrire à cette session</span>
+                <span>{t('btn_register_session')}</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>

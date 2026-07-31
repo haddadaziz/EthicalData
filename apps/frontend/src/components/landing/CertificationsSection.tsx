@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, ArrowRight } from '@/components/icons';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { getCertificateBadgeLogo } from '../../lib/certification-utils';
 import { CertificationCard } from '@/components/ui/CertificationCard';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface CertificationsSectionProps {
   realCertifications: any[];
@@ -13,6 +14,8 @@ interface CertificationsSectionProps {
 }
 
 export function CertificationsSection({ realCertifications, courses, cleanTitle }: CertificationsSectionProps) {
+  const { t } = useLanguage();
+
   const catalogCourses = realCertifications.length > 0
     ? realCertifications.map(c => ({
         id: c.id,
@@ -67,16 +70,17 @@ export function CertificationsSection({ realCertifications, courses, cleanTitle 
     return () => clearInterval(timer);
   }, [isPaused, goNext, catalogCourses.length, itemsPerPage]);
 
-  const cert = catalogCourses[currentIndex];
   if (catalogCourses.length === 0) return null;
+  const cert = catalogCourses[currentIndex];
 
   return (
-    <section id="formations" className="relative z-10 w-full bg-[#020617] border-t border-slate-900 py-20 overflow-hidden">
+    <section id="certifications" className="relative z-10 py-24 bg-[#020617] border-t border-slate-900 overflow-hidden">
       
+      {/* Background Texture */}
       <div className="absolute inset-0 z-0 pointer-events-none" style={{ contentVisibility: 'auto' }}>
         <img 
-          src="/bg/cyber_hero_bg.png" 
-          alt="Cyber security background texture" 
+          src="/bg/cyber_certif_bg.png" 
+          alt="Certifications background" 
           className="w-full h-full object-cover opacity-65 transform-gpu" 
           loading="lazy"
           decoding="async"
@@ -90,11 +94,11 @@ export function CertificationsSection({ realCertifications, courses, cleanTitle 
         <AnimatedSection className="text-center max-w-3xl mx-auto mb-16 space-y-3">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight leading-tight">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-cyan-400">
-              Certifications
+              {t('certifications_title')}
             </span>
           </h2>
           <p className="text-slate-400 text-xs sm:text-sm md:text-base font-medium leading-relaxed">
-            Sélectionnez votre parcours, entraînez-vous sur nos simulateurs et décrochez votre certification internationale.
+            {t('certifications_desc')}
           </p>
         </AnimatedSection>
 

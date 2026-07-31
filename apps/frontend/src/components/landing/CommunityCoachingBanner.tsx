@@ -2,17 +2,16 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { MessageSquare, Calendar, ArrowRight, CheckCircle, Sparkles, Tag, Play } from '@/components/icons';
-import NeuralBackground from '@/components/ui/flow-field-background';
+import { ArrowRight } from '@/components/icons';
+import { useLanguage } from '@/context/LanguageContext';
 
 export function CommunityCoachingBanner() {
+  const { t } = useLanguage();
+
   return (
-    <section className="py-20 md:py-28 relative z-10 bg-[#020617] border-t border-slate-900 overflow-hidden">
-      
-      {/* Full Section Neural Flow Field Interactive Animated Background */}
-      <div className="absolute inset-0 z-0 opacity-40 pointer-events-auto">
-        <NeuralBackground color="#06b6d4" trailOpacity={0.12} speed={0.9} particleCount={550} />
-      </div>
+    <section className="relative py-20 bg-[#020617] border-t border-slate-900 overflow-hidden">
+      {/* Visual Ambient Grid & Gradients */}
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-20 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px]" />
 
       {/* Soft Glow Overlays */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -25,14 +24,14 @@ export function CommunityCoachingBanner() {
           <div className="lg:col-span-7 space-y-6">
 
             <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
-              Maximisez vos chances de réussite : <br className="hidden sm:inline" />
+              {t('coaching_headline')} <br className="hidden sm:inline" />
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-cyan-400">
-                Examens Blancs IA, Vouchers & Mentoring
+                {t('coaching_gradient_text')}
               </span>
             </h2>
 
             <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-2xl">
-              Entraînez-vous avec nos simulations chronométrées avec correction IA (Readiness Score), achetez vos vouchers d'examen officiel avec réductions EDS et planifiez un coaching 1-on-1 avec un formateur expert.
+              {t('coaching_subtext')}
             </p>
 
             {/* 3 Cartes Sobres avec Flèche Bleue à Droite */}
@@ -42,7 +41,7 @@ export function CommunityCoachingBanner() {
                 className="group flex items-center justify-between p-4 bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-cyan-500/60 rounded-2xl transition-all duration-300 shadow-md"
               >
                 <div>
-                  <h4 className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors">Examens Blancs IA</h4>
+                  <h4 className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors">{t('card_exam_ia')}</h4>
                   <p className="text-[10px] text-slate-400 mt-0.5 font-medium">Readiness Score & IA</p>
                 </div>
                 <div className="w-7 h-7 rounded-xl bg-cyan-950/60 border border-cyan-800/60 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-600 group-hover:text-white transition-all shrink-0">
@@ -55,7 +54,7 @@ export function CommunityCoachingBanner() {
                 className="group flex items-center justify-between p-4 bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-cyan-500/60 rounded-2xl transition-all duration-300 shadow-md"
               >
                 <div>
-                  <h4 className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors">Vouchers Examen</h4>
+                  <h4 className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors">{t('card_vouchers')}</h4>
                   <p className="text-[10px] text-slate-400 mt-0.5 font-medium">Réductions EDS</p>
                 </div>
                 <div className="w-7 h-7 rounded-xl bg-cyan-950/60 border border-cyan-800/60 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-600 group-hover:text-white transition-all shrink-0">
@@ -68,7 +67,7 @@ export function CommunityCoachingBanner() {
                 className="group flex items-center justify-between p-4 bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-cyan-500/60 rounded-2xl transition-all duration-300 shadow-md"
               >
                 <div>
-                  <h4 className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors">Coaching 1-on-1</h4>
+                  <h4 className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors">{t('card_coaching')}</h4>
                   <p className="text-[10px] text-slate-400 mt-0.5 font-medium">Mentors Certifiés</p>
                 </div>
                 <div className="w-7 h-7 rounded-xl bg-cyan-950/60 border border-cyan-800/60 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-600 group-hover:text-white transition-all shrink-0">
@@ -83,14 +82,14 @@ export function CommunityCoachingBanner() {
                 href="/examens-blancs"
                 className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-blue-600/20 flex items-center gap-2 cursor-pointer hover:scale-105 active:scale-95"
               >
-                <span>Découvrir les Examens Blancs</span>
+                <span>{t('btn_discover_exams')}</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 href="/vouchers"
                 className="px-6 py-3 bg-[#080d1a] hover:bg-slate-900 border border-slate-800 text-cyan-400 hover:text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all flex items-center gap-2 cursor-pointer"
               >
-                <span>Voir les Vouchers</span>
+                <span>{t('btn_view_vouchers')}</span>
               </Link>
             </div>
           </div>
