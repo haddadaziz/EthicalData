@@ -99,8 +99,13 @@ export const CourseFormModal = React.memo(function CourseFormModal({
   isOpen, onClose, onSubmit, initialData, certifications, modalLoading, modalError, inline, fullWidth
 }: CourseFormModalProps) {
   const { showToast } = useToast();
+  const [activeLang, setActiveLang] = useState<'FR' | 'AR' | 'EN'>('FR');
   const [titre, setTitre] = useState('');
+  const [titreAr, setTitreAr] = useState('');
+  const [titreEn, setTitreEn] = useState('');
   const [description, setDescription] = useState('');
+  const [descriptionAr, setDescriptionAr] = useState('');
+  const [descriptionEn, setDescriptionEn] = useState('');
   const [dureeEstimee, setDureeEstimee] = useState<number>(10);
   const [deliveryType, setDeliveryType] = useState<'E-learning 24/7' | 'Visioconférence Live'>('E-learning 24/7');
   const [priceMad, setPriceMad] = useState<number>(2500);
@@ -251,15 +256,70 @@ export const CourseFormModal = React.memo(function CourseFormModal({
         </div>
       )}
 
+      {/* Selecteur de Langue de Rédaction (Multilingue FR / AR / EN) */}
+      <div className="flex items-center justify-between bg-[#080d1a] p-3 rounded-2xl border border-slate-800">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Langue d&apos;Édition :</span>
+          <div className="flex items-center gap-1 bg-[#020617] p-1 rounded-xl border border-slate-800">
+            <button
+              type="button"
+              onClick={() => setActiveLang('FR')}
+              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeLang === 'FR' ? 'bg-cyan-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}
+            >
+              🇫🇷 Français (FR)
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveLang('AR')}
+              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeLang === 'AR' ? 'bg-cyan-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}
+            >
+              🇲🇦 العربية (AR)
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveLang('EN')}
+              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeLang === 'EN' ? 'bg-cyan-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}
+            >
+              🇬🇧 English (EN)
+            </button>
+          </div>
+        </div>
+        <span className="text-[10px] text-cyan-400 font-bold px-2.5 py-1 bg-cyan-950/40 rounded-lg border border-cyan-800/40">
+          Mode Multilingue Actif
+        </span>
+      </div>
+
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <div className="space-y-5">
-          {/* Titre */}
+          {/* Titre avec Support Multilingue */}
           <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Titre du cours</label>
-            <input type="text" required value={titre}
-              onChange={(e) => setTitre(e.target.value)}
-              placeholder="Initiation à la Sécurité Informatique"
-              className="w-full px-4 py-2.5 bg-[#080d1a] shadow-sm border border-slate-800/80 focus:border-blue-600 rounded-xl text-white text-sm outline-none transition-all" />
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">
+                Titre du cours ({activeLang}) *
+              </label>
+              <span className="text-[9px] text-slate-500 font-semibold">
+                {activeLang === 'FR' ? 'Version principale FR' : activeLang === 'AR' ? 'Traduction Arabe' : 'Traduction Anglaise'}
+              </span>
+            </div>
+            {activeLang === 'FR' && (
+              <input type="text" required value={titre}
+                onChange={(e) => setTitre(e.target.value)}
+                placeholder="Initiation à la Sécurité Informatique (Français)"
+                className="w-full px-4 py-2.5 bg-[#080d1a] shadow-sm border border-slate-800/80 focus:border-blue-600 rounded-xl text-white text-sm outline-none transition-all" />
+            )}
+            {activeLang === 'AR' && (
+              <input type="text" value={titreAr}
+                onChange={(e) => setTitreAr(e.target.value)}
+                dir="rtl"
+                placeholder="مقدمة في والأمن السيبراني (العربية)"
+                className="w-full px-4 py-2.5 bg-[#080d1a] shadow-sm border border-slate-800/80 focus:border-cyan-500 rounded-xl text-white text-sm outline-none transition-all font-sans" />
+            )}
+            {activeLang === 'EN' && (
+              <input type="text" value={titreEn}
+                onChange={(e) => setTitreEn(e.target.value)}
+                placeholder="Introduction to Cybersecurity (English)"
+                className="w-full px-4 py-2.5 bg-[#080d1a] shadow-sm border border-slate-800/80 focus:border-cyan-500 rounded-xl text-white text-sm outline-none transition-all" />
+            )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

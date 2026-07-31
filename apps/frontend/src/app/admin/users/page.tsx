@@ -206,6 +206,20 @@ export default function AdminUsersPage() {
         }
     };
 
+    const handleToggleStatus = async (user: UserData) => {
+        const newStatus = user.statut === 'ACTIF' ? 'INACTIF' : 'ACTIF';
+        try {
+            await apiFetch(`/users/${user.id}`, {
+                method: 'PATCH',
+                body: { statut: newStatus }
+            });
+            showToast(`Statut du compte ${user.prenom} ${user.nom} passé à ${newStatus === 'ACTIF' ? 'Actif' : 'Désactivé'}.`, "success");
+            fetchUsers();
+        } catch (err: any) {
+            showToast(err.message || "Erreur lors du changement de statut.", "error");
+        }
+    };
+
     const filteredUsers = React.useMemo(() => {
         return users.filter((user) => {
             const matchesSearch =
@@ -308,18 +322,32 @@ export default function AdminUsersPage() {
                                 )}
                             </div>
 
-                            {/* Actions sur le Compte */}
+                            {/* Actions sur le Compte avec 1-Clic Activation/Désactivation */}
                             <div className="flex items-center gap-2 pt-2 border-t border-slate-800">
+                                <button
+                                    type="button"
+                                    onClick={() => handleToggleStatus(user)}
+                                    title={user.statut === 'ACTIF' ? 'Cliquer pour désactiver le profil' : 'Cliquer pour activer le profil'}
+                                    className={`py-2 px-2.5 rounded-xl font-bold text-xs flex items-center gap-1 transition-all cursor-pointer border ${
+                                        user.statut === 'ACTIF'
+                                            ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800/80 hover:bg-rose-950/60 hover:text-rose-300 hover:border-rose-800/80'
+                                            : 'bg-slate-900 text-slate-400 border-slate-700 hover:bg-emerald-950/60 hover:text-emerald-300 hover:border-emerald-800/80'
+                                    }`}
+                                >
+                                    <span className={`w-2 h-2 rounded-full ${user.statut === 'ACTIF' ? 'bg-emerald-400' : 'bg-slate-500'}`} />
+                                    <span>{user.statut === 'ACTIF' ? 'Actif' : 'Inactif'}</span>
+                                </button>
+
                                 <button
                                     onClick={() => {
                                         setGrantCertUser(user);
                                         setGrantCertName('Palo Alto Networks PCNSA Certified');
                                         setGrantCertCode('PCNSA-2026');
                                     }}
-                                    className="py-2 px-3 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-800/80 text-emerald-300 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                                    className="py-2 px-2.5 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-800/80 text-emerald-300 font-bold rounded-xl text-xs flex items-center justify-center gap-1 transition-all cursor-pointer"
                                 >
                                     <Award className="w-3.5 h-3.5" />
-                                    <span>Accorder Certif</span>
+                                    <span>Certif</span>
                                 </button>
 
                                 <button
@@ -327,12 +355,13 @@ export default function AdminUsersPage() {
                                     className="flex-1 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                                 >
                                     <Edit className="w-3.5 h-3.5" />
-                                    <span>Modifier</span>
+                                    <span>Editer</span>
                                 </button>
 
                                 <button
                                     onClick={() => handleDeleteUser(user)}
                                     className="p-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs flex items-center justify-center transition-all cursor-pointer"
+                                    title="Supprimer"
                                 >
                                     <Trash2 className="w-3.5 h-3.5" />
                                 </button>
@@ -537,6 +566,7 @@ export default function AdminUsersPage() {
                                     >
                                         <option value="APPRENANT">APPRENANT</option>
                                         <option value="FORMATEUR">FORMATEUR</option>
+                                        <option value="CONSULTANT_BOOKINGS">CONSULTANT BOOKINGS</option>
                                         <option value="ADMIN">ADMIN</option>
                                         <option value="SUPER_ADMIN">SUPER ADMIN</option>
                                     </select>
@@ -649,6 +679,7 @@ export default function AdminUsersPage() {
                                     >
                                         <option value="APPRENANT">APPRENANT</option>
                                         <option value="FORMATEUR">FORMATEUR</option>
+                                        <option value="CONSULTANT_BOOKINGS">CONSULTANT BOOKINGS</option>
                                         <option value="ADMIN">ADMIN</option>
                                         <option value="SUPER_ADMIN">SUPER ADMIN</option>
                                     </select>

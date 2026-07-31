@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useToast } from '../../context/ToastContext';
-import { LayoutDashboard, Users, BookOpen, MessageSquare, ShieldCheck, LogOut, DownloadCloud, Award, Bell, Calendar, FileText, Settings, User, X, Menu, Activity, ChevronDown } from '@/components/icons';
+import { LayoutDashboard, Users, BookOpen, MessageSquare, ShieldCheck, LogOut, DownloadCloud, Award, Bell, Calendar, FileText, Settings, User, X, Menu, Activity, Tag, Video, ChevronDown } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import NotificationBell from '../../components/NotificationBell';
 import ErrorBoundary from '../../components/ErrorBoundary';
@@ -105,9 +105,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       subItems: [
         { name: 'Certifications', href: '/admin/certifications', icon: Award },
         { name: 'Gestion des Cours', href: '/admin/courses', icon: BookOpen },
+        { name: 'Sessions Live', href: '/admin/sessions', icon: Video },
         { name: 'Ressources', href: '/admin/resources', icon: DownloadCloud },
         { name: 'Historique Téléchargements', href: '/admin/downloads', icon: DownloadCloud },
         { name: 'Simulations', href: '/admin/simulations', icon: Activity },
+        { name: 'Promotions', href: '/admin/promotions', icon: Tag },
       ]
     },
     {
@@ -123,6 +125,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       icon: Settings,
       subItems: [
         { name: 'Utilisateurs & Rôles', href: '/admin/users', icon: ShieldCheck },
+        { name: 'Reporting & KPIs', href: '/admin/reporting', icon: Activity },
         { name: 'Santé Système', href: '/admin/health', icon: Activity },
         ...(isSuperAdmin ? [{ name: 'Configuration Système', href: '/admin/system', icon: Settings }] : []),
       ]
@@ -151,6 +154,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (pathname === '/admin/courses') {
       return { title: 'Gestion des Cours', subtitle: 'Catalogue global de cours de la plateforme' };
     }
+    if (pathname === '/admin/sessions') {
+      return { title: 'Gestion des Sessions Live', subtitle: 'Planification, formateurs affectés, places et statut des sessions' };
+    }
     if (pathname === '/admin/downloads') {
         return { title: 'Historique des Téléchargements', subtitle: 'Suivi de tous les téléchargements effectués sur la plateforme' };
     }
@@ -160,6 +166,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (pathname === '/admin/simulations') {
       return { title: 'Gestion des Simulations', subtitle: 'Création et gestion des examens blancs et simulations' };
     }
+    if (pathname === '/admin/promotions') {
+      return { title: 'Gestion des Promotions', subtitle: 'Remises sur formations, vouchers et packs d\'examens' };
+    }
     if (pathname === '/admin/community') {
       return { title: 'Modération du Forum', subtitle: 'Gestion des sujets et des signalements' };
     }
@@ -167,7 +176,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       return { title: 'Coaching', subtitle: 'Ouverture des créneaux et rendez-vous' };
     }
     if (pathname === '/admin/users') {
-      return { title: 'Gestion des Utilisateurs', subtitle: 'Administration des comptes et attribution des rôles' };
+      return { title: 'Gestion des Utilisateurs', subtitle: 'Administration des comptes (apprenants, formateurs, consultants Bookings)' };
+    }
+    if (pathname === '/admin/reporting') {
+      return { title: 'Reporting & Analytics', subtitle: 'Suivi des inscriptions, chiffre d\'affaires, taux de réussite et sessions populaires' };
     }
     if (pathname === '/admin/health') {
       return { title: 'Santé & Monitoring Système', subtitle: 'Surveillance des performances serveur, BDD et RAM' };

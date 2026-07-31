@@ -12,6 +12,8 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { AppointmentsModule } from './modules/appointments/appointments.module';
 import { ResourcesModule } from './modules/resources/resources.module';
 import { SimulationsModule } from './modules/simulations/simulations.module';
+import { PromotionsModule } from './modules/promotions/promotions.module';
+import { SessionsModule } from './modules/sessions/sessions.module';
 import { HealthModule } from './health/health.module';
 import { CoursModule } from './modules/cours/cours.module';
 import { ContactModule } from './modules/contact/contact.module';
@@ -41,6 +43,8 @@ import { SettingsModule } from './modules/settings/settings.module';
     CertificationsModule,
     ResourcesModule,
     SimulationsModule,
+    PromotionsModule,
+    SessionsModule,
     ForumModule,
     NotificationsModule,
     AppointmentsModule,

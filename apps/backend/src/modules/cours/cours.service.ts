@@ -195,7 +195,7 @@ export class CoursService {
     return this.serializeCours(cours);
   }
 
-  async create(formateurId: number, dto: CreateCoursDto) {
+  async create(formateurId: number, dto: CreateCoursDto, userRoles?: string[]) {
     const statut = dto.statut || 'BROUILLON';
 
     if ((statut as string) === 'PUBLIE') {
@@ -217,6 +217,12 @@ export class CoursService {
       throw new BadRequestException(['Le titre du cours est obligatoire.']);
     }
 
+    const isAdmin =
+      userRoles &&
+      (userRoles.includes('ADMIN') || userRoles.includes('SUPER_ADMIN'));
+    const assigneeId =
+      dto.formateurId && isAdmin ? dto.formateurId : formateurId;
+
     const slug = `${this.slugify(dto.titre)}-${Date.now()}`;
     const cours = await this.prisma.cours.create({
       data: {
@@ -229,8 +235,11 @@ export class CoursService {
         prerequis: dto.prerequis || [],
         publicCible: dto.publicCible || [],
         dureeEstimee: dto.dureeEstimee || null,
+        priceMad: dto.priceMad ?? null,
+        deliveryType: dto.deliveryType || null,
+        maxCapacity: dto.maxCapacity ?? null,
         statut,
-        formateurId: BigInt(formateurId),
+        formateurId: BigInt(assigneeId),
         certificationId: dto.certificationId
           ? BigInt(dto.certificationId)
           : undefined,
@@ -293,6 +302,9 @@ export class CoursService {
     if (dto.prerequis !== undefined) data.prerequis = dto.prerequis;
     if (dto.publicCible !== undefined) data.publicCible = dto.publicCible;
     if (dto.dureeEstimee !== undefined) data.dureeEstimee = dto.dureeEstimee;
+    if (dto.priceMad !== undefined) data.priceMad = dto.priceMad;
+    if (dto.deliveryType !== undefined) data.deliveryType = dto.deliveryType;
+    if (dto.maxCapacity !== undefined) data.maxCapacity = dto.maxCapacity;
     if (dto.certificationId !== undefined)
       data.certificationId = BigInt(dto.certificationId);
     if (dto.statut !== undefined) {

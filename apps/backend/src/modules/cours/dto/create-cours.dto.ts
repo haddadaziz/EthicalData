@@ -2,6 +2,7 @@ import {
   IsString,
   IsOptional,
   IsInt,
+  IsNumber,
   IsArray,
   IsEnum,
   Min,
@@ -48,6 +49,24 @@ export class CreateCoursDto {
   @IsInt()
   @Min(0)
   dureeEstimee?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  priceMad?: number;
+
+  @IsOptional()
+  @IsString()
+  deliveryType?: string;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  maxCapacity?: number;
+
+  @IsOptional()
+  @IsInt()
+  formateurId?: number;
 
   @IsOptional()
   @IsInt()

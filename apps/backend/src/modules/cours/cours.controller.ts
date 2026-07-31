@@ -90,7 +90,7 @@ export class CoursController {
   @Roles('FORMATEUR', 'ADMIN', 'SUPER_ADMIN')
   @Post()
   async create(@Req() req: any, @Body() dto: CreateCoursDto) {
-    return this.coursService.create(req.user.id, dto);
+    return this.coursService.create(req.user.id, dto, req.user.roles);
   }
 
   // Mettre à jour un cours

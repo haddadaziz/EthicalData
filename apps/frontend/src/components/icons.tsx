@@ -41,6 +41,9 @@ function makeIcon(icon: any) {
 }
 
 export const Activity = makeIcon(faChartLine);
+export const TrendingUp = makeIcon(faChartLine);
+export const BarChart2 = makeIcon(faChartLine);
+export const PieChart = makeIcon(faChartLine);
 export const AlertCircle = makeIcon(faCircleExclamation);
 export const AlertTriangle = makeIcon(faTriangleExclamation);
 export const ArrowLeft = makeIcon(faArrowLeft);

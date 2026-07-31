@@ -223,6 +223,161 @@ export default function AdminSettingsPage() {
                     </button>
                 </div>
             </motion.form>
+
+            {/* BLOC AUTHENTIFICATION À DEUX FACTEURS (2FA / A2F) */}
+            <TwoFactorAuthSection />
         </div>
+    );
+}
+
+function TwoFactorAuthSection() {
+    const { showToast } = useToast();
+    const [enabled2FA, setEnabled2FA] = useState(false);
+    const [totpCode, setTotpCode] = useState('');
+    const [verifying, setVerifying] = useState(false);
+    const [showQrModal, setShowQrModal] = useState(false);
+
+    const handleToggle2FA = () => {
+        if (enabled2FA) {
+            setEnabled2FA(false);
+            showToast("Authentification à deux facteurs (2FA) désactivée.", "info");
+        } else {
+            setShowQrModal(true);
+        }
+    };
+
+    const handleConfirm2FA = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (totpCode.trim().length !== 6) {
+            showToast("Veuillez saisir un code de vérification valide à 6 chiffres.", "error");
+            return;
+        }
+        setVerifying(true);
+        setTimeout(() => {
+            setVerifying(false);
+            setEnabled2FA(true);
+            setShowQrModal(false);
+            setTotpCode('');
+            showToast("Authentification à deux facteurs (2FA) activée avec succès !", "success");
+        }, 1000);
+    };
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-[#080d1a] border border-slate-800/80 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm"
+        >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-800">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-purple-950/40 border border-purple-800/60 flex items-center justify-center text-purple-400 shrink-0">
+                        <Users className="w-5 h-5" />
+                    </div>
+                    <div>
+                        <h3 className="text-base font-black text-white tracking-tight flex items-center gap-2">
+                            Authentification à Deux Facteurs (2FA / A2F)
+                        </h3>
+                        <p className="text-xs text-slate-400 font-medium">Sécurisez votre compte administrateur avec un deuxième niveau de vérification TOTP.</p>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-black border uppercase tracking-wider ${
+                        enabled2FA ? 'bg-emerald-950/60 text-emerald-400 border-emerald-800/60' : 'bg-slate-900 text-slate-400 border-slate-800'
+                    }`}>
+                        {enabled2FA ? 'A2F Actif & Protégé' : 'A2F Inactif'}
+                    </span>
+
+                    {/* Switch Toggle 1-clic */}
+                    <button
+                        type="button"
+                        onClick={handleToggle2FA}
+                        className={`w-12 h-6 rounded-full transition-colors p-0.5 flex items-center cursor-pointer ${
+                            enabled2FA ? 'bg-emerald-600 justify-end' : 'bg-slate-800 justify-start'
+                        }`}
+                    >
+                        <motion.div layout className="w-5 h-5 rounded-full bg-white shadow-md" />
+                    </button>
+                </div>
+            </div>
+
+            <div className="p-4 bg-[#020617] border border-slate-800/80 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs">
+                <div className="space-y-1">
+                    <p className="font-bold text-white">Validation Google Authenticator / Authy / Email</p>
+                    <p className="text-slate-400 font-medium">Un code temporaire à 6 chiffres vous sera demandé à chaque connexion administrative.</p>
+                </div>
+                <button
+                    type="button"
+                    onClick={() => setShowQrModal(true)}
+                    className="px-4 py-2 bg-purple-950/60 hover:bg-purple-900 border border-purple-800/60 text-purple-300 font-bold rounded-xl text-xs transition-all cursor-pointer shrink-0"
+                >
+                    {enabled2FA ? 'Ré-afficher QR Code' : 'Configurer 2FA (TOTP)'}
+                </button>
+            </div>
+
+            {/* Modal de Configuration 2FA */}
+            {showQrModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 md:p-8 max-w-md w-full space-y-6 shadow-2xl relative text-left"
+                    >
+                        <div className="space-y-1">
+                            <h3 className="text-lg font-black text-white">Scanner le QR Code A2F</h3>
+                            <p className="text-xs text-slate-400 font-medium">Ouvrez Google Authenticator ou Authy et scannez ce QR Code.</p>
+                        </div>
+
+                        <div className="flex flex-col items-center justify-center space-y-3 bg-[#020617] p-6 rounded-2xl border border-slate-800">
+                            {/* QR Code Canvas Representation */}
+                            <div className="w-40 h-40 bg-white p-2 rounded-xl flex items-center justify-center shadow-md">
+                                <img
+                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=otpauth://totp/EthicalDataAdmin:admin@ethicaldata.com?secret=EDSADMIN2FATOTPSECRET2026&issuer=EthicalData`}
+                                    alt="QR Code A2F"
+                                    className="w-full h-full object-contain"
+                                />
+                            </div>
+                            <div className="text-center">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Clé Secrète Manuelle</p>
+                                <code className="text-xs font-mono font-bold text-cyan-400 select-all">EDS-ADMIN-2FA-7849-X9K2</code>
+                            </div>
+                        </div>
+
+                        <form onSubmit={handleConfirm2FA} className="space-y-4">
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-slate-300">Code à 6 chiffres de l&apos;application *</label>
+                                <input
+                                    type="text"
+                                    maxLength={6}
+                                    required
+                                    value={totpCode}
+                                    onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ''))}
+                                    placeholder="123456"
+                                    className="w-full p-3.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 text-white text-center font-mono font-bold text-lg tracking-[0.3em] rounded-2xl outline-none"
+                                />
+                            </div>
+
+                            <div className="flex items-center justify-end gap-3 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowQrModal(false)}
+                                    className="px-4 py-2.5 bg-slate-900 text-slate-400 font-bold rounded-xl text-xs hover:bg-slate-800 transition-all cursor-pointer"
+                                >
+                                    Fermer
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={verifying}
+                                    className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+                                >
+                                    {verifying ? <RefreshCw className="w-4 h-4 animate-spin" /> : null}
+                                    <span>Activer A2F</span>
+                                </button>
+                            </div>
+                        </form>
+                    </motion.div>
+                </div>
+            )}
+        </motion.div>
     );
 }

@@ -32,6 +32,7 @@ model Utilisateur {
   rdvCandidat      RendezVous[]           @relation("CandidatRendezVous")
   rdvFormateur     RendezVous[]           @relation("FormateurRendezVous")
   coursCrees       Cours[]                @relation("FormateurCours")
+  sessionsAnimees  Session[]              @relation("FormateurSessions")
 
   // Relations forum
   sujets                   Sujet[]
@@ -145,6 +146,9 @@ model Cours {
   prerequis       String[]    @default([])
   publicCible     String[]    @default([])
   dureeEstimee    Int? // total en minutes
+  priceMad        Float?
+  deliveryType    String?
+  maxCapacity     Int?
   dateCreation    DateTime    @default(now())
   datePublication DateTime?
   deletedAt       DateTime?   @map("deleted_at")
@@ -162,6 +166,7 @@ model Cours {
   simulations  Simulation[]
   inscriptions InscriptionCours[]
   ressources   Ressource[]
+  sessions     Session[]
 
   @@index([certificationId, statut])
   @@index([formateurId, statut])
@@ -621,4 +626,65 @@ model ConfigurationSysteme {
   updatedAt DateTime @updatedAt
 
   @@map("configuration_systeme")
+}
+
+model Promotion {
+  id           BigInt          @id @default(autoincrement())
+  nom          String
+  description  String?         @db.Text
+  type         TypePromotion   @default(POURCENTAGE)
+  valeur       Float
+  targetType   TargetPromotion
+  targetId     BigInt?         @map("target_id")
+  cibleNom     String?         @map("cible_nom")
+  dateDebut    DateTime?       @map("date_debut")
+  dateFin      DateTime?       @map("date_fin")
+  actif        Boolean         @default(true)
+  isPublic     Boolean         @default(true) @map("is_public")
+  dateCreation DateTime        @default(now()) @map("date_creation")
+
+  @@index([targetType])
+  @@index([actif])
+  @@index([isPublic])
+  @@map("promotions")
+}
+
+enum TypePromotion {
+  POURCENTAGE
+  MONTANT
+}
+
+enum TargetPromotion {
+  FORMATION
+  VOUCHER
+  PACK_EXAMEN_BLANC
+}
+
+model Session {
+  id             BigInt        @id @default(autoincrement())
+  titre          String
+  description    String?       @db.Text
+  dateDebut      DateTime      @map("date_debut")
+  dateFin        DateTime?     @map("date_fin")
+  maxPlaces      Int?          @map("max_places")
+  placesOccupees Int           @default(0) @map("places_occupees")
+  statut         StatutSession @default(OUVERTE)
+  teamsLink      String?       @map("teams_link")
+  dateCreation   DateTime      @default(now()) @map("date_creation")
+
+  coursId    BigInt?     @map("cours_id")
+  cours      Cours?      @relation(fields: [coursId], references: [id], onDelete: SetNull)
+  formateurId BigInt     @map("formateur_id")
+  formateur  Utilisateur @relation("FormateurSessions", fields: [formateurId], references: [id], onDelete: Restrict)
+
+  @@index([coursId])
+  @@index([formateurId])
+  @@index([statut])
+  @@map("sessions")
+}
+
+enum StatutSession {
+  OUVERTE
+  COMPLETE
+  CLOTUREE
 }
