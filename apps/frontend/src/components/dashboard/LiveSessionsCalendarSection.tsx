@@ -324,7 +324,7 @@ export default function LiveSessionsCalendarSection() {
           <div className="bg-[#080d1a] border border-slate-800 rounded-3xl max-w-3xl w-full p-6 space-y-4 text-left shadow-2xl relative">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <h4 className="text-base font-black text-white truncate pr-4">
-                🎬 Replay Automatique : {activeReplayVideo.title}
+                Replay Vidéo : {activeReplayVideo.title}
               </h4>
               <button
                 onClick={() => setActiveReplayVideo(null)}
@@ -342,10 +342,6 @@ export default function LiveSessionsCalendarSection() {
                 className="w-full h-full object-cover"
               />
             </div>
-
-            <p className="text-xs text-slate-400 italic">
-              Enregistrement vidéo officiel haute définition généré automatiquement à l&apos;issue de la session live visioconférence.
-            </p>
           </div>
         </div>
       )}
