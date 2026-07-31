@@ -74,14 +74,14 @@ export function CoursesPreviewSection() {
             {FEATURED_COURSES.map((course) => (
               <div
                 key={course.id}
-                className="bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-slate-700 rounded-3xl overflow-hidden flex flex-col justify-between transition-all shadow-xl hover:shadow-cyan-950/20 group"
+                className="bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-cyan-500/40 rounded-3xl overflow-hidden flex flex-col justify-between transition-all duration-300 ease-out shadow-xl hover:shadow-cyan-950/20 group transform-gpu"
               >
                 {/* Banner Image */}
                 <div className="relative h-44 w-full overflow-hidden bg-slate-900">
                   <img
                     src={course.image}
                     alt={course.titre}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out transform-gpu"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#080d1a] via-transparent to-transparent opacity-80" />
                 </div>

@@ -20,9 +20,9 @@ export const CertificationCard = ({
   cleanTitle,
 }: CertificationCardProps) => {
   return (
-    <Link href={`/certifications/${slug}`} className="block w-full">
+    <Link href={`/certifications/${slug}`} className="block w-full transform-gpu">
       <GlareCard className="rounded-2xl group/glare">
-        <div className="relative w-full h-[400px] rounded-2xl overflow-hidden bg-[#0a0f1d] border border-slate-800 transition-all duration-300 shadow-xl group-hover/glare:shadow-[0_20px_40px_-15px_rgba(37,99,235,0.4)] group-hover/glare:border-cyan-500/50">
+        <div className="relative w-full h-[400px] rounded-2xl overflow-hidden bg-[#0a0f1d] border border-slate-800 transition-all duration-300 ease-out shadow-xl group-hover/glare:shadow-[0_20px_40px_-15px_rgba(37,99,235,0.4)] group-hover/glare:border-cyan-500/50 transform-gpu">
           
           {/* Background Image / Frame */}
           <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
