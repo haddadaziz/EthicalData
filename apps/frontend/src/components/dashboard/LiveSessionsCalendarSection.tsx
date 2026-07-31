@@ -259,7 +259,7 @@ export default function LiveSessionsCalendarSection() {
                     rel="noopener noreferrer"
                     className="w-full py-2.5 px-4 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg shadow-red-600/25"
                   >
-                    <Video className="w-4 h-4 animate-bounce" />
+                    <Video className="w-4 h-4" />
                     <span>Rejoindre la Visio Direct Teams</span>
                   </a>
                 ) : isFinished ? (
