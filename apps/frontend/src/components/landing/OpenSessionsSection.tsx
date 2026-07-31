@@ -1,8 +1,7 @@
-'use client';
-
 import React from 'react';
 import Link from 'next/link';
 import { Calendar, Users, Clock, ArrowRight, CheckCircle } from '@/components/icons';
+import ParticlesComponent from '@/components/ui/particles-bg';
 
 const SESSIONS = [
   {
@@ -43,7 +42,12 @@ const SESSIONS = [
 export function OpenSessionsSection() {
   return (
     <section className="relative z-10 py-20 bg-[#020617] border-t border-slate-900 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 space-y-12">
+      {/* Background Particles Animation */}
+      <div className="absolute inset-0 z-0 opacity-40 pointer-events-none overflow-hidden">
+        <ParticlesComponent id="open-sessions-particles" />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 md:px-6 space-y-12 relative z-10">
         
         {/* En-tête */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
