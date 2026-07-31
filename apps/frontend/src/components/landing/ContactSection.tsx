@@ -178,12 +178,10 @@ export function ContactSection() {
         
         {/* Section Header */}
         <AnimatedSection className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-800/60 text-cyan-400 text-xs font-black uppercase tracking-widest">
-            <span>ETHICAL DATA SECURITY — Contact & Bookings</span>
-          </div>
-
-          <h2 className="text-3xl sm:text-5xl font-black text-white uppercase leading-tight tracking-tight">
-            NOUS CONTACTER
+          <h2 className="text-3xl sm:text-5xl font-black uppercase leading-tight tracking-tight">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-cyan-400">
+              Nous Contacter
+            </span>
           </h2>
           <p className="text-slate-300 text-xs sm:text-sm md:text-base leading-relaxed font-medium max-w-2xl mx-auto">
             Formulaire complet d&apos;assistance ou prise de rendez-vous directe avec nos 8 consultants via Microsoft Bookings.
