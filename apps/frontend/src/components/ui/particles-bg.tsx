@@ -124,7 +124,7 @@ export default function ParticlesComponent({ className, id = "particles-js" }: P
       id={id}
       className={
         className ||
-        `w-full h-full absolute inset-0 pointer-events-none transition-colors duration-500 bg-gradient-to-tr from-[#000814]/80 via-[#001d3d]/60 to-[#003566]/40 transform-gpu`
+        `w-full h-full absolute inset-0 pointer-events-none transition-colors duration-500 bg-gradient-to-tr from-[#020617] via-[#080d1a]/95 to-[#001f3f]/40 transform-gpu`
       }
     />
   );
