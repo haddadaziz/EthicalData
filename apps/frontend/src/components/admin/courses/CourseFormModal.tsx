@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, BookOpen, Edit, Upload, Clock, Users, PlusCircle, Trash2, Search, ChevronDown, Award, Check } from '@/components/icons';
 import { useToast } from '@/context/ToastContext';
+import { apiFetch } from '@/lib/api';
 
 interface CertificationInfo {
   id: string;
@@ -22,6 +23,13 @@ interface FormateurOption {
 }
 
 const REAL_TRAINERS_LIST: FormateurOption[] = [
+  { 
+    id: 't-aziz', 
+    prenom: 'Aziz', 
+    nom: 'Haddad', 
+    specialite: 'Formateur Expert IT & Cybersécurité',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80'
+  },
   { 
     id: 't1', 
     prenom: 'Dr. Tariq', 
@@ -109,9 +117,35 @@ export const CourseFormModal = React.memo(function CourseFormModal({
   const [certDropdownOpen, setCertDropdownOpen] = useState(false);
   const [trainerDropdownOpen, setTrainerDropdownOpen] = useState(false);
   const [trainerSearchQuery, setTrainerSearchQuery] = useState('');
+  const [trainersList, setTrainersList] = useState<FormateurOption[]>(REAL_TRAINERS_LIST);
 
   useEffect(() => {
     if (isOpen) {
+      apiFetch('/users')
+        .then((usersData) => {
+          if (Array.isArray(usersData) && usersData.length > 0) {
+            const mapped: FormateurOption[] = usersData.map((u: any) => ({
+              id: u.id,
+              prenom: u.prenom || 'Formateur',
+              nom: u.nom || '',
+              specialite: u.bio || u.specialite || 'Formateur IT & Cybersécurité',
+              avatar: u.avatar || null
+            }));
+            
+            // Merge with REAL_TRAINERS_LIST ensuring no duplicate IDs
+            const combined = [...mapped];
+            REAL_TRAINERS_LIST.forEach(t => {
+              if (!combined.some(c => c.id === t.id || `${c.prenom} ${c.nom}`.toLowerCase() === `${t.prenom} ${t.nom}`.toLowerCase())) {
+                combined.push(t);
+              }
+            });
+            setTrainersList(combined);
+          }
+        })
+        .catch(() => {
+          // Keep REAL_TRAINERS_LIST fallback
+        });
+
       if (initialData) {
         setTitre(initialData.titre);
         setDescription(initialData.description || '');
@@ -333,20 +367,20 @@ export const CourseFormModal = React.memo(function CourseFormModal({
                 className="w-full px-4 py-2.5 bg-[#080d1a] border border-slate-800 focus:border-cyan-500 rounded-xl text-white text-sm font-semibold outline-none flex items-center justify-between gap-2 text-left cursor-pointer"
               >
                 <div className="flex items-center gap-2.5 truncate">
-                  {REAL_TRAINERS_LIST.find(t => t.id === formateurId)?.avatar ? (
+                  {trainersList.find(t => t.id === formateurId)?.avatar ? (
                     <img
-                      src={REAL_TRAINERS_LIST.find(t => t.id === formateurId)?.avatar || ''}
+                      src={trainersList.find(t => t.id === formateurId)?.avatar || ''}
                       alt=""
                       className="w-6 h-6 rounded-full object-cover shrink-0 border border-slate-700"
                     />
                   ) : (
                     <div className="w-6 h-6 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800 flex items-center justify-center text-[9px] font-black shrink-0">
-                      {REAL_TRAINERS_LIST.find(t => t.id === formateurId)?.prenom?.[0] || 'F'}
+                      {trainersList.find(t => t.id === formateurId)?.prenom?.[0] || 'F'}
                     </div>
                   )}
                   <span className="truncate">
-                    {REAL_TRAINERS_LIST.find(t => t.id === formateurId)
-                      ? `${REAL_TRAINERS_LIST.find(t => t.id === formateurId)?.prenom} ${REAL_TRAINERS_LIST.find(t => t.id === formateurId)?.nom}`
+                    {trainersList.find(t => t.id === formateurId)
+                      ? `${trainersList.find(t => t.id === formateurId)?.prenom} ${trainersList.find(t => t.id === formateurId)?.nom}`
                       : 'Sélectionner un formateur'}
                   </span>
                 </div>
@@ -371,7 +405,7 @@ export const CourseFormModal = React.memo(function CourseFormModal({
                     </div>
 
                     <div className="max-h-56 overflow-y-auto space-y-1">
-                      {REAL_TRAINERS_LIST.filter(t => 
+                      {trainersList.filter(t => 
                         !trainerSearchQuery.trim() || 
                         `${t.prenom} ${t.nom}`.toLowerCase().includes(trainerSearchQuery.toLowerCase()) ||
                         t.specialite.toLowerCase().includes(trainerSearchQuery.toLowerCase())
