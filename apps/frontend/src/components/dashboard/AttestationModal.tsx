@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { X, DownloadCloud, Award } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -23,6 +23,7 @@ interface AttestationModalProps {
 
 export default function AttestationModal({ isOpen, onClose, data }: AttestationModalProps) {
   const printRef = useRef<HTMLDivElement>(null);
+  const [downloading, setDownloading] = useState(false);
 
   if (!isOpen || !data) return null;
 
@@ -30,8 +31,33 @@ export default function AttestationModal({ isOpen, onClose, data }: AttestationM
     window.print();
   };
 
-  const handleDownloadPDF = () => {
-    window.print();
+  const handleDownloadPDF = async () => {
+    if (!printRef.current) return;
+    setDownloading(true);
+
+    try {
+      // Dynamic import to avoid SSR issues
+      const html2pdf = (await import('html2pdf.js')).default;
+      
+      const element = printRef.current;
+      const filename = `Attestation_EDS_${data.studentName.replace(/\s+/g, '_')}.pdf`;
+
+      const options = {
+        margin: 5,
+        filename: filename,
+        image: { type: 'jpeg' as const, quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#020617' },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' as const }
+      };
+
+      await html2pdf().set(options).from(element).save();
+    } catch (err) {
+      console.error("Erreur génération PDF:", err);
+      // Fallback print if html2pdf encounters issues
+      window.print();
+    } finally {
+      setDownloading(false);
+    }
   };
 
   return (
@@ -105,10 +131,11 @@ export default function AttestationModal({ isOpen, onClose, data }: AttestationM
               <button
                 type="button"
                 onClick={handleDownloadPDF}
-                className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md shadow-blue-600/20 cursor-pointer"
+                disabled={downloading}
+                className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md shadow-blue-600/20 cursor-pointer disabled:opacity-50"
               >
                 <DownloadCloud className="w-3.5 h-3.5" />
-                <span>Télécharger PDF (A4 Paysage)</span>
+                <span>{downloading ? 'Génération...' : 'Télécharger PDF'}</span>
               </button>
               <button
                 type="button"
