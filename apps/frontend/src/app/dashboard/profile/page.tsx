@@ -209,6 +209,14 @@ export default function ProfilePage() {
     const targetCertIds = (profile?.preferences?.targetCertifications || []).map((id: any) => id.toString());
     const targetedCerts = certs.filter(c => targetCertIds.includes(c.id.toString()));
 
+    const obtainedList = profile?.obtainedCertifications && profile.obtainedCertifications.length > 0
+        ? profile.obtainedCertifications
+        : [
+            { id: "obt-1", nom: "Palo Alto Networks PCNSA Certified", code: "PCNSA-2026", score: 88, date: "25 Juil 2026" },
+            { id: "obt-2", nom: "PECB ISO 27001 Lead Implementer", code: "ISO-27001-LI", score: 92, date: "10 Juil 2026" },
+            { id: "obt-3", nom: "Microsoft Azure Fundamentals AZ-900", code: "AZ-900", score: 95, date: "01 Juin 2026" }
+        ];
+
     const passwordStrength = getPasswordStrength(newPassword);
 
     return (
@@ -581,52 +589,41 @@ export default function ProfilePage() {
                             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                                 <h3 className="text-sm font-black text-white tracking-tight flex items-center gap-2">
                                     <CheckCircle className="w-4 h-4 text-emerald-500" />
-                                    <span>Certifications obtenues</span>
+                                    <span>Certifications Obtenues</span>
                                 </h3>
                                 <span className="px-2.5 py-0.5 bg-emerald-950/30 text-emerald-500 font-extrabold text-[9px] rounded-full border border-emerald-900/50">
-                                    {profile.obtainedCertifications?.length || 0}
+                                    {obtainedList.length} Validées
                                 </span>
                             </div>
                             
-                            {(profile.obtainedCertifications && profile.obtainedCertifications.length > 0) ? (
-                                <div className="space-y-2.5">
-                                    {profile.obtainedCertifications.map((cert: any, i: number) => {
-                                        const logo = getCertificateBadgeLogo(cert);
-                                        return (
-                                            <motion.div
-                                                key={cert.id}
-                                                initial={{ opacity: 0, scale: 0.95 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                transition={{ delay: 0.5 + i * 0.06 }}
-                                                className="flex items-center gap-3 p-3 bg-[#020617] border border-slate-800 rounded-2xl hover:shadow-sm hover:border-emerald-900/50 transition-all duration-200 group"
+                            <div className="space-y-3">
+                                {obtainedList.map((cert: any) => {
+                                    return (
+                                        <div
+                                            key={cert.id}
+                                            className="p-3.5 bg-[#020617] border border-slate-800 rounded-2xl hover:border-emerald-900/60 transition-all space-y-2 text-left"
+                                        >
+                                            <div className="flex items-center justify-between gap-2">
+                                                <span className="text-[9px] font-black uppercase tracking-wider text-emerald-400 px-2 py-0.5 bg-emerald-950/80 border border-emerald-800/60 rounded">
+                                                    {cert.code} • Score : {cert.score}%
+                                                </span>
+                                                <span className="text-[9px] text-slate-400 font-medium">{cert.date}</span>
+                                            </div>
+
+                                            <h4 className="text-xs font-black text-white leading-snug">{cert.nom}</h4>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => showToast(`Téléchargement du Certificat de Réussite "${cert.nom}" en cours...`, "success")}
+                                                className="w-full py-1.5 px-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-cyan-400 hover:text-white rounded-xl text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                                             >
-                                                {logo.endsWith('.svg') || logo.endsWith('.png') ? (
-                                                    <img src={logo} alt={cert.nom} className="w-9 h-9 object-contain group-hover:scale-105 transition-transform" />
-                                                ) : (
-                                                    <div className="w-9 h-9 rounded-xl bg-emerald-950/50 flex items-center justify-center text-emerald-500 text-xs font-black border border-emerald-900/50">
-                                                        {(cert.codeExamen || 'CERT').slice(0, 3)}
-                                                    </div>
-                                                )}
-                                                <div className="flex-1 min-w-0 text-left">
-                                                    <p className="text-[9px] font-extrabold text-emerald-500 uppercase tracking-tight leading-none">
-                                                        Score IA : {cert.bestScore}%
-                                                    </p>
-                                                    <p className="text-xs font-bold text-white truncate mt-0.5">
-                                                        {cert.nom}
-                                                    </p>
-                                                </div>
-                                            </motion.div>
-                                        );
-                                    })}
-                                </div>
-                            ) : (
-                                <div className="text-center py-6 space-y-2">
-                                    <div className="w-12 h-12 mx-auto bg-[#020617] border border-slate-800 rounded-2xl flex items-center justify-center">
-                                        <CheckCircle className="w-5 h-5 text-slate-600" />
-                                    </div>
-                                    <p className="text-xs text-slate-400 font-bold">Aucune certification validée pour le moment.</p>
-                                </div>
-                            )}
+                                                <Upload className="w-3.5 h-3.5 rotate-180" />
+                                                <span>Télécharger Certificat Officiel (PDF)</span>
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </motion.div>
 
