@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef } from 'react';
-import { X, DownloadCloud, ShieldCheck, Award, CheckCircle } from '@/components/icons';
+import { X, DownloadCloud, Award } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface AttestationData {
@@ -68,10 +68,10 @@ export default function AttestationModal({ isOpen, onClose, data }: AttestationM
             </div>
           </div>
 
-          {/* PRINTABLE ATTESTATION DIPLOMA CARD (Optimized Compact Scale) */}
+          {/* PRINTABLE ATTESTATION DIPLOMA CARD */}
           <div
             ref={printRef}
-            className="bg-[#020617] border border-cyan-500/40 rounded-2xl p-5 sm:p-6 space-y-4 relative overflow-hidden text-center shadow-inner overflow-y-auto max-h-[72vh]"
+            className="bg-[#020617] border border-cyan-500/40 rounded-2xl p-6 sm:p-8 space-y-5 relative overflow-hidden text-center shadow-inner overflow-y-auto max-h-[76vh]"
           >
             {/* Corner Decorative Borders */}
             <div className="absolute top-2 left-2 w-6 h-6 border-t border-l border-cyan-400/60 pointer-events-none" />
@@ -79,13 +79,10 @@ export default function AttestationModal({ isOpen, onClose, data }: AttestationM
             <div className="absolute bottom-2 left-2 w-6 h-6 border-b border-l border-cyan-400/60 pointer-events-none" />
             <div className="absolute bottom-2 right-2 w-6 h-6 border-b border-r border-cyan-400/60 pointer-events-none" />
 
-            {/* Logo & Header */}
-            <div className="space-y-1.5">
-              <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-8 mx-auto object-contain" />
-              <div className="inline-block px-3 py-0.5 rounded-full bg-cyan-950/80 border border-cyan-800/60 text-cyan-400 text-[9px] font-black uppercase tracking-widest">
-                RÉPUBLIQUE DU MAROC — ETHICAL DATA SECURITY (EDS)
-              </div>
-              <h1 className="text-lg sm:text-2xl font-black uppercase tracking-wider text-white">
+            {/* Logo & Title Header */}
+            <div className="space-y-2">
+              <img src="/logos/ethicaldata_white_logo.png" alt="Ethical Data Security" className="h-9 mx-auto object-contain" />
+              <h1 className="text-xl sm:text-2xl font-black uppercase tracking-wider text-white">
                 ATTESTATION DE FORMATION
               </h1>
               <p className="text-[10px] text-slate-400 italic">
@@ -94,7 +91,7 @@ export default function AttestationModal({ isOpen, onClose, data }: AttestationM
             </div>
 
             {/* Main Attestation Statement */}
-            <div className="space-y-2 max-w-xl mx-auto py-2.5 border-y border-slate-800/80">
+            <div className="space-y-2 max-w-xl mx-auto py-3 border-y border-slate-800/80">
               <p className="text-[11px] text-slate-300">
                 Le Centre d&apos;Expertise et de Formation <strong className="text-white">Ethical Data Security</strong> atteste par la présente que :
               </p>
@@ -132,36 +129,14 @@ export default function AttestationModal({ isOpen, onClose, data }: AttestationM
               </div>
             </div>
 
-            {/* Signatures & Verification */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 border-t border-slate-800/80 text-left max-w-2xl mx-auto">
-              <div className="space-y-0.5 text-center sm:text-left">
-                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider block">Code de Vérification Unique</span>
-                <span className="font-mono text-[10px] font-black text-cyan-400 bg-cyan-950/60 border border-cyan-800/60 px-2.5 py-0.5 rounded inline-block">
-                  {data.verificationCode}
-                </span>
-              </div>
-
-              <div className="text-center sm:text-right space-y-0.5">
-                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider block">Pour la Direction Pédagogique</span>
-                <div className="h-6 flex items-center justify-center sm:justify-end">
-                  <span className="font-serif italic font-black text-slate-300 text-xs">Ethical Data Security — Direction</span>
-                </div>
-                <span className="text-[9px] font-bold text-emerald-400 flex items-center justify-center sm:justify-end gap-1">
-                  <ShieldCheck className="w-3 h-3" />
-                  <span>Signature Numérique Validée</span>
-                </span>
-              </div>
+            {/* Verification Code Footer */}
+            <div className="pt-2 border-t border-slate-800/80 text-center max-w-2xl mx-auto">
+              <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Code de Vérification Unique</span>
+              <span className="font-mono text-[10px] font-black text-cyan-400 bg-cyan-950/60 border border-cyan-800/60 px-3 py-1 rounded inline-block">
+                {data.verificationCode}
+              </span>
             </div>
 
-          </div>
-
-          {/* Footer bar */}
-          <div className="p-2.5 bg-[#030712] border border-slate-800 rounded-xl flex items-center justify-between text-[11px] text-slate-400 shrink-0">
-            <span className="flex items-center gap-1.5">
-              <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Complétion à 100% vérifiée automatiquement par la plateforme.</span>
-            </span>
-            <span className="font-bold text-slate-300">EDS Certificats v2.4</span>
           </div>
 
         </motion.div>
