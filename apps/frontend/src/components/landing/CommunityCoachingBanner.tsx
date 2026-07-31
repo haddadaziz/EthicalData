@@ -35,39 +35,45 @@ export function CommunityCoachingBanner() {
               Entraînez-vous avec nos simulations chronométrées avec correction IA (Readiness Score), achetez vos vouchers d'examen officiel avec réductions EDS et planifiez un coaching 1-on-1 avec un formateur expert.
             </p>
 
-            {/* 3 Cartes Rapides */}
+            {/* 3 Cartes Sobres avec Flèche Bleue à Droite */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
               <Link
                 href="/examens-blancs"
-                className="group flex flex-col p-3.5 bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-cyan-500/50 rounded-2xl transition-all duration-200"
+                className="group flex items-center justify-between p-4 bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-cyan-500/60 rounded-2xl transition-all duration-300 shadow-md"
               >
-                <div className="w-8 h-8 rounded-xl bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center mb-2 text-cyan-400 group-hover:bg-cyan-600 group-hover:text-white transition-all">
-                  <Sparkles className="w-4 h-4" />
+                <div>
+                  <h4 className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors">Examens Blancs IA</h4>
+                  <p className="text-[10px] text-slate-400 mt-0.5 font-medium">Readiness Score & IA</p>
                 </div>
-                <h4 className="text-xs font-bold text-white group-hover:text-cyan-400 transition-colors">Examens Blancs IA</h4>
-                <p className="text-[10px] text-slate-400 mt-0.5">Readiness Score & IA</p>
+                <div className="w-7 h-7 rounded-xl bg-cyan-950/60 border border-cyan-800/60 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-600 group-hover:text-white transition-all shrink-0">
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                </div>
               </Link>
 
               <Link
                 href="/vouchers"
-                className="group flex flex-col p-3.5 bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-emerald-500/50 rounded-2xl transition-all duration-200"
+                className="group flex items-center justify-between p-4 bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-cyan-500/60 rounded-2xl transition-all duration-300 shadow-md"
               >
-                <div className="w-8 h-8 rounded-xl bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center mb-2 text-emerald-400 group-hover:bg-emerald-600 group-hover:text-white transition-all">
-                  <Tag className="w-4 h-4" />
+                <div>
+                  <h4 className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors">Vouchers Examen</h4>
+                  <p className="text-[10px] text-slate-400 mt-0.5 font-medium">Réductions EDS</p>
                 </div>
-                <h4 className="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">Vouchers Examen</h4>
-                <p className="text-[10px] text-slate-400 mt-0.5">Réductions EDS</p>
+                <div className="w-7 h-7 rounded-xl bg-cyan-950/60 border border-cyan-800/60 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-600 group-hover:text-white transition-all shrink-0">
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                </div>
               </Link>
 
               <Link
                 href="/coaching"
-                className="group flex flex-col p-3.5 bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-blue-500/50 rounded-2xl transition-all duration-200"
+                className="group flex items-center justify-between p-4 bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-cyan-500/60 rounded-2xl transition-all duration-300 shadow-md"
               >
-                <div className="w-8 h-8 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center mb-2 text-cyan-400 group-hover:bg-blue-600 group-hover:text-white transition-all">
-                  <Calendar className="w-4 h-4" />
+                <div>
+                  <h4 className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors">Coaching 1-on-1</h4>
+                  <p className="text-[10px] text-slate-400 mt-0.5 font-medium">Mentors Certifiés</p>
                 </div>
-                <h4 className="text-xs font-bold text-white group-hover:text-blue-400 transition-colors">Coaching 1-on-1</h4>
-                <p className="text-[10px] text-slate-400 mt-0.5">Mentors Certifiés</p>
+                <div className="w-7 h-7 rounded-xl bg-cyan-950/60 border border-cyan-800/60 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-600 group-hover:text-white transition-all shrink-0">
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                </div>
               </Link>
             </div>
 
