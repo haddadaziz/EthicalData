@@ -152,12 +152,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             name: 'Apprentissage', 
             icon: GraduationCap,
             subItems: [
-                { name: 'Mes Cours', href: '/dashboard/cours', icon: BookOpen },
+                { name: 'Mes Cours & Progrès', href: '/dashboard/cours', icon: BookOpen },
                 { name: 'Entraînement', href: '/dashboard/practice', icon: HelpCircle },
-                { name: 'Certifications', href: '/dashboard/certifications', icon: Award },
+                { name: 'Certifications & Scores', href: '/dashboard/certifications', icon: Award },
             ]
         },
-        { name: 'Ressources', href: '/dashboard/downloads', icon: DownloadCloud },
+        { name: 'Ressources & Replays', href: '/dashboard/downloads', icon: DownloadCloud },
         { name: 'Communauté', href: '/dashboard/community', icon: MessageSquare },
         { name: 'Rendez-vous & Coaching', href: '/dashboard/appointments', icon: Calendar },
         { name: 'Mon Profil', href: '/dashboard/profile', icon: User },

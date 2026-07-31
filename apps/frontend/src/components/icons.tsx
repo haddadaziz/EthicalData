@@ -25,7 +25,7 @@ import {
   faUser, faUsers, faVideo, faWandMagicSparkles,
   faXmark, faTurnDown, faAt,
   faCamera, faListUl, faShield, faShieldHalved,
-  faBuilding, faLocationDot,
+  faBuilding, faLocationDot, faShoppingBag,
 } from '@fortawesome/free-solid-svg-icons';
 import type { FontAwesomeIconProps } from '@fortawesome/react-fontawesome';
 
@@ -123,6 +123,7 @@ export const Send = makeIcon(faPaperPlane);
 export const Settings = makeIcon(faGear);
 export const ShieldAlert = makeIcon(faShield);
 export const ShieldCheck = makeIcon(faShieldHalved);
+export const ShoppingBag = makeIcon(faShoppingBag);
 export const Sparkles = makeIcon(faWandMagicSparkles);
 export const Star = makeIcon(faStar);
 export const Target = makeIcon(faBullseye);

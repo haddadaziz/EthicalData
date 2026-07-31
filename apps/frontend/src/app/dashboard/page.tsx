@@ -25,6 +25,11 @@ import { getCertificateBadgeLogo } from '@/lib/certification-utils';
 import RecentActivity from '@/components/dashboard/RecentActivity';
 import CertDetailModal from '@/components/dashboard/CertDetailModal';
 import QuickActions from '@/components/dashboard/QuickActions';
+import AttestationModal from '@/components/dashboard/AttestationModal';
+import ReplaysSection from '@/components/dashboard/ReplaysSection';
+import ExamHistorySection from '@/components/dashboard/ExamHistorySection';
+import PurchaseHistorySection from '@/components/dashboard/PurchaseHistorySection';
+import { DownloadCloud, Video, ShoppingBag, Bell, Video as VideoIcon } from '@/components/icons';
 
 export default function StudentDashboard() {
     const router = useRouter();
@@ -50,6 +55,8 @@ export default function StudentDashboard() {
     const [myAppointments, setMyAppointments] = useState<any[]>([]);
     const [me, setMe] = useState<any>(null);
     const [enrolledCerts, setEnrolledCerts] = useState<any[]>([]);
+    const [activeSectionTab, setActiveSectionTab] = useState<'replays' | 'exams' | 'purchases'>('replays');
+    const [attestationModalOpen, setAttestationModalOpen] = useState(false);
 
     useEffect(() => {
         const handleOutsideClick = (e: MouseEvent) => {
@@ -966,6 +973,148 @@ export default function StudentDashboard() {
                     </div>
                 )}
             </div>
+
+            {/* CARD 1: NOTIFICATION / RAPPEL SESSION LIVE VISIOCONFÉRENCE IMMINENTE */}
+            <div className="bg-gradient-to-r from-[#0c1938] via-[#080d1a] to-[#06152e] border border-cyan-500/40 rounded-3xl p-6 sm:p-8 space-y-4 shadow-2xl relative overflow-hidden text-left">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 shrink-0 animate-pulse">
+                            <Video className="w-6 h-6" />
+                        </div>
+                        <div className="space-y-1">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400 px-3 py-1 bg-cyan-950/80 border border-cyan-800/60 rounded-full">
+                                Session Live en Visioconférence Imminente
+                            </span>
+                            <h3 className="text-lg font-black text-white">
+                                Session Live #05 — Architecture Cloud AWS Security Specialist
+                            </h3>
+                            <p className="text-xs text-slate-300 font-medium">
+                                Avec <strong className="text-cyan-400">Leila Naciri</strong> • Aujourd&apos;hui à 16:00 (Rappel automatique activé)
+                            </p>
+                        </div>
+                    </div>
+
+                    <a
+                        href="/dashboard/appointments"
+                        className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg shadow-cyan-600/20 cursor-pointer shrink-0"
+                    >
+                        <Video className="w-4 h-4" />
+                        <span>Rejoindre la Session (Direct)</span>
+                    </a>
+                </div>
+            </div>
+
+            {/* CARD 2: ATTESTATIONS DE FORMATION DÉLIVRÉES (DISTINCTES DES CERTIFICATS SCORE) */}
+            <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl text-left">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                    <div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400 px-3 py-1 bg-cyan-950/80 border border-cyan-800/60 rounded-full">
+                          Attestations de Présence & Complétion
+                        </span>
+                        <h3 className="text-xl font-black text-white pt-2">Vos Attestations de Formation Officielle</h3>
+                        <p className="text-xs text-slate-400">
+                          Document certifiant 100% de suivi ou présence en visioconférence (Distinct du certificat de réussite d&apos;examen).
+                        </p>
+                    </div>
+
+                    <button
+                        onClick={() => setAttestationModalOpen(true)}
+                        className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-blue-600/20 cursor-pointer shrink-0"
+                    >
+                        <DownloadCloud className="w-4 h-4" />
+                        <span>Générer l&apos;Attestation Spécimen</span>
+                    </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="p-4 bg-[#030712] border border-slate-800 rounded-2xl flex items-center justify-between">
+                        <div className="space-y-1">
+                            <div className="text-xs font-black text-white">Formation Pentest & Cybersécurité Advanced</div>
+                            <div className="text-[10px] text-slate-400">Période: 10/06 - 15/07/2026 • 45 Heures • Dr. Tariq Berrada</div>
+                        </div>
+                        <button
+                            onClick={() => setAttestationModalOpen(true)}
+                            className="px-3 py-1.5 bg-slate-900 border border-slate-700 text-cyan-400 hover:text-white rounded-lg text-xs font-bold shrink-0 cursor-pointer"
+                        >
+                            Télécharger
+                        </button>
+                    </div>
+
+                    <div className="p-4 bg-[#030712] border border-slate-800 rounded-2xl flex items-center justify-between">
+                        <div className="space-y-1">
+                            <div className="text-xs font-black text-white">Palo Alto Next-Gen Firewall Administration</div>
+                            <div className="text-[10px] text-slate-400">Période: 01/05 - 20/05/2026 • 30 Heures • Mehdi Kabbaj</div>
+                        </div>
+                        <button
+                            onClick={() => setAttestationModalOpen(true)}
+                            className="px-3 py-1.5 bg-slate-900 border border-slate-700 text-cyan-400 hover:text-white rounded-lg text-xs font-bold shrink-0 cursor-pointer"
+                        >
+                            Télécharger
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* CARD 3: NAVIGATION PAR ONGLETS (REPLAYS / EXAMENS BLANCS / ACHATS) */}
+            <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl">
+                <div className="flex flex-wrap items-center gap-3 border-b border-slate-800 pb-4">
+                    <button
+                        onClick={() => setActiveSectionTab('replays')}
+                        className={`px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 ${
+                            activeSectionTab === 'replays'
+                                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/25 border border-cyan-400/40'
+                                : 'bg-[#030712] text-slate-400 hover:text-white border border-slate-800'
+                        }`}
+                    >
+                        <Video className="w-4 h-4" />
+                        <span>Replays Vidéo Visioconférences</span>
+                    </button>
+
+                    <button
+                        onClick={() => setActiveSectionTab('exams')}
+                        className={`px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 ${
+                            activeSectionTab === 'exams'
+                                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/25 border border-cyan-400/40'
+                                : 'bg-[#030712] text-slate-400 hover:text-white border border-slate-800'
+                        }`}
+                    >
+                        <Target className="w-4 h-4" />
+                        <span>Historique Examens Blancs & IA</span>
+                    </button>
+
+                    <button
+                        onClick={() => setActiveSectionTab('purchases')}
+                        className={`px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 ${
+                            activeSectionTab === 'purchases'
+                                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/25 border border-cyan-400/40'
+                                : 'bg-[#030712] text-slate-400 hover:text-white border border-slate-800'
+                        }`}
+                    >
+                        <ShoppingBag className="w-4 h-4" />
+                        <span>Historique des Achats & Factures</span>
+                    </button>
+                </div>
+
+                {activeSectionTab === 'replays' && <ReplaysSection />}
+                {activeSectionTab === 'exams' && <ExamHistorySection />}
+                {activeSectionTab === 'purchases' && <PurchaseHistorySection />}
+            </div>
+
+            {/* ATTESTATION MODAL DISPLAY */}
+            <AttestationModal
+                isOpen={attestationModalOpen}
+                onClose={() => setAttestationModalOpen(false)}
+                data={{
+                    studentName: me ? `${me.prenom || ''} ${me.nom || ''}`.trim() || 'Karim Bennani' : 'Karim Bennani',
+                    courseTitle: "Palo Alto Networks PCNSA & Architecture Cybersécurité Next-Gen",
+                    startDate: "10 Juin 2026",
+                    endDate: "28 Juillet 2026",
+                    durationHours: 45,
+                    trainerName: "Dr. Tariq Berrada",
+                    deliveryType: "E-learning 100%",
+                    verificationCode: "EDS-ATT-2026-99481"
+                }}
+            />
 
             {/* Modal détail */}
             <AnimatePresence>
