@@ -93,15 +93,20 @@ export default function TrainerManagementSection() {
 
   // Handle Manual Attendance Validation
   const handleValidateAttendance = (studentId: string) => {
+    let studentName = '';
     setStudents(prev =>
       prev.map(s => {
         if (s.id === studentId) {
-          showToast(`Présence validée pour ${s.studentName} ! Attestation de formation générée automatiquement.`, "success");
+          studentName = s.studentName;
           return { ...s, attendanceValidated: true, attestationGenerated: true };
         }
         return s;
       })
     );
+
+    if (studentName) {
+      showToast(`Présence validée pour ${studentName} ! Attestation de formation générée automatiquement.`, "success");
+    }
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
