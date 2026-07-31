@@ -403,6 +403,36 @@ export default function StudentDashboard() {
     return (
         <div className="space-y-8 text-slate-300 text-left font-sans selection:bg-blue-600 selection:text-white pb-10">
 
+            {/* BANNIÈRE DE NOTIFICATION DE SESSION LIVE EN HAUT DE PAGE */}
+            <div className="bg-gradient-to-r from-[#0c1938] via-[#080d1a] to-[#06152e] border border-cyan-500/40 rounded-3xl p-6 sm:p-8 space-y-4 shadow-2xl relative overflow-hidden text-left">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 shrink-0 animate-pulse">
+                            <Video className="w-6 h-6" />
+                        </div>
+                        <div className="space-y-1">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400 px-3 py-1 bg-cyan-950/80 border border-cyan-800/60 rounded-full">
+                                Session Live en Visioconférence Imminente
+                            </span>
+                            <h3 className="text-lg font-black text-white">
+                                Session Live #05 — Architecture Cloud AWS Security Specialist
+                            </h3>
+                            <p className="text-xs text-slate-300 font-medium">
+                                Avec <strong className="text-cyan-400">Leila Naciri</strong> • Aujourd&apos;hui à 16:00 (Rappel automatique activé)
+                            </p>
+                        </div>
+                    </div>
+
+                    <a
+                        href="/dashboard/appointments"
+                        className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg shadow-cyan-600/20 cursor-pointer shrink-0"
+                    >
+                        <Video className="w-4 h-4" />
+                        <span>Rejoindre la Session (Direct)</span>
+                    </a>
+                </div>
+            </div>
+
             {/* BARRE D'EN-TÊTE ACTION & SÉLECTEUR DE CERTIFICATION D'EXAMEN */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
                 <div className="space-y-1">
@@ -976,36 +1006,6 @@ export default function StudentDashboard() {
                         </Link>
                     </div>
                 )}
-            </div>
-
-            {/* CARD 1: NOTIFICATION / RAPPEL SESSION LIVE VISIOCONFÉRENCE IMMINENTE */}
-            <div className="bg-gradient-to-r from-[#0c1938] via-[#080d1a] to-[#06152e] border border-cyan-500/40 rounded-3xl p-6 sm:p-8 space-y-4 shadow-2xl relative overflow-hidden text-left">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 shrink-0 animate-pulse">
-                            <Video className="w-6 h-6" />
-                        </div>
-                        <div className="space-y-1">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400 px-3 py-1 bg-cyan-950/80 border border-cyan-800/60 rounded-full">
-                                Session Live en Visioconférence Imminente
-                            </span>
-                            <h3 className="text-lg font-black text-white">
-                                Session Live #05 — Architecture Cloud AWS Security Specialist
-                            </h3>
-                            <p className="text-xs text-slate-300 font-medium">
-                                Avec <strong className="text-cyan-400">Leila Naciri</strong> • Aujourd&apos;hui à 16:00 (Rappel automatique activé)
-                            </p>
-                        </div>
-                    </div>
-
-                    <a
-                        href="/dashboard/appointments"
-                        className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg shadow-cyan-600/20 cursor-pointer shrink-0"
-                    >
-                        <Video className="w-4 h-4" />
-                        <span>Rejoindre la Session (Direct)</span>
-                    </a>
-                </div>
             </div>
 
             {/* CARD 2: ATTESTATIONS DE FORMATION DÉLIVRÉES (DISTINCTES DES CERTIFICATS SCORE) */}
