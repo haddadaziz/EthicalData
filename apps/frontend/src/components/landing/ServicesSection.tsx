@@ -71,7 +71,7 @@ export function ServicesSection() {
                 <img
                   src={item.bgImage}
                   alt={item.title}
-                  className="w-full h-full object-cover object-bottom translate-y-3 opacity-40 group-hover:opacity-60 group-hover:scale-110 transition-all duration-700 ease-out transform-gpu"
+                  className="w-full h-full object-cover object-top -translate-y-3 opacity-40 group-hover:opacity-60 group-hover:scale-110 transition-all duration-700 ease-out transform-gpu"
                   loading="lazy"
                   decoding="async"
                 />
