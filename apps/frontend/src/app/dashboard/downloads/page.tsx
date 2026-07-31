@@ -6,8 +6,9 @@ import { Search, Download, BookOpen, FolderOpen, FileText, ChevronLeft, Globe, V
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '../../../context/ToastContext';
+import ReplaysSection from '@/components/dashboard/ReplaysSection';
 
-type Tab = 'generales' | 'mes-cours' | 'historique';
+type Tab = 'replays' | 'generales' | 'mes-cours' | 'historique';
 
 export default function DownloadsPage() {
     const [activeTab, setActiveTab] = useState<Tab>('mes-cours');
@@ -185,6 +186,15 @@ export default function DownloadsPage() {
 
                 {/* Tabs */}
                 <div className="flex items-center gap-1 border-b border-slate-800 pb-0">
+                    <button onClick={() => { setActiveTab('replays'); setSearchTerm(''); }}
+                        className={`pb-3 px-4 text-xs font-black uppercase tracking-wider transition-all cursor-pointer border-b-2 ${activeTab === 'replays'
+                            ? 'border-blue-600 text-white'
+                            : 'border-transparent text-slate-400 hover:text-white'
+                        }`}>
+                        <span className="flex items-center gap-2">
+                            <Video className="w-3.5 h-3.5 text-cyan-400" /> Replays Vidéo & Évaluations
+                        </span>
+                    </button>
                     <button onClick={() => { setActiveTab('mes-cours'); setSearchTerm(''); }}
                         className={`pb-3 px-4 text-xs font-black uppercase tracking-wider transition-all cursor-pointer border-b-2 ${activeTab === 'mes-cours'
                             ? 'border-blue-600 text-white'
@@ -214,6 +224,13 @@ export default function DownloadsPage() {
                     </button>
                 </div>
             </div>
+
+            {/* --- ONGLET REPLAYS VIDÉO --- */}
+            {activeTab === 'replays' && (
+                <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 shadow-xl">
+                    <ReplaysSection />
+                </div>
+            )}
 
             {/* --- ONGLET RESSOURCES GÉNÉRALES --- */}
             {activeTab === 'generales' && (

@@ -5,6 +5,8 @@ import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { User, ShieldCheck, KeyRound, CheckCircle, Save, RefreshCw, MessageCircle, Heart, Camera, Phone, Mail, FileText, Lock, Eye, EyeOff, Upload, Target, ChevronRight, Reply } from '@/components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
+import PurchaseHistorySection from '@/components/dashboard/PurchaseHistorySection';
+import { ShoppingBag } from '@/components/icons';
 import { getCertificateBadgeLogo } from '@/lib/certification-utils';
 
 interface UserProfileData {
@@ -31,7 +33,7 @@ export default function ProfilePage() {
     const [profile, setProfile] = useState<UserProfileData | null>(null);
     const [certs, setCerts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'INFO' | 'SECURITY'>('INFO');
+    const [activeTab, setActiveTab] = useState<'INFO' | 'SECURITY' | 'ACHATS'>('INFO');
 
     // Formulaire d'informations personnelles
     const [prenom, setPrenom] = useState('');
@@ -358,6 +360,17 @@ export default function ProfilePage() {
                             <KeyRound className="w-4 h-4" />
                             <span>Sécurité</span>
                         </button>
+
+                        <button
+                            onClick={() => setActiveTab('ACHATS')}
+                            className={`px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all duration-300 cursor-pointer ${activeTab === 'ACHATS'
+                                ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.3)]'
+                                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                                }`}
+                        >
+                            <ShoppingBag className="w-4 h-4" />
+                            <span>Achats & Factures</span>
+                        </button>
                     </motion.div>
 
                     {/* Contenu des formulaires */}
@@ -571,6 +584,20 @@ export default function ProfilePage() {
                                     </button>
                                 </div>
                             </motion.form>
+                        )}
+
+                        {/* ONGLET 3 : ACHATS & FACTURES */}
+                        {activeTab === 'ACHATS' && (
+                            <motion.div
+                                key="achats"
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: 20 }}
+                                transition={{ duration: 0.35 }}
+                                className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm"
+                            >
+                                <PurchaseHistorySection />
+                            </motion.div>
                         )}
                     </AnimatePresence>
                 </div>

@@ -1012,16 +1012,21 @@ export default function StudentDashboard() {
                 )}
             </div>
 
-            {/* CARD 2: ATTESTATIONS DE FORMATION DÉLIVRÉES (DISTINCTES DES CERTIFICATS SCORE) */}
+            {/* 1. PROGRESSION PAR COURS */}
+            <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl">
+                <CourseProgressSection />
+            </div>
+
+            {/* 2. CERTIFICATS & ATTESTATIONS OBTENUS */}
             <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl text-left">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
                     <div>
                         <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400 px-3 py-1 bg-cyan-950/80 border border-cyan-800/60 rounded-full">
-                          Attestations de Présence & Complétion
+                          Certificats & Attestations Délégués
                         </span>
-                        <h3 className="text-xl font-black text-white pt-2">Vos Attestations de Formation Officielle</h3>
+                        <h3 className="text-xl font-black text-white pt-2">Certificats & Attestations Obtenus</h3>
                         <p className="text-xs text-slate-400">
-                          Document certifiant 100% de suivi ou présence en visioconférence (Distinct du certificat de réussite d&apos;examen).
+                          Documents certifiant votre participation (Attestations) et la réussite de vos examens blancs (Certificats).
                         </p>
                     </div>
 
@@ -1037,8 +1042,8 @@ export default function StudentDashboard() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="p-4 bg-[#030712] border border-slate-800 rounded-2xl flex items-center justify-between">
                         <div className="space-y-1">
-                            <div className="text-xs font-black text-white">Formation Pentest & Cybersécurité Advanced</div>
-                            <div className="text-[10px] text-slate-400">Période: 10/06 - 15/07/2026 • 45 Heures • Dr. Tariq Berrada</div>
+                            <div className="text-xs font-black text-white">Attestation de Formation Pentest & Cybersécurité</div>
+                            <div className="text-[10px] text-slate-400">Période: 10/06 - 15/07/2026 • 45h • Dr. Tariq Berrada</div>
                         </div>
                         <button
                             onClick={() => setAttestationModalOpen(true)}
@@ -1050,8 +1055,8 @@ export default function StudentDashboard() {
 
                     <div className="p-4 bg-[#030712] border border-slate-800 rounded-2xl flex items-center justify-between">
                         <div className="space-y-1">
-                            <div className="text-xs font-black text-white">Palo Alto Next-Gen Firewall Administration</div>
-                            <div className="text-[10px] text-slate-400">Période: 01/05 - 20/05/2026 • 30 Heures • Mehdi Kabbaj</div>
+                            <div className="text-xs font-black text-white">Certificat de Réussite Palo Alto PCNSA (88%)</div>
+                            <div className="text-[10px] text-slate-400">Délivré le 25/07/2026 • Validation IA Officielle</div>
                         </div>
                         <button
                             onClick={() => setAttestationModalOpen(true)}
@@ -1063,62 +1068,9 @@ export default function StudentDashboard() {
                 </div>
             </div>
 
-            {/* CARD 3: NAVIGATION PAR ONGLETS (REPLAYS / EXAMENS BLANCS / ACHATS) */}
+            {/* 3. HISTORIQUE DES EXAMENS BLANCS & SCORES */}
             <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl">
-                <div className="flex flex-wrap items-center gap-3 border-b border-slate-800 pb-4">
-                    <button
-                        onClick={() => setActiveSectionTab('progress')}
-                        className={`px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 ${
-                            activeSectionTab === 'progress'
-                                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/25 border border-cyan-400/40'
-                                : 'bg-[#030712] text-slate-400 hover:text-white border border-slate-800'
-                        }`}
-                    >
-                        <GraduationCap className="w-4 h-4" />
-                        <span>Progression par Cours</span>
-                    </button>
-
-                    <button
-                        onClick={() => setActiveSectionTab('replays')}
-                        className={`px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 ${
-                            activeSectionTab === 'replays'
-                                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/25 border border-cyan-400/40'
-                                : 'bg-[#030712] text-slate-400 hover:text-white border border-slate-800'
-                        }`}
-                    >
-                        <Video className="w-4 h-4" />
-                        <span>Replays Vidéo Visioconférences</span>
-                    </button>
-
-                    <button
-                        onClick={() => setActiveSectionTab('exams')}
-                        className={`px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 ${
-                            activeSectionTab === 'exams'
-                                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/25 border border-cyan-400/40'
-                                : 'bg-[#030712] text-slate-400 hover:text-white border border-slate-800'
-                        }`}
-                    >
-                        <Target className="w-4 h-4" />
-                        <span>Historique Examens Blancs & IA</span>
-                    </button>
-
-                    <button
-                        onClick={() => setActiveSectionTab('purchases')}
-                        className={`px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 ${
-                            activeSectionTab === 'purchases'
-                                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/25 border border-cyan-400/40'
-                                : 'bg-[#030712] text-slate-400 hover:text-white border border-slate-800'
-                        }`}
-                    >
-                        <ShoppingBag className="w-4 h-4" />
-                        <span>Historique des Achats & Factures</span>
-                    </button>
-                </div>
-
-                {activeSectionTab === 'progress' && <CourseProgressSection />}
-                {activeSectionTab === 'replays' && <ReplaysSection />}
-                {activeSectionTab === 'exams' && <ExamHistorySection />}
-                {activeSectionTab === 'purchases' && <PurchaseHistorySection />}
+                <ExamHistorySection />
             </div>
 
             {/* ATTESTATION MODAL DISPLAY */}
