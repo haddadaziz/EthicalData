@@ -153,7 +153,7 @@ export default function CourseProgressSection() {
               {/* Action Button */}
               <div className="pt-2">
                 <Link
-                  href="/dashboard/cours"
+                  href={`/dashboard/cours/${c.courseId || c.id}?from=dashboard`}
                   className={`w-full py-2.5 px-4 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md ${
                     isCompleted
                       ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/80 hover:bg-emerald-900/60'
