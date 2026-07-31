@@ -48,12 +48,14 @@ export default function ProfilePage() {
         return () => window.removeEventListener('certificationsUpdated', handleUpdate);
     }, []);
 
-    // Formulaire d'informations personnelles
+    // Formulaire d'informations personnelles & Profil Formateur
     const [prenom, setPrenom] = useState('');
     const [nom, setNom] = useState('');
     const [telephone, setTelephone] = useState('');
     const [avatar, setAvatar] = useState('');
     const [bio, setBio] = useState('');
+    const [trainerSpecialties, setTrainerSpecialties] = useState('Pentesting & Ethical Hacking, Sécurité Périmétrique Fortinet/Palo Alto, Conformité ISO 27001');
+    const [trainerCertificationsHeld, setTrainerCertificationsHeld] = useState('PECB ISO 27001 Lead Auditor, Palo Alto PCNSE, CEH Certified');
     const [infoLoading, setInfoLoading] = useState(false);
 
     // Formulaire de mot de passe
@@ -468,15 +470,39 @@ export default function ProfilePage() {
                                 </div>
 
                                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="space-y-1.5">
-                                    <label className="text-xs font-bold text-slate-400">Bio & Objectifs professionnels</label>
+                                    <label className="text-xs font-bold text-slate-400">Bio & Présentation du Formateur</label>
                                     <textarea
                                         rows={4}
-                                        placeholder="Présentez votre parcours, vos certifications cibles ou vos compétences clés..."
+                                        placeholder="Présentez votre parcours d'expert, votre expérience d'auditeur et vos domaines de spécialités..."
                                         value={bio}
                                         onChange={(e) => setBio(e.target.value)}
                                         className="w-full p-3.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 rounded-xl text-white text-xs font-semibold outline-none resize-none transition-all duration-200"
                                     />
                                 </motion.div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="space-y-1.5">
+                                        <label className="text-xs font-bold text-cyan-400">Spécialités Pédagogiques (séparées par des virgules)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="ex: Pentesting Web, Cloud Security AWS, Conformité ISO 27001"
+                                            value={trainerSpecialties}
+                                            onChange={(e) => setTrainerSpecialties(e.target.value)}
+                                            className="w-full p-3.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-xl text-white text-xs font-semibold outline-none"
+                                        />
+                                    </motion.div>
+
+                                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="space-y-1.5">
+                                        <label className="text-xs font-bold text-emerald-400">Certifications Officiellement Détenues</label>
+                                        <input
+                                            type="text"
+                                            placeholder="ex: PECB Lead Auditor, Palo Alto PCNSE, CISSP, CEH"
+                                            value={trainerCertificationsHeld}
+                                            onChange={(e) => setTrainerCertificationsHeld(e.target.value)}
+                                            className="w-full p-3.5 bg-[#020617] border border-slate-800 focus:border-emerald-500 rounded-xl text-white text-xs font-semibold outline-none"
+                                        />
+                                    </motion.div>
+                                </div>
 
                                 <div className="flex justify-end pt-4 border-t border-slate-800">
                                     <button
