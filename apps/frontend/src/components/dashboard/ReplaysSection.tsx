@@ -164,14 +164,16 @@ export default function ReplaysSection() {
               </button>
             </div>
 
-            <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black border border-slate-800 flex items-center justify-center">
-              <div className="text-center space-y-3 p-8">
-                <Video className="w-12 h-12 text-cyan-400 mx-auto animate-pulse" />
-                <p className="text-sm font-bold text-white">Lecteur de Replay HD Chargé</p>
-                <p className="text-xs text-slate-400 max-w-md mx-auto">
-                  La vidéo intégrale de la session &laquo; {selectedVideo.title} &raquo; est prête pour le visionnage.
-                </p>
-              </div>
+            <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black border border-slate-800 flex items-center justify-center relative shadow-inner">
+              <video
+                controls
+                autoPlay
+                className="w-full h-full object-cover"
+                poster="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1200&q=80"
+              >
+                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4" />
+                Votre navigateur ne prend pas en charge le lecteur vidéo HTML5.
+              </video>
             </div>
           </div>
         </div>
