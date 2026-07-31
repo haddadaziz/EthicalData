@@ -23,6 +23,8 @@ interface PublicProfile {
     };
     obtainedCertifications?: any[];
     targetedCertifications?: any[];
+    specialties?: string[];
+    certificationsHeld?: string[];
 }
 
 const getRoleLabel = (role?: string) => {
@@ -175,6 +177,70 @@ export default function PublicProfilePage() {
                     </motion.div>
                 </div>
             </motion.div>
+
+            {/* ═══ FICHE EXPERTISE & BIO FORMATEUR (SI FORMATEUR OU PROFILE A DES SPÉCIALITÉS) ═══ */}
+            {(profile.role === 'FORMATEUR' || profile.bio || profile.specialties) && (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3, duration: 0.5 }}
+                    className="bg-[#080d1a] border border-[#2563eb]/40 rounded-3xl p-6 sm:p-8 space-y-6 text-left shadow-xl"
+                >
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-2xl bg-cyan-950/80 border border-cyan-800/60 flex items-center justify-center text-cyan-400 font-bold">
+                                🎓
+                            </div>
+                            <div>
+                                <h3 className="text-base font-black text-white">Fiche d&apos;Expertise Formateur</h3>
+                                <p className="text-xs text-slate-400">Profil Pédagogique, Domaines d&apos;intervention & Certifications</p>
+                            </div>
+                        </div>
+                        <span className="px-3 py-1 bg-cyan-950/80 border border-cyan-800 text-cyan-400 font-black text-[10px] uppercase rounded-full tracking-wider">
+                            Formateur Agréé EDS
+                        </span>
+                    </div>
+
+                    {/* Bio */}
+                    <div className="space-y-2">
+                        <h4 className="text-xs font-black text-slate-300 uppercase tracking-wider">Biographie & Experience</h4>
+                        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed bg-[#020617] border border-slate-800 p-4 rounded-2xl">
+                            {profile.bio || "Formateur certifié et expert en sécurité des systèmes d'information. Spécialisé dans l'accompagnement des professionnels et la préparation aux examens officiels."}
+                        </p>
+                    </div>
+
+                    {/* Spécialités & Certifications Détenues */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="p-4 bg-[#020617] border border-slate-800 rounded-2xl space-y-3">
+                            <h4 className="text-xs font-black text-cyan-400 uppercase tracking-wider flex items-center gap-2">
+                                <span>📚 Spécialités Pédagogiques</span>
+                            </h4>
+                            <div className="space-y-2">
+                                {(profile.specialties || ["Pentesting & Ethical Hacking", "Sécurité Périmétrique Fortinet/Palo Alto", "Conformité ISO 27001", "Audit SI"]).map((spec: string, i: number) => (
+                                    <div key={i} className="flex items-center gap-2 text-xs font-bold text-slate-200">
+                                        <span className="text-cyan-400">•</span>
+                                        <span>{spec}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="p-4 bg-[#020617] border border-slate-800 rounded-2xl space-y-3">
+                            <h4 className="text-xs font-black text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+                                <span>🏆 Certifications Détenues</span>
+                            </h4>
+                            <div className="space-y-2">
+                                {(profile.certificationsHeld || ["PECB Certified ISO 27001 Lead Auditor", "Palo Alto Networks PCNSE", "CEH (Certified Ethical Hacker)"]).map((cert: string, i: number) => (
+                                    <div key={i} className="flex items-center gap-2 text-xs font-bold text-slate-200">
+                                        <span className="text-emerald-400">✔</span>
+                                        <span>{cert}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+            )}
 
             {/* Grid obtained & targeted certifications */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
