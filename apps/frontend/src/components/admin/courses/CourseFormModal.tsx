@@ -450,12 +450,22 @@ export const CourseFormModal = React.memo(function CourseFormModal({
               )}
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Capacité Max (Places Visio)</label>
-              <input type="number" required min={5} max={100} value={maxCapacity}
-                onChange={(e) => setMaxCapacity(Number(e.target.value))}
-                className="w-full px-4 py-2.5 bg-[#080d1a] shadow-sm border border-slate-800/80 focus:border-cyan-500 rounded-xl text-white text-sm outline-none font-semibold" />
-            </div>
+            {deliveryType === 'Visioconférence Live' ? (
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Capacité Max (Places Visio Live) *</label>
+                <input type="number" required min={5} max={100} value={maxCapacity}
+                  onChange={(e) => setMaxCapacity(Number(e.target.value))}
+                  className="w-full px-4 py-2.5 bg-[#080d1a] shadow-sm border border-slate-800/80 focus:border-cyan-500 rounded-xl text-white text-sm outline-none font-semibold" />
+              </div>
+            ) : (
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Capacité d&apos;accès</label>
+                <div className="w-full px-4 py-2.5 bg-blue-950/20 border border-blue-900/40 rounded-xl text-cyan-400 text-xs font-bold flex items-center justify-between">
+                  <span>Accès illimité 24/7 (Autoformation)</span>
+                  <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 bg-blue-900/50 rounded-full text-cyan-300">Illimité</span>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Statut & Publication */}
