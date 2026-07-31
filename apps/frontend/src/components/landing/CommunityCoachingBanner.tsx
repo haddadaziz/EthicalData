@@ -98,12 +98,14 @@ export function CommunityCoachingBanner() {
           {/* Carte Visuelle / Témoignage rapide */}
           <div className="lg:col-span-5 bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center text-white font-black text-sm shadow-md">
-                ED
-              </div>
+              <img
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
+                alt="Youssef Bennani"
+                className="w-11 h-11 rounded-full object-cover border-2 border-cyan-500/80 shadow-md shrink-0"
+              />
               <div>
-                <h4 className="text-sm font-bold text-white">Espace Membres EthicalData</h4>
-                <p className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">Communauté & Mentors IT</p>
+                <h4 className="text-sm font-bold text-white">Youssef Bennani</h4>
+                <p className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">Apprenant Certifié AZ-900 & AWS</p>
               </div>
             </div>
 
