@@ -480,29 +480,16 @@ export default function ProfilePage() {
                                     />
                                 </motion.div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="space-y-1.5">
-                                        <label className="text-xs font-bold text-cyan-400">Spécialités Pédagogiques (séparées par des virgules)</label>
-                                        <input
-                                            type="text"
-                                            placeholder="ex: Pentesting Web, Cloud Security AWS, Conformité ISO 27001"
-                                            value={trainerSpecialties}
-                                            onChange={(e) => setTrainerSpecialties(e.target.value)}
-                                            className="w-full p-3.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-xl text-white text-xs font-semibold outline-none"
-                                        />
-                                    </motion.div>
-
-                                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="space-y-1.5">
-                                        <label className="text-xs font-bold text-emerald-400">Certifications Officiellement Détenues</label>
-                                        <input
-                                            type="text"
-                                            placeholder="ex: PECB Lead Auditor, Palo Alto PCNSE, CISSP, CEH"
-                                            value={trainerCertificationsHeld}
-                                            onChange={(e) => setTrainerCertificationsHeld(e.target.value)}
-                                            className="w-full p-3.5 bg-[#020617] border border-slate-800 focus:border-emerald-500 rounded-xl text-white text-xs font-semibold outline-none"
-                                        />
-                                    </motion.div>
-                                </div>
+                                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="space-y-1.5">
+                                    <label className="text-xs font-bold text-cyan-400">Spécialités Pédagogiques (séparées par des virgules)</label>
+                                    <input
+                                        type="text"
+                                        placeholder="ex: Pentesting Web, Cloud Security AWS, Conformité ISO 27001"
+                                        value={trainerSpecialties}
+                                        onChange={(e) => setTrainerSpecialties(e.target.value)}
+                                        className="w-full p-3.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-xl text-white text-xs font-semibold outline-none"
+                                    />
+                                </motion.div>
 
                                 <div className="flex justify-end pt-4 border-t border-slate-800">
                                     <button

@@ -199,34 +199,18 @@ export default function PublicProfilePage() {
                         </p>
                     </div>
 
-                    {/* Spécialités & Certifications Détenues */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="p-4 bg-[#020617] border border-slate-800 rounded-2xl space-y-3">
-                            <h4 className="text-xs font-black text-cyan-400 uppercase tracking-wider">
-                                Spécialités Pédagogiques
-                            </h4>
-                            <div className="space-y-2">
-                                {(profile.specialties || ["Pentesting & Ethical Hacking", "Sécurité Périmétrique Fortinet/Palo Alto", "Conformité ISO 27001", "Audit SI"]).map((spec: string, i: number) => (
-                                    <div key={i} className="flex items-center gap-2 text-xs font-bold text-slate-200">
-                                        <span className="text-cyan-400">•</span>
-                                        <span>{spec}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="p-4 bg-[#020617] border border-slate-800 rounded-2xl space-y-3">
-                            <h4 className="text-xs font-black text-emerald-400 uppercase tracking-wider">
-                                Certifications Détenues
-                            </h4>
-                            <div className="space-y-2">
-                                {(profile.certificationsHeld || ["PECB Certified ISO 27001 Lead Auditor", "Palo Alto Networks PCNSE", "CEH (Certified Ethical Hacker)"]).map((cert: string, i: number) => (
-                                    <div key={i} className="flex items-center gap-2 text-xs font-bold text-slate-200">
-                                        <span className="text-emerald-400">✔</span>
-                                        <span>{cert}</span>
-                                    </div>
-                                ))}
-                            </div>
+                    {/* Spécialités Pédagogiques */}
+                    <div className="p-4 bg-[#020617] border border-slate-800 rounded-2xl space-y-3">
+                        <h4 className="text-xs font-black text-cyan-400 uppercase tracking-wider">
+                            Spécialités Pédagogiques
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {(profile.specialties || ["Pentesting & Ethical Hacking", "Sécurité Périmétrique Fortinet/Palo Alto", "Conformité ISO 27001", "Audit SI"]).map((spec: string, i: number) => (
+                                <div key={i} className="flex items-center gap-2 text-xs font-bold text-slate-200">
+                                    <span className="text-cyan-400">•</span>
+                                    <span>{spec}</span>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </motion.div>
