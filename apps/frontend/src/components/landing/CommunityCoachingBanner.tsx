@@ -108,16 +108,8 @@ export function CommunityCoachingBanner() {
             </div>
 
             <blockquote className="text-xs sm:text-sm text-slate-300 italic leading-relaxed border-l-2 border-cyan-500 pl-4 py-1">
-              « L'examen blanc avec la correction IA et le voucher à tarif réduit m'ont permis d'obtenir l'AZ-900 du premier coup avec 920/1000 ! »
+              « L&apos;examen blanc avec la correction IA et le voucher à tarif réduit m&apos;ont permis d&apos;obtenir l&apos;AZ-900 du premier coup avec 920/1000 ! »
             </blockquote>
-
-            <div className="pt-3 flex items-center justify-between text-xs text-slate-400 border-t border-slate-800">
-              <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
-                <CheckCircle className="w-4 h-4" />
-                Apprenants certifiés
-              </span>
-              <span className="font-bold text-white">98% de taux de réussite</span>
-            </div>
           </div>
 
         </div>
