@@ -152,7 +152,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             name: 'Apprentissage', 
             icon: GraduationCap,
             subItems: [
-                { name: 'Mes Cours & Progrès', href: '/dashboard/cours', icon: BookOpen },
+                { name: 'Mes Cours', href: '/dashboard/cours', icon: BookOpen },
                 { name: 'Entraînement', href: '/dashboard/practice', icon: HelpCircle },
                 { name: 'Certifications', href: '/dashboard/certifications', icon: Award },
             ]

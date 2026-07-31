@@ -21,7 +21,7 @@ interface CourseProgress {
 const MOCK_COURSE_PROGRESS: CourseProgress[] = [
   {
     id: "cp-1",
-    title: "Palo Alto Networks PCNSA — Architecture & Administration Next-Gen Firewall",
+    title: "Palo Alto Networks PCNSA — Administration Next-Gen Firewall",
     certificationCode: "PCNSA",
     category: "Cybersécurité Périmétrique",
     progressPercent: 75,
@@ -34,20 +34,7 @@ const MOCK_COURSE_PROGRESS: CourseProgress[] = [
   },
   {
     id: "cp-2",
-    title: "AWS Certified Security - Specialty — Cloud Infrastructure Protection",
-    certificationCode: "SCS-C02",
-    category: "Cloud Security",
-    progressPercent: 40,
-    completedModules: 6,
-    totalModules: 15,
-    durationLeft: "8h 15m restantes",
-    lastLessonTitle: "Module 6 : KMS Key Policies & S3 Bucket Encryption Rules",
-    trainerName: "Leila Naciri",
-    deliveryType: "Visioconférence Live"
-  },
-  {
-    id: "cp-3",
-    title: "PECB ISO 27001 Lead Implementer — Management de la Sécurité de l'Information",
+    title: "PECB ISO 27001 Lead Implementer — Management SI",
     certificationCode: "ISO-27001",
     category: "Gouvernance & Conformité",
     progressPercent: 100,
@@ -56,6 +43,58 @@ const MOCK_COURSE_PROGRESS: CourseProgress[] = [
     durationLeft: "Formation Terminée",
     lastLessonTitle: "Examen de validation des compétences ISO 27001",
     trainerName: "Dr. Tariq Berrada",
+    deliveryType: "E-learning 24/7"
+  },
+  {
+    id: "cp-3",
+    title: "Microsoft Azure Fundamentals (AZ-900) - Le Guide Complet",
+    certificationCode: "AZ-900",
+    category: "Cloud Infrastructure",
+    progressPercent: 60,
+    completedModules: 5,
+    totalModules: 8,
+    durationLeft: "4h 15m restantes",
+    lastLessonTitle: "Module 5 : Sécurité Entra ID & RBAC Groups",
+    trainerName: "Leila Naciri",
+    deliveryType: "E-learning 24/7"
+  },
+  {
+    id: "cp-4",
+    title: "AWS Solutions Architect Associate (SAA-C03) - Masterclass",
+    certificationCode: "SAA-C03",
+    category: "Cloud Architecture",
+    progressPercent: 40,
+    completedModules: 5,
+    totalModules: 12,
+    durationLeft: "8h 30m restantes",
+    lastLessonTitle: "Module 5 : Architectures résilientes Auto Scaling & Multi-AZ",
+    trainerName: "Leila Naciri",
+    deliveryType: "Visioconférence Live"
+  },
+  {
+    id: "cp-5",
+    title: "CompTIA Security+ (SY0-701) - BootCamp Cybersécurité",
+    certificationCode: "SY0-701",
+    category: "Sécurité Opérationnelle",
+    progressPercent: 25,
+    completedModules: 3,
+    totalModules: 11,
+    durationLeft: "12h 00m restantes",
+    lastLessonTitle: "Module 3 : Cryptographie assistée & Gestion des clefs PKI",
+    trainerName: "Dr. Tariq Berrada",
+    deliveryType: "E-learning 24/7"
+  },
+  {
+    id: "cp-6",
+    title: "AWS Certified Cloud Practitioner (CLF-C02) - Essentiels",
+    certificationCode: "CLF-C02",
+    category: "Cloud Essentials",
+    progressPercent: 10,
+    completedModules: 1,
+    totalModules: 10,
+    durationLeft: "14h 20m restantes",
+    lastLessonTitle: "Module 1 : Introduction à l'écosystème AWS & Global Infrastructure",
+    trainerName: "Leila Naciri",
     deliveryType: "E-learning 24/7"
   }
 ];
