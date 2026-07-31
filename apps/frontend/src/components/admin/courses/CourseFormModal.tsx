@@ -450,22 +450,23 @@ export const CourseFormModal = React.memo(function CourseFormModal({
               )}
             </div>
 
-            {deliveryType === 'Visioconférence Live' ? (
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Capacité Max Places Visio Live *</label>
-                <input type="number" required min={5} max={100} value={maxCapacity}
-                  onChange={(e) => setMaxCapacity(Number(e.target.value))}
-                  className="w-full px-4 py-2.5 bg-[#080d1a] shadow-sm border border-slate-800/80 focus:border-cyan-500 rounded-xl text-white text-sm outline-none font-semibold" />
-              </div>
-            ) : (
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Capacité d&apos;accès</label>
-                <div className="w-full px-4 py-2.5 bg-blue-950/20 border border-blue-900/40 rounded-xl text-cyan-400 text-xs font-bold flex items-center justify-between">
-                  <span>Accès illimité 24/7 Autoformation</span>
-                  <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 bg-blue-900/50 rounded-full text-cyan-300">Illimité</span>
-                </div>
-              </div>
-            )}
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Capacité Max *</label>
+              <input
+                type={deliveryType === 'Visioconférence Live' ? 'number' : 'text'}
+                required={deliveryType === 'Visioconférence Live'}
+                disabled={deliveryType !== 'Visioconférence Live'}
+                min={5}
+                max={100}
+                value={deliveryType === 'Visioconférence Live' ? maxCapacity : 'Pas de limite'}
+                onChange={(e) => setMaxCapacity(Number(e.target.value))}
+                className={`w-full px-4 py-2.5 rounded-xl text-sm outline-none font-semibold transition-all ${
+                  deliveryType === 'Visioconférence Live'
+                    ? 'bg-[#080d1a] border border-slate-800 focus:border-cyan-500 text-white'
+                    : 'bg-slate-900/60 border border-slate-800/60 text-slate-500 cursor-not-allowed'
+                }`}
+              />
+            </div>
           </div>
 
           {/* Statut & Publication */}
