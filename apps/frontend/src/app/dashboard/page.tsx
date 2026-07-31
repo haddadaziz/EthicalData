@@ -58,6 +58,7 @@ export default function StudentDashboard() {
     const [enrolledCerts, setEnrolledCerts] = useState<any[]>([]);
     const [activeSectionTab, setActiveSectionTab] = useState<'replays' | 'exams' | 'purchases'>('replays');
     const [attestationModalOpen, setAttestationModalOpen] = useState(false);
+    const [liveModalOpen, setLiveModalOpen] = useState(false);
 
     useEffect(() => {
         const handleOutsideClick = (e: MouseEvent) => {
@@ -423,13 +424,14 @@ export default function StudentDashboard() {
                         </div>
                     </div>
 
-                    <a
-                        href="/dashboard/appointments"
+                    <button
+                        type="button"
+                        onClick={() => setLiveModalOpen(true)}
                         className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg shadow-cyan-600/20 cursor-pointer shrink-0"
                     >
                         <Video className="w-4 h-4" />
                         <span>Rejoindre la Session (Direct)</span>
-                    </a>
+                    </button>
                 </div>
             </div>
 
@@ -1119,6 +1121,68 @@ export default function StudentDashboard() {
                     verificationCode: "EDS-ATT-2026-99481"
                 }}
             />
+
+            {/* MODAL SALLE VIRTUELLE LIVE VISIOCONFÉRENCE DIRECT */}
+            <AnimatePresence>
+                {liveModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="bg-[#080d1a] border border-slate-800 rounded-3xl max-w-4xl w-full p-6 space-y-5 shadow-2xl relative text-left"
+                        >
+                            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-cyan-950 border border-cyan-800 flex items-center justify-center text-cyan-400">
+                                        <Video className="w-5 h-5 animate-pulse" />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-base font-black text-white">Session Live #05 — Architecture Cloud AWS Security Specialist</h4>
+                                        <p className="text-xs text-cyan-400 font-bold">Intervenante : Leila Naciri • En direct (Microsoft Teams Sync)</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setLiveModalOpen(false)}
+                                    className="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-900 border border-slate-800 cursor-pointer"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            {/* Live Video Window Simulation */}
+                            <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black border border-slate-800 flex flex-col items-center justify-center relative p-8 text-center space-y-4 shadow-inner">
+                                <div className="w-16 h-16 rounded-full bg-cyan-600/20 border border-cyan-500/40 text-cyan-400 flex items-center justify-center animate-bounce">
+                                    <Video className="w-8 h-8" />
+                                </div>
+                                <div className="space-y-1">
+                                    <h5 className="text-lg font-black text-white">Flux Visioconférence Direct Connecté</h5>
+                                    <p className="text-xs text-slate-300 max-w-md mx-auto leading-relaxed">
+                                        Vous êtes connecté à la salle virtuelle sécurisée. La session avec <strong className="text-cyan-400">Leila Naciri</strong> est actuellement en cours.
+                                    </p>
+                                </div>
+
+                                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                                    <a
+                                        href="https://teams.microsoft.com/l/meetup-join/eds-session-live-aws"
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 cursor-pointer shadow-lg shadow-blue-600/20"
+                                    >
+                                        <span>Ouvrir dans l&apos;application Teams</span>
+                                    </a>
+                                    <button
+                                        onClick={() => setLiveModalOpen(false)}
+                                        className="px-5 py-2.5 bg-slate-900 border border-slate-800 text-slate-400 hover:text-white rounded-xl text-xs font-bold cursor-pointer"
+                                    >
+                                        Quitter la session
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
 
             {/* Modal détail */}
             <AnimatePresence>
