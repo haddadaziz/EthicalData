@@ -21,44 +21,38 @@ export default function ParticlesComponent({ className, id = "particles-js" }: P
       window.pJSDom = [];
     }
 
-    const colors = isDark
-      ? {
-          particles: "#00f5ff",
-          lines: "#00d9ff",
-          accent: "#0096c7",
-        }
-      : {
-          particles: "#0277bd",
-          lines: "#0288d1",
-          accent: "#039be5",
-        };
+    const colors = {
+      particles: "#00f5ff",
+      lines: "#38bdf8",
+      accent: "#67e8f9",
+    };
 
     // @ts-ignore
     if (window.particlesJS) {
       // @ts-ignore
       window.particlesJS(id, {
         particles: {
-          number: { value: 75, density: { enable: true, value_area: 800 } },
+          number: { value: 90, density: { enable: true, value_area: 800 } },
           color: { value: colors.particles },
-          shape: { type: "circle", stroke: { width: 0.5, color: colors.accent } },
+          shape: { type: "circle", stroke: { width: 0.8, color: colors.accent } },
           opacity: {
-            value: 0.6,
-            random: true,
-            anim: { enable: true, speed: 1, opacity_min: 0.2 },
+            value: 0.85,
+            random: false,
+            anim: { enable: true, speed: 1, opacity_min: 0.5 },
           },
           size: {
-            value: 2.5,
+            value: 3.2,
             random: true,
-            anim: { enable: true, speed: 1.5, size_min: 1 },
+            anim: { enable: true, speed: 1.5, size_min: 1.5 },
           },
           line_linked: {
             enable: true,
-            distance: 140,
+            distance: 150,
             color: colors.lines,
-            opacity: 0.35,
-            width: 1.1,
+            opacity: 0.55,
+            width: 1.3,
           },
-          move: { enable: true, speed: 1.8, random: true, out_mode: "bounce" },
+          move: { enable: true, speed: 2, random: true, out_mode: "bounce" },
         },
         interactivity: {
           detect_on: "canvas",

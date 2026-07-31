@@ -43,7 +43,7 @@ export function OpenSessionsSection() {
   return (
     <section className="relative z-10 py-20 bg-[#020617] border-t border-slate-900 overflow-hidden">
       {/* Background Particles Animation */}
-      <div className="absolute inset-0 z-0 opacity-40 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 z-0 opacity-85 pointer-events-none overflow-hidden">
         <ParticlesComponent id="open-sessions-particles" />
       </div>
 
