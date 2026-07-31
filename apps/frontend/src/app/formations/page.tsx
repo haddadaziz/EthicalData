@@ -13,6 +13,8 @@ interface Course {
   description?: string;
   imageUrl?: string;
   dureeEstimee?: number;
+  deliveryType?: 'E-learning 24/7' | 'Visioconférence Live';
+  priceMad?: number;
   certification?: {
     nom: string;
     codeExamen?: string;
@@ -101,6 +103,7 @@ export default function FormationsPublicPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProvider, setSelectedProvider] = useState<string>('TOUS');
+  const [selectedFormat, setSelectedFormat] = useState<'TOUS' | 'E-learning 24/7' | 'Visioconférence Live'>('TOUS');
 
   useEffect(() => {
     document.title = "Catalogue des Formations - Ethical Data Security";
@@ -122,7 +125,10 @@ export default function FormationsPublicPage() {
     const matchProvider =
       selectedProvider === 'TOUS' ||
       c.certification?.fournisseur?.nom?.toUpperCase().includes(selectedProvider.toUpperCase());
-    return matchSearch && matchProvider;
+    const matchFormat =
+      selectedFormat === 'TOUS' ||
+      (c.deliveryType || 'E-learning 24/7') === selectedFormat;
+    return matchSearch && matchProvider && matchFormat;
   });
 
   return (
@@ -145,34 +151,74 @@ export default function FormationsPublicPage() {
         </div>
 
         {/* FILTRES & RECHERCHE */}
-        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 bg-[#080d1a] border border-slate-800 p-4 rounded-2xl">
-          {/* Recherche */}
-          <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-500 absolute left-4 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Rechercher un cours, un examen (AZ-900, ISO 27001...)..."
-              className="w-full pl-10 pr-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-xl text-white placeholder-slate-500 text-xs font-semibold outline-none"
-            />
+        <div className="space-y-4">
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 bg-[#080d1a] border border-slate-800 p-4 rounded-2xl">
+            {/* Recherche */}
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 text-slate-500 absolute left-4 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Rechercher un cours, un examen (AZ-900, ISO 27001...)..."
+                className="w-full pl-10 pr-4 py-2.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 rounded-xl text-white placeholder-slate-500 text-xs font-semibold outline-none"
+              />
+            </div>
+
+            {/* Filtre Constructeur */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 shrink-0">
+              {['TOUS', 'MICROSOFT', 'AWS', 'COMPTIA', 'GOOGLE'].map((provider) => (
+                <button
+                  key={provider}
+                  onClick={() => setSelectedProvider(provider)}
+                  className={`px-3 py-2 text-[11px] font-black uppercase tracking-wider rounded-xl border transition-all cursor-pointer ${
+                    selectedProvider === provider
+                      ? 'bg-blue-600/20 text-cyan-400 border-cyan-500/50'
+                      : 'bg-[#020617] text-slate-400 border-slate-800 hover:text-white'
+                  }`}
+                >
+                  {provider}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Filtre Constructeur */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 shrink-0">
-            {['TOUS', 'MICROSOFT', 'AWS', 'COMPTIA', 'GOOGLE'].map((provider) => (
-              <button
-                key={provider}
-                onClick={() => setSelectedProvider(provider)}
-                className={`px-3 py-2 text-[11px] font-black uppercase tracking-wider rounded-xl border transition-all cursor-pointer ${
-                  selectedProvider === provider
-                    ? 'bg-blue-600/20 text-cyan-400 border-cyan-500/50'
-                    : 'bg-[#020617] text-slate-400 border-slate-800 hover:text-white'
-                }`}
-              >
-                {provider}
-              </button>
-            ))}
+          {/* DISTINCTION FORMAT (E-LEARNING 24/7 vs VISIOCONFÉRENCE LIVE) */}
+          <div className="flex items-center gap-3 bg-[#080d1a] border border-slate-800 p-3 rounded-2xl text-xs font-bold">
+            <span className="text-slate-400 text-[11px] font-black uppercase tracking-wider pl-2">Format de Formation :</span>
+            
+            <button
+              onClick={() => setSelectedFormat('TOUS')}
+              className={`px-3.5 py-1.5 rounded-xl border transition-all cursor-pointer ${
+                selectedFormat === 'TOUS'
+                  ? 'bg-cyan-950 text-cyan-400 border-cyan-700'
+                  : 'bg-[#020617] text-slate-400 border-slate-800 hover:text-white'
+              }`}
+            >
+              Tous les Formats
+            </button>
+
+            <button
+              onClick={() => setSelectedFormat('E-learning 24/7')}
+              className={`px-3.5 py-1.5 rounded-xl border transition-all cursor-pointer ${
+                selectedFormat === 'E-learning 24/7'
+                  ? 'bg-blue-950 text-cyan-400 border-cyan-700 font-black'
+                  : 'bg-[#020617] text-slate-400 border-slate-800 hover:text-white'
+              }`}
+            >
+              💻 E-learning (Autoformation 24/7)
+            </button>
+
+            <button
+              onClick={() => setSelectedFormat('Visioconférence Live')}
+              className={`px-3.5 py-1.5 rounded-xl border transition-all cursor-pointer ${
+                selectedFormat === 'Visioconférence Live'
+                  ? 'bg-rose-950 text-rose-400 border-rose-800 font-black'
+                  : 'bg-[#020617] text-slate-400 border-slate-800 hover:text-white'
+              }`}
+            >
+              🎥 Visioconférence Live (Teams)
+            </button>
           </div>
         </div>
 
@@ -187,79 +233,83 @@ export default function FormationsPublicPage() {
             <ShieldCheck className="w-10 h-10 text-slate-600 mx-auto" />
             <h3 className="text-base font-bold text-white">Aucune formation trouvée</h3>
             <p className="text-xs text-slate-400 max-w-md mx-auto">
-              Essayez de modifier votre terme de recherche ou le filtre de constructeur.
+              Essayez de modifier votre terme de recherche ou le filtre de format.
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCourses.map((c) => (
-              <div
-                key={c.id}
-                className="bg-[#080d1a] border border-slate-800 hover:border-slate-700 rounded-3xl overflow-hidden flex flex-col justify-between transition-all shadow-xl hover:shadow-cyan-950/20 group"
-              >
-                {/* Banner Image */}
-                {c.imageUrl && (
-                  <div className="relative h-44 w-full overflow-hidden bg-slate-900">
-                    <img
-                      src={c.imageUrl}
-                      alt={c.titre}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#080d1a] via-transparent to-transparent opacity-80" />
-                  </div>
-                )}
+            {filteredCourses.map((c) => {
+              const format = c.deliveryType || 'E-learning 24/7';
 
-                <div className="p-6 flex-1 flex flex-col justify-between space-y-5">
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider bg-blue-600/20 text-cyan-400 border border-blue-500/30 rounded-full">
-                        {c.certification?.fournisseur?.nom || 'Formation IT'}
-                      </span>
-                      {c.dureeEstimee && (
-                        <span className="flex items-center gap-1 text-[11px] text-slate-400 font-bold">
-                          <Clock className="w-3 h-3 text-cyan-400" />
-                          {c.dureeEstimee} min
-                        </span>
-                      )}
+              return (
+                <div
+                  key={c.id}
+                  className="bg-[#080d1a] border border-slate-800 hover:border-slate-700 rounded-3xl overflow-hidden flex flex-col justify-between transition-all shadow-xl hover:shadow-cyan-950/20 group"
+                >
+                  {/* Banner Image */}
+                  {c.imageUrl && (
+                    <div className="relative h-44 w-full overflow-hidden bg-slate-900">
+                      <img
+                        src={c.imageUrl}
+                        alt={c.titre}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#080d1a] via-transparent to-transparent opacity-80" />
                     </div>
+                  )}
 
-                    <h3 className="text-base font-bold text-white group-hover:text-cyan-400 transition-colors leading-snug">
-                      {c.titre}
-                    </h3>
+                  <div className="p-6 flex-1 flex flex-col justify-between space-y-5">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[9px] font-black uppercase tracking-wider text-cyan-400 px-2.5 py-0.5 bg-cyan-950 border border-cyan-800 rounded-full">
+                          {c.certification?.codeExamen || 'Examen'}
+                        </span>
+                        
+                        {/* FORMAT BADGE */}
+                        <span className={`text-[9px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
+                          format === 'E-learning 24/7' 
+                            ? 'bg-blue-950/80 text-cyan-300 border-blue-800' 
+                            : 'bg-rose-950/80 text-rose-400 border-rose-800'
+                        }`}>
+                          {format === 'E-learning 24/7' ? '💻 E-learning 24/7' : '🎥 Visio Live Teams'}
+                        </span>
+                      </div>
 
-                    {c.description && (
-                      <p className="text-xs text-slate-400 line-clamp-3 leading-relaxed">
+                      <h3 className="text-base font-black text-white group-hover:text-cyan-400 transition-colors leading-snug">
+                        {c.titre}
+                      </h3>
+
+                      <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
                         {c.description}
                       </p>
-                    )}
-                  </div>
-
-                  <div className="pt-4 border-t border-slate-800/80 space-y-4">
-                    <div className="flex items-center justify-between text-xs text-slate-400">
-                      <span className="flex items-center gap-1">
-                        <BookOpen className="w-3.5 h-3.5 text-slate-500" />
-                        {c._count?.modules || 0} modules
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Users className="w-3.5 h-3.5 text-slate-500" />
-                        {c._count?.inscriptions || 0} inscrits
-                      </span>
                     </div>
 
-                    <Link
-                      href="/dashboard/cours"
-                      className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                      <span>Accéder à la formation</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
+                    <div className="space-y-4 pt-3 border-t border-slate-800">
+                      <div className="flex items-center justify-between text-xs text-slate-300 font-semibold">
+                        <span className="flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-cyan-400" />
+                          <span>{c.dureeEstimee || 45}h de contenu</span>
+                        </span>
+
+                        <span className="text-emerald-400 font-black">
+                          {c.priceMad || 2500} MAD
+                        </span>
+                      </div>
+
+                      <Link
+                        href={`/formations/${c.id}`}
+                        className="w-full py-2.5 bg-blue-600/90 hover:bg-blue-600 text-white font-black rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md shadow-blue-600/20"
+                      >
+                        <span>Consulter la Fiche de Cours</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
-
       </div>
 
       <Footer />

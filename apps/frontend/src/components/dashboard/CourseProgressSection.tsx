@@ -108,9 +108,9 @@ export default function CourseProgressSection() {
                 {/* Progress Bar */}
                 <div className="space-y-1.5 bg-[#030712] p-3 rounded-2xl border border-slate-800">
                   <div className="flex items-center justify-between text-xs font-bold">
-                    <span className="text-slate-300">Progression</span>
+                    <span className="text-slate-300">Progression Visionnage</span>
                     <span className={isCompleted ? 'text-emerald-400' : 'text-cyan-400'}>
-                      {c.progressPercent}% ({c.completedModules}/{c.totalModules} modules)
+                      {c.progressPercent}% de vidéos vues ({c.completedModules}/{c.totalModules} leçons)
                     </span>
                   </div>
 
