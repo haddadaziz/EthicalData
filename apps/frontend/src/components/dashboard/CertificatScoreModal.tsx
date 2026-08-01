@@ -223,12 +223,30 @@ export default function CertificatScoreModal({ isOpen, onClose, data }: Certific
               </div>
             </div>
 
-            {/* Verification Code Footer */}
-            <div className="pt-2 border-t border-[#1e293b] text-center max-w-2xl mx-auto">
-              <span className="text-[9px] font-bold text-[#64748b] uppercase tracking-wider block mb-1" style={{ color: '#64748b' }}>ID Certificat Unique</span>
-              <span className="font-mono text-[10px] font-black text-[#10b981] bg-[#064e3b]/60 border border-[#047857] px-3 py-1 rounded inline-block" style={{ color: '#10b981', backgroundColor: '#064e3b' }}>
-                {data.verificationCode}
-              </span>
+            {/* Verification Code Footer & QR Code */}
+            <div className="pt-3 border-t border-[#1e293b] flex items-center justify-between max-w-2xl mx-auto text-left">
+              <div className="space-y-1">
+                <span className="text-[9px] font-bold text-[#64748b] uppercase tracking-wider block" style={{ color: '#64748b' }}>Verification Authenticity QR Code</span>
+                <span className="font-mono text-[10px] font-black text-[#10b981] bg-[#064e3b]/60 border border-[#047857] px-3 py-1 rounded inline-block" style={{ color: '#10b981', backgroundColor: '#064e3b' }}>
+                  {data.verificationCode}
+                </span>
+                <a
+                  href={`/verify/${encodeURIComponent(data.verificationCode)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[9px] text-emerald-400 font-bold underline block hover:text-white"
+                >
+                  Lien de vérification public en ligne &rarr;
+                </a>
+              </div>
+
+              <div className="w-14 h-14 bg-white p-1 rounded-lg shrink-0 shadow-md">
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`https://ethicaldatasecurity.ma/verify/${data.verificationCode}`)}`}
+                  alt="QR Code Certificat"
+                  className="w-full h-full object-contain"
+                />
+              </div>
             </div>
 
           </div>
