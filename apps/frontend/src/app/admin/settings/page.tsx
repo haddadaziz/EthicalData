@@ -332,14 +332,14 @@ function TwoFactorAuthSection() {
                             {/* QR Code Canvas Representation */}
                             <div className="w-40 h-40 bg-white p-2 rounded-xl flex items-center justify-center shadow-md">
                                 <img
-                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=otpauth://totp/EthicalDataAdmin:admin@ethicaldata.com?secret=EDSADMIN2FATOTPSECRET2026&issuer=EthicalData`}
+                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=otpauth://totp/EthicalData:admin@ethicaldata.ma?secret=JBSWY3DPEHPK3PXP&issuer=EthicalData`}
                                     alt="QR Code A2F"
                                     className="w-full h-full object-contain"
                                 />
                             </div>
                             <div className="text-center">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Clé Secrète Manuelle</p>
-                                <code className="text-xs font-mono font-bold text-cyan-400 select-all">EDS-ADMIN-2FA-7849-X9K2</code>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Clé Secrète Manuelle (Base32)</p>
+                                <code className="text-xs font-mono font-bold text-cyan-400 select-all">JBSW Y3DP EHPK 3PXP</code>
                             </div>
                         </div>
 
