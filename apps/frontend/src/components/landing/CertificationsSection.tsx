@@ -91,7 +91,7 @@ export function CertificationsSection({ realCertifications, courses, cleanTitle 
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         
-        <AnimatedSection className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+        <AnimatedSection className="text-center max-w-3xl mx-auto mb-20 space-y-3">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight leading-tight">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-cyan-400">
               {t('certifications_title')}
@@ -119,13 +119,13 @@ export function CertificationsSection({ realCertifications, courses, cleanTitle 
           )}
 
           {isDesktop ? (
-            <div className="overflow-hidden rounded-xl">
+            <div className="overflow-visible rounded-xl">
               <div
                 className="flex transition-transform duration-300 ease-in-out"
                 style={{ transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)` }}
               >
                 {catalogCourses.map((c, i) => (
-                  <div key={i} className="w-1/4 shrink-0 px-3 pb-8">
+                  <div key={i} className="w-1/4 shrink-0 px-3 pt-6 pb-8">
                     <CertificationCard
                       slug={c.slug}
                       nom={c.nom}
