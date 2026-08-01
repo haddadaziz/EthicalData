@@ -187,6 +187,11 @@ export function Navbar() {
             </AnimatePresence>
           </div>
 
+          {/* Lien À propos */}
+          <Link href="/about" className={`px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
+            {t('nav_about')}
+          </Link>
+
           {/* Menu Déroulant Services */}
           <div
             className="relative"
@@ -228,10 +233,6 @@ export function Navbar() {
               )}
             </AnimatePresence>
           </div>
-
-          <Link href="/about" className={`px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
-            {t('nav_about')}
-          </Link>
           <Link href="/blog" className={`px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all duration-200 ${scrolled ? 'text-slate-300 hover:text-cyan-400 hover:bg-slate-900/40' : 'text-white/90 hover:text-white'}`}>
             {t('nav_blog')}
           </Link>
@@ -375,6 +376,8 @@ export function Navbar() {
                 </AnimatePresence>
               </div>
 
+              <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">À propos</Link>
+
               {/* Accordéon Services sur Mobile */}
               <div>
                 <button
@@ -406,8 +409,6 @@ export function Navbar() {
                   )}
                 </AnimatePresence>
               </div>
-
-              <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">À propos</Link>
               <Link href="/blog" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">Blog</Link>
               <a href="/#testimonials" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">Avis</a>
               <a href="/#faq" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-900/60 rounded-xl transition-colors">FAQ</a>
