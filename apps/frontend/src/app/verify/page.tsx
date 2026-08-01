@@ -31,11 +31,6 @@ export default function VerifySearchPage() {
         
         {/* HERO HEADER */}
         <div className="space-y-4 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-800/60 text-emerald-400 text-xs font-black uppercase tracking-wider">
-            <ShieldCheck className="w-4 h-4" />
-            <span>Vérification Officielle des Certificats & Attestations (Loi 09-08)</span>
-          </div>
-
           <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-cyan-400">
               Portail Public de Vérification
