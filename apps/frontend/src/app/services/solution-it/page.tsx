@@ -154,9 +154,6 @@ export default function SolutionITPage() {
         <div className="max-w-7xl mx-auto px-4 md:px-6 space-y-12">
           
           <div className="text-center space-y-4 max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-950/60 border border-blue-800/50 text-cyan-400 text-xs font-black uppercase tracking-wider">
-              <span>Notre Processus de Déploiement</span>
-            </div>
             <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
               Solution IT en 3 Étapes
             </h2>
