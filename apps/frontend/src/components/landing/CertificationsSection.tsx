@@ -107,7 +107,7 @@ export function CertificationsSection({ realCertifications, courses, cleanTitle 
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          {catalogCourses.length > itemsPerPage && (
+          {catalogCourses.length > 1 && (
             <>
               <button onClick={goPrev} aria-label="Précédent" className="absolute -left-2 sm:-left-4 lg:-left-6 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-[#080d1a] border border-cyan-500 text-cyan-400 hover:bg-blue-950/30 hover:scale-110 rounded-full flex items-center justify-center transition-all shadow-md cursor-pointer">
                 <ChevronLeft className="w-5 h-5 lg:w-6 lg:h-6 ml-[-2px]" />
