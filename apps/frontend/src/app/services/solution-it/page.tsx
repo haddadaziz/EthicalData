@@ -138,13 +138,13 @@ export default function SolutionITPage() {
           </p>
 
           <div className="pt-2">
-            <Link
-              href="/contact"
+            <a
+              href="#devis-online"
               className="inline-flex items-center gap-2 px-8 py-3.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-blue-600/20 cursor-pointer hover:scale-105 active:scale-95"
             >
               <span>Demander un devis</span>
               <ArrowRight className="w-4 h-4" />
-            </Link>
+            </a>
           </div>
         </div>
       </section>
@@ -154,8 +154,10 @@ export default function SolutionITPage() {
         <div className="max-w-7xl mx-auto px-4 md:px-6 space-y-12">
           
           <div className="text-center space-y-4 max-w-3xl mx-auto">
-            <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-              Solution IT en 3 Étapes
+            <h2 className="text-3xl sm:text-5xl font-black tracking-tight">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-cyan-400">
+                Solution IT en 3 Étapes
+              </span>
             </h2>
             <p className="text-slate-300 text-xs sm:text-sm md:text-base leading-relaxed">
               Ethical Data Security vous accompagne avec des solutions technologiques fiables et économiques pour booster votre transformation numérique.
