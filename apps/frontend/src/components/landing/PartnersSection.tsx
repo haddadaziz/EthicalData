@@ -45,6 +45,7 @@ export function PartnersSection() {
             </div>
           ))}
         </div>
+      </div>
       </AnimatedSection>
     </section>
   );
