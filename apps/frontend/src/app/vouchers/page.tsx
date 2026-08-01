@@ -111,11 +111,6 @@ export default function VouchersPublicPage() {
 
         {/* HERO SECTION */}
         <div className="text-center max-w-3xl mx-auto space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-800/60 text-cyan-400 text-xs font-black uppercase tracking-wider">
-            <Tag className="w-3.5 h-3.5" />
-            <span>Catalogue Vouchers d&apos;Examen Constructeurs</span>
-          </div>
-
           <h1 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-cyan-400">
               Vouchers d&apos;Examen Officiel avec Discount EDS
@@ -196,14 +191,14 @@ export default function VouchersPublicPage() {
                 className="bg-[#080d1a] border border-slate-800 hover:border-cyan-500/50 rounded-3xl p-6 space-y-6 shadow-xl relative overflow-hidden flex flex-col justify-between transition-all duration-300 group"
               >
                 <div className="space-y-4">
-                  {/* Badge Remise + Prix Normal Barré */}
-                  <div className="flex items-center justify-between">
+                  {/* Badge Remise + Prix Normal Barré Mis en Avant */}
+                  <div className="flex items-center justify-between gap-2">
                     <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 px-3 py-1 bg-emerald-950/80 border border-emerald-800/60 rounded-full">
                       {voucher.discount}
                     </span>
-                    <div className="text-right">
-                      <span className="text-[11px] text-slate-400 font-medium block">Prix normal :</span>
-                      <span className="text-xs font-bold text-red-400 line-through">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] text-slate-400 font-medium">Prix public :</span>
+                      <span className="text-xs font-black text-rose-400 line-through decoration-rose-500 decoration-2 px-2 py-0.5 bg-rose-950/50 border border-rose-900/60 rounded-lg">
                         {voucher.officialPrice}
                       </span>
                     </div>
