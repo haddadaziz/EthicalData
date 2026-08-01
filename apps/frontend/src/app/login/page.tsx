@@ -7,7 +7,7 @@ import { apiFetch } from '../../lib/api';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useToast } from '../../context/ToastContext';
-import { getAdmin2FAStatus, verifyTOTPCode, ADMIN_2FA_SECRET } from '@/lib/totp-utils';
+import { getAdmin2FAStatus, getUser2FAStatus, verifyTOTPCode, ADMIN_2FA_SECRET } from '@/lib/totp-utils';
 
 const TriangleLogo = ({ className = "w-5 h-5" }: { className?: string }) => (
     <svg className={`${className} text-red-600`} viewBox="0 0 100 100" fill="currentColor">
@@ -176,6 +176,7 @@ export default function LoginPage() {
     const [show2FAModal, setShow2FAModal] = useState(false);
     const [totpCode, setTotpCode] = useState('');
     const [verifying2FA, setVerifying2FA] = useState(false);
+    const [targetRedirect, setTargetRedirect] = useState<string>('/dashboard');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -198,6 +199,7 @@ export default function LoginPage() {
                 const isAdminUser = roles.includes('SUPER_ADMIN') || roles.includes('ADMIN');
 
                 if (isAdminUser) {
+                    setTargetRedirect('/admin');
                     const is2FAActive = getAdmin2FAStatus();
                     if (is2FAActive) {
                         // 2FA is enabled in settings -> Require TOTP verification
@@ -210,8 +212,16 @@ export default function LoginPage() {
                         router.push('/admin');
                     }
                 } else {
-                    showToast("Connecté avec succès", "success");
-                    router.push('/dashboard');
+                    setTargetRedirect('/dashboard');
+                    const isUser2FAActive = getUser2FAStatus();
+                    if (isUser2FAActive) {
+                        setShow2FAModal(true);
+                        setLoading(false);
+                        return;
+                    } else {
+                        showToast("Connecté avec succès", "success");
+                        router.push('/dashboard');
+                    }
                 }
             } catch {
                 router.push('/dashboard');
@@ -234,8 +244,8 @@ export default function LoginPage() {
                 return;
             }
             setShow2FAModal(false);
-            showToast("Double authentification (2FA) validée avec succès ! Accès administration accordé.", "success");
-            router.push('/admin');
+            showToast("Double authentification (2FA) validée avec succès !", "success");
+            router.push(targetRedirect);
         }, 500);
     };
 

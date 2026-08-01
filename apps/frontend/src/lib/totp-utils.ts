@@ -171,3 +171,14 @@ export function setAdmin2FAStatus(enabled: boolean): void {
   if (typeof window === 'undefined') return;
   localStorage.setItem('admin_2fa_enabled', enabled ? 'true' : 'false');
 }
+
+export function getUser2FAStatus(): boolean {
+  if (typeof window === 'undefined') return false;
+  const status = localStorage.getItem('user_2fa_enabled');
+  return status === 'true';
+}
+
+export function setUser2FAStatus(enabled: boolean): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem('user_2fa_enabled', enabled ? 'true' : 'false');
+}
