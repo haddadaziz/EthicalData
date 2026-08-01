@@ -4,20 +4,19 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowRight } from '@/components/icons';
 import { useLanguage } from '@/context/LanguageContext';
+import KineticGrid from '@/components/ui/kinetic-grid';
 
 export function CommunityCoachingBanner() {
   const { t } = useLanguage();
 
   return (
-    <section className="relative py-20 bg-[#020617] border-t border-slate-900 overflow-hidden">
-      {/* Visual Ambient Grid & Gradients */}
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-20 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px]" />
+    <section className="relative border-t border-slate-900">
+      <KineticGrid className="py-20 bg-[#020617]" globalColor="default">
+        {/* Soft Glow Overlays (gardés pour le punch cyan) */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/8 rounded-full blur-3xl pointer-events-none z-10" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-cyan-500/8 rounded-full blur-3xl pointer-events-none z-10" />
 
-      {/* Soft Glow Overlays */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10 text-left">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-20 text-left">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           
           {/* Contenu Texte Immersif */}
@@ -115,6 +114,7 @@ export function CommunityCoachingBanner() {
 
         </div>
       </div>
+      </KineticGrid>
     </section>
   );
 }
