@@ -20,13 +20,7 @@ export function AboutSection() {
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto px-6 text-center space-y-6">
-        <h2 className="text-3xl sm:text-4xl font-black text-white uppercase leading-tight tracking-tight">
-          ETHICAL DATA SECURITY
-        </h2>
-        <p className="text-slate-300 text-sm md:text-[15px] leading-relaxed font-medium max-w-4xl mx-auto">
-          Dynamisme, réactivité, et innovation font partie de nos principaux engagements vis à vis de nos clients. De même, toutes nos prestations et solutions sont conçues et réalisées par des experts reconnus dans leurs domaines. Chez ETHICAL DATA SECURITY, nous ferons toujours les efforts nécessaires pour dépasser vos attentes.
-        </p>
-        
+
         <div className="flex flex-wrap justify-center gap-12 sm:gap-20 md:gap-32 pt-8 pb-4">
           {[
             { end: 254, label: "Projets Réalisés" },
