@@ -139,11 +139,10 @@ export default function FormationsPublicPage() {
         
         {/* HERO EN-TÊTE */}
         <div className="space-y-4 max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-950/60 border border-blue-800/50 text-cyan-400 text-xs font-black uppercase tracking-wider">
-            <span>Catalogue de cours et formations</span>
-          </div>
-          <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight">
-            Formations & Cours d’Préparation IT
+          <h1 className="text-3xl md:text-5xl font-black tracking-tight">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-cyan-400">
+              Formations & Cours de Préparation IT
+            </span>
           </h1>
           <p className="text-slate-400 text-sm md:text-base leading-relaxed">
             Explorez nos programmes de formation complets conçus par des experts certifiés. Maîtrisez les concepts clés et réussissez vos certifications Cloud, Cybersécurité et ISO.
