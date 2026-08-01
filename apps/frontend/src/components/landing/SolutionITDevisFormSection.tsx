@@ -43,11 +43,6 @@ export function SolutionITDevisFormSection() {
 
         {/* Section Header */}
         <div className="text-center space-y-4 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-800/60 text-cyan-400 text-xs font-black uppercase tracking-widest">
-            <Shield className="w-3.5 h-3.5" />
-            <span>Demande de Devis Abonnements & Licences Cloud</span>
-          </div>
-
           <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight uppercase">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-cyan-400">
               Demande de Devis en Ligne
