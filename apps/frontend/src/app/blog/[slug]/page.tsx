@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { Navbar } from '@/components/landing/Navbar';
@@ -11,15 +11,63 @@ import { ArrowLeft, Clock, MessageSquare, ArrowRight, BookOpen, Share2, CheckCir
 export default function BlogArticleDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const slug = params?.slug as string;
+  const slug = (params?.slug as string) || '';
 
   const article = ARTICLES.find((a) => a.slug === slug) || ARTICLES[0];
+
+  // Dynamic SEO Configuration
+  useEffect(() => {
+    if (article) {
+      document.title = `${article.title} - Blog Ethical Data Security`;
+      
+      let metaDesc = document.querySelector('meta[name="description"]');
+      if (!metaDesc) {
+        metaDesc = document.createElement('meta');
+        metaDesc.setAttribute('name', 'description');
+        document.head.appendChild(metaDesc);
+      }
+      metaDesc.setAttribute('content', article.summary);
+    }
+  }, [article]);
+
+  // JSON-LD Structured Microdata for Google Rich Snippets
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: article.title,
+    description: article.summary,
+    image: [article.image],
+    datePublished: '2026-07-20T08:00:00+00:00',
+    dateModified: '2026-07-20T08:00:00+00:00',
+    author: {
+      '@type': 'Person',
+      name: article.author,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Ethical Data Security',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://ethicaldatasecurity.ma/logos/ethicaldata_white_logo.png',
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://ethicaldatasecurity.ma/blog/${article.slug}`,
+    },
+  };
 
   return (
     <main className="min-h-screen bg-[#020617] text-white relative overflow-hidden font-sans">
       <Navbar />
 
-      <div className="pt-28 pb-20 relative z-10 max-w-4xl mx-auto px-4 md:px-6 text-left space-y-10">
+      {/* JSON-LD Google Rich Snippets Injection */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
+      <article className="pt-28 pb-20 relative z-10 max-w-4xl mx-auto px-4 md:px-6 text-left space-y-10">
         
         {/* BOUTON RETOUR */}
         <button
@@ -31,7 +79,7 @@ export default function BlogArticleDetailPage() {
         </button>
 
         {/* EN-TÊTE ARTICLE */}
-        <div className="space-y-4">
+        <header className="space-y-4">
           <div className="flex items-center gap-3">
             <span className={`px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded-full border ${article.categoryClass}`}>
               {article.category}
@@ -41,7 +89,7 @@ export default function BlogArticleDetailPage() {
               {article.readTime} de lecture
             </span>
             <span className="text-xs text-slate-500">•</span>
-            <span className="text-xs text-slate-400">{article.date}</span>
+            <time className="text-xs text-slate-400">{article.date}</time>
           </div>
 
           <h1 className="text-2xl md:text-4xl font-black text-white tracking-tight leading-tight">
@@ -51,17 +99,23 @@ export default function BlogArticleDetailPage() {
           <p className="text-xs text-slate-400 font-semibold">
             Par <span className="text-white">{article.author}</span>
           </p>
-        </div>
+        </header>
 
-        {/* IMAGE VEDETTE */}
+        {/* IMAGE VEDETTE OPTIMISÉE */}
         <div className="relative h-64 md:h-96 w-full rounded-3xl overflow-hidden border border-slate-800 shadow-2xl">
-          <img src={article.image} alt={article.title} className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent opacity-60" />
+          <img
+            src={article.image}
+            alt={article.title}
+            className="w-full h-full object-cover"
+            loading="eager"
+            decoding="async"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent opacity-60 pointer-events-none" />
         </div>
 
         {/* CORPS DE L'ARTICLE */}
-        <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 md:p-10 space-y-6 text-slate-300 text-sm leading-relaxed">
-          <p className="font-semibold text-base text-white">
+        <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-6 md:p-10 space-y-6 text-slate-300 text-sm leading-relaxed shadow-xl">
+          <p className="font-semibold text-base text-white border-l-4 border-cyan-500 pl-4 py-1">
             {article.summary}
           </p>
 
@@ -71,7 +125,7 @@ export default function BlogArticleDetailPage() {
         </div>
 
         {/* PASSERELLE VERS LA COMMUNAUTÉ (CTA FORUM) */}
-        <div className="bg-gradient-to-br from-[#080d1a] via-[#0b1329] to-[#020617] border border-blue-900/50 rounded-3xl p-8 space-y-6 shadow-2xl text-left">
+        <section className="bg-gradient-to-br from-[#080d1a] via-[#0b1329] to-[#020617] border border-blue-900/50 rounded-3xl p-8 space-y-6 shadow-2xl text-left">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-cyan-400">
               <MessageSquare className="w-5 h-5" />
@@ -98,9 +152,9 @@ export default function BlogArticleDetailPage() {
               Réserver un coaching personnalisé
             </Link>
           </div>
-        </div>
+        </section>
 
-      </div>
+      </article>
 
       <Footer />
     </main>
