@@ -20,7 +20,7 @@ const CELL_SIZE = 55;
 const INFLUENCE_RADIUS = 260;
 const MAX_WARP = 24;
 const DOT_SPACING = 28;
-const LERP_SPEED = 0.08;
+const LERP_SPEED = 0.12;
 
 const LINE_BASE = { r: 255, g: 255, b: 255, a: 0.1 };
 const NODE_BASE_RADIUS = 1.8;
@@ -240,8 +240,14 @@ export default function KineticGrid({
     (now: number) => {
       const m = mouseRef.current;
       const t = targetMouseRef.current;
-      m.x = lerpN(m.x, t.x, LERP_SPEED);
-      m.y = lerpN(m.y, t.y, LERP_SPEED);
+      // Snap instantly if mouse hasn't been detected yet (avoids lerp from -9999)
+      if (m.x === -9999) {
+        m.x = t.x;
+        m.y = t.y;
+      } else {
+        m.x = lerpN(m.x, t.x, LERP_SPEED);
+        m.y = lerpN(m.y, t.y, LERP_SPEED);
+      }
       draw(now);
       rafRef.current = requestAnimationFrame(animate);
     },
@@ -268,10 +274,13 @@ export default function KineticGrid({
     // Mouse relative to the section bounding box
     const onMouseMove = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
-      targetMouseRef.current = {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      };
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      targetMouseRef.current = { x, y };
+      // Snap on first detection — no lerp delay from -9999
+      if (mouseRef.current.x === -9999) {
+        mouseRef.current = { x, y };
+      }
     };
 
     const onClick = (e: MouseEvent) => {
