@@ -14,8 +14,8 @@ const partnerLogos = [
 
 export function PartnersSection() {
   return (
-    <section className="relative z-10 w-full border-t border-slate-200/60 py-16 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 mb-10 text-left">
+    <section className="relative z-10 w-full border-t border-slate-200/60 py-8 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 mb-4 text-left">
         <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">Nos Partenaires Certifications</h3>
       </div>
       <div className="relative w-full overflow-hidden">
