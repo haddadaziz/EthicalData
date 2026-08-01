@@ -46,10 +46,10 @@ export const CertificationCard = ({
             </div>
           )}
 
-          {/* Bouton Explorer (Top Right - à l'opposé du Code Examen) */}
+          {/* Bouton Voir (Top Right - à l'opposé du Code Examen) */}
           <div className="absolute top-5 right-5 z-30">
             <div className="px-3.5 py-1.5 bg-blue-600/20 border border-blue-600/40 rounded-md flex items-center justify-center text-cyan-300 group-hover/glare:bg-blue-600 group-hover/glare:text-white group-hover/glare:border-blue-600 transition-all duration-300 text-[10px] font-black uppercase tracking-widest shadow-lg backdrop-blur-sm">
-              Explorer
+              Voir
             </div>
           </div>
 
