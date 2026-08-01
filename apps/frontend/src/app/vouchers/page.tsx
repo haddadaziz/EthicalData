@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Navbar } from '@/components/landing/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { Award, ArrowRight, Tag } from '@/components/icons';
+import { VoucherCmiCheckoutModal } from '@/components/vouchers/VoucherCmiCheckoutModal';
 
 interface VoucherPromo {
   id: string;
@@ -92,6 +93,7 @@ function formatDate(iso?: string | null) {
 
 export default function VouchersPublicPage() {
   const [vouchers, setVouchers] = useState<VoucherPromo[] | null>(null);
+  const [selectedVoucherForCmi, setSelectedVoucherForCmi] = useState<any | null>(null);
 
   useEffect(() => {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
@@ -242,20 +244,29 @@ export default function VouchersPublicPage() {
                   </div>
                 </div>
 
-                {/* Bouton Commander */}
-                <Link
-                  href="/contact"
+                {/* Bouton Commander via CMI */}
+                <button
+                  type="button"
+                  onClick={() => setSelectedVoucherForCmi(voucher)}
                   className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-cyan-950 flex items-center justify-center gap-2 cursor-pointer mt-4"
                 >
                   <span>Commander ce voucher</span>
                   <ArrowRight className="w-4 h-4" />
-                </Link>
+                </button>
               </div>
             ))
           )}
         </div>
 
       </div>
+
+      {/* MODALE DE PAIEMENT CMI & LIVRAISON VOUCHER */}
+      {selectedVoucherForCmi && (
+        <VoucherCmiCheckoutModal
+          voucher={selectedVoucherForCmi}
+          onClose={() => setSelectedVoucherForCmi(null)}
+        />
+      )}
 
       <Footer />
     </main>

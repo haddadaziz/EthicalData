@@ -129,6 +129,7 @@ export const Server = makeIcon(faDatabase);
 export const ShieldAlert = makeIcon(faShield);
 export const ShieldCheck = makeIcon(faShieldHalved);
 export const ShoppingBag = makeIcon(faShoppingBag);
+export const CreditCard = makeIcon(faShoppingBag);
 export const Sparkles = makeIcon(faWandMagicSparkles);
 export const Star = makeIcon(faStar);
 export const Target = makeIcon(faBullseye);
