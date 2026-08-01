@@ -249,8 +249,10 @@ export default function SolutionITPage() {
         <div className="max-w-7xl mx-auto px-4 md:px-6 space-y-12">
           
           <div className="text-center space-y-4 max-w-3xl mx-auto">
-            <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-              Une gamme de matériels informatiques rigoureusement sélectionnée
+            <h2 className="text-3xl sm:text-5xl font-black tracking-tight">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-cyan-400">
+                Une gamme de matériels informatiques rigoureusement sélectionnée
+              </span>
             </h2>
             <p className="text-slate-300 text-xs sm:text-sm md:text-base leading-relaxed">
               Le choix du matériel informatique se fait en fonction de vos besoins et de vos missions. Nous vous garantissons des solutions clés en main et sur-mesure en choisissant les constructeurs répertoriés au meilleur prix.
