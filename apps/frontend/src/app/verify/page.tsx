@@ -94,33 +94,6 @@ export default function VerifySearchPage() {
           </div>
         </div>
 
-        {/* GARANTIES SÉCURITÉ */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto text-left text-xs">
-          <div className="p-4 bg-[#080d1a] border border-slate-800/80 rounded-2xl space-y-1">
-            <div className="flex items-center gap-2 text-emerald-400 font-bold">
-              <CheckCircle className="w-4 h-4" />
-              <span>Horodatage Infalsifiable</span>
-            </div>
-            <p className="text-[11px] text-slate-400">Chaque document est scellé avec un identifiant cryptographique unique.</p>
-          </div>
-
-          <div className="p-4 bg-[#080d1a] border border-slate-800/80 rounded-2xl space-y-1">
-            <div className="flex items-center gap-2 text-cyan-400 font-bold">
-              <QrCode className="w-4 h-4" />
-              <span>Scan QR Code Direct</span>
-            </div>
-            <p className="text-[11px] text-slate-400">Accessible instantanément via l&apos;appareil photo d&apos;un smartphone.</p>
-          </div>
-
-          <div className="p-4 bg-[#080d1a] border border-slate-800/80 rounded-2xl space-y-1">
-            <div className="flex items-center gap-2 text-blue-400 font-bold">
-              <Lock className="w-4 h-4" />
-              <span>Conforme CNDP Loi 09-08</span>
-            </div>
-            <p className="text-[11px] text-slate-400">Seules les métadonnées de certification publiques sont exposées.</p>
-          </div>
-        </div>
-
       </div>
 
       <Footer />
