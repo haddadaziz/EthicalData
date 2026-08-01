@@ -15,8 +15,10 @@ export default function ExamensBlancsPublicPage() {
         
         {/* HERO SECTION */}
         <div className="text-center max-w-3xl mx-auto space-y-6">
-          <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
-            Examens Blancs & Entraînement Pratique IA
+          <h1 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-cyan-400">
+              Examens Blancs & Entraînement Pratique IA
+            </span>
           </h1>
 
           <p className="text-slate-300 text-sm md:text-base leading-relaxed">
