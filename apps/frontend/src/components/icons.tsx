@@ -25,7 +25,7 @@ import {
   faUser, faUsers, faVideo, faWandMagicSparkles,
   faXmark, faTurnDown, faAt,
   faCamera, faListUl, faShield, faShieldHalved,
-  faBuilding, faLocationDot, faShoppingBag,
+  faBuilding, faLocationDot, faShoppingBag, faQrcode,
 } from '@fortawesome/free-solid-svg-icons';
 import type { FontAwesomeIconProps } from '@fortawesome/react-fontawesome';
 
@@ -144,3 +144,4 @@ export const X = makeIcon(faXmark);
 export const Zap = makeIcon(faBolt);
 export const Tag = makeIcon(faBookmark);
 export const Share2 = makeIcon(faArrowUpRightFromSquare);
+export const QrCode = makeIcon(faQrcode);
