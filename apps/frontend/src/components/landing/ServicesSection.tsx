@@ -65,10 +65,8 @@ export function ServicesSection() {
         {/* Cartes Visuelles Sublimées avec Fond Image HD & Texte au Premier Plan */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {priorities.map((item, i) => (
-            <div
-              key={i}
-              className={`group relative bg-[#080d1a] border border-slate-800 ${item.borderColor} rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1.5 shadow-xl flex flex-col justify-end min-h-[210px] text-left transform-gpu cursor-pointer`}
-            >
+            <AnimatedSection key={i} delay={i * 0.1} variant="up">
+              <div className={`group relative bg-[#080d1a] border border-slate-800 ${item.borderColor} rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1.5 shadow-xl flex flex-col justify-end min-h-[210px] text-left transform-gpu cursor-pointer`}>
               {/* Image de fond thématique unique avec Zoom au Survol */}
               <div className="absolute inset-0 z-0 overflow-hidden">
                 <img
@@ -98,7 +96,8 @@ export function ServicesSection() {
                   </div>
                 </div>
               </div>
-            </div>
+              </div>
+            </AnimatedSection>
           ))}
         </div>
       </div>

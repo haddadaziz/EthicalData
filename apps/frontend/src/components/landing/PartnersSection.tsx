@@ -1,4 +1,5 @@
 import React from 'react';
+import { AnimatedSection } from '@/components/ui/AnimatedSection';
 
 const partnerLogos = [
   { name: "Microsoft", path: "/logos/microsoft.png" },
@@ -15,9 +16,10 @@ const partnerLogos = [
 export function PartnersSection() {
   return (
     <section className="relative z-10 w-full border-t border-slate-200/60 py-8 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 mb-4 text-left">
+      <AnimatedSection variant="fade" className="max-w-7xl mx-auto px-6 mb-4 text-left">
         <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">Nos Partenaires Certifications</h3>
-      </div>
+      </AnimatedSection>
+      <AnimatedSection variant="up" delay={0.1}>
       <div className="relative w-full overflow-hidden">
         <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#020617] to-transparent z-10 pointer-events-none" />
         <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#020617] to-transparent z-10 pointer-events-none" />
@@ -43,7 +45,7 @@ export function PartnersSection() {
             </div>
           ))}
         </div>
-      </div>
+      </AnimatedSection>
     </section>
   );
 }

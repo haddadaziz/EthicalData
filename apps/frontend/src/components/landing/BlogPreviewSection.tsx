@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Clock } from '@/components/icons';
 import { GoogleGeminiEffect } from '@/components/ui/google-gemini-effect';
+import { AnimatedSection } from '@/components/ui/AnimatedSection';
 
 const BLOG_POSTS = [
   {
@@ -73,7 +74,7 @@ export function BlogPreviewSection() {
       <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10 space-y-8">
         
         {/* Sous-Titre "Articles populaires" + Bouton "Voir tous les articles" */}
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-t border-slate-800/60 pt-6">
+        <AnimatedSection variant="up" delay={0.05} className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-t border-slate-800/60 pt-6">
           <h3 className="text-sm sm:text-lg font-black text-white uppercase tracking-wider text-left">
             Articles populaires
           </h3>
@@ -84,56 +85,57 @@ export function BlogPreviewSection() {
             <span>Voir tous les articles</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
-        </div>
+        </AnimatedSection>
 
         {/* Grille des 3 articles */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-          {BLOG_POSTS.map((post) => (
-            <Link
-              key={post.slug}
-              href={`/blog/${post.slug}`}
-              className="group bg-[#080d1a] border border-slate-800 hover:border-slate-700 rounded-3xl overflow-hidden transition-all duration-300 flex flex-col shadow-xl hover:shadow-cyan-950/20 transform-gpu"
-            >
-              {/* Image d'illustration */}
-              <div className="relative h-48 w-full overflow-hidden bg-slate-900">
-                <img
-                  src={post.image}
-                  alt={post.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#080d1a] via-transparent to-transparent opacity-80" />
-                <span className={`absolute top-4 left-4 px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded-full border ${post.categoryClass}`}>
-                  {post.category}
-                </span>
-              </div>
+          {BLOG_POSTS.map((post, i) => (
+            <AnimatedSection key={post.slug} delay={i * 0.12} variant="up">
+              <Link
+                href={`/blog/${post.slug}`}
+                className="group bg-[#080d1a] border border-slate-800 hover:border-slate-700 rounded-3xl overflow-hidden transition-all duration-300 flex flex-col shadow-xl hover:shadow-cyan-950/20 transform-gpu"
+              >
+                {/* Image d'illustration */}
+                <div className="relative h-48 w-full overflow-hidden bg-slate-900">
+                  <img
+                    src={post.image}
+                    alt={post.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#080d1a] via-transparent to-transparent opacity-80" />
+                  <span className={`absolute top-4 left-4 px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded-full border ${post.categoryClass}`}>
+                    {post.category}
+                  </span>
+                </div>
 
-              {/* Contenu */}
-              <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3 text-[11px] text-slate-400 font-medium">
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-cyan-400" />
-                      {post.readTime} de lecture
-                    </span>
-                    <span>•</span>
-                    <span>{post.date}</span>
+                {/* Contenu */}
+                <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3 text-[11px] text-slate-400 font-medium">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-cyan-400" />
+                        {post.readTime} de lecture
+                      </span>
+                      <span>•</span>
+                      <span>{post.date}</span>
+                    </div>
+
+                    <h3 className="text-base font-bold text-white group-hover:text-cyan-400 transition-colors line-clamp-2 leading-snug">
+                      {post.title}
+                    </h3>
+
+                    <p className="text-xs text-slate-400 line-clamp-3 leading-relaxed">
+                      {post.summary}
+                    </p>
                   </div>
 
-                  <h3 className="text-base font-bold text-white group-hover:text-cyan-400 transition-colors line-clamp-2 leading-snug">
-                    {post.title}
-                  </h3>
-
-                  <p className="text-xs text-slate-400 line-clamp-3 leading-relaxed">
-                    {post.summary}
-                  </p>
+                  <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-cyan-400 group-hover:text-white transition-colors">
+                    <span>Lire l&apos;article complet</span>
+                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </div>
-
-                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-cyan-400 group-hover:text-white transition-colors">
-                  <span>Lire l’article complet</span>
-                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            </Link>
+              </Link>
+            </AnimatedSection>
           ))}
         </div>
 
