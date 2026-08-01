@@ -249,9 +249,6 @@ export default function SolutionITPage() {
         <div className="max-w-7xl mx-auto px-4 md:px-6 space-y-12">
           
           <div className="text-center space-y-4 max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-800/60 text-cyan-400 text-xs font-black uppercase tracking-wider">
-              <span>Catalogue & Équipements Professionnels</span>
-            </div>
             <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
               Une gamme de matériels informatiques rigoureusement sélectionnée
             </h2>
