@@ -126,9 +126,6 @@ export default function AdminReportingPage() {
               <BarChart2 className="w-6 h-6 text-cyan-400" />
               Reporting & Analytics Administrateur
             </h2>
-            <span className="px-3 py-1 bg-cyan-950/80 border border-cyan-800/60 text-cyan-400 text-xs font-bold rounded-full">
-              Données En Direct
-            </span>
           </div>
           <p className="text-xs text-slate-400 mt-1 font-medium">
             Supervision du Chiffre d'Affaires, Inscriptions, Taux de réussite aux examens et Sessions les plus demandées.
