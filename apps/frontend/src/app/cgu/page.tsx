@@ -79,9 +79,6 @@ En cas de résiliation, vos données seront conservées conformément à notre p
     },
 ];
 
-export const metadata = {
-    title: "Conditions Générales d'Utilisation - Ethical Data Security"
-};
 
 export default function CGUPage() {
     return (

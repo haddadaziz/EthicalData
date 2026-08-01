@@ -74,9 +74,6 @@ Vous pouvez paramétrer vos préférences de cookies à tout moment depuis les p
     },
 ];
 
-export const metadata = {
-    title: "Mentions Légales - Ethical Data Security"
-};
 
 export default function LegalPage() {
     return (
