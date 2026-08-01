@@ -60,10 +60,6 @@ export default function ServicesProfessionnelsPage() {
         </div>
 
         <div className="relative z-10 max-w-5xl mx-auto px-4 md:px-6 space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-800/60 text-cyan-400 text-xs font-black uppercase tracking-widest">
-            <span>ETHICAL DATA SECURITY — l&apos;essentiel en un clic !</span>
-          </div>
-
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight uppercase">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-cyan-400">
               Services Professionnels
@@ -73,23 +69,6 @@ export default function ServicesProfessionnelsPage() {
           <p className="text-xs sm:text-sm md:text-base text-slate-300 max-w-2xl mx-auto font-medium leading-relaxed">
             Conseil, audit, architecture et assistance à maîtrise d&apos;ouvrage assurés par nos consultants et ingénieurs séniors certifiés.
           </p>
-        </div>
-      </section>
-
-      {/* PILIERS BADGES BANNER */}
-      <section className="py-12 relative z-10 bg-[#030712] border-t border-slate-900 text-center">
-        <div className="max-w-4xl mx-auto px-4 md:px-6">
-          <div className="flex flex-wrap justify-center gap-3">
-            {[
-              "Notre mission",
-              "Répondre aux défis technologiques",
-              "Accompagnement sur mesure"
-            ].map((badge, idx) => (
-              <span key={idx} className="px-5 py-2.5 rounded-xl bg-[#080d1a] border border-slate-800 text-xs font-extrabold uppercase tracking-wider text-cyan-400">
-                • {badge}
-              </span>
-            ))}
-          </div>
         </div>
       </section>
 
