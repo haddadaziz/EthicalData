@@ -77,7 +77,7 @@ export function CoursesPreviewSection() {
             {FEATURED_COURSES.map((course) => (
               <div
                 key={course.id}
-                className="bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-cyan-500/40 rounded-3xl overflow-hidden flex flex-col justify-between transition-all duration-300 ease-out shadow-xl hover:shadow-cyan-950/20 group transform-gpu"
+                className="bg-[#080d1a] border border-slate-800 hover:border-cyan-500/40 rounded-3xl overflow-hidden flex flex-col justify-between transition-all duration-300 ease-out shadow-xl hover:shadow-cyan-950/20 group transform-gpu"
               >
                 {/* Banner Image */}
                 <div className="relative h-44 w-full overflow-hidden bg-slate-900">

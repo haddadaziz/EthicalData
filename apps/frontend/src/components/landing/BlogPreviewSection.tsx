@@ -92,7 +92,7 @@ export function BlogPreviewSection() {
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
-              className="group bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-slate-700 rounded-3xl overflow-hidden transition-all duration-300 flex flex-col shadow-xl hover:shadow-cyan-950/20"
+              className="group bg-[#080d1a] border border-slate-800 hover:border-slate-700 rounded-3xl overflow-hidden transition-all duration-300 flex flex-col shadow-xl hover:shadow-cyan-950/20 transform-gpu"
             >
               {/* Image d'illustration */}
               <div className="relative h-48 w-full overflow-hidden bg-slate-900">

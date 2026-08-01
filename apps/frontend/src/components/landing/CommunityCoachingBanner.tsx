@@ -38,7 +38,7 @@ export function CommunityCoachingBanner() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
               <Link
                 href="/examens-blancs"
-                className="group flex items-center justify-between p-4 bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-cyan-500/60 rounded-2xl transition-all duration-300 shadow-md"
+                className="group flex items-center justify-between p-4 bg-[#080d1a] border border-slate-800 hover:border-cyan-500/60 rounded-2xl transition-all duration-300 shadow-md transform-gpu"
               >
                 <div>
                   <h4 className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors">{t('card_exam_ia')}</h4>
@@ -51,7 +51,7 @@ export function CommunityCoachingBanner() {
 
               <Link
                 href="/vouchers"
-                className="group flex items-center justify-between p-4 bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-cyan-500/60 rounded-2xl transition-all duration-300 shadow-md"
+                className="group flex items-center justify-between p-4 bg-[#080d1a] border border-slate-800 hover:border-cyan-500/60 rounded-2xl transition-all duration-300 shadow-md transform-gpu"
               >
                 <div>
                   <h4 className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors">{t('card_vouchers')}</h4>
@@ -64,7 +64,7 @@ export function CommunityCoachingBanner() {
 
               <Link
                 href="/coaching"
-                className="group flex items-center justify-between p-4 bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 hover:border-cyan-500/60 rounded-2xl transition-all duration-300 shadow-md"
+                className="group flex items-center justify-between p-4 bg-[#080d1a] border border-slate-800 hover:border-cyan-500/60 rounded-2xl transition-all duration-300 shadow-md transform-gpu"
               >
                 <div>
                   <h4 className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors">{t('card_coaching')}</h4>
@@ -95,7 +95,7 @@ export function CommunityCoachingBanner() {
           </div>
 
           {/* Carte Visuelle / Témoignage rapide */}
-          <div className="lg:col-span-5 bg-[#080d1a]/90 backdrop-blur-md border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl">
+          <div className="lg:col-span-5 bg-[#080d1a] border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl">
             <div className="flex items-center gap-3">
               <img
                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"

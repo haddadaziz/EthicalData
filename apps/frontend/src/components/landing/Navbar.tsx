@@ -93,8 +93,11 @@ export function Navbar() {
           const isScrolled = currentY > 60;
           const isNavVisible = currentY <= 60 || currentY < lastScrollY.current;
 
-          setScrolled(isScrolled);
-          setNavVisible(isNavVisible);
+          setScrolled(prev => (prev !== isScrolled ? isScrolled : prev));
+          setNavVisible(prev => {
+            const nextVisible = currentY <= 60 || currentY < lastScrollY.current;
+            return prev !== nextVisible ? nextVisible : prev;
+          });
 
           lastScrollY.current = currentY;
           ticking = false;
