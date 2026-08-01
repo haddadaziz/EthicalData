@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { Save, RefreshCw, Send, Bell, Users } from '@/components/icons';
+import { Save, RefreshCw, Send, Bell, Users, GraduationCap, ChalkboardTeacher } from '@/components/icons';
 import { motion } from 'framer-motion';
 import { getAdmin2FAStatus, setAdmin2FAStatus, verifyTOTPCode, ADMIN_2FA_SECRET } from '@/lib/totp-utils';
 
@@ -143,24 +143,23 @@ export default function AdminSettingsPage() {
                             <label className="text-xs font-bold text-slate-300">Destinataires</label>
                             <div className="flex flex-wrap gap-2">
                                 {[
-                                    { val: 'APPRENANT', label: 'Apprenants', img: '/images/apprenant.png' },
-                                    { val: 'FORMATEUR', label: 'Formateurs', img: '/images/formateur.png' },
-                                    { val: 'TOUS', label: 'Tout le monde', icon: true },
-                                ].map((opt: any) => (
-                                    <button key={opt.val} type="button" onClick={() => setNotifTarget(opt.val as any)}
-                                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-                                            notifTarget === opt.val
-                                                ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
-                                                : 'bg-[#020617] text-slate-400 border-slate-800 hover:border-slate-700'
-                                        }`}>
-                                        {opt.img ? (
-                                            <img src={opt.img} alt="" className="w-4 h-4 object-contain" />
-                                        ) : (
-                                            <Users className="w-4 h-4" />
-                                        )}
-                                        <span>{opt.label}</span>
-                                    </button>
-                                ))}
+                                    { val: 'APPRENANT', label: 'Apprenants', Icon: GraduationCap },
+                                    { val: 'FORMATEUR', label: 'Formateurs', Icon: ChalkboardTeacher },
+                                    { val: 'TOUS', label: 'Tout le monde', Icon: Users },
+                                ].map((opt: any) => {
+                                    const TargetIcon = opt.Icon;
+                                    return (
+                                        <button key={opt.val} type="button" onClick={() => setNotifTarget(opt.val as any)}
+                                            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                                                notifTarget === opt.val
+                                                    ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                                                    : 'bg-[#020617] text-slate-400 border-slate-800 hover:border-slate-700 hover:text-slate-200'
+                                            }`}>
+                                            <TargetIcon className={`w-4 h-4 ${notifTarget === opt.val ? 'text-white' : 'text-slate-400'}`} />
+                                            <span>{opt.label}</span>
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>
