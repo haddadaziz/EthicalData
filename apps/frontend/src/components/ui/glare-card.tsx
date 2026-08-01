@@ -88,7 +88,7 @@ export const GlareCard = ({
       onPointerLeave={handlePointerLeave}
     >
       <div
-        className="w-full h-full relative rounded-2xl overflow-hidden transition-transform duration-100 ease-out will-change-transform"
+        className="w-full h-full relative rounded-2xl overflow-visible transition-transform duration-100 ease-out will-change-transform"
         style={{
           transform: `rotateX(${styleState.rotateX}deg) rotateY(${styleState.rotateY}deg)`,
           transformStyle: "preserve-3d",
