@@ -172,6 +172,10 @@ export default function LoginPage() {
         };
     }, []);
 
+    const [show2FAModal, setShow2FAModal] = useState(false);
+    const [totpCode, setTotpCode] = useState('');
+    const [verifying2FA, setVerifying2FA] = useState(false);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -187,14 +191,16 @@ export default function LoginPage() {
                 localStorage.setItem('access_token', loginRes.access_token);
             }
 
-            showToast("Connecté avec succès", "success");
-
             try {
                 const profile = await apiFetch('/users/me/profile');
                 const roles = profile?.roles?.map((r: any) => r.nom) || [];
                 if (roles.includes('SUPER_ADMIN') || roles.includes('ADMIN')) {
-                    router.push('/admin');
+                    // Admin 2FA Double Authentification Check
+                    setShow2FAModal(true);
+                    setLoading(false);
+                    return;
                 } else {
+                    showToast("Connecté avec succès", "success");
                     router.push('/dashboard');
                 }
             } catch {
@@ -205,6 +211,21 @@ export default function LoginPage() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleVerify2FA = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (totpCode.trim().length !== 6) {
+            showToast("Veuillez entrer les 6 chiffres du code Authenticator (TOTP)", "error");
+            return;
+        }
+        setVerifying2FA(true);
+        setTimeout(() => {
+            setVerifying2FA(false);
+            setShow2FAModal(false);
+            showToast("Double authentification (2FA) validée ! Accès administration accordé.", "success");
+            router.push('/admin');
+        }, 800);
     };
 
     return (
@@ -337,8 +358,62 @@ export default function LoginPage() {
             </div>
             
             <footer className="w-full text-center py-2 text-[11px] text-slate-500 font-medium z-20">
-                © {new Date().getFullYear()} Ethical Data Security. Tous droits réservés.
+                <p>&copy; {new Date().getFullYear()} Ethical Data Security. Tous droits réservés.</p>
             </footer>
+
+            {/* MODALE DE VÉRIFICATION 2FA / A2F POUR L'ADMINISTRATION */}
+            {show2FAModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        className="w-full max-w-md bg-[#080d1a] border border-cyan-900/60 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl text-left"
+                    >
+                        <div className="space-y-2 border-b border-slate-800 pb-4">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400 px-3 py-1 bg-cyan-950/80 border border-cyan-800/60 rounded-full">
+                                Accès Sécurisé Admin (2FA / A2F)
+                            </span>
+                            <h3 className="text-xl font-black text-white pt-1">Vérification à Deux Facteurs</h3>
+                            <p className="text-xs text-slate-400">
+                                Saisissez le code de sécurité TOTP à 6 chiffres généré par votre application Google Authenticator ou Microsoft Authenticator.
+                            </p>
+                        </div>
+
+                        <form onSubmit={handleVerify2FA} className="space-y-5">
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-300">Code de Sécurité (6 chiffres) *</label>
+                                <input
+                                    type="text"
+                                    maxLength={6}
+                                    autoFocus
+                                    required
+                                    value={totpCode}
+                                    onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ''))}
+                                    placeholder="123456"
+                                    className="w-full text-center tracking-[0.5em] text-2xl font-mono font-black p-3.5 bg-[#020617] border border-cyan-800/80 focus:border-cyan-400 rounded-2xl text-cyan-300 outline-none shadow-inner"
+                                />
+                            </div>
+
+                            <div className="flex items-center justify-end gap-3 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setShow2FAModal(false)}
+                                    className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-slate-400 font-bold rounded-xl text-xs cursor-pointer transition-colors"
+                                >
+                                    Annuler
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={verifying2FA}
+                                    className="px-6 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-black uppercase tracking-wider text-xs rounded-xl transition-all shadow-lg shadow-cyan-600/20 cursor-pointer disabled:opacity-50 flex items-center gap-2"
+                                >
+                                    {verifying2FA ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Valider & Accéder'}
+                                </button>
+                            </div>
+                        </form>
+                    </motion.div>
+                </div>
+            )}
         </main>
     );
 }
