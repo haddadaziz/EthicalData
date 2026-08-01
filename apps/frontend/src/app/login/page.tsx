@@ -400,7 +400,7 @@ export default function LoginPage() {
                                     required
                                     value={totpCode}
                                     onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ''))}
-                                    placeholder="123456"
+                                    placeholder="──────"
                                     className="w-full text-center tracking-[0.5em] text-2xl font-mono font-black p-3.5 bg-[#020617] border border-cyan-800/80 focus:border-cyan-400 rounded-2xl text-cyan-300 outline-none shadow-inner"
                                 />
                             </div>

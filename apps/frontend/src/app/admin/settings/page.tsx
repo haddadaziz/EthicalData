@@ -360,7 +360,7 @@ function TwoFactorAuthSection() {
                                     required
                                     value={totpCode}
                                     onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ''))}
-                                    placeholder="123456"
+                                    placeholder="──────"
                                     className="w-full p-3.5 bg-[#020617] border border-slate-800 focus:border-cyan-500 text-white text-center font-mono font-bold text-lg tracking-[0.3em] rounded-2xl outline-none"
                                 />
                             </div>
