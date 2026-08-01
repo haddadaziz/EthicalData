@@ -119,7 +119,7 @@ export function CertificationsSection({ realCertifications, courses, cleanTitle 
           )}
 
           {isDesktop ? (
-            <div className="overflow-visible rounded-xl">
+            <div className="overflow-hidden rounded-xl py-6 -my-6">
               <div
                 className="flex transition-transform duration-300 ease-in-out"
                 style={{ transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)` }}
