@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navbar } from '@/components/landing/Navbar';
 import { Footer } from '@/components/layout/Footer';
+import { SolutionITDevisFormSection } from '@/components/landing/SolutionITDevisFormSection';
 import { Cpu, ArrowRight, CheckCircle, Phone, Clock, Award, ChevronDown, MessageSquare } from '@/components/icons';
 
 const STEPS = [
@@ -387,28 +388,8 @@ export default function SolutionITPage() {
         </div>
       </section>
 
-      {/* CTA BOTTOM CONTACT BANNER */}
-      <section className="py-16 relative z-10 bg-[#020617] border-t border-slate-900 text-center">
-        <div className="max-w-4xl mx-auto px-4 md:px-6">
-          <div className="bg-[#080d1a] border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 shadow-2xl">
-            <h2 className="text-2xl md:text-4xl font-black text-white">
-              Besoin d&apos;équipements IT au meilleur rapport qualité/prix ?
-            </h2>
-            <p className="text-slate-300 text-xs md:text-sm max-w-xl mx-auto leading-relaxed">
-              Obtenez un devis personnalisé pour vos renouvellements de parc informatique et vos projets matériels.
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-              <Link
-                href="/contact"
-                className="px-8 py-3.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-blue-600/20 flex items-center gap-2 cursor-pointer hover:scale-105 active:scale-95"
-              >
-                <Phone className="w-4 h-4" />
-                <span>Demander un devis matériel</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* SECTION 4 : FORMULAIRE DÉDIÉ DEMANDE DE DEVIS EN LIGNE (ABONNEMENTS / LICENCES) */}
+      <SolutionITDevisFormSection />
 
       <Footer />
     </main>
