@@ -7,6 +7,7 @@ import { apiFetch } from '../../lib/api';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useToast } from '../../context/ToastContext';
+import { getAdmin2FAStatus, verifyTOTPCode, ADMIN_2FA_SECRET } from '@/lib/totp-utils';
 
 const TriangleLogo = ({ className = "w-5 h-5" }: { className?: string }) => (
     <svg className={`${className} text-red-600`} viewBox="0 0 100 100" fill="currentColor">
@@ -194,11 +195,20 @@ export default function LoginPage() {
             try {
                 const profile = await apiFetch('/users/me/profile');
                 const roles = profile?.roles?.map((r: any) => r.nom) || [];
-                if (roles.includes('SUPER_ADMIN') || roles.includes('ADMIN')) {
-                    // Admin 2FA Double Authentification Check
-                    setShow2FAModal(true);
-                    setLoading(false);
-                    return;
+                const isAdminUser = roles.includes('SUPER_ADMIN') || roles.includes('ADMIN');
+
+                if (isAdminUser) {
+                    const is2FAActive = getAdmin2FAStatus();
+                    if (is2FAActive) {
+                        // 2FA is enabled in settings -> Require TOTP verification
+                        setShow2FAModal(true);
+                        setLoading(false);
+                        return;
+                    } else {
+                        // 2FA disabled -> direct admin login
+                        showToast("Connecté avec succès (Espace Administration)", "success");
+                        router.push('/admin');
+                    }
                 } else {
                     showToast("Connecté avec succès", "success");
                     router.push('/dashboard');
@@ -215,17 +225,18 @@ export default function LoginPage() {
 
     const handleVerify2FA = (e: React.FormEvent) => {
         e.preventDefault();
-        if (totpCode.trim().length !== 6) {
-            showToast("Veuillez entrer les 6 chiffres du code Authenticator (TOTP)", "error");
-            return;
-        }
         setVerifying2FA(true);
         setTimeout(() => {
+            const isValid = verifyTOTPCode(totpCode, ADMIN_2FA_SECRET);
             setVerifying2FA(false);
+            if (!isValid) {
+                showToast("Accès refusé : Code 2FA incorrect ou expiré.", "error");
+                return;
+            }
             setShow2FAModal(false);
-            showToast("Double authentification (2FA) validée ! Accès administration accordé.", "success");
+            showToast("Double authentification (2FA) validée avec succès ! Accès administration accordé.", "success");
             router.push('/admin');
-        }, 800);
+        }, 500);
     };
 
     return (

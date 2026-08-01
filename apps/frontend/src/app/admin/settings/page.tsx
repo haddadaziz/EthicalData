@@ -5,6 +5,7 @@ import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { Save, RefreshCw, Send, Bell, Users } from '@/components/icons';
 import { motion } from 'framer-motion';
+import { getAdmin2FAStatus, setAdmin2FAStatus, verifyTOTPCode, ADMIN_2FA_SECRET } from '@/lib/totp-utils';
 
 export default function AdminSettingsPage() {
     const { showToast } = useToast();
@@ -237,8 +238,13 @@ function TwoFactorAuthSection() {
     const [verifying, setVerifying] = useState(false);
     const [showQrModal, setShowQrModal] = useState(false);
 
+    useEffect(() => {
+        setEnabled2FA(getAdmin2FAStatus());
+    }, []);
+
     const handleToggle2FA = () => {
         if (enabled2FA) {
+            setAdmin2FAStatus(false);
             setEnabled2FA(false);
             showToast("Authentification à deux facteurs (2FA) désactivée.", "info");
         } else {
@@ -248,18 +254,20 @@ function TwoFactorAuthSection() {
 
     const handleConfirm2FA = (e: React.FormEvent) => {
         e.preventDefault();
-        if (totpCode.trim().length !== 6) {
-            showToast("Veuillez saisir un code de vérification valide à 6 chiffres.", "error");
-            return;
-        }
         setVerifying(true);
         setTimeout(() => {
+            const isValid = verifyTOTPCode(totpCode, ADMIN_2FA_SECRET);
             setVerifying(false);
+            if (!isValid) {
+                showToast("Code TOTP incorrect ou expiré. Veuillez vérifier l'heure de votre application Google Authenticator.", "error");
+                return;
+            }
+            setAdmin2FAStatus(true);
             setEnabled2FA(true);
             setShowQrModal(false);
             setTotpCode('');
-            showToast("Authentification à deux facteurs (2FA) activée avec succès !", "success");
-        }, 1000);
+            showToast("Authentification à deux facteurs (2FA) activée et vérifiée avec succès !", "success");
+        }, 500);
     };
 
     return (
