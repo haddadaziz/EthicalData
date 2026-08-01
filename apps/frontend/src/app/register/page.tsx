@@ -27,6 +27,7 @@ export default function RegisterPage() {
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [passwordError, setPasswordError] = useState<string | null>(null);
+    const [cndpConsent, setCndpConsent] = useState(true);
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const mouseRef = useRef({ x: 0, y: 0, active: false });
@@ -361,6 +362,20 @@ export default function RegisterPage() {
                             {passwordError && (
                                 <p className="mt-1 text-[10px] font-semibold text-red-500">{passwordError}</p>
                             )}
+                        </div>
+
+                        <div className="flex items-start gap-2.5 pt-1 text-left">
+                            <input
+                                type="checkbox"
+                                id="cndp-consent"
+                                required
+                                checked={cndpConsent}
+                                onChange={(e) => setCndpConsent(e.target.checked)}
+                                className="mt-0.5 w-4 h-4 rounded border-slate-800 bg-[#020617] text-cyan-500 focus:ring-cyan-500/20 cursor-pointer shrink-0 accent-cyan-600"
+                            />
+                            <label htmlFor="cndp-consent" className="text-[10px] text-slate-400 font-medium leading-tight cursor-pointer">
+                                J&apos;accepte le traitement de mes données personnelles conformément à la <Link href="/legal" className="text-cyan-400 underline font-bold hover:text-white">Loi marocaine n° 09-08 (CNDP)</Link>.
+                            </label>
                         </div>
 
                         <button

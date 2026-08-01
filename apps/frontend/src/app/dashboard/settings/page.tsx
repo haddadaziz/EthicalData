@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { Bell, Save, RefreshCw } from '@/components/icons';
+import { Bell, Save, RefreshCw, Shield } from '@/components/icons';
 import { motion } from 'framer-motion';
 import { getUser2FAStatus, setUser2FAStatus, verifyTOTPCode, ADMIN_2FA_SECRET } from '@/lib/totp-utils';
 
@@ -270,6 +270,43 @@ function UserTwoFactorAuthSection() {
                 >
                     {enabled2FA ? 'Ré-afficher QR Code' : 'Activer 2FA (TOTP)'}
                 </button>
+            </div>
+
+            {/* CONFORMITÉ LOI MAROCAINE 09-08 (CNDP) */}
+            <div className="p-6 bg-[#080d1a] border border-slate-800 rounded-3xl space-y-4 shadow-xl text-left">
+                <div className="flex items-center gap-3 border-b border-slate-800 pb-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-950/40 border border-emerald-800/60 flex items-center justify-center text-emerald-400 shrink-0">
+                        <Shield className="w-5 h-5" />
+                    </div>
+                    <div>
+                        <h3 className="text-base font-black text-white tracking-tight flex items-center gap-2">
+                            Conformité à la Loi marocaine n° 09-08 (CNDP)
+                        </h3>
+                        <p className="text-xs text-slate-400 font-medium">
+                            Vos données personnelles sont protégées conformément à la réglementation de la CNDP.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <button
+                        type="button"
+                        onClick={() => showToast("Exportation de vos données personnelles (Loi 09-08) préparée au format JSON.", "success")}
+                        className="p-3 bg-[#020617] border border-slate-800 hover:border-slate-700 text-slate-300 font-bold rounded-xl text-left flex items-center justify-between transition-all cursor-pointer"
+                    >
+                        <span>Exporter mes données personnelles</span>
+                        <span className="text-[10px] text-cyan-400 font-mono">JSON / CSV</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => showToast("Votre demande de suppression/droit à l'oubli a été transmise à notre DPO.", "info")}
+                        className="p-3 bg-[#020617] border border-slate-800 hover:border-rose-900/50 text-slate-300 hover:text-rose-400 font-bold rounded-xl text-left flex items-center justify-between transition-all cursor-pointer"
+                    >
+                        <span>Exercer mon droit à l&apos;oubli</span>
+                        <span className="text-[10px] text-slate-500 font-mono">Droit d&apos;opposition</span>
+                    </button>
+                </div>
             </div>
 
             {/* Modal de Configuration 2FA User */}

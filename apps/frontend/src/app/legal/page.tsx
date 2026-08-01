@@ -56,6 +56,15 @@ Pour exercer vos droits, contactez-nous à : contact@ethicaldatasecurity.ma`,
 • Sauvegardes régulières et plan de reprise d'activité`,
     },
     {
+        icon: ShieldCheck,
+        title: 'Conformité à la Loi marocaine n° 09-08 (CNDP)',
+        content: `Ethical Data Security s'engage à respecter scrupuleusement la loi marocaine n° 09-08 relative à la protection des personnes physiques à l'égard du traitement des données à caractère personnel.
+
+• Déclaration / Autorisation CNDP : Les traitements automatiques de données réalisés sur la plateforme font l'objet d'une déclaration auprès de la Commission Nationale de contrôle de la protection des Données à caractère Personnel (CNDP).
+• Exercice des Droits d'Accès et d'Opposition (Art. 5, 7 & 9) : Chaque utilisateur dispose d'un droit d'accès, de rectification et d'opposition sur ses données personnelles en nous écrivant à : contact@ethicaldatasecurity.ma.
+• Confidentialité Strictement Garantie : Vos données ne sont en aucun cas vendues ou cédées à des tiers non autorisés.`,
+    },
+    {
         icon: FileText,
         title: 'Cookies',
         content: `Notre plateforme utilise des cookies strictement nécessaires à son fonctionnement (authentification, session utilisateur). 
