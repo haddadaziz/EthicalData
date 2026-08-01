@@ -63,10 +63,6 @@ export default function InfogerancePage() {
         </div>
 
         <div className="relative z-10 max-w-5xl mx-auto px-4 md:px-6 space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-800/60 text-cyan-400 text-xs font-black uppercase tracking-widest">
-            <span>ETHICAL DATA SECURITY — l&apos;essentiel en un clic !</span>
-          </div>
-
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight uppercase">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-cyan-400">
               Infogérance
