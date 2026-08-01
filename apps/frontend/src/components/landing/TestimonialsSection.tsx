@@ -124,7 +124,6 @@ export function TestimonialsSection() {
           <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">{t('testimonials_title')}</h2>
           
           <div className="flex flex-col items-center space-y-1">
-            <span className="text-base sm:text-lg font-black text-white uppercase tracking-widest">{t('testimonials_excellent')}</span>
             <div className="flex gap-1">
               {[...Array(5)].map((_, i) => (
                 <svg key={i} className="w-5 h-5 sm:w-7 sm:h-7 text-[#FFC107] fill-current" viewBox="0 0 512 512">
