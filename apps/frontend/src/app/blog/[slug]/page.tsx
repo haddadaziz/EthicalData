@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { Navbar } from '@/components/landing/Navbar';
 import { Footer } from '@/components/layout/Footer';
-import { ARTICLES } from '../page';
+import { ARTICLES } from '@/lib/blog-data';
 import { ArrowLeft, Clock, MessageSquare, ArrowRight, BookOpen, Share2, CheckCircle } from '@/components/icons';
 
 export default function BlogArticleDetailPage() {

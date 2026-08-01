@@ -6,6 +6,7 @@ import { useToast } from '../../../context/ToastContext';
 import { Save, RefreshCw, Send, Bell, Users, GraduationCap, ChalkboardTeacher } from '@/components/icons';
 import { motion } from 'framer-motion';
 import { getAdmin2FAStatus, setAdmin2FAStatus, verifyTOTPCode, ADMIN_2FA_SECRET } from '@/lib/totp-utils';
+import { AdminTrilingualLanguageSection } from '@/components/admin/settings/AdminTrilingualLanguageSection';
 
 export default function AdminSettingsPage() {
     const { showToast } = useToast();
@@ -223,6 +224,9 @@ export default function AdminSettingsPage() {
                     </button>
                 </div>
             </motion.form>
+
+            {/* SECTON 8 : GESTION MULTILINGUE TRILINGUE (FR / AR / EN) */}
+            <AdminTrilingualLanguageSection />
 
             {/* BLOC AUTHENTIFICATION À DEUX FACTEURS (2FA / A2F) */}
             <TwoFactorAuthSection />
