@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import { FileText, CheckCircle, AlertTriangle, X, BookOpen } from '@/components/icons';
 import { Navbar } from '@/components/landing/Navbar';

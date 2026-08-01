@@ -1,4 +1,5 @@
-﻿"use client";
+'use client';
+"use client";
 
 import React, { useState } from 'react';
 import { ChevronDown, Search, MessageCircle, BookOpen, Award, Activity, HelpCircle } from '@/components/icons';

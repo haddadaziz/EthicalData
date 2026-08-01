@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import { ShieldCheck, FileText, Lock, Eye } from '@/components/icons';
 import { Navbar } from '@/components/landing/Navbar';
