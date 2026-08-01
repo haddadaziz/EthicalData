@@ -15,12 +15,10 @@ export default function CoachingPublicPage() {
         
         {/* HERO SECTION */}
         <div className="text-center max-w-3xl mx-auto space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/60 border border-cyan-800/50 text-cyan-400 text-xs font-black uppercase tracking-wider">
-            <span>Accompagnement Individualisé</span>
-          </div>
-
-          <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
-            Coaching Personnalisé & Mentoring par des Formateurs Experts
+          <h1 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-cyan-400">
+              Coaching Personnalisé & Mentoring par des Formateurs Experts
+            </span>
           </h1>
 
           <p className="text-slate-300 text-sm md:text-base leading-relaxed">
