@@ -7,6 +7,7 @@ import { Save, RefreshCw, Send, Bell, Users, GraduationCap, ChalkboardTeacher } 
 import { motion } from 'framer-motion';
 import { getAdmin2FAStatus, setAdmin2FAStatus, verifyTOTPCode, ADMIN_2FA_SECRET } from '@/lib/totp-utils';
 import { AdminTrilingualLanguageSection } from '@/components/admin/settings/AdminTrilingualLanguageSection';
+import { AdminEmailNotificationsTestSection } from '@/components/admin/settings/AdminEmailNotificationsTestSection';
 
 export default function AdminSettingsPage() {
     const { showToast } = useToast();
@@ -224,6 +225,9 @@ export default function AdminSettingsPage() {
                     </button>
                 </div>
             </motion.form>
+
+            {/* SECTION NOTIFICATIONS EMAILS TRANSACTIONNELLES AUTOMATIQUES */}
+            <AdminEmailNotificationsTestSection />
 
             {/* SECTON 8 : GESTION MULTILINGUE TRILINGUE (FR / AR / EN) */}
             <AdminTrilingualLanguageSection />
