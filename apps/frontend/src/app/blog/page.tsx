@@ -30,11 +30,10 @@ export default function BlogPublicPage() {
         
         {/* HERO HEADER */}
         <div className="space-y-4 max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-950/60 border border-blue-800/50 text-cyan-400 text-xs font-black uppercase tracking-wider">
-            <span>Blog & Conseils Examens IT</span>
-          </div>
-          <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight">
-            Articles, Guides & Actualités Certifications
+          <h1 className="text-3xl md:text-5xl font-black tracking-tight">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-cyan-400">
+              Articles, Guides & Actualités Certifications
+            </span>
           </h1>
           <p className="text-slate-400 text-sm md:text-base leading-relaxed">
             Conseils de préparation, méthodes de révision et actualités du monde du Cloud et de la Cybersécurité rédigés par nos formateurs experts.
